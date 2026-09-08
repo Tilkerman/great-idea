@@ -1,0 +1,79 @@
+.hour-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hour-slot--compact {
+  border-radius: 8px;
+}
+
+/* Силуэт пустого часа — как на макете */
+.hour-slot--empty {
+  display: block;
+  cursor: pointer;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  min-height: 0;
+}
+
+.hour-slot--empty:hover {
+  filter: brightness(0.97);
+}
+
+.hour-slot--empty .hour-slot__add-icon {
+  display: none;
+}
+
+.hour-slot--filled {
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+}
+
+.hour-slot__stack {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.hour-slot__add-btn {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hour-slot__add-btn:hover {
+  background: rgba(0, 0, 0, 0.14);
+}
+
+[data-theme='dark'] .hour-slot--empty {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='dark'] .hour-slot__add-btn {
+  background: rgba(255, 255, 255, 0.12);
+}

@@ -1,0 +1,153 @@
+.task-card {
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.task-card:active {
+  transform: scale(0.98);
+}
+
+.task-card--done {
+  opacity: 0.55;
+}
+
+.task-card--compact {
+  padding: 4px 6px;
+}
+
+.task-card--compact .task-card__desc {
+  display: none;
+}
+
+/* Слот внутри часа */
+.task-card--slot {
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 0;
+  border-radius: 8px;
+  padding: 4px 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.task-card--slot-single {
+  flex: 1;
+}
+
+.task-card--slot-double {
+  min-height: 0;
+}
+
+.task-card--slot-triple .task-card__title,
+.task-card--slot-quad .task-card__title {
+  font-size: 9px;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.task-card--slot-triple .task-card__badge,
+.task-card--slot-quad .task-card__badge {
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+}
+
+.task-card--slot-quad .task-card__title {
+  -webkit-line-clamp: 1;
+}
+
+.task-card__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 0;
+  flex: 1;
+}
+
+.task-card__body {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.task-card__badge {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-card__title {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.task-card__title--strike {
+  text-decoration: line-through;
+}
+
+.task-card__desc {
+  margin: 2px 0 0;
+  font-size: 9px;
+  opacity: 0.85;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.task-card__delete {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  color: #c62828;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.task-card__complete {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.task-card__important {
+  color: #c62828;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.category-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}

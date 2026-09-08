@@ -1,0 +1,15 @@
+.auth-form__intro {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.auth-form__switch {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px;
+}

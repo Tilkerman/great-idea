@@ -1,0 +1,135 @@
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.task-sheet {
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.task-sheet__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.task-sheet__time {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+}
+
+.task-sheet__slot-info {
+  font-size: 12px;
+  color: var(--accent-dim);
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.task-sheet__close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--surface-2);
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.task-sheet__title {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  outline: none;
+}
+
+.task-sheet__desc {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  resize: vertical;
+  background: var(--surface-2);
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  font-family: inherit;
+}
+
+.task-sheet__categories {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cat-chip {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cat-chip--active {
+  border-color: var(--accent);
+}
+
+.task-sheet__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.task-sheet__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #0a1a0a;
+}
+
+.btn--ghost {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.btn--danger {
+  background: #ffebee;
+  color: #c62828;
+}

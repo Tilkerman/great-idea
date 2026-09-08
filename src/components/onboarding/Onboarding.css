@@ -1,0 +1,62 @@
+.onboarding {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  padding-top: calc(48px + env(safe-area-inset-top));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  background: linear-gradient(160deg, #0a0a0a 0%, #1a2a1a 100%);
+  color: #fff;
+}
+
+.onboarding__emoji {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 24px;
+}
+
+.onboarding__title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.onboarding__body {
+  font-size: 16px;
+  line-height: 1.5;
+  opacity: 0.85;
+  margin: 0;
+}
+
+.onboarding__dots {
+  display: flex;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.onboarding__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.onboarding__dot--active {
+  background: var(--accent);
+  width: 24px;
+  border-radius: 4px;
+}
+
+.onboarding__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.onboarding__skip {
+  margin-right: auto;
+  color: rgba(255, 255, 255, 0.7) !important;
+  background: transparent !important;
+}
