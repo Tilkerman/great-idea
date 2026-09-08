@@ -17,6 +17,10 @@ alwaysApply: true
 
 Это вложенность `список` → `календарь`. Туда раньше попадали правки по ошибке. **Не считать её основной.** Новые файлы и правки — только в workspace с `\`.
 
-GitHub: `Tilkerman/great-idea` (ветка `main`). Деплой: ветка `gh-pages`, сайт `https://tilkerman.github.io/great-idea/`.
+GitHub: `Tilkerman/great-idea` (ветка `main`). Репозиторий **должен быть Public** — иначе GitHub Pages отдаёт 404 на бесплатном аккаунте.
+
+Деплой: ветка `gh-pages`, корень `/`, сайт `https://tilkerman.github.io/great-idea/` (`BASE_PATH=/great-idea/`).
+
+**Сборка:** Vite ломается (`ERR_INVALID_MODULE_SPECIFIER`), если `npm run build` запускать из папки с `\` в имени. Сборку и `gh-pages -d dist` делать из копии `/Users/macbookair/Работа/список/календарь` после `rsync` исходников (без `node_modules`, `dist`). Код править только в workspace с `\`.
 
 Задачи пользователей живут в IndexedDB браузера, не в git.
