@@ -2,7 +2,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 10px;
+  border-radius: 4px;
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
@@ -11,7 +11,7 @@
 }
 
 .hour-slot--compact {
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 /* Силуэт пустого часа — как на макете */
@@ -36,6 +36,7 @@
   display: flex;
   flex-direction: column;
   padding: 3px;
+  gap: 2px;
 }
 
 .hour-slot__stack {
@@ -47,33 +48,55 @@
   overflow: hidden;
 }
 
-.hour-slot__add-btn {
-  position: absolute;
-  right: 4px;
-  bottom: 4px;
-  width: 22px;
-  height: 22px;
+.hour-slot__add-strip {
+  flex: 0 0 auto;
+  min-height: 14px;
+  width: 100%;
   border: none;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.08);
-  color: var(--text-primary);
-  font-size: 16px;
-  line-height: 1;
+  padding: 0;
+  margin: 0;
+  border-radius: 3px;
   cursor: pointer;
-  z-index: 2;
+  background: var(--surface-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  -webkit-tap-highlight-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.hour-slot__add-btn:hover {
-  background: rgba(0, 0, 0, 0.14);
+.hour-slot__add-strip-plus {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-primary);
+  opacity: 0.38;
+  pointer-events: none;
+  transform: translateY(-0.5px);
+}
+
+.hour-slot--compact .hour-slot__add-strip {
+  min-height: 12px;
+}
+
+.hour-slot--compact .hour-slot__add-strip-plus {
+  font-size: 11px;
+}
+
+.hour-slot:not(.hour-slot--compact) .hour-slot__add-strip {
+  min-height: 16px;
+  flex: 0 0 18%;
+  max-height: 28px;
+}
+
+.hour-slot__add-strip:hover {
+  filter: brightness(0.97);
 }
 
 [data-theme='dark'] .hour-slot--empty {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-[data-theme='dark'] .hour-slot__add-btn {
-  background: rgba(255, 255, 255, 0.12);
+[data-theme='dark'] .hour-slot__add-strip {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }

@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { useApp } from '../../context/AppContext';
 import { WEEKDAY_SHORT } from '../../constants/categories';
-import { getWeekZoomMetrics } from '../../constants/weekZoom';
+import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_TITLE_MIN } from '../../constants/weekZoom';
 import { HourSlot } from '../tasks/HourSlot';
 import {
   addDays,
@@ -23,6 +23,11 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
   const timeScrollRef = useRef<HTMLDivElement>(null);
 
   const { colWidth, rowHeight } = getWeekZoomMetrics(weekZoom, viewportWidth);
+  /** До 60% × мешает на мелких карточках; с 60% и на дне — виден */
+  const showSlotDelete = weekZoom >= WEEK_ZOOM_DELETE_MIN;
+  const showSlotBadge = weekZoom >= WEEK_ZOOM_BADGE_MIN;
+  const showSlotTitle = weekZoom >= WEEK_ZOOM_TITLE_MIN;
+  const showSlotAdd = weekZoom >= WEEK_ZOOM_ADD_MIN;
 
   const days = useMemo(
     () => getWeekDays(focusDate, settings.weekStartsOn),
@@ -126,6 +131,10 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
                           setSheetOpen(true);
                         }}
                         onTaskDelete={(task) => requestDelete(task)}
+                        showDelete={showSlotDelete}
+                        showBadge={showSlotBadge}
+                        showTitle={showSlotTitle}
+                        showAddStrip={showSlotAdd}
                         onAdd={openDraft}
                       />
                     </div>

@@ -10,6 +10,10 @@ interface HourSlotProps {
   compact?: boolean;
   onTaskClick: (task: Task) => void;
   onTaskDelete?: (task: Task) => void;
+  showDelete?: boolean;
+  showBadge?: boolean;
+  showTitle?: boolean;
+  showAddStrip?: boolean;
   onAdd: (draft: Task) => void;
 }
 
@@ -20,10 +24,14 @@ export function HourSlot({
   compact,
   onTaskClick,
   onTaskDelete,
+  showDelete = true,
+  showBadge = true,
+  showTitle = true,
+  showAddStrip = true,
   onAdd,
 }: HourSlotProps) {
   const count = tasks.length;
-  const showAdd = canAddToHour(count);
+  const showAdd = canAddToHour(count) && showAddStrip;
   const density = count <= 1 ? 'single' : count <= 2 ? 'double' : count <= 3 ? 'triple' : 'quad';
 
   if (count === 0) {
@@ -40,7 +48,7 @@ export function HourSlot({
   }
 
   return (
-    <div className={`hour-slot hour-slot--filled ${compact ? 'hour-slot--compact' : ''}`}>
+    <div className={`hour-slot hour-slot--filled ${compact ? 'hour-slot--compact' : ''} ${showAdd ? 'hour-slot--with-add' : ''}`}>
       <div className={`hour-slot__stack hour-slot__stack--${density}`}>
         {tasks.map((task) => (
           <TaskCard
@@ -49,18 +57,20 @@ export function HourSlot({
             slot
             density={density}
             onClick={() => onTaskClick(task)}
-            onDelete={onTaskDelete ? () => onTaskDelete(task) : undefined}
+            onDelete={showDelete && onTaskDelete ? () => onTaskDelete(task) : undefined}
+            showBadge={showBadge}
+            showTitle={showTitle}
           />
         ))}
       </div>
       {showAdd && (
         <button
           type="button"
-          className="hour-slot__add-btn"
+          className="hour-slot__add-strip"
           onClick={() => onAdd(createDraftTask(day, hour, tasks))}
           aria-label={`Добавить дело (${count}/${MAX_TASKS_PER_HOUR})`}
         >
-          +
+          <span className="hour-slot__add-strip-plus" aria-hidden>+</span>
         </button>
       )}
     </div>
