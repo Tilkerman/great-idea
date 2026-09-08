@@ -39,6 +39,7 @@ interface AppContextValue {
   zoomIn: () => void;
   zoomOut: () => void;
   weekZoom: number;
+  setWeekZoom: (zoom: number) => void;
   weekZoomIn: () => void;
   weekZoomOut: () => void;
   focusDate: Date;
@@ -118,15 +119,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const weekZoomIn = useCallback(() => {
-    setWeekZoom((w) => Math.min(w + 1, WEEK_ZOOM_MAX));
+    setWeekZoom((w) => Math.min(w + 0.18, WEEK_ZOOM_MAX));
   }, []);
 
   const weekZoomOut = useCallback(() => {
-    setWeekZoom((w) => Math.max(w - 1, WEEK_ZOOM_MIN));
+    setWeekZoom((w) => Math.max(w - 0.18, WEEK_ZOOM_MIN));
   }, []);
 
   useEffect(() => {
-    if (zoom !== 'week') setWeekZoom(WEEK_ZOOM_MIN);
+    if (zoom === 'day') setWeekZoom(WEEK_ZOOM_MAX);
+    if (zoom === 'month' || zoom === 'year') setWeekZoom(WEEK_ZOOM_MIN);
   }, [zoom]);
 
   const upsertTask = useCallback(async (task: Task) => {
@@ -194,6 +196,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       zoomIn,
       zoomOut,
       weekZoom,
+      setWeekZoom,
       weekZoomIn,
       weekZoomOut,
       focusDate,
@@ -217,7 +220,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       completeOnboarding,
     }),
     [
-      ready, screen, zoom, zoomIn, zoomOut, weekZoom, weekZoomIn, weekZoomOut,
+      ready, screen, zoom, zoomIn, zoomOut, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
       focusDate, selectedDay, tasks,
       refreshTasks, upsertTask, saveHourSlot, deleteTaskInHour, removeTask, settings, updateSettings,
       session, editingTask, sheetOpen, completeOnboarding,

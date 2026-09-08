@@ -1,22 +1,26 @@
-export const WEEK_ZOOM_MIN = 1;
-export const WEEK_ZOOM_MAX = 3;
+export const WEEK_ZOOM_MIN = 0;
+export const WEEK_ZOOM_MAX = 1;
+export const TIME_COL_WIDTH = 44;
 
-/** Ширина колонки дня и высота строки часа для каждого уровня масштаба недели */
-export function getWeekZoomMetrics(level: number) {
-  const lv = Math.min(WEEK_ZOOM_MAX, Math.max(WEEK_ZOOM_MIN, Math.round(level)));
-  const colWidth = 72 + (lv - 1) * 48; // 72 → 120 → 168 px (~2.5 дня на экране)
-  const rowHeight = 96 + (lv - 1) * 28; // 96 → 124 → 152 px
-  return { level: lv, colWidth, rowHeight };
+/** t=0: вся неделя на экране. t=1: почти один день. */
+export function getWeekZoomMetrics(level: number, viewportWidth: number) {
+  const t = Math.min(WEEK_ZOOM_MAX, Math.max(WEEK_ZOOM_MIN, level));
+  const avail = Math.max(240, viewportWidth - TIME_COL_WIDTH);
+  const minCol = avail / 7;
+  const maxCol = avail * 0.94;
+  const colWidth = minCol + (maxCol - minCol) * t;
+  const rowHeight = 72 + t * 88;
+  return { level: t, colWidth, rowHeight, daysVisible: avail / colWidth };
 }
 
-export function weekZoomHint(level: number) {
-  const { colWidth } = getWeekZoomMetrics(level);
-  const daysVisible = (420 / colWidth).toFixed(1);
-  if (level >= WEEK_ZOOM_MAX) {
-    return `Макс. масштаб (~${daysVisible} дня) · щипок внутрь → день`;
+export function weekZoomHint(level: number, viewportWidth = 390) {
+  const { daysVisible } = getWeekZoomMetrics(level, viewportWidth);
+  const days = daysVisible.toFixed(1);
+  if (level >= WEEK_ZOOM_MAX - 0.02) {
+    return `Один день · листай в стороны · сведи пальцы — вся неделя`;
   }
-  if (level <= WEEK_ZOOM_MIN) {
-    return `Масштаб ${level}/${WEEK_ZOOM_MAX} · щипок внутрь — увеличить · наружу → месяц`;
+  if (level <= WEEK_ZOOM_MIN + 0.02) {
+    return `Вся неделя на экране · сведи сильнее → месяц`;
   }
-  return `Масштаб ${level}/${WEEK_ZOOM_MAX} (~${daysVisible} дня) · щипок — изменить масштаб`;
+  return `${days} дня на экране · разведи/сведи плавно`;
 }

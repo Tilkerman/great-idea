@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { useApp } from '../../context/AppContext';
 import { WEEKDAY_SHORT } from '../../constants/categories';
 import { getWeekZoomMetrics } from '../../constants/weekZoom';
 import { HourSlot } from '../tasks/HourSlot';
 import {
+  addDays,
   getHoursRange,
   getWeekDays,
   toLocalDateString,
@@ -11,7 +12,7 @@ import {
 import type { Task } from '../../types';
 import './CalendarViews.css';
 
-export function WeekView() {
+export function WeekView({ viewportWidth }: { viewportWidth: number }) {
   const {
     focusDate, tasks, settings, weekZoom, setEditingTask, setSheetOpen,
     deleteTaskInHour,
@@ -21,7 +22,7 @@ export function WeekView() {
   const gridScrollRef = useRef<HTMLDivElement>(null);
   const timeScrollRef = useRef<HTMLDivElement>(null);
 
-  const { colWidth, rowHeight } = getWeekZoomMetrics(weekZoom);
+  const { colWidth, rowHeight } = getWeekZoomMetrics(weekZoom, viewportWidth);
 
   const days = useMemo(
     () => getWeekDays(focusDate, settings.weekStartsOn),
@@ -68,7 +69,7 @@ export function WeekView() {
   const style = {
     '--week-col-width': `${colWidth}px`,
     '--week-row-height': `${rowHeight}px`,
-  } as React.CSSProperties;
+  } as CSSProperties;
 
   return (
     <div className="week-view" style={style}>
@@ -103,7 +104,7 @@ export function WeekView() {
         </div>
 
         <div
-          className="week-view__grid-scroll"
+          className={`week-view__grid-scroll ${weekZoom > 0.45 ? 'week-view__grid-scroll--snap' : ''}`}
           ref={gridScrollRef}
           onScroll={() => syncScroll('grid')}
         >
@@ -141,13 +142,16 @@ export function WeekView() {
 
 export function DayView() {
   const {
-    focusDate, tasks, settings, setEditingTask, setSheetOpen, deleteTaskInHour,
+    focusDate, setFocusDate, tasks, settings, setEditingTask, setSheetOpen, deleteTaskInHour,
   } = useApp();
   const hours = useMemo(
     () => getHoursRange(settings.dayStartHour, settings.dayEndHour),
     [settings.dayStartHour, settings.dayEndHour],
   );
   const dateStr = toLocalDateString(focusDate);
+  const drag = useRef<{ id: number; x: number; y: number; locked?: 'x' | 'y' } | null>(null);
+  const offsetRef = useRef(0);
+  const [offsetX, setOffsetX] = useState(0);
 
   const tasksByHour = useMemo(() => {
     const map = new Map<number, Task[]>();
@@ -163,8 +167,47 @@ export function DayView() {
     return map;
   }, [tasks, dateStr, settings.showCompleted]);
 
+  const onPointerDown = (e: ReactPointerEvent) => {
+    drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
+  };
+
+  const onPointerMove = (e: ReactPointerEvent) => {
+    const start = drag.current;
+    if (!start || start.id !== e.pointerId) return;
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    if (!start.locked) {
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      start.locked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    if (start.locked === 'x') {
+      e.preventDefault();
+      offsetRef.current = dx;
+      setOffsetX(dx);
+    }
+  };
+
+  const onPointerUp = (e: ReactPointerEvent) => {
+    const start = drag.current;
+    if (!start || start.id !== e.pointerId) return;
+    const dx = offsetRef.current;
+    drag.current = null;
+    offsetRef.current = 0;
+    setOffsetX(0);
+    if (start.locked === 'x' && Math.abs(dx) > 56) {
+      setFocusDate(addDays(focusDate, dx < 0 ? 1 : -1));
+    }
+  };
+
   return (
-    <div className="day-view">
+    <div
+      className={`day-view ${offsetX !== 0 ? 'day-view--dragging' : ''}`}
+      style={{ transform: `translateX(${offsetX * 0.35}px)` }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+    >
       {hours.map((h) => {
         const slotTasks = tasksByHour.get(h) ?? [];
         if (settings.hideEmptyHours && slotTasks.length === 0) return null;

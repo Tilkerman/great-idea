@@ -6,6 +6,59 @@
   touch-action: pan-x pan-y;
 }
 
+.calendar-canvas__body {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  transform-origin: 50% 28%;
+}
+
+.calendar-stage--rubber-in {
+  animation: cal-rubber-in 0.78s cubic-bezier(0.22, 1.4, 0.36, 1);
+}
+
+.calendar-stage--rubber-out {
+  animation: cal-rubber-out 0.78s cubic-bezier(0.22, 1.4, 0.36, 1);
+}
+
+.calendar-stage--fade {
+  animation: cal-fade 0.28s ease-out;
+}
+
+.calendar-stage--none {
+  animation: none;
+}
+
+@keyframes cal-rubber-in {
+  0% { opacity: 0.15; transform: scale(0.58); }
+  42% { opacity: 1; transform: scale(1.1); }
+  62% { transform: scale(0.96); }
+  78% { transform: scale(1.03); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes cal-rubber-out {
+  0% { opacity: 0.15; transform: scale(1.42); }
+  42% { opacity: 1; transform: scale(0.9); }
+  62% { transform: scale(1.05); }
+  78% { transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes cal-fade {
+  from { opacity: 0.45; }
+  to { opacity: 1; }
+}
+
 .zoom-tabs {
   display: flex;
   gap: 4px;
@@ -78,14 +131,6 @@
   min-width: 28px;
   text-align: center;
   color: var(--text-secondary);
-}
-
-.calendar-canvas__body {
-  flex: 1;
-  overflow: hidden;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 .view-title {
@@ -288,6 +333,7 @@
   padding: 8px 4px;
   text-align: center;
   box-sizing: border-box;
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .week-view__day-name {
@@ -329,12 +375,22 @@
   text-align: right;
   box-sizing: border-box;
   flex-shrink: 0;
+  transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .week-view__grid-scroll {
   flex: 1;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+}
+
+.week-view__grid-scroll--snap {
+  scroll-snap-type: x mandatory;
+}
+
+.week-view__grid-scroll--snap .week-view__col {
+  scroll-snap-align: start;
 }
 
 .week-view__grid {
@@ -346,6 +402,7 @@
   flex-shrink: 0;
   border-left: 1px solid var(--border);
   box-sizing: border-box;
+  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .week-view__slot {
@@ -353,6 +410,14 @@
   border-bottom: 1px solid var(--border);
   padding: 3px;
   box-sizing: border-box;
+  transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.is-pinching .week-view__day-head,
+.is-pinching .week-view__col,
+.is-pinching .week-view__slot,
+.is-pinching .week-view__time-label {
+  transition: none;
 }
 
 .day-view__slot {
@@ -368,6 +433,12 @@
   flex: 1;
   overflow-y: auto;
   min-height: 0;
+  touch-action: pan-y;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.day-view--dragging {
+  transition: none;
 }
 
 .day-view__row {

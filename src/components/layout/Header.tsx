@@ -1,6 +1,6 @@
 import { useApp } from '../../context/AppContext';
 import { MONTH_NAMES } from '../../constants/categories';
-import { addMonths, toLocalDateString } from '../../utils/date';
+import { addDays, addMonths, toLocalDateString } from '../../utils/date';
 import { createDraftTask, getTasksInHour } from '../../utils/hourSlot';
 import './Header.css';
 
@@ -17,18 +17,22 @@ export function Header() {
   const prev = () => {
     if (zoom === 'year') setFocusDate(new Date(focusDate.getFullYear() - 1, 0, 1));
     else if (zoom === 'month') setFocusDate(addMonths(focusDate, -1));
-    else setFocusDate(new Date(focusDate.getTime() - 7 * 86400000));
+    else if (zoom === 'day') setFocusDate(addDays(focusDate, -1));
+    else setFocusDate(addDays(focusDate, -7));
   };
 
   const next = () => {
     if (zoom === 'year') setFocusDate(new Date(focusDate.getFullYear() + 1, 0, 1));
     else if (zoom === 'month') setFocusDate(addMonths(focusDate, 1));
-    else setFocusDate(new Date(focusDate.getTime() + 7 * 86400000));
+    else if (zoom === 'day') setFocusDate(addDays(focusDate, 1));
+    else setFocusDate(addDays(focusDate, 7));
   };
 
   const title = zoom === 'year'
     ? String(focusDate.getFullYear())
-    : `${MONTH_NAMES[focusDate.getMonth()]} ${focusDate.getFullYear()}`;
+    : zoom === 'day'
+      ? focusDate.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' })
+      : `${MONTH_NAMES[focusDate.getMonth()]} ${focusDate.getFullYear()}`;
 
   return (
     <header className="app-header">
