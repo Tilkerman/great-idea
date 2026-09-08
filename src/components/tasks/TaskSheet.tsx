@@ -13,7 +13,7 @@ import './TaskSheet.css';
 export function TaskSheet() {
   const {
     sheetOpen, setSheetOpen, editingTask, setEditingTask,
-    tasks, saveHourSlot, deleteTaskInHour,
+    tasks, saveHourSlot, requestDelete,
   } = useApp();
 
   const [title, setTitle] = useState('');
@@ -74,11 +74,8 @@ export function TaskSheet() {
     close();
   };
 
-  const del = async () => {
-    if (editingTask.title || tasks.some((t) => t.id === editingTask.id)) {
-      await deleteTaskInHour(editingTask);
-    }
-    close();
+  const del = () => {
+    requestDelete(editingTask);
   };
 
   const slotInfo = (() => {

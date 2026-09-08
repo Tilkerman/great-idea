@@ -56,7 +56,13 @@ export function TaskCard({
           <button
             type="button"
             className="task-card__delete"
-            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            onPointerDown={(e) => { e.stopPropagation(); }}
+            onTouchStart={(e) => { e.stopPropagation(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              onDelete();
+            }}
             aria-label="Удалить"
           >
             ×

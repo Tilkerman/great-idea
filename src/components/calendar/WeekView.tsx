@@ -15,7 +15,7 @@ import './CalendarViews.css';
 export function WeekView({ viewportWidth }: { viewportWidth: number }) {
   const {
     focusDate, tasks, settings, weekZoom, setEditingTask, setSheetOpen,
-    deleteTaskInHour,
+    requestDelete,
   } = useApp();
 
   const headerScrollRef = useRef<HTMLDivElement>(null);
@@ -125,7 +125,7 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
                           setEditingTask(task);
                           setSheetOpen(true);
                         }}
-                        onTaskDelete={(task) => deleteTaskInHour(task)}
+                        onTaskDelete={(task) => requestDelete(task)}
                         onAdd={openDraft}
                       />
                     </div>
@@ -142,7 +142,7 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
 
 export function DayView() {
   const {
-    focusDate, setFocusDate, tasks, settings, setEditingTask, setSheetOpen, deleteTaskInHour,
+    focusDate, setFocusDate, tasks, settings, setEditingTask, setSheetOpen, requestDelete,
   } = useApp();
   const hours = useMemo(
     () => getHoursRange(settings.dayStartHour, settings.dayEndHour),
@@ -223,7 +223,7 @@ export function DayView() {
                   setEditingTask(task);
                   setSheetOpen(true);
                 }}
-                onTaskDelete={(task) => deleteTaskInHour(task)}
+                onTaskDelete={(task) => requestDelete(task)}
                 onAdd={(draft) => {
                   setEditingTask(draft);
                   setSheetOpen(true);

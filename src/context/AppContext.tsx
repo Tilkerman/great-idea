@@ -60,6 +60,10 @@ interface AppContextValue {
   setEditingTask: (t: Task | null) => void;
   sheetOpen: boolean;
   setSheetOpen: (v: boolean) => void;
+  pendingDelete: Task | null;
+  requestDelete: (task: Task) => void;
+  cancelDelete: () => void;
+  confirmDelete: () => Promise<void>;
   completeOnboarding: () => void;
 }
 
@@ -79,6 +83,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<UserSession>({ isGuest: true });
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<Task | null>(null);
 
   const refreshTasks = useCallback(async () => {
     setTasks(await getAllTasks());
@@ -155,6 +160,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await refreshTasks();
   }, [refreshTasks]);
 
+  const requestDelete = useCallback((task: Task) => {
+    setPendingDelete(task);
+  }, []);
+
+  const cancelDelete = useCallback(() => {
+    setPendingDelete(null);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!pendingDelete) return;
+    const task = pendingDelete;
+    setPendingDelete(null);
+    setSheetOpen(false);
+    setEditingTask(null);
+    await deleteTaskInHour(task);
+  }, [pendingDelete, deleteTaskInHour]);
+
   const removeTask = useCallback(async (id: string) => {
     await deleteTask(id);
     await refreshTasks();
@@ -217,13 +239,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setEditingTask,
       sheetOpen,
       setSheetOpen,
+      pendingDelete,
+      requestDelete,
+      cancelDelete,
+      confirmDelete,
       completeOnboarding,
     }),
     [
       ready, screen, zoom, zoomIn, zoomOut, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
       focusDate, selectedDay, tasks,
       refreshTasks, upsertTask, saveHourSlot, deleteTaskInHour, removeTask, settings, updateSettings,
-      session, editingTask, sheetOpen, completeOnboarding,
+      session, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding,
     ],
   );
 

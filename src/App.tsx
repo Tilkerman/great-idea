@@ -4,6 +4,7 @@ import { Header, Fab } from './components/layout/Header';
 import { BottomNav } from './components/layout/BottomNav';
 import { CalendarCanvas } from './components/calendar/CalendarCanvas';
 import { TaskSheet } from './components/tasks/TaskSheet';
+import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { AuthScreen } from './components/auth/AuthScreen';
 import { SearchScreen } from './components/search/SearchScreen';
 import {
@@ -15,6 +16,23 @@ import {
   SettingsData,
   SettingsAbout,
 } from './components/settings/Settings';
+
+function DeleteConfirm() {
+  const { pendingDelete, cancelDelete, confirmDelete } = useApp();
+  if (!pendingDelete) return null;
+  return (
+    <ConfirmDialog
+      title="Удалить запись?"
+      message={pendingDelete.title
+        ? `«${pendingDelete.title}» будет удалена. Это нельзя отменить.`
+        : 'Эта запись будет удалена. Это нельзя отменить.'}
+      confirmLabel="Удалить"
+      cancelLabel="Отмена"
+      onCancel={cancelDelete}
+      onConfirm={() => { void confirmDelete(); }}
+    />
+  );
+}
 
 function AppRouter() {
   const { ready, screen } = useApp();
@@ -64,6 +82,7 @@ export default function App() {
   return (
     <AppProvider>
       <AppRouter />
+      <DeleteConfirm />
     </AppProvider>
   );
 }
