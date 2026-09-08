@@ -13,6 +13,7 @@ interface HourSlotProps {
   showDelete?: boolean;
   showBadge?: boolean;
   showTitle?: boolean;
+  showDesc?: boolean;
   showAddStrip?: boolean;
   onAdd: (draft: Task) => void;
 }
@@ -27,6 +28,7 @@ export function HourSlot({
   showDelete = true,
   showBadge = true,
   showTitle = true,
+  showDesc = true,
   showAddStrip = true,
   onAdd,
 }: HourSlotProps) {
@@ -60,6 +62,7 @@ export function HourSlot({
             onDelete={showDelete && onTaskDelete ? () => onTaskDelete(task) : undefined}
             showBadge={showBadge}
             showTitle={showTitle}
+            showDesc={showDesc}
           />
         ))}
       </div>

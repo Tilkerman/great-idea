@@ -5,7 +5,7 @@ import { MonthView } from './MonthView';
 import { WeekView, DayView } from './WeekView';
 import { usePinchZoom, zoomHint } from '../../hooks/usePinchZoom';
 import { ZOOM_LABELS } from '../../constants/categories';
-import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../../constants/weekZoom';
+import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomPercent } from '../../constants/weekZoom';
 import type { ZoomLevel } from '../../types';
 import './CalendarViews.css';
 
@@ -79,7 +79,7 @@ export function CalendarCanvas() {
             >
               −
             </button>
-            <span className="week-zoom-level">{Math.round(weekZoom * 100)}%</span>
+            <span className="week-zoom-level">{weekZoomPercent(weekZoom)}%</span>
             <button
               type="button"
               className="week-zoom-btn"

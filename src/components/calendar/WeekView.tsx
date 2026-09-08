@@ -1,12 +1,13 @@
 import { useCallback, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { useApp } from '../../context/AppContext';
-import { WEEKDAY_SHORT } from '../../constants/categories';
-import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_TITLE_MIN } from '../../constants/weekZoom';
+import { WEEKDAY_NAMES, WEEKDAY_SHORT } from '../../constants/categories';
+import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TIME_GROW_MAX, WEEK_ZOOM_TIME_GROW_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
 import { HourSlot } from '../tasks/HourSlot';
 import {
   addDays,
   getHoursRange,
   getWeekDays,
+  hourRangeLabels,
   toLocalDateString,
 } from '../../utils/date';
 import type { Task } from '../../types';
@@ -24,10 +25,13 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
 
   const { colWidth, rowHeight } = getWeekZoomMetrics(weekZoom, viewportWidth);
   /** До 60% × мешает на мелких карточках; с 60% и на дне — виден */
-  const showSlotDelete = weekZoom >= WEEK_ZOOM_DELETE_MIN;
-  const showSlotBadge = weekZoom >= WEEK_ZOOM_BADGE_MIN;
-  const showSlotTitle = weekZoom >= WEEK_ZOOM_TITLE_MIN;
-  const showSlotAdd = weekZoom >= WEEK_ZOOM_ADD_MIN;
+  const showSlotDelete = weekZoomAtLeast(weekZoom, WEEK_ZOOM_DELETE_MIN);
+  const showSlotBadge = weekZoomAtLeast(weekZoom, WEEK_ZOOM_BADGE_MIN);
+  const showSlotTitle = weekZoomAtLeast(weekZoom, WEEK_ZOOM_TITLE_MIN);
+  const showSlotAdd = weekZoomAtLeast(weekZoom, WEEK_ZOOM_ADD_MIN);
+  const zoomPct = weekZoomPercent(weekZoom);
+  const titlesOnly = showSlotTitle && zoomPct <= Math.round(WEEK_ZOOM_TITLE_ONLY_MAX * 100);
+  const showSlotDesc = weekZoomAtLeast(weekZoom, WEEK_ZOOM_DESC_MIN);
 
   const days = useMemo(
     () => getWeekDays(focusDate, settings.weekStartsOn),
@@ -69,15 +73,21 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
     }
   }, []);
 
+  const showFullWeekday = weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
   const gridWidth = colWidth * days.length;
+  const timeT = Math.max(0, Math.min(weekZoom, WEEK_ZOOM_TIME_GROW_MAX) - WEEK_ZOOM_TIME_GROW_MIN);
+  const timeScaleY = 1.22 + timeT * 1.1;
+  const timeFontPx = 12 + timeT * 10;
 
   const style = {
     '--week-col-width': `${colWidth}px`,
     '--week-row-height': `${rowHeight}px`,
+    '--week-time-y': String(timeScaleY),
+    '--week-time-size': `${timeFontPx}px`,
   } as CSSProperties;
 
   return (
-    <div className="week-view" style={style}>
+    <div className={`week-view ${titlesOnly ? 'week-view--sm-title' : ''}`} style={style}>
       <div className="week-view__header-row">
         <div className="week-view__time-spacer" />
         <div
@@ -85,12 +95,19 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
           ref={headerScrollRef}
         >
           <div className="week-view__header-inner" style={{ width: gridWidth }}>
-            {days.map((d) => (
-              <div key={d.toISOString()} className="week-view__day-head">
-                <span className="week-view__day-name">{WEEKDAY_SHORT[(d.getDay() + 6) % 7]}</span>
-                <span className="week-view__day-num">{d.getDate()}</span>
-              </div>
-            ))}
+            {days.map((d) => {
+              const wi = (d.getDay() + 6) % 7;
+              const raw = WEEKDAY_NAMES[wi] ?? '';
+              const name = showFullWeekday
+                ? raw.charAt(0) + raw.slice(1).toLowerCase()
+                : WEEKDAY_SHORT[wi];
+              return (
+                <div key={d.toISOString()} className="week-view__day-head">
+                  <span className="week-view__day-name">{name}</span>
+                  <span className="week-view__day-num">{d.getDate()}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -101,11 +118,16 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
           ref={timeScrollRef}
           onScroll={() => syncScroll('time')}
         >
-          {hours.map((h) => (
-            <div key={h} className="week-view__time-label">
-              {String(h).padStart(2, '0')}:00
-            </div>
-          ))}
+          {hours.map((h) => {
+            const { start, end } = hourRangeLabels(h);
+            return (
+              <div key={h} className="week-view__time-label">
+                <span className="week-view__time-start">{start}</span>
+                <span className="week-view__time-dash" aria-hidden>–</span>
+                <span className="week-view__time-end">{end}</span>
+              </div>
+            );
+          })}
         </div>
 
         <div
@@ -134,6 +156,7 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
                         showDelete={showSlotDelete}
                         showBadge={showSlotBadge}
                         showTitle={showSlotTitle}
+                        showDesc={showSlotDesc}
                         showAddStrip={showSlotAdd}
                         onAdd={openDraft}
                       />
@@ -220,9 +243,14 @@ export function DayView() {
       {hours.map((h) => {
         const slotTasks = tasksByHour.get(h) ?? [];
         if (settings.hideEmptyHours && slotTasks.length === 0) return null;
+        const { start, end } = hourRangeLabels(h);
         return (
           <div key={h} className="day-view__row">
-            <div className="day-view__time">{String(h).padStart(2, '0')}:00</div>
+            <div className="day-view__time">
+              <span className="week-view__time-start">{start}</span>
+              <span className="week-view__time-dash" aria-hidden>–</span>
+              <span className="week-view__time-end">{end}</span>
+            </div>
             <div className="day-view__slot">
               <HourSlot
                 day={focusDate}

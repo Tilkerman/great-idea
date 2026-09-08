@@ -124,11 +124,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const weekZoomIn = useCallback(() => {
-    setWeekZoom((w) => Math.min(w + 0.18, WEEK_ZOOM_MAX));
+    setWeekZoom((w) => Math.min(w + 0.1, WEEK_ZOOM_MAX));
   }, []);
 
   const weekZoomOut = useCallback(() => {
-    setWeekZoom((w) => Math.max(w - 0.18, WEEK_ZOOM_MIN));
+    setWeekZoom((w) => Math.max(w - 0.1, WEEK_ZOOM_MIN));
   }, []);
 
   useEffect(() => {

@@ -12,11 +12,16 @@
 
 .hour-slot--compact {
   border-radius: 4px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 /* Силуэт пустого часа — как на макете */
 .hour-slot--empty {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -24,12 +29,33 @@
   min-height: 0;
 }
 
+.hour-slot--empty.hour-slot--compact {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
 .hour-slot--empty:hover {
   filter: brightness(0.97);
 }
 
+.hour-slot--empty.hour-slot--compact:hover {
+  filter: none;
+}
+
 .hour-slot--empty .hour-slot__add-icon {
-  display: none;
+  display: block;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--text-primary);
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+.hour-slot--empty.hour-slot--compact .hour-slot__add-icon {
+  font-size: 14px;
+  opacity: 0.2;
 }
 
 .hour-slot--filled {

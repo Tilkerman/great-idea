@@ -2,6 +2,13 @@ export function pad(n: number) {
   return String(n).padStart(2, '0');
 }
 
+export function hourRangeLabels(hour: number) {
+  return {
+    start: `${pad(hour)}:00`,
+    end: `${pad((hour + 1) % 24)}:00`,
+  };
+}
+
 export function toLocalDateString(d: Date) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }

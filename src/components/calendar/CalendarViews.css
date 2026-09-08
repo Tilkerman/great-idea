@@ -301,6 +301,16 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  --week-title-scale: 1;
+  --week-title-size: clamp(8px, calc(var(--week-col-width) * 0.042 * var(--week-title-scale)), calc(11px * var(--week-title-scale)));
+  --week-desc-size: calc(var(--week-title-size) * 0.82);
+  --week-badge-size: calc(var(--week-title-size) * 1.15);
+}
+
+.week-view--sm-title {
+  --week-title-scale: 0.7;
 }
 
 .week-view__header-row {
@@ -314,7 +324,7 @@
 }
 
 .week-view__time-spacer {
-  width: 44px;
+  width: 50px;
   flex-shrink: 0;
 }
 
@@ -330,9 +340,10 @@
 .week-view__day-head {
   width: var(--week-col-width, 72px);
   flex-shrink: 0;
-  padding: 8px 4px;
+  padding: 6px 2px 7px;
   text-align: center;
   box-sizing: border-box;
+  border-left: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
   transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -341,6 +352,9 @@
   font-size: 11px;
   color: var(--text-secondary);
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .week-view__day-num {
@@ -356,11 +370,12 @@
 }
 
 .week-view__time-col {
-  width: 44px;
+  width: 50px;
   flex-shrink: 0;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
+  background: var(--surface);
 }
 
 .week-view__time-col::-webkit-scrollbar {
@@ -369,13 +384,62 @@
 
 .week-view__time-label {
   height: var(--week-row-height, 96px);
-  font-size: 10px;
-  color: var(--text-secondary);
-  padding: 4px 4px 0 0;
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
   box-sizing: border-box;
   flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 0 2px;
+  font-family: "Avenir Next Condensed", "Arial Narrow", "Franklin Gothic Medium", "Helvetica Neue", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
   transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.week-view__time-start,
+.week-view__time-end {
+  display: block;
+  font-size: var(--week-time-size, 12px);
+  transform: scaleX(0.82) scaleY(var(--week-time-y, 1.22));
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), font-size 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.week-view__time-start {
+  transform-origin: center bottom;
+}
+
+.week-view__time-end {
+  transform-origin: center top;
+  opacity: 0.55;
+  font-weight: 500;
+}
+
+.week-view__time-dash {
+  flex: 0 0 16px;
+  width: 100%;
+  height: 16px;
+  margin: 0;
+  padding: 0 4px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  opacity: 0.45;
+  background: none;
+  transform: none;
+  pointer-events: none;
 }
 
 .week-view__grid-scroll {
@@ -400,7 +464,7 @@
 .week-view__col {
   width: var(--week-col-width, 72px);
   flex-shrink: 0;
-  border-left: 1px solid var(--border);
+  border-left: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
   box-sizing: border-box;
   transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -416,7 +480,9 @@
 .is-pinching .week-view__day-head,
 .is-pinching .week-view__col,
 .is-pinching .week-view__slot,
-.is-pinching .week-view__time-label {
+.is-pinching .week-view__time-label,
+.is-pinching .week-view__time-start,
+.is-pinching .week-view__time-end {
   transition: none;
 }
 
@@ -449,12 +515,22 @@
 }
 
 .day-view__time {
-  width: 48px;
+  width: 50px;
   flex-shrink: 0;
-  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-family: "Avenir Next Condensed", "Arial Narrow", "Franklin Gothic Medium", "Helvetica Neue", sans-serif;
+  font-weight: 600;
+  font-size: var(--week-time-size, 14.5px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
   color: var(--text-secondary);
-  padding-top: 8px;
-  text-align: right;
+  --week-time-y: 1.5;
+  --week-time-size: 14.5px;
 }
 
 .day-view__empty-slot {

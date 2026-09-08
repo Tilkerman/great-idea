@@ -12,6 +12,7 @@ interface TaskCardProps {
   onDelete?: () => void;
   showBadge?: boolean;
   showTitle?: boolean;
+  showDesc?: boolean;
 }
 
 export function TaskCard({
@@ -24,10 +25,11 @@ export function TaskCard({
   onDelete,
   showBadge = true,
   showTitle = true,
+  showDesc: showDescProp = true,
 }: TaskCardProps) {
   const meta = CATEGORY_META[task.category];
   const completed = task.status === 'completed';
-  const showDesc = showTitle && (slot ? density === 'single' || density === 'double' : !compact);
+  const showDesc = showDescProp && showTitle && (slot ? density === 'single' || density === 'double' : !compact);
 
   return (
     <div
@@ -39,6 +41,7 @@ export function TaskCard({
         slot && `task-card--slot-${density}`,
         slot && !showBadge && 'task-card--no-badge',
         slot && !showTitle && 'task-card--no-title',
+        slot && !onDelete && 'task-card--no-delete',
       ].filter(Boolean).join(' ')}
       style={{ background: meta.bg, color: meta.text }}
       onClick={onClick}
