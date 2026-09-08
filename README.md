@@ -2,6 +2,8 @@
 
 Мобильный PWA-календарь TiLi «Мой Календарь».
 
+**Демо:** https://tilkerman.github.io/great-idea/
+
 ## Локально
 
 ```bash
@@ -9,7 +11,9 @@ npm install
 npm run dev
 ```
 
-## Деплой
+## Деплой на GitHub Pages
 
-Push в `main` — GitHub Actions публикует на Pages:
-`https://<username>.github.io/tili-calendar/`
+```bash
+BASE_PATH=/great-idea/ npm run build
+npx gh-pages -d dist -r git@github.com:Tilkerman/great-idea.git
+```
