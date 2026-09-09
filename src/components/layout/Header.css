@@ -70,7 +70,7 @@
   border-radius: 50%;
   border: none;
   background: var(--accent);
-  color: #0a1a0a;
+  color: var(--accent-on);
   font-size: 28px;
   font-weight: 300;
   cursor: pointer;

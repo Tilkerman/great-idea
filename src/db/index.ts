@@ -19,7 +19,12 @@ export const db = new TiLiDB();
 
 export async function getSettings(): Promise<UserSettings> {
   const row = await db.settings.get('main');
-  return row ?? { ...DEFAULT_SETTINGS };
+  if (!row) return { ...DEFAULT_SETTINGS };
+  const { id: _ignored, ...stored } = row as UserSettings & { id: string };
+  const merged = { ...DEFAULT_SETTINGS, ...stored };
+  const offsets = [0, 5, 15, 30, 60, 1440];
+  if (!offsets.includes(merged.reminderBeforeMin)) merged.reminderBeforeMin = 15;
+  return merged;
 }
 
 export async function saveSettings(settings: UserSettings) {

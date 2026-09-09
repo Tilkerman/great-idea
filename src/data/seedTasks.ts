@@ -32,6 +32,7 @@ function hourBlock(dayOffset: number, hour: number, items: Item[]): Task[] {
     endAt: '',
     status: 'active',
     important: false,
+    reminderOffsetMinutes: null,
     order: i + 1,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

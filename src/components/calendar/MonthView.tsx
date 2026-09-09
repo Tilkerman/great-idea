@@ -64,7 +64,11 @@ export function MonthView() {
               <div className="week-card__header">
                 {formatDateRange(w.start, w.end)}
               </div>
-              <WeekDotGrid start={w.start} tasksByDay={tasksByDay} weekTasks={weekTasks} />
+              {weekTasks.length === 0 ? (
+                <p className="week-card__empty">Нет задач</p>
+              ) : (
+                <WeekDotGrid start={w.start} tasksByDay={tasksByDay} />
+              )}
             </button>
           );
         })}
@@ -76,11 +80,9 @@ export function MonthView() {
 function WeekDotGrid({
   start,
   tasksByDay,
-  weekTasks,
 }: {
   start: Date;
   tasksByDay: Map<string, Task[]>;
-  weekTasks: Task[];
 }) {
   const { selectedDay, setSelectedDay, setFocusDate, setZoom } = useApp();
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -88,7 +90,6 @@ function WeekDotGrid({
     d.setDate(d.getDate() + i);
     return d;
   });
-  const maxRows = 6;
 
   return (
     <div className="week-dot-grid">
@@ -109,21 +110,14 @@ function WeekDotGrid({
             role="button"
             tabIndex={0}
           >
-            {Array.from({ length: maxRows }, (_, row) => {
-              const t = dayTasks[row];
-              if (!t) return <span key={row} className="week-dot week-dot--empty" />;
-              return (
-                <span key={row} className="week-dot week-dot--filled">
-                  <CategoryDot category={t.category} />
-                </span>
-              );
-            })}
+            {dayTasks.slice(0, 6).map((t) => (
+              <span key={t.id} className="week-dot week-dot--filled">
+                <CategoryDot category={t.category} />
+              </span>
+            ))}
           </div>
         );
       })}
-      {weekTasks.length === 0 && (
-        <p className="week-card__empty">Нет задач</p>
-      )}
     </div>
   );
 }

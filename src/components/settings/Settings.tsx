@@ -8,7 +8,6 @@ export function SettingsHub() {
   const items = [
     { id: 'settings-profile' as const, label: 'Профиль', sub: session.isGuest ? 'Гостевой режим' : session.name },
     { id: 'settings-calendar' as const, label: 'Календарь', sub: 'Часы, неделя, слоты' },
-    { id: 'settings-notifications' as const, label: 'Уведомления', sub: 'Push и напоминания' },
     { id: 'settings-appearance' as const, label: 'Внешний вид', sub: 'Тема и язык' },
     { id: 'settings-data' as const, label: 'Данные', sub: 'Экспорт и резервная копия' },
     { id: 'settings-about' as const, label: 'О приложении', sub: 'TiLi Calendar v0.1' },
@@ -127,38 +126,6 @@ export function SettingsCalendar() {
           />
           Показывать выполненные
         </label>
-      </div>
-    </div>
-  );
-}
-
-export function SettingsNotifications() {
-  const { setScreen, settings, updateSettings } = useApp();
-
-  return (
-    <div className="settings-page">
-      <SettingsTopBar title="Уведомления" onBack={() => setScreen('settings')} />
-      <div className="settings-form">
-        <label className="settings-field">
-          Напоминание за (мин)
-          <select
-            value={settings.reminderBeforeMin}
-            onChange={(e) => updateSettings({ reminderBeforeMin: Number(e.target.value) })}
-          >
-            {[5, 10, 15, 30].map((m) => (
-              <option key={m} value={m}>{m} мин</option>
-            ))}
-          </select>
-        </label>
-        <label className="settings-toggle">
-          <input
-            type="checkbox"
-            checked={settings.importantReminderHours === 2}
-            onChange={(e) => updateSettings({ importantReminderHours: e.target.checked ? 2 : 0 })}
-          />
-          Важные задачи — каждые 2 часа
-        </label>
-        <p className="settings-note">Push-уведомления будут в следующей версии.</p>
       </div>
     </div>
   );

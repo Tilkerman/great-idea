@@ -6,21 +6,21 @@ export const CATEGORY_META: Record<
 > = {
   work: {
     label: 'Работа',
-    bg: '#F5B8B8',
-    text: '#5c2a2a',
-    dot: '#E45D6D',
+    bg: 'var(--cat-work)',
+    text: 'var(--cat-work-text)',
+    dot: 'var(--cat-work)',
   },
   personal: {
     label: 'Личное / отдых',
-    bg: '#B8D4F0',
-    text: '#1e3a5f',
-    dot: '#4A90D9',
+    bg: 'var(--cat-personal)',
+    text: 'var(--cat-personal-text)',
+    dot: 'var(--cat-personal)',
   },
   family: {
     label: 'Семья',
-    bg: '#B8E6B8',
-    text: '#1e4d1e',
-    dot: '#4CAF50',
+    bg: 'var(--cat-family)',
+    text: 'var(--cat-family-text)',
+    dot: 'var(--cat-family)',
   },
 };
 
@@ -40,6 +40,16 @@ export const WEEKDAY_NAMES = [
 
 export const WEEKDAY_SHORT = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
 
+export const REMINDER_OFFSET_OPTIONS: { value: number | null; label: string }[] = [
+  { value: null, label: 'Не напоминать' },
+  { value: 0, label: 'Вовремя' },
+  { value: 5, label: 'За 5 минут' },
+  { value: 15, label: 'За 15 минут' },
+  { value: 30, label: 'За 30 минут' },
+  { value: 60, label: 'За 1 час' },
+  { value: 1440, label: 'За 1 день' },
+];
+
 export const DEFAULT_SETTINGS = {
   dayStartHour: 7,
   dayEndHour: 21,
@@ -51,6 +61,7 @@ export const DEFAULT_SETTINGS = {
   locale: 'ru' as const,
   importantReminderHours: 2,
   reminderBeforeMin: 15,
+  notificationsEnabled: false,
 };
 
 export const ZOOM_LABELS: Record<string, string> = {

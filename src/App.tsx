@@ -11,7 +11,6 @@ import {
   SettingsHub,
   SettingsProfile,
   SettingsCalendar,
-  SettingsNotifications,
   SettingsAppearance,
   SettingsData,
   SettingsAbout,
@@ -54,8 +53,6 @@ function AppRouter() {
       return <SettingsProfile />;
     case 'settings-calendar':
       return <SettingsCalendar />;
-    case 'settings-notifications':
-      return <SettingsNotifications />;
     case 'settings-appearance':
       return <SettingsAppearance />;
     case 'settings-data':

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { CATEGORY_META } from '../../constants/categories';
+import { CATEGORY_META, REMINDER_OFFSET_OPTIONS } from '../../constants/categories';
 import type { TaskCategory } from '../../types';
 import { formatTime } from '../../utils/date';
 import {
@@ -20,6 +20,8 @@ export function TaskSheet() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<TaskCategory>('work');
   const [important, setImportant] = useState(false);
+  const [reminderOffset, setReminderOffset] = useState<number | null>(null);
+  const descRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (editingTask) {
@@ -27,8 +29,16 @@ export function TaskSheet() {
       setDescription(editingTask.description ?? '');
       setCategory(editingTask.category);
       setImportant(editingTask.important);
+      setReminderOffset(editingTask.reminderOffsetMinutes ?? null);
     }
   }, [editingTask]);
+
+  useEffect(() => {
+    const el = descRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.max(el.scrollHeight, 44)}px`;
+  }, [description, sheetOpen, editingTask]);
 
   if (!sheetOpen || !editingTask) return null;
 
@@ -47,6 +57,7 @@ export function TaskSheet() {
     description: description.trim() || undefined,
     category,
     important,
+    reminderOffsetMinutes: reminderOffset,
   });
 
   const save = async () => {
@@ -110,11 +121,12 @@ export function TaskSheet() {
           autoFocus
         />
         <textarea
+          ref={descRef}
           className="task-sheet__desc"
           placeholder="Описание (необязательно)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          rows={3}
+          rows={1}
         />
 
         <div className="task-sheet__categories">
@@ -122,8 +134,8 @@ export function TaskSheet() {
             <button
               key={cat}
               type="button"
+              data-cat={cat}
               className={`cat-chip ${category === cat ? 'cat-chip--active' : ''}`}
-              style={{ background: CATEGORY_META[cat].bg, color: CATEGORY_META[cat].text }}
               onClick={() => setCategory(cat)}
             >
               {CATEGORY_META[cat].label}
@@ -131,21 +143,44 @@ export function TaskSheet() {
           ))}
         </div>
 
+        <label className="task-sheet__field">
+          Напомнить
+          <select
+            className="task-sheet__select"
+            value={reminderOffset === null ? '' : String(reminderOffset)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setReminderOffset(v === '' ? null : Number(v));
+            }}
+          >
+            {REMINDER_OFFSET_OPTIONS.map((opt) => (
+              <option key={String(opt.value)} value={opt.value === null ? '' : String(opt.value)}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <label className="task-sheet__check">
           <input type="checkbox" checked={important} onChange={(e) => setImportant(e.target.checked)} />
           Важная задача
         </label>
 
         <div className="task-sheet__actions">
-          {!isNew && (
-            <>
-              <button type="button" className="btn btn--ghost" onClick={complete}>Завершить</button>
-              <button type="button" className="btn btn--danger" onClick={del}>Удалить</button>
-            </>
-          )}
           <button type="button" className="btn btn--primary" onClick={save}>
             {isNew ? 'Создать' : 'Сохранить'}
           </button>
+          {!isNew && (
+            <div className="task-sheet__actions-row">
+              <button type="button" className="btn btn--ghost" onClick={complete}>Завершить</button>
+              <button type="button" className="btn btn--danger" onClick={del}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                  <path d="M4 7h16M9 7V5h6v2m-8 0v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Удалить
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -81,7 +81,7 @@
 
 .zoom-tab--active {
   background: var(--accent);
-  color: #0a1a0a;
+  color: var(--accent-on);
 }
 
 .zoom-hint {
@@ -223,7 +223,7 @@
 .month-view__pill {
   border: none;
   background: var(--accent);
-  color: #0a1a0a;
+  color: var(--accent-on);
   font-weight: 800;
   font-size: 13px;
   padding: 10px 14px;
@@ -255,9 +255,10 @@
 }
 
 .week-card__empty {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
-  margin: 4px 0 0;
+  margin: 8px 0 4px;
+  text-align: center;
 }
 
 .week-dot-grid {

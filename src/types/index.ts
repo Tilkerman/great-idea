@@ -13,6 +13,8 @@ export interface Task {
   endAt: string;
   status: TaskStatus;
   important: boolean;
+  /** Minutes before start. null = don't remind. Not delivered yet. */
+  reminderOffsetMinutes: number | null;
   order: number;
   createdAt: string;
   updatedAt: string;
@@ -25,7 +27,6 @@ export type AppScreen =
   | 'settings'
   | 'settings-profile'
   | 'settings-calendar'
-  | 'settings-notifications'
   | 'settings-appearance'
   | 'settings-data'
   | 'settings-about'
@@ -42,6 +43,8 @@ export interface UserSettings {
   locale: 'ru' | 'en';
   importantReminderHours: number;
   reminderBeforeMin: number;
+  /** Preference only — push is not delivered yet */
+  notificationsEnabled: boolean;
 }
 
 export interface UserSession {

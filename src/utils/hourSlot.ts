@@ -79,6 +79,7 @@ export function createDraftTask(day: Date, hour: number, existing: Task[]): Task
     endAt: end.toISOString(),
     status: 'active',
     important: false,
+    reminderOffsetMinutes: null,
     order: nextOrder,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
