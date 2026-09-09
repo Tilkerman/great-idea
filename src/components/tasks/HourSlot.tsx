@@ -36,12 +36,16 @@ export function HourSlot({
   const showAdd = canAddToHour(count) && showAddStrip;
   const density = count <= 1 ? 'single' : count <= 2 ? 'double' : count <= 3 ? 'triple' : 'quad';
 
+  const addDraft = () => {
+    onAdd(createDraftTask(day, hour, tasks));
+  };
+
   if (count === 0) {
     return (
       <button
         type="button"
         className={`hour-slot hour-slot--empty ${compact ? 'hour-slot--compact' : ''}`}
-        onClick={() => onAdd(createDraftTask(day, hour, []))}
+        onClick={addDraft}
         aria-label="Добавить дело"
       >
         <span className="hour-slot__add-icon">+</span>
@@ -70,7 +74,7 @@ export function HourSlot({
         <button
           type="button"
           className="hour-slot__add-strip"
-          onClick={() => onAdd(createDraftTask(day, hour, tasks))}
+          onClick={addDraft}
           aria-label={`Добавить дело (${count}/${MAX_TASKS_PER_HOUR})`}
         >
           <span className="hour-slot__add-strip-plus" aria-hidden>+</span>

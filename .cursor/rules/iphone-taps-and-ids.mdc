@@ -1,0 +1,33 @@
+---
+description: iPhone/LAN — тапы, id задач, не ломать создание дел
+alwaysApply: true
+---
+
+# iPhone и LAN: тапы + id
+
+Mobile-first PWA. На iPhone часто тестируют по **LAN** (`http://192.168.x.x:5175`), не только `localhost`.
+
+## ID задач — только через `newTaskId()`
+
+**Не** вызывать `crypto.randomUUID()` напрямую.
+
+- `randomUUID` работает только в **secure context** (HTTPS, `localhost`).
+- По `http://192.168…` на iPhone вызов **падает** → плюс в часе «не работает», шит не открывается.
+- Везде для новых задач: `import { newTaskId } from '../utils/id'` (`src/utils/id.ts`).
+
+## Плюсы и кнопки в календаре
+
+- Пустой час и полоска «+» — нативные `<button type="button">` + **`onClick`**. Без `document` capture, без portal-шита, без `iosTap`, без замены на `<div>`.
+- Не вешать `preventDefault` на `gesturestart` / `gestureend` для одиночного тапа.
+- Щипок (`usePinchZoom`) **не** перехватывает интерактив: `button`, `.hour-slot--empty`, `.hour-slot__add-strip`, `.task-card`, `[role="button"]`.
+- `touch-action: pan-x pan-y` на canvas — ок; на кнопках слота — `touch-action: manipulation`.
+
+## Если «на Mac работает, на iPhone нет»
+
+1. Secure context? LAN = HTTP → проверить `newTaskId`, не `randomUUID`.
+2. Жест щипка глушит клик? — не `preventDefault` на gesture для тапов; игнор interactive targets.
+3. Не чинить ghost-click костылями, которые ломают создание (capture `touchend`, portaled sheet).
+
+## Деплой / preview
+
+Сборка Vite — из копии без `\` в пути. После правок в workspace с `\` — `rsync` в nested copy, иначе iPhone видит старый код.

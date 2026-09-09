@@ -5,11 +5,40 @@
   margin: 0;
 }
 
+.auth-form__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
 .auth-form__switch {
   border: none;
   background: none;
   color: var(--accent);
   font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   padding: 8px;
+  text-align: center;
+}
+
+.auth-form__error {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--danger);
+}
+
+.auth-progress {
+  text-align: right;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.auth-page .settings-form {
+  max-width: 480px;
+  margin: 0 auto;
 }

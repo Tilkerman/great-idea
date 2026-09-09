@@ -1,19 +1,25 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { CATEGORY_META, REMINDER_OFFSET_OPTIONS } from '../../constants/categories';
 import type { TaskCategory } from '../../types';
-import { formatTime } from '../../utils/date';
+import { getHoursRange, pad, toLocalDateString } from '../../utils/date';
 import {
   getDateStrFromTask,
   getHourFromTask,
   getTasksInHour,
+  MAX_TASKS_PER_HOUR,
 } from '../../utils/hourSlot';
 import './TaskSheet.css';
+
+function parseLocalDate(value: string): Date {
+  const [y, m, d] = value.split('-').map(Number);
+  return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
+}
 
 export function TaskSheet() {
   const {
     sheetOpen, setSheetOpen, editingTask, setEditingTask,
-    tasks, saveHourSlot, requestDelete,
+    tasks, placeTask, requestDelete, settings,
   } = useApp();
 
   const [title, setTitle] = useState('');
@@ -21,6 +27,10 @@ export function TaskSheet() {
   const [category, setCategory] = useState<TaskCategory>('work');
   const [important, setImportant] = useState(false);
   const [reminderOffset, setReminderOffset] = useState<number | null>(null);
+  const [slotDate, setSlotDate] = useState('');
+  const [slotHour, setSlotHour] = useState(0);
+  const [whenOpen, setWhenOpen] = useState(false);
+  const [error, setError] = useState('');
   const descRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -30,6 +40,10 @@ export function TaskSheet() {
       setCategory(editingTask.category);
       setImportant(editingTask.important);
       setReminderOffset(editingTask.reminderOffsetMinutes ?? null);
+      setSlotDate(getDateStrFromTask(editingTask));
+      setSlotHour(getHourFromTask(editingTask));
+      setWhenOpen(false);
+      setError('');
     }
   }, [editingTask]);
 
@@ -40,11 +54,19 @@ export function TaskSheet() {
     el.style.height = `${Math.max(el.scrollHeight, 36)}px`;
   }, [description, sheetOpen, editingTask]);
 
+  const hourOptions = useMemo(() => {
+    const hours = getHoursRange(settings.dayStartHour, settings.dayEndHour);
+    if (!hours.includes(slotHour)) hours.push(slotHour);
+    return hours.sort((a, b) => a - b);
+  }, [settings.dayStartHour, settings.dayEndHour, slotHour]);
+
   if (!sheetOpen || !editingTask) return null;
 
-  const start = new Date(editingTask.startAt);
-  const end = new Date(editingTask.endAt);
   const isNew = !tasks.some((t) => t.id === editingTask.id);
+  const targetCount = getTasksInHour(tasks, slotDate, slotHour)
+    .filter((t) => t.id !== editingTask.id).length;
+  const afterAdd = targetCount + 1;
+  const hourFull = afterAdd > MAX_TASKS_PER_HOUR;
 
   const close = () => {
     setSheetOpen(false);
@@ -60,28 +82,18 @@ export function TaskSheet() {
     reminderOffsetMinutes: reminderOffset,
   });
 
-  const save = async () => {
+  const saveToSlot = async (status?: 'completed') => {
     if (!title.trim()) return;
-    const updated = buildUpdated();
-    const day = new Date(editingTask.startAt);
-    const hour = getHourFromTask(editingTask);
-    const dateStr = getDateStrFromTask(editingTask);
-    const inHour = getTasksInHour(tasks, dateStr, hour);
-    const merged = inHour.some((t) => t.id === updated.id)
-      ? inHour.map((t) => (t.id === updated.id ? updated : t))
-      : [...inHour, updated];
-    await saveHourSlot(day, hour, merged);
-    close();
-  };
-
-  const complete = async () => {
-    const updated = { ...buildUpdated(), status: 'completed' as const };
-    const day = new Date(editingTask.startAt);
-    const hour = getHourFromTask(editingTask);
-    const dateStr = getDateStrFromTask(editingTask);
-    const inHour = getTasksInHour(tasks, dateStr, hour)
-      .map((t) => (t.id === updated.id ? updated : t));
-    await saveHourSlot(day, hour, inHour);
+    if (hourFull) {
+      setError('В этом часе уже 5 дел — выберите другой час или день');
+      return;
+    }
+    const updated = status ? { ...buildUpdated(), status } : buildUpdated();
+    const result = await placeTask(updated, parseLocalDate(slotDate), slotHour);
+    if (result === 'full') {
+      setError('В этом часе уже 5 дел — выберите другой час или день');
+      return;
+    }
     close();
   };
 
@@ -90,28 +102,74 @@ export function TaskSheet() {
   };
 
   const slotInfo = (() => {
-    const dateStr = getDateStrFromTask(editingTask);
-    const hour = getHourFromTask(editingTask);
-    const count = getTasksInHour(tasks, dateStr, hour).length;
-    const afterAdd = isNew ? count + 1 : count;
+    if (hourFull) return 'Этот час заполнен (5/5)';
     if (afterAdd <= 1) return '1 дело на весь час (60 мин)';
     if (afterAdd <= 4) return `${afterAdd} дела × 15 мин в этом часе`;
     return `${afterAdd} дел × 12 мин в этом часе`;
   })();
 
+  const whenLabel = slotDate
+    ? `${parseLocalDate(slotDate).toLocaleDateString('ru-RU', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    })} · ${pad(slotHour)}:00`
+    : '';
+
   return (
     <div className="sheet-overlay" onClick={close}>
       <div className="task-sheet" onClick={(e) => e.stopPropagation()}>
         <div className="task-sheet__header">
-          <span className="task-sheet__time">
-            {start.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'short' })}
-            {' · '}
-            {formatTime(start)} – {formatTime(end)}
-          </span>
-          <button type="button" className="task-sheet__close" onClick={close}>×</button>
+          <button
+            type="button"
+            className="task-sheet__when-toggle"
+            onClick={() => setWhenOpen((v) => !v)}
+            aria-expanded={whenOpen}
+          >
+            <span className="task-sheet__time">{whenLabel || 'Дата и час'}</span>
+            <span className="task-sheet__when-hint">{whenOpen ? 'Свернуть' : 'Изменить'}</span>
+          </button>
+          <button type="button" className="task-sheet__close" onClick={close} aria-label="Закрыть">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
 
+        {whenOpen && (
+          <div className="task-sheet__when">
+            <label className="task-sheet__field task-sheet__field--inline">
+              Дата
+              <input
+                type="date"
+                className="task-sheet__select"
+                value={slotDate}
+                onChange={(e) => {
+                  setSlotDate(e.target.value || toLocalDateString(new Date()));
+                  setError('');
+                }}
+              />
+            </label>
+            <label className="task-sheet__field task-sheet__field--inline">
+              Час
+              <select
+                className="task-sheet__select"
+                value={slotHour}
+                onChange={(e) => {
+                  setSlotHour(Number(e.target.value));
+                  setError('');
+                }}
+              >
+                {hourOptions.map((h) => (
+                  <option key={h} value={h}>{pad(h)}:00</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
+
         <p className="task-sheet__slot-info">{slotInfo}</p>
+        {error && <p className="task-sheet__error" role="alert">{error}</p>}
 
         <input
           className="task-sheet__title"
@@ -168,12 +226,12 @@ export function TaskSheet() {
         </label>
 
         <div className="task-sheet__actions">
-          <button type="button" className="btn btn--primary" onClick={save}>
+          <button type="button" className="btn btn--primary" onClick={() => { void saveToSlot(); }}>
             {isNew ? 'Создать' : 'Сохранить'}
           </button>
           {!isNew && (
             <div className="task-sheet__actions-row">
-              <button type="button" className="btn btn--ghost" onClick={complete}>Завершить</button>
+              <button type="button" className="btn btn--ghost" onClick={() => { void saveToSlot('completed'); }}>Завершить</button>
               <button type="button" className="btn btn--danger" onClick={del}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                   <path d="M4 7h16M9 7V5h6v2m-8 0v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7" strokeLinecap="round" strokeLinejoin="round" />

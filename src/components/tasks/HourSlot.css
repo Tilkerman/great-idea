@@ -27,6 +27,8 @@
   border: 1px solid var(--border);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
   min-height: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hour-slot--empty.hour-slot--compact {
@@ -86,6 +88,7 @@
   background: var(--surface-2);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   display: flex;
   align-items: center;
   justify-content: center;

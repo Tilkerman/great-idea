@@ -30,6 +30,7 @@ export function TaskCard({
   const meta = CATEGORY_META[task.category];
   const completed = task.status === 'completed';
   const showDesc = showDescProp && showTitle && (slot ? density === 'single' || density === 'double' : !compact);
+  const showMark = showBadge || completed;
 
   return (
     <div
@@ -39,11 +40,15 @@ export function TaskCard({
         compact && 'task-card--compact',
         slot && 'task-card--slot',
         slot && `task-card--slot-${density}`,
-        slot && !showBadge && 'task-card--no-badge',
+        slot && !showMark && 'task-card--no-badge',
         slot && !showTitle && 'task-card--no-title',
         slot && !onDelete && 'task-card--no-delete',
       ].filter(Boolean).join(' ')}
-      style={{ background: meta.bg, color: meta.text }}
+      style={{
+        ['--task-bg' as string]: meta.bg,
+        ['--task-text' as string]: meta.text,
+        ['--task-dot' as string]: meta.dot,
+      }}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -51,9 +56,22 @@ export function TaskCard({
       onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
     >
       <div className="task-card__row">
-        {showBadge && (
-          <span className="task-card__badge" style={{ background: meta.dot }}>
-            {task.order}
+        {showMark && (
+          <span className={`task-card__badge ${completed ? 'task-card__badge--done' : ''}`}>
+            {completed ? (
+              <svg className="task-card__check" viewBox="0 0 12 12" aria-hidden>
+                <path
+                  d="M2.2 6.2 4.8 8.8 9.8 3.2"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : (
+              task.order
+            )}
           </span>
         )}
         <div className="task-card__body">

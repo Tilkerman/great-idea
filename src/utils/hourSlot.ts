@@ -1,4 +1,5 @@
 import type { Task } from '../types';
+import { newTaskId } from './id';
 import { toLocalDateString } from './date';
 
 /** Максимум дел в одном часе */
@@ -72,7 +73,7 @@ export function createDraftTask(day: Date, hour: number, existing: Task[]): Task
   end.setMinutes(end.getMinutes() + dur);
 
   return {
-    id: crypto.randomUUID(),
+    id: newTaskId(),
     title: '',
     category: 'work',
     startAt: start.toISOString(),

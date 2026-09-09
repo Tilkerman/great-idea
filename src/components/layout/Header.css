@@ -60,24 +60,3 @@
   cursor: pointer;
   border-radius: 8px;
 }
-
-.fab {
-  position: fixed;
-  right: 16px;
-  bottom: calc(72px + env(safe-area-inset-bottom));
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: none;
-  background: var(--accent);
-  color: var(--accent-on);
-  font-size: 28px;
-  font-weight: 300;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  z-index: 40;
-}
-
-.fab:active {
-  transform: scale(0.95);
-}

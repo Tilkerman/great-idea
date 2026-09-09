@@ -1,15 +1,15 @@
 import { AppProvider, useApp } from './context/AppContext';
 import { Onboarding } from './components/onboarding/Onboarding';
-import { Header, Fab } from './components/layout/Header';
+import { Header } from './components/layout/Header';
 import { BottomNav } from './components/layout/BottomNav';
 import { CalendarCanvas } from './components/calendar/CalendarCanvas';
 import { TaskSheet } from './components/tasks/TaskSheet';
 import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { AuthScreen } from './components/auth/AuthScreen';
-import { SearchScreen } from './components/search/SearchScreen';
 import {
   SettingsHub,
   SettingsProfile,
+  SettingsPassword,
   SettingsCalendar,
   SettingsAppearance,
   SettingsData,
@@ -45,12 +45,12 @@ function AppRouter() {
       return <Onboarding />;
     case 'auth':
       return <AuthScreen />;
-    case 'search':
-      return <SearchScreen />;
     case 'settings':
       return <SettingsHub />;
     case 'settings-profile':
       return <SettingsProfile />;
+    case 'settings-password':
+      return <SettingsPassword />;
     case 'settings-calendar':
       return <SettingsCalendar />;
     case 'settings-appearance':
@@ -67,7 +67,6 @@ function AppRouter() {
           <main className="app-shell__main">
             <CalendarCanvas />
           </main>
-          <Fab />
           <BottomNav />
           <TaskSheet />
         </div>

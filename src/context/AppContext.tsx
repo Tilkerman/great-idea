@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { AppScreen, Task, UserSession, UserSettings, ZoomLevel } from '../types';
+import type { AppScreen, AuthStart, Task, UserSession, UserSettings, ZoomLevel } from '../types';
 import { DEFAULT_SETTINGS } from '../constants/categories';
 import {
   deleteTask,
@@ -22,8 +22,10 @@ import {
   getDateStrFromTask,
   getHourFromTask,
   getTasksInHour,
+  MAX_TASKS_PER_HOUR,
   rebalanceHourTasks,
 } from '../utils/hourSlot';
+import { toLocalDateString } from '../utils/date';
 import { SEED_TASKS } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 
@@ -50,12 +52,16 @@ interface AppContextValue {
   refreshTasks: () => Promise<void>;
   upsertTask: (task: Task) => Promise<void>;
   saveHourSlot: (day: Date, hour: number, slotTasks: Task[]) => Promise<void>;
+  placeTask: (task: Task, day: Date, hour: number) => Promise<'ok' | 'full'>;
   deleteTaskInHour: (task: Task) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
   settings: UserSettings;
   updateSettings: (s: Partial<UserSettings>) => Promise<void>;
   session: UserSession;
   setSession: (s: UserSession) => void;
+  authStart: AuthStart;
+  setAuthStart: (s: AuthStart) => void;
+  authBackScreen: AppScreen;
   editingTask: Task | null;
   setEditingTask: (t: Task | null) => void;
   sheetOpen: boolean;
@@ -65,6 +71,7 @@ interface AppContextValue {
   cancelDelete: () => void;
   confirmDelete: () => Promise<void>;
   completeOnboarding: () => void;
+  openAuth: (start: AuthStart, back?: AppScreen) => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -81,6 +88,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [settings, setSettingsState] = useState<UserSettings>({ ...DEFAULT_SETTINGS });
   const [session, setSession] = useState<UserSession>({ isGuest: true });
+  const [authStart, setAuthStart] = useState<AuthStart>('choice');
+  const [authBackScreen, setAuthBackScreen] = useState<AppScreen>('calendar');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<Task | null>(null);
@@ -147,6 +156,37 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await refreshTasks();
   }, [refreshTasks]);
 
+  const placeTask = useCallback(async (task: Task, day: Date, hour: number): Promise<'ok' | 'full'> => {
+    const all = await getAllTasks();
+    const newDateStr = toLocalDateString(day);
+    const existing = all.find((t) => t.id === task.id);
+    const same = Boolean(
+      existing
+      && getDateStrFromTask(existing) === newDateStr
+      && getHourFromTask(existing) === hour,
+    );
+    const others = getTasksInHour(all, newDateStr, hour).filter((t) => t.id !== task.id);
+    if (!same && others.length >= MAX_TASKS_PER_HOUR) return 'full';
+
+    if (existing && !same) {
+      const oldDateStr = getDateStrFromTask(existing);
+      const oldHour = getHourFromTask(existing);
+      const remaining = getTasksInHour(all, oldDateStr, oldHour).filter((t) => t.id !== task.id);
+      const oldDay = new Date(existing.startAt);
+      oldDay.setHours(0, 0, 0, 0);
+      if (remaining.length > 0) {
+        await saveTasks(rebalanceHourTasks(oldDay, oldHour, remaining));
+      }
+    }
+
+    const merged = same
+      ? getTasksInHour(all, newDateStr, hour).map((t) => (t.id === task.id ? task : t))
+      : [...others, task];
+    await saveTasks(rebalanceHourTasks(day, hour, merged));
+    await refreshTasks();
+    return 'ok';
+  }, [refreshTasks]);
+
   const deleteTaskInHour = useCallback(async (task: Task) => {
     const day = new Date(task.startAt);
     const hour = getHourFromTask(task);
@@ -193,9 +233,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setScreen('calendar');
   }, []);
 
+  const openAuth = useCallback((start: AuthStart, back: AppScreen = 'calendar') => {
+    localStorage.setItem(ONBOARDING_KEY, '1');
+    setAuthStart(start);
+    setAuthBackScreen(back);
+    setScreen('auth');
+  }, []);
+
   useEffect(() => {
+    if (!ready) return;
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  }, [session]);
+  }, [session, ready]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -229,12 +277,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       refreshTasks,
       upsertTask,
       saveHourSlot,
+      placeTask,
       deleteTaskInHour,
       removeTask,
       settings,
       updateSettings,
       session,
       setSession,
+      authStart,
+      setAuthStart,
+      authBackScreen,
       editingTask,
       setEditingTask,
       sheetOpen,
@@ -244,12 +296,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       cancelDelete,
       confirmDelete,
       completeOnboarding,
+      openAuth,
     }),
     [
       ready, screen, zoom, zoomIn, zoomOut, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
       focusDate, selectedDay, tasks,
-      refreshTasks, upsertTask, saveHourSlot, deleteTaskInHour, removeTask, settings, updateSettings,
-      session, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding,
+      refreshTasks, upsertTask, saveHourSlot, placeTask, deleteTaskInHour, removeTask, settings, updateSettings,
+      session, authStart, authBackScreen, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding, openAuth,
     ],
   );
 

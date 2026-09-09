@@ -26,11 +26,13 @@ export type AppScreen =
   | 'calendar'
   | 'settings'
   | 'settings-profile'
+  | 'settings-password'
   | 'settings-calendar'
   | 'settings-appearance'
   | 'settings-data'
-  | 'settings-about'
-  | 'search';
+  | 'settings-about';
+
+export type AuthStart = 'choice' | 'register' | 'login';
 
 export interface UserSettings {
   dayStartHour: number;

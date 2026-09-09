@@ -13,6 +13,13 @@ function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+function isInteractiveTarget(target: EventTarget | null) {
+  if (!(target instanceof Element)) return false;
+  return Boolean(target.closest(
+    'button, a, input, textarea, select, [role="button"], .task-card, .hour-slot--empty, .hour-slot__add-strip',
+  ));
+}
+
 export function usePinchZoom() {
   const { zoom, weekZoom, setWeekZoom, setZoom } = useApp();
   const ref = useRef<HTMLDivElement>(null);
@@ -62,6 +69,7 @@ export function usePinchZoom() {
 
     const applyScale = (scale: number) => {
       lastScale.current = scale;
+      setPinching(true);
       const z = zoomRef.current;
       if (z === 'week') {
         const raw = startWeek.current + (scale - 1) * 0.95;
@@ -94,7 +102,6 @@ export function usePinchZoom() {
       pendingLive.current = 1;
       pendingWeek.current = weekRef.current;
       consumed.current = false;
-      setPinching(true);
     };
 
     const finish = () => {
@@ -133,14 +140,18 @@ export function usePinchZoom() {
     };
 
     if (isAppleMobile()) {
-      const onStart = (event: Event) => { event.preventDefault(); begin(); };
+      const onStart = (event: Event) => {
+        if (isInteractiveTarget(event.target)) return;
+        begin();
+      };
       const onChange = (event: Event) => {
+        if (isInteractiveTarget(event.target)) return;
         event.preventDefault();
         const scale = (event as Event & { scale?: number }).scale;
         if (typeof scale === 'number') applyScale(scale);
       };
       const onEnd = (event: Event) => {
-        event.preventDefault();
+        if (isInteractiveTarget(event.target)) return;
         const scale = (event as Event & { scale?: number }).scale;
         if (typeof scale === 'number') lastScale.current = scale;
         finish();
@@ -156,6 +167,7 @@ export function usePinchZoom() {
     }
 
     const onPointerDown = (event: PointerEvent) => {
+      if (isInteractiveTarget(event.target)) return;
       pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
       if (pointers.current.size === 2) {
         const [a, b] = [...pointers.current.values()];
