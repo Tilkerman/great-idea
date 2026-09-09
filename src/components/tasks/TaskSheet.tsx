@@ -37,7 +37,7 @@ export function TaskSheet() {
     const el = descRef.current;
     if (!el) return;
     el.style.height = 'auto';
-    el.style.height = `${Math.max(el.scrollHeight, 44)}px`;
+    el.style.height = `${Math.max(el.scrollHeight, 36)}px`;
   }, [description, sheetOpen, editingTask]);
 
   if (!sheetOpen || !editingTask) return null;
@@ -136,9 +136,10 @@ export function TaskSheet() {
               type="button"
               data-cat={cat}
               className={`cat-chip ${category === cat ? 'cat-chip--active' : ''}`}
+              aria-label={CATEGORY_META[cat].label}
               onClick={() => setCategory(cat)}
             >
-              {CATEGORY_META[cat].label}
+              {CATEGORY_META[cat].label.split(' ')[0]}
             </button>
           ))}
         </div>
