@@ -238,3 +238,246 @@
   padding: 8px;
   text-align: center;
 }
+
+/* Statistics */
+.stats-page {
+  padding-top: 8px;
+}
+
+.stats-period-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.stats-period-tab {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 4px;
+  background: var(--surface-2);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.stats-period-tab--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-on);
+}
+
+.stats-period-label {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.stats-empty {
+  padding: 28px 8px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.stats-hero {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+
+.stats-hero__title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.stats-hero__counts {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+.stats-hero__done strong {
+  color: var(--accent);
+}
+
+.stats-hero__missed strong {
+  color: #c45c4a;
+}
+
+.stats-hero__sep {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.stats-hero__bar {
+  margin-top: 12px;
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #c45c4a 18%, var(--border));
+  overflow: hidden;
+}
+
+.stats-hero__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.stats-hero__detail,
+.stats-hero__ahead {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.stats-hero__ahead strong {
+  color: var(--text-primary);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.stats-card {
+  padding: 12px 8px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.stats-card--warn .stats-card__num {
+  color: var(--danger);
+}
+
+.stats-card__num {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.stats-card__label {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.stats-section {
+  margin-top: 20px;
+}
+
+.stats-section__title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stats-cat {
+  margin-bottom: 14px;
+}
+
+.stats-cat__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.stats-cat__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stats-cat__nums {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.stats-cat__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.stats-cat__bar-done {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--task-dot, var(--accent));
+}
+
+.stats-cat[data-cat='work'] {
+  --task-dot: var(--cat-work);
+}
+
+.stats-cat[data-cat='personal'] {
+  --task-dot: var(--cat-personal);
+}
+
+.stats-cat[data-cat='family'] {
+  --task-dot: var(--cat-family);
+}
+
+.stats-cat__hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.stats-time-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.stats-time-row strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.stats-upsell {
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stats-upsell__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.stats-footer-note {
+  margin-top: 16px;
+}

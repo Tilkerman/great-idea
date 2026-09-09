@@ -16,6 +16,7 @@ export function SettingsHub() {
   const items = [
     { id: 'settings-profile' as const, label: 'Профиль', sub: session.isGuest ? (session.name ? `${session.name} · гость` : 'Гостевой режим') : (session.name || session.email) },
     { id: 'settings-calendar' as const, label: 'Календарь', sub: 'Часы, неделя, слоты' },
+    { id: 'settings-stats' as const, label: 'Статистика', sub: 'Выполнено и по категориям' },
     { id: 'settings-appearance' as const, label: 'Внешний вид', sub: 'Тема и язык' },
     { id: 'settings-data' as const, label: 'Данные', sub: 'Экспорт и резервная копия' },
     { id: 'settings-about' as const, label: 'О приложении', sub: 'TiLi Calendar v0.1' },

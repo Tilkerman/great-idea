@@ -478,6 +478,11 @@
   transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.is-pinching .week-view__grid-scroll,
+.is-pinching .day-view {
+  touch-action: none;
+}
+
 .is-pinching .week-view__day-head,
 .is-pinching .week-view__col,
 .is-pinching .week-view__slot,

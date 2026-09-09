@@ -30,6 +30,7 @@ export type AppScreen =
   | 'settings-calendar'
   | 'settings-appearance'
   | 'settings-data'
+  | 'settings-stats'
   | 'settings-about';
 
 export type AuthStart = 'choice' | 'register' | 'login';

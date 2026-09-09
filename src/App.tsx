@@ -15,6 +15,7 @@ import {
   SettingsData,
   SettingsAbout,
 } from './components/settings/Settings';
+import { SettingsStatistics } from './components/settings/SettingsStatistics';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
@@ -57,6 +58,8 @@ function AppRouter() {
       return <SettingsAppearance />;
     case 'settings-data':
       return <SettingsData />;
+    case 'settings-stats':
+      return <SettingsStatistics />;
     case 'settings-about':
       return <SettingsAbout />;
     case 'calendar':
