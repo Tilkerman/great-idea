@@ -5,29 +5,23 @@ import {
   STATS_PERIOD_OPTIONS,
   categoryLabel,
   computeTaskStats,
+  dynamicsText,
+  formatHours,
+  formatSignedHours,
   type StatsPeriod,
 } from '../../utils/taskStats';
 import './Settings.css';
 
-function pct(n: number, total: number) {
-  if (total <= 0) return 0;
-  return Math.round((n / total) * 100);
-}
-
-function formatHours(h: number) {
-  if (h < 1) return `${Math.round(h * 60)} мин`;
-  const whole = Math.floor(h);
-  const mins = Math.round((h - whole) * 60);
-  if (mins === 0) return `${whole} ч`;
-  return `${whole} ч ${mins} мин`;
-}
-
-function tasksWord(n: number) {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return 'дело';
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'дела';
-  return 'дел';
+function MetricRow({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <p className="stats-time-row">
+      <span>
+        {label}
+        {sub && <span className="stats-row-sub">{sub}</span>}
+      </span>
+      <strong>{value}</strong>
+    </p>
+  );
 }
 
 export function SettingsStatistics() {
@@ -37,7 +31,9 @@ export function SettingsStatistics() {
     () => computeTaskStats(tasks, period, settings.weekStartsOn),
     [tasks, period, settings.weekStartsOn],
   );
-  const pastTotal = report.completed + report.missed;
+
+  const dynamics = dynamicsText(period, report.dynamics.completedHoursDeltaPct);
+  const hasTails = report.tails.over3Days.count > 0;
 
   return (
     <div className="settings-page">
@@ -63,88 +59,83 @@ export function SettingsStatistics() {
 
         <p className="stats-period-label">{report.periodLabel}</p>
 
-        {report.total === 0 ? (
+        {!report.hasData ? (
           <div className="stats-empty">
-            <p>За этот период дел пока нет.</p>
-            <p className="settings-note">Создай задачи в календаре — здесь появится прогресс.</p>
+            <p>За этот период часов в календаре пока нет.</p>
+            <p className="settings-note">Создай задачи — статистика считается по их длительности.</p>
           </div>
         ) : (
           <>
-            <section className="stats-hero" aria-label="Итог за период">
-              <h2 className="stats-hero__title">Уже было по календарю</h2>
-              <p className="stats-hero__counts">
-                <span className="stats-hero__done">
-                  <strong>{report.completed}</strong> сделано
-                </span>
-                <span className="stats-hero__sep" aria-hidden>·</span>
-                <span className="stats-hero__missed">
-                  <strong>{report.missed}</strong> не сделано
-                </span>
-              </p>
-              {pastTotal > 0 ? (
-                <>
-                  <div
-                    className="stats-hero__bar"
-                    role="progressbar"
-                    aria-valuenow={report.completionRate}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`Сделано ${report.completed} из ${pastTotal}`}
-                  >
-                    <span className="stats-hero__bar-fill" style={{ width: `${report.completionRate}%` }} />
-                  </div>
-                  <p className="stats-hero__detail">
-                    Закрыто {report.completionRate}% — {report.completed} из {pastTotal}{' '}
-                    {tasksWord(pastTotal)}, время которых уже прошло
-                  </p>
-                </>
-              ) : (
-                <p className="stats-hero__detail">Пока нет дел, время которых уже наступило.</p>
-              )}
-              {report.planned > 0 && (
-                <p className="stats-hero__ahead">
-                  Ещё <strong>{report.planned}</strong> {tasksWord(report.planned)} впереди — время не наступило
-                </p>
-              )}
+            <section className="stats-hero" aria-label="Выполнение по времени">
+              <h2 className="stats-hero__title">Выполнение по времени</h2>
+              <p className="stats-hero__big">{report.hours.completionPct}%</p>
+              <div
+                className="stats-hero__bar"
+                role="progressbar"
+                aria-valuenow={report.hours.completionPct}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`Выполнено ${formatHours(report.hours.completed)} из ${formatHours(report.hours.scheduled)}`}
+              >
+                <span className="stats-hero__bar-fill" style={{ width: `${report.hours.completionPct}%` }} />
+              </div>
+              <MetricRow label="Запланировано" value={formatHours(report.hours.scheduled)} />
+              <MetricRow label="Выполнено" value={formatHours(report.hours.completed)} />
             </section>
 
-            <div className="stats-grid">
-              <div className="stats-card">
-                <span className="stats-card__num">{report.completed}</span>
-                <span className="stats-card__label">Сделано</span>
-              </div>
-              <div className="stats-card">
-                <span className="stats-card__num">{report.planned}</span>
-                <span className="stats-card__label">Впереди</span>
-              </div>
-              <div className="stats-card stats-card--warn">
-                <span className="stats-card__num">{report.missed}</span>
-                <span className="stats-card__label">Не сделано</span>
-              </div>
-            </div>
+            {(report.past.hoursClosed > 0 || report.past.hoursOverdue > 0) && (
+              <section className="stats-section">
+                <h2 className="stats-section__title">Уже прошло по времени</h2>
+                <p className="stats-section__lead">
+                  Закрыто {report.past.closedPct}% прошедших часов
+                </p>
+                <MetricRow
+                  label="Закрыто"
+                  value={formatHours(report.past.hoursClosed)}
+                  sub={` · ${report.past.tasksClosed} ${report.past.tasksClosed === 1 ? 'дело' : 'дел'}`}
+                />
+                <MetricRow
+                  label="Просрочено"
+                  value={formatHours(report.past.hoursOverdue)}
+                  sub={` · ${report.past.tasksOverdue} ${report.past.tasksOverdue === 1 ? 'дело' : 'дел'}`}
+                />
+              </section>
+            )}
 
             <section className="stats-section">
-              <h2 className="stats-section__title">По категориям</h2>
+              <h2 className="stats-section__title">План vs факт</h2>
+              <MetricRow label="Запланировано" value={formatHours(report.planFact.plannedHours)} />
+              <MetricRow label="Фактически" value={formatHours(report.planFact.actualHours)} />
+              <MetricRow
+                label="Разница"
+                value={
+                  report.planFact.diffPct !== null
+                    ? `${formatSignedHours(report.planFact.diffHours)} (${report.planFact.diffPct > 0 ? '+' : ''}${report.planFact.diffPct}%)`
+                    : formatSignedHours(report.planFact.diffHours)
+                }
+              />
+            </section>
+
+            <section className="stats-section">
+              <h2 className="stats-section__title">Баланс по категориям</h2>
               {CATEGORY_ORDER.map((cat) => {
                 const row = report.byCategory[cat];
-                if (row.total === 0) return null;
-                const donePct = pct(row.completed, row.total);
+                if (row.hoursScheduled <= 0) return null;
+                const share = Math.round((row.hoursScheduled / report.hours.scheduled) * 100);
                 return (
                   <div key={cat} className="stats-cat" data-cat={cat}>
                     <div className="stats-cat__head">
                       <span className="stats-cat__name">{categoryLabel(cat)}</span>
                       <span className="stats-cat__nums">
-                        {row.completed}/{row.total}
+                        {formatHours(row.hoursScheduled)} · {share}%
                       </span>
                     </div>
                     <div className="stats-cat__bar" aria-hidden>
-                      <span className="stats-cat__bar-done" style={{ width: `${donePct}%` }} />
+                      <span className="stats-cat__bar-done" style={{ width: `${share}%` }} />
                     </div>
                     <p className="stats-cat__hint">
-                      {row.planned > 0 && `${row.planned} впереди`}
-                      {row.planned > 0 && row.missed > 0 && ' · '}
-                      {row.missed > 0 && `${row.missed} не сделано`}
-                      {row.planned === 0 && row.missed === 0 && 'всё закрыто'}
+                      Выполнено {formatHours(row.hoursCompleted)}
+                      {row.hoursMissed > 0 && ` · просрочено ${formatHours(row.hoursMissed)}`}
                     </p>
                   </div>
                 );
@@ -152,29 +143,82 @@ export function SettingsStatistics() {
             </section>
 
             <section className="stats-section">
-              <h2 className="stats-section__title">Время в календаре</h2>
-              <p className="stats-time-row">
-                <span>Запланировано</span>
-                <strong>{formatHours(report.hoursScheduled)}</strong>
-              </p>
-              <p className="stats-time-row">
-                <span>Выполнено</span>
-                <strong>{formatHours(report.hoursCompleted)}</strong>
-              </p>
+              <h2 className="stats-section__title">Нагрузка</h2>
+              <MetricRow
+                label="Среднее в день"
+                value={formatHours(report.load.avgHoursPerDay)}
+                sub={` · ${report.load.daysInPeriod} дн.`}
+              />
+              <MetricRow label="Всего за период" value={formatHours(report.hours.scheduled)} />
+              {report.load.busiestWeekday && (
+                <MetricRow
+                  label="Самый загруженный день"
+                  value={report.load.busiestWeekday}
+                  sub={` · ${formatHours(report.load.busiestWeekdayHours)}`}
+                />
+              )}
             </section>
 
-            {report.important.total > 0 && (
+            {report.important.hoursScheduled > 0 && (
               <section className="stats-section">
-                <h2 className="stats-section__title">Важные</h2>
-                <p className="stats-time-row">
-                  <span>Сделано</span>
-                  <strong>
-                    {report.important.completed} / {report.important.total}
-                  </strong>
+                <h2 className="stats-section__title">Важные задачи</h2>
+                <p className="stats-section__lead">
+                  {report.important.completionPct}% по времени · {report.important.taskCount}{' '}
+                  {report.important.taskCount === 1 ? 'дело' : 'дел'}
                 </p>
+                <MetricRow label="Запланировано" value={formatHours(report.important.hoursScheduled)} />
+                <MetricRow label="Выполнено" value={formatHours(report.important.hoursCompleted)} />
               </section>
             )}
+
+            {report.dynamics.hasPrevious && dynamics && (
+              <section className="stats-section stats-dynamics">
+                <h2 className="stats-section__title">Динамика</h2>
+                <p
+                  className={`stats-dynamics__value ${
+                    (report.dynamics.completedHoursDeltaPct ?? 0) >= 0
+                      ? 'stats-dynamics__value--up'
+                      : 'stats-dynamics__value--down'
+                  }`}
+                >
+                  {dynamics}
+                </p>
+                <p className="stats-cat__hint">Сравнение выполненных часов с {report.dynamics.previousLabel.toLowerCase()}</p>
+              </section>
+            )}
+
+            <p className="stats-tasks-note">
+              Дополнительно: {report.tasks.completed} / {report.tasks.total} дел закрыто
+              {report.tasks.planned > 0 && ` · ${report.tasks.planned} впереди`}
+            </p>
           </>
+        )}
+
+        {hasTails && (
+          <section className="stats-section stats-tails">
+            <h2 className="stats-section__title">Хвосты</h2>
+            <p className="stats-section__lead">Незакрытые дела, время которых прошло</p>
+            <MetricRow
+              label="Старше 3 дней"
+              value={`${report.tails.over3Days.count} · ${formatHours(report.tails.over3Days.hours)}`}
+            />
+            <MetricRow
+              label="Старше 7 дней"
+              value={`${report.tails.over7Days.count} · ${formatHours(report.tails.over7Days.hours)}`}
+            />
+            {report.tails.oldest.length > 0 && (
+              <ul className="stats-tail-list">
+                {report.tails.oldest.map((t) => (
+                  <li key={t.id} className="stats-tail-item">
+                    <span className="stats-tail-item__title">{t.title}</span>
+                    <span className="stats-tail-item__meta">
+                      {t.daysOpen} дн. · {formatHours(t.hours)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         )}
 
         {session.isGuest ? (
@@ -189,7 +233,7 @@ export function SettingsStatistics() {
           </div>
         ) : (
           <p className="settings-note stats-footer-note">
-            Считаем по дате дела в календаре. «Не сделано» — время прошло, дело не отмечено завершённым.
+            Все метрики — по длительности задач в календаре. Просрочено — время прошло, дело не завершено.
           </p>
         )}
       </div>

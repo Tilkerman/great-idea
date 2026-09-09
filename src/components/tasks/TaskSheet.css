@@ -68,8 +68,15 @@
   font-weight: 500;
 }
 
-.task-sheet__when select.task-sheet__select {
-  padding: 0 34px 0 10px;
+.task-sheet__when .select-wrap--compact select {
+  min-height: 34px;
+  height: 34px;
+  padding: 0 12px;
+  padding-right: 40px;
+}
+
+.task-sheet__when .select-wrap--compact::after {
+  right: 14px;
 }
 
 .task-sheet__slot-info {
@@ -225,29 +232,50 @@
   font-weight: 500;
 }
 
-select.task-sheet__select {
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: 34px;
-  background-color: var(--surface);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%236b7280' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 12px 12px;
-}
-
-[data-theme='dark'] select.task-sheet__select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%239ca3af' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-}
-
 .task-sheet__check {
   display: flex;
   align-items: center;
-  gap: var(--s2);
-  min-height: 40px;
-  font-size: 13px;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 15px;
   margin-bottom: var(--s4);
   color: var(--text-primary);
+  cursor: pointer;
+}
+
+.task-sheet__check input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+}
+
+.task-sheet__check input[type='checkbox']::after {
+  content: '';
+  width: 6px;
+  height: 10px;
+  border: solid var(--accent-on);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  margin-top: -2px;
+  transition: transform 120ms ease;
+}
+
+.task-sheet__check input[type='checkbox']:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.task-sheet__check input[type='checkbox']:checked::after {
+  transform: rotate(45deg) scale(1);
 }
 
 .task-sheet__actions {

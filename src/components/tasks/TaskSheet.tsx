@@ -152,18 +152,20 @@ export function TaskSheet() {
             </label>
             <label className="task-sheet__field task-sheet__field--inline">
               Час
-              <select
-                className="task-sheet__select"
-                value={slotHour}
-                onChange={(e) => {
-                  setSlotHour(Number(e.target.value));
-                  setError('');
-                }}
-              >
-                {hourOptions.map((h) => (
-                  <option key={h} value={h}>{pad(h)}:00</option>
-                ))}
-              </select>
+              <span className="select-wrap select-wrap--compact">
+                <select
+                  className="task-sheet__select"
+                  value={slotHour}
+                  onChange={(e) => {
+                    setSlotHour(Number(e.target.value));
+                    setError('');
+                  }}
+                >
+                  {hourOptions.map((h) => (
+                    <option key={h} value={h}>{pad(h)}:00</option>
+                  ))}
+                </select>
+              </span>
             </label>
           </div>
         )}
@@ -204,20 +206,22 @@ export function TaskSheet() {
 
         <label className="task-sheet__field">
           Напомнить
-          <select
-            className="task-sheet__select"
-            value={reminderOffset === null ? '' : String(reminderOffset)}
-            onChange={(e) => {
-              const v = e.target.value;
-              setReminderOffset(v === '' ? null : Number(v));
-            }}
-          >
-            {REMINDER_OFFSET_OPTIONS.map((opt) => (
-              <option key={String(opt.value)} value={opt.value === null ? '' : String(opt.value)}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          <span className="select-wrap">
+            <select
+              className="task-sheet__select"
+              value={reminderOffset === null ? '' : String(reminderOffset)}
+              onChange={(e) => {
+                const v = e.target.value;
+                setReminderOffset(v === '' ? null : Number(v));
+              }}
+            >
+              {REMINDER_OFFSET_OPTIONS.map((opt) => (
+                <option key={String(opt.value)} value={opt.value === null ? '' : String(opt.value)}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </span>
         </label>
 
         <label className="task-sheet__check">

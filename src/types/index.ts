@@ -31,6 +31,7 @@ export type AppScreen =
   | 'settings-appearance'
   | 'settings-data'
   | 'settings-stats'
+  | 'settings-install'
   | 'settings-about';
 
 export type AuthStart = 'choice' | 'register' | 'login';

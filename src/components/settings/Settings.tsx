@@ -19,6 +19,7 @@ export function SettingsHub() {
     { id: 'settings-stats' as const, label: 'Статистика', sub: 'Выполнено и по категориям' },
     { id: 'settings-appearance' as const, label: 'Внешний вид', sub: 'Тема и язык' },
     { id: 'settings-data' as const, label: 'Данные', sub: 'Экспорт и резервная копия' },
+    { id: 'settings-install' as const, label: 'Установка', sub: 'PWA на телефон' },
     { id: 'settings-about' as const, label: 'О приложении', sub: 'TiLi Calendar v0.1' },
   ];
 
@@ -266,41 +267,47 @@ export function SettingsCalendar() {
       <div className="settings-form">
         <label className="settings-field">
           Начало дня
-          <select
-            value={settings.dayStartHour}
-            onChange={(e) => updateSettings({ dayStartHour: Number(e.target.value) })}
-          >
-            {Array.from({ length: 24 }, (_, i) => (
-              <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>
-            ))}
-          </select>
+          <span className="select-wrap">
+            <select
+              value={settings.dayStartHour}
+              onChange={(e) => updateSettings({ dayStartHour: Number(e.target.value) })}
+            >
+              {Array.from({ length: 24 }, (_, i) => (
+                <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>
+              ))}
+            </select>
+          </span>
         </label>
         <label className="settings-field">
           Конец дня
-          <select
-            value={settings.dayEndHour}
-            onChange={(e) => updateSettings({ dayEndHour: Number(e.target.value) })}
-          >
-            {Array.from({ length: 24 }, (_, i) => (
-              <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>
-            ))}
-          </select>
+          <span className="select-wrap">
+            <select
+              value={settings.dayEndHour}
+              onChange={(e) => updateSettings({ dayEndHour: Number(e.target.value) })}
+            >
+              {Array.from({ length: 24 }, (_, i) => (
+                <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>
+              ))}
+            </select>
+          </span>
         </label>
-        <label className="settings-toggle">
+        <label className="settings-switch-row">
+          <span className="settings-switch-row__title">Скрывать пустые часы</span>
           <input
             type="checkbox"
+            className="settings-switch"
             checked={settings.hideEmptyHours}
             onChange={(e) => updateSettings({ hideEmptyHours: e.target.checked })}
           />
-          Скрывать пустые часы
         </label>
-        <label className="settings-toggle">
+        <label className="settings-switch-row">
+          <span className="settings-switch-row__title">Показывать выполненные</span>
           <input
             type="checkbox"
+            className="settings-switch"
             checked={settings.showCompleted}
             onChange={(e) => updateSettings({ showCompleted: e.target.checked })}
           />
-          Показывать выполненные
         </label>
       </div>
     </div>
@@ -316,24 +323,28 @@ export function SettingsAppearance() {
       <div className="settings-form">
         <label className="settings-field">
           Тема
-          <select
-            value={settings.theme}
-            onChange={(e) => updateSettings({ theme: e.target.value as typeof settings.theme })}
-          >
-            <option value="system">Системная</option>
-            <option value="light">Светлая</option>
-            <option value="dark">Тёмная</option>
-          </select>
+          <span className="select-wrap">
+            <select
+              value={settings.theme}
+              onChange={(e) => updateSettings({ theme: e.target.value as typeof settings.theme })}
+            >
+              <option value="system">Системная</option>
+              <option value="light">Светлая</option>
+              <option value="dark">Тёмная</option>
+            </select>
+          </span>
         </label>
         <label className="settings-field">
           Язык
-          <select
-            value={settings.locale}
-            onChange={(e) => updateSettings({ locale: e.target.value as typeof settings.locale })}
-          >
-            <option value="ru">Русский</option>
-            <option value="en">English</option>
-          </select>
+          <span className="select-wrap">
+            <select
+              value={settings.locale}
+              onChange={(e) => updateSettings({ locale: e.target.value as typeof settings.locale })}
+            >
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+            </select>
+          </span>
         </label>
       </div>
     </div>
