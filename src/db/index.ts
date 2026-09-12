@@ -55,6 +55,11 @@ export async function deleteTask(id: string) {
   await db.tasks.delete(id);
 }
 
+export async function deleteTasks(ids: string[]) {
+  if (ids.length === 0) return;
+  await db.tasks.bulkDelete(ids);
+}
+
 export async function seedIfEmpty(seed: Task[]) {
   const count = await db.tasks.count();
   if (count === 0) {

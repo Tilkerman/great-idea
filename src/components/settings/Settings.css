@@ -650,6 +650,37 @@
   font-weight: 600;
 }
 
+.settings-install__guide {
+  margin: 0 0 16px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--accent);
+}
+
+.settings-install__guide-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.settings-install__steps {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.settings-install__steps strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 .stats-footer-note {
   margin-top: 16px;
 }

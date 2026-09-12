@@ -1,21 +1,51 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   type BeforeInstallPromptEvent,
   canWebShare,
   copyAppLink,
+  isAppleMobile,
   isStandaloneApp,
   shareAppLink,
+  trackInstallButtonClick,
+  TILI_PUBLIC_URL,
 } from '../../utils/pwaInstall';
 import './Settings.css';
+
+function InstallGuide({ ios }: { ios: boolean }) {
+  if (ios) {
+    return (
+      <ol className="settings-install__steps">
+        <li>Открой <strong>Safari</strong> (на iPhone установка только через него).</li>
+        <li>Перейди на <strong>{TILI_PUBLIC_URL}</strong></li>
+        <li>Нажми кнопку <strong>«Поделиться»</strong> (квадрат со стрелкой вниз).</li>
+        <li>Выбери <strong>«На экран Домой»</strong>.</li>
+        <li>Нажми <strong>«Добавить»</strong> — иконка TiLi появится на главном экране.</li>
+      </ol>
+    );
+  }
+
+  return (
+    <ol className="settings-install__steps">
+      <li>Открой <strong>Chrome</strong> на Android.</li>
+      <li>Перейди на <strong>{TILI_PUBLIC_URL}</strong></li>
+      <li>Нажми меню <strong>(⋮)</strong> справа вверху.</li>
+      <li>Выбери <strong>«Установить приложение»</strong> или <strong>«На главный экран»</strong>.</li>
+      <li>Подтверди — иконка TiLi появится рядом с другими приложениями.</li>
+    </ol>
+  );
+}
 
 export function SettingsInstall() {
   const { setScreen } = useApp();
   const isInstalled = useMemo(() => isStandaloneApp(), []);
+  const isIos = useMemo(() => isAppleMobile(), []);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installBusy, setInstallBusy] = useState(false);
   const [shareBusy, setShareBusy] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [showGuide, setShowGuide] = useState(false);
+  const guideRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onInstallPrompt = (event: Event) => {
@@ -26,22 +56,37 @@ export function SettingsInstall() {
     return () => window.removeEventListener('beforeinstallprompt', onInstallPrompt);
   }, []);
 
+  useEffect(() => {
+    if (showGuide) {
+      guideRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [showGuide]);
+
   const showShare = canWebShare();
 
   const onInstall = async () => {
-    if (!installPrompt) return;
+    trackInstallButtonClick();
     setFeedback(null);
-    setInstallBusy(true);
-    try {
-      await installPrompt.prompt();
-      const { outcome } = await installPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setFeedback('Устанавливаем… Иконка скоро появится на главном экране.');
-        setInstallPrompt(null);
+
+    if (installPrompt) {
+      setInstallBusy(true);
+      try {
+        await installPrompt.prompt();
+        const { outcome } = await installPrompt.userChoice;
+        if (outcome === 'accepted') {
+          setFeedback('Устанавливаем… Иконка скоро появится на главном экране.');
+          setInstallPrompt(null);
+          setShowGuide(false);
+        } else {
+          setShowGuide(true);
+        }
+      } finally {
+        setInstallBusy(false);
       }
-    } finally {
-      setInstallBusy(false);
+      return;
     }
+
+    setShowGuide(true);
   };
 
   const onShare = async () => {
@@ -78,11 +123,12 @@ export function SettingsInstall() {
         <p className="settings-install__lead">PWA — как обычное приложение, но без App Store</p>
 
         <div className="settings-install__actions">
-          {!isInstalled && installPrompt && (
+          {!isInstalled && (
             <button
               type="button"
               className="btn btn--primary settings-full"
               disabled={installBusy}
+              data-track="install-button-click"
               onClick={() => { void onInstall(); }}
             >
               Установить на телефон
@@ -99,6 +145,18 @@ export function SettingsInstall() {
         </div>
 
         {feedback && <p className="settings-install__feedback" role="status">{feedback}</p>}
+
+        {showGuide && !isInstalled && (
+          <div ref={guideRef} className="settings-install__guide" role="region" aria-label="Как установить">
+            <p className="settings-install__guide-title">
+              {isIos ? 'Установка на iPhone' : 'Установка на Android'}
+            </p>
+            <InstallGuide ios={isIos} />
+            <p className="settings-install__text">
+              После этого открывай TiLi с главного экрана — так работает офлайн и быстрее запуск.
+            </p>
+          </div>
+        )}
 
         {isInstalled ? (
           <p className="settings-install__text">
@@ -117,19 +175,22 @@ export function SettingsInstall() {
                 открыть и установить приложение.
               </p>
             </div>
-            <p className="settings-install__subhead">Как установить на телефон</p>
-            <ul className="settings-install__list">
-              <li>
-                <strong>Android:</strong> Chrome → меню (⋮) → «Установить приложение»
-                или «На главный экран»
-              </li>
-              <li>
-                <strong>iPhone:</strong> только Safari → «Поделиться» → «На экран Домой»
-              </li>
-            </ul>
+            {!showGuide && (
+              <>
+                <p className="settings-install__subhead">Кратко</p>
+                <ul className="settings-install__list">
+                  <li>
+                    <strong>Android:</strong> Chrome → меню (⋮) → «Установить приложение»
+                  </li>
+                  <li>
+                    <strong>iPhone:</strong> Safari → «Поделиться» → «На экран Домой»
+                  </li>
+                </ul>
+              </>
+            )}
             <p className="settings-install__text">
-              После установки иконка TiLi появится на главном экране — запуск в один тап,
-              как у обычного приложения. Данные никуда не отправляются.
+              Нажми «Установить на телефон» — откроется подробная инструкция или системное окно
+              установки.
             </p>
           </>
         )}

@@ -26,30 +26,58 @@
 
 .task-sheet__header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: var(--s2);
+  gap: 8px;
   margin-bottom: var(--s2);
 }
 
-.task-sheet__when-toggle {
+.task-sheet__header-row {
   min-width: 0;
   flex: 1;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.task-sheet__header-row::-webkit-scrollbar {
+  display: none;
+}
+
+.task-sheet__link {
   padding: 0;
   border: none;
   background: none;
-  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
   cursor: pointer;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.task-sheet__link:disabled {
+  color: var(--text-secondary);
+  opacity: 0.45;
+  cursor: default;
+}
+
+.task-sheet__link--active:not(:disabled) {
+  font-weight: 700;
 }
 
 .task-sheet__time {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-primary);
   text-transform: capitalize;
+  flex-shrink: 0;
+  white-space: nowrap;
+  line-height: 1.2;
 }
 
 .task-sheet__when-hint {
@@ -110,8 +138,8 @@
 
 .task-sheet__close {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: none;
   background: var(--surface-2);

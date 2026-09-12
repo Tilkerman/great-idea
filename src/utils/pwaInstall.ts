@@ -55,3 +55,33 @@ export async function shareAppLink() {
   await copyAppLink();
   return 'copied' as const;
 }
+
+/** Анонимный счётчик интереса к установке (без данных пользователя). */
+export function trackInstallButtonClick() {
+  if (typeof window === 'undefined') return;
+
+  const payload = {
+    event: 'install_button_click',
+    ts: Date.now(),
+    platform: isAppleMobile() ? 'ios' : 'android',
+    standalone: isStandaloneApp(),
+  };
+
+  const customUrl = import.meta.env.VITE_INSTALL_TRACKING_URL as string | undefined;
+  if (customUrl) {
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    navigator.sendBeacon?.(customUrl, blob);
+  }
+
+  const ns = 'tili-great-idea';
+  const key = import.meta.env.PROD ? 'install-button' : 'install-button-dev';
+  void fetch(`https://api.countapi.xyz/hit/${ns}/${key}`, {
+    method: 'GET',
+    mode: 'no-cors',
+    keepalive: true,
+  }).catch(() => {});
+}
+
+/** Для проверки: GET https://api.countapi.xyz/get/tili-great-idea/install-button */
+export const INSTALL_CLICK_COUNTER_GET_URL =
+  'https://api.countapi.xyz/get/tili-great-idea/install-button';

@@ -7,10 +7,13 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { AppScreen, AuthStart, Task, UserSession, UserSettings, ZoomLevel } from '../types';
+import type {
+  AppScreen, AuthStart, GridClipboard, Task, TaskClipboard, UserSession, UserSettings, ZoomLevel,
+} from '../types';
 import { DEFAULT_SETTINGS } from '../constants/categories';
 import {
   deleteTask,
+  deleteTasks,
   getAllTasks,
   getSettings,
   saveSettings,
@@ -26,6 +29,12 @@ import {
   rebalanceHourTasks,
 } from '../utils/hourSlot';
 import { toLocalDateString } from '../utils/date';
+import {
+  buildPastedTasks,
+  idsInDay,
+  idsInHour,
+  idsInWeek,
+} from '../utils/gridClipboard';
 import { SEED_TASKS } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 
@@ -72,6 +81,16 @@ interface AppContextValue {
   confirmDelete: () => Promise<void>;
   completeOnboarding: () => void;
   openAuth: (start: AuthStart, back?: AppScreen) => void;
+  taskClipboard: TaskClipboard | null;
+  copyTaskToClipboard: (data: TaskClipboard) => void;
+  gridClipboard: GridClipboard | null;
+  setGridClipboard: (clip: GridClipboard | null) => void;
+  pasteGridClipboard: (
+    target:
+      | { kind: 'week'; focusDate: Date }
+      | { kind: 'day'; day: Date }
+      | { kind: 'hour'; day: Date; hour: number },
+  ) => Promise<void>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -93,6 +112,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<Task | null>(null);
+  const [taskClipboard, setTaskClipboard] = useState<TaskClipboard | null>(null);
+  const [gridClipboard, setGridClipboard] = useState<GridClipboard | null>(null);
 
   const refreshTasks = useCallback(async () => {
     setTasks(await getAllTasks());
@@ -240,6 +261,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setScreen('auth');
   }, []);
 
+  const copyTaskToClipboard = useCallback((data: TaskClipboard) => {
+    setTaskClipboard(data);
+  }, []);
+
+  const pasteGridClipboard = useCallback(async (
+    target:
+      | { kind: 'week'; focusDate: Date }
+      | { kind: 'day'; day: Date }
+      | { kind: 'hour'; day: Date; hour: number },
+  ) => {
+    if (!gridClipboard || gridClipboard.kind !== target.kind) return;
+    const all = await getAllTasks();
+    const removeIds = target.kind === 'week'
+      ? idsInWeek(all, target.focusDate, settings.weekStartsOn)
+      : target.kind === 'day'
+        ? idsInDay(all, target.day)
+        : idsInHour(all, target.day, target.hour);
+    await deleteTasks(removeIds);
+    const incoming = buildPastedTasks(
+      gridClipboard,
+      target.kind === 'week'
+        ? { kind: 'week', focusDate: target.focusDate, weekStartsOn: settings.weekStartsOn }
+        : target,
+    );
+    await saveTasks(incoming);
+    await refreshTasks();
+  }, [gridClipboard, refreshTasks, settings.weekStartsOn]);
+
   useEffect(() => {
     if (!ready) return;
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
@@ -297,12 +346,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       confirmDelete,
       completeOnboarding,
       openAuth,
+      taskClipboard,
+      copyTaskToClipboard,
+      gridClipboard,
+      setGridClipboard,
+      pasteGridClipboard,
     }),
     [
       ready, screen, zoom, zoomIn, zoomOut, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
       focusDate, selectedDay, tasks,
       refreshTasks, upsertTask, saveHourSlot, placeTask, deleteTaskInHour, removeTask, settings, updateSettings,
-      session, authStart, authBackScreen, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding, openAuth,
+      session, authStart, authBackScreen, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding, openAuth, taskClipboard, copyTaskToClipboard, gridClipboard, pasteGridClipboard,
     ],
   );
 

@@ -52,11 +52,26 @@
 }
 
 .app-header__icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: none;
-  background: transparent;
-  font-size: 18px;
+  background: var(--surface-2);
   cursor: pointer;
   border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--text-primary);
+  touch-action: manipulation;
+}
+
+.app-header__icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.app-header__icon:active {
+  background: color-mix(in srgb, var(--border) 55%, var(--surface-2));
 }

@@ -16,10 +16,18 @@ function parseLocalDate(value: string): Date {
   return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
 }
 
+function formatSheetWhen(dateStr: string, hour: number): string {
+  const d = parseLocalDate(dateStr);
+  const weekday = d.toLocaleDateString('ru-RU', { weekday: 'short' }).replace(/\./g, '');
+  const month = d.toLocaleDateString('ru-RU', { month: 'short' }).replace(/\./g, '');
+  return `${weekday}, ${d.getDate()} ${month} ${pad(hour)}:00`;
+}
+
 export function TaskSheet() {
   const {
     sheetOpen, setSheetOpen, editingTask, setEditingTask,
     tasks, placeTask, requestDelete, settings,
+    taskClipboard, copyTaskToClipboard,
   } = useApp();
 
   const [title, setTitle] = useState('');
@@ -31,6 +39,7 @@ export function TaskSheet() {
   const [slotHour, setSlotHour] = useState(0);
   const [whenOpen, setWhenOpen] = useState(false);
   const [error, setError] = useState('');
+  const [copyHint, setCopyHint] = useState('');
   const descRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -44,6 +53,7 @@ export function TaskSheet() {
       setSlotHour(getHourFromTask(editingTask));
       setWhenOpen(false);
       setError('');
+      setCopyHint('');
     }
   }, [editingTask]);
 
@@ -63,6 +73,10 @@ export function TaskSheet() {
   if (!sheetOpen || !editingTask) return null;
 
   const isNew = !tasks.some((t) => t.id === editingTask.id);
+  const isCompleted = editingTask.status === 'completed';
+  const showClipActions = isNew || !isCompleted;
+  const canCopy = !isNew && title.trim().length > 0;
+  const canPaste = isNew && taskClipboard !== null;
   const targetCount = getTasksInHour(tasks, slotDate, slotHour)
     .filter((t) => t.id !== editingTask.id).length;
   const afterAdd = targetCount + 1;
@@ -101,6 +115,30 @@ export function TaskSheet() {
     requestDelete(editingTask);
   };
 
+  const copyTask = () => {
+    if (!canCopy) return;
+    const data = buildUpdated();
+    copyTaskToClipboard({
+      title: data.title,
+      description: data.description,
+      category: data.category,
+      important: data.important,
+      reminderOffsetMinutes: data.reminderOffsetMinutes ?? null,
+    });
+    setCopyHint('Скопировано');
+    window.setTimeout(() => setCopyHint(''), 1600);
+  };
+
+  const pasteTask = () => {
+    if (!canPaste || !taskClipboard) return;
+    setTitle(taskClipboard.title);
+    setDescription(taskClipboard.description ?? '');
+    setCategory(taskClipboard.category);
+    setImportant(taskClipboard.important);
+    setReminderOffset(taskClipboard.reminderOffsetMinutes);
+    setError('');
+  };
+
   const slotInfo = (() => {
     if (hourFull) return 'Этот час заполнен (5/5)';
     if (afterAdd <= 1) return '1 дело на весь час (60 мин)';
@@ -108,27 +146,43 @@ export function TaskSheet() {
     return `${afterAdd} дел × 12 мин в этом часе`;
   })();
 
-  const whenLabel = slotDate
-    ? `${parseLocalDate(slotDate).toLocaleDateString('ru-RU', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-    })} · ${pad(slotHour)}:00`
-    : '';
+  const whenLabel = slotDate ? formatSheetWhen(slotDate, slotHour) : '';
 
   return (
     <div className="sheet-overlay" onClick={close}>
       <div className="task-sheet" onClick={(e) => e.stopPropagation()}>
         <div className="task-sheet__header">
-          <button
-            type="button"
-            className="task-sheet__when-toggle"
-            onClick={() => setWhenOpen((v) => !v)}
-            aria-expanded={whenOpen}
-          >
+          <div className="task-sheet__header-row">
             <span className="task-sheet__time">{whenLabel || 'Дата и час'}</span>
-            <span className="task-sheet__when-hint">{whenOpen ? 'Свернуть' : 'Изменить'}</span>
-          </button>
+            <button
+              type="button"
+              className="task-sheet__link"
+              onClick={() => setWhenOpen((v) => !v)}
+              aria-expanded={whenOpen}
+            >
+              {whenOpen ? 'Свернуть' : 'Изменить'}
+            </button>
+            {showClipActions && (
+              <>
+                <button
+                  type="button"
+                  className="task-sheet__link"
+                  disabled={!canCopy}
+                  onClick={copyTask}
+                >
+                  {copyHint || 'Копировать'}
+                </button>
+                <button
+                  type="button"
+                  className={`task-sheet__link ${canPaste ? 'task-sheet__link--active' : ''}`}
+                  disabled={!canPaste}
+                  onClick={pasteTask}
+                >
+                  Вставить
+                </button>
+              </>
+            )}
+          </div>
           <button type="button" className="task-sheet__close" onClick={close} aria-label="Закрыть">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
               <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
