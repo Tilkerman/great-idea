@@ -1,5 +1,6 @@
 import { useApp } from '../../context/AppContext';
 import { MONTH_NAMES_SHORT } from '../../constants/categories';
+import { isToday } from '../../utils/date';
 import './CalendarViews.css';
 
 export function YearView() {
@@ -42,14 +43,23 @@ function MiniMonthGrid({ year, month }: { year: number; month: number }) {
 
   return (
     <div className="mini-month-grid">
-      {cells.map((d, i) => (
+      {cells.map((d, i) => {
+        const cellDate = d === null ? null : new Date(year, month, d);
+        const today = cellDate && isToday(cellDate);
+        return (
         <span
           key={i}
-          className={`mini-month-grid__cell ${d === null ? 'mini-month-grid__cell--empty' : ''} ${d && d % 7 === 0 ? 'mini-month-grid__cell--sun' : ''}`}
+          className={[
+            'mini-month-grid__cell',
+            d === null && 'mini-month-grid__cell--empty',
+            d && d % 7 === 0 && !today && 'mini-month-grid__cell--sun',
+            today && 'mini-month-grid__cell--today',
+          ].filter(Boolean).join(' ')}
         >
           {d ?? ''}
         </span>
-      ))}
+        );
+      })}
     </div>
   );
 }

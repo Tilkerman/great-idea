@@ -35,6 +35,14 @@ export function isSameDay(a: Date, b: Date) {
   return toLocalDateString(a) === toLocalDateString(b);
 }
 
+export function isToday(d: Date, now = new Date()) {
+  return isSameDay(d, now);
+}
+
+export function isPastDay(d: Date, now = new Date()) {
+  return startOfDay(d).getTime() < startOfDay(now).getTime();
+}
+
 export function getWeekStart(d: Date, weekStartsOn: 0 | 1 = 1) {
   const date = startOfDay(d);
   const day = date.getDay();

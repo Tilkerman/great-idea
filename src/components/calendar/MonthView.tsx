@@ -5,7 +5,9 @@ import { CategoryDot } from '../tasks/TaskCard';
 import type { Task } from '../../types';
 import {
   getWeeksInMonth,
+  isPastDay,
   isSameDay,
+  isToday,
   toLocalDateString,
   formatDateRange,
 } from '../../utils/date';
@@ -97,10 +99,15 @@ function WeekDotGrid({
         const key = toLocalDateString(day);
         const dayTasks = tasksByDay.get(key) ?? [];
         const selected = selectedDay && isSameDay(day, selectedDay);
+        const when = isToday(day) ? 'today' : isPastDay(day) ? 'past' : null;
         return (
           <div
             key={key}
-            className={`week-dot-col ${selected ? 'week-dot-col--selected' : ''}`}
+            className={[
+              'week-dot-col',
+              selected && 'week-dot-col--selected',
+              when && `week-dot-col--${when}`,
+            ].filter(Boolean).join(' ')}
             onClick={(e) => {
               e.stopPropagation();
               setSelectedDay(day);

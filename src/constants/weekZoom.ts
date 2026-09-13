@@ -8,6 +8,8 @@ export const WEEK_ZOOM_BADGE_MIN = 0.2;
 export const WEEK_ZOOM_TITLE_MIN = 0.1;
 /** До этого (включительно 15%) только мелкие названия, без описания */
 export const WEEK_ZOOM_TITLE_ONLY_MAX = 0.15;
+/** С этого масштаба на неделе можно смахнуть карточку вправо и завершить дело */
+export const WEEK_ZOOM_COMPLETE_MIN = 0.15;
 /** С этого масштаба на карточках появляется описание */
 export const WEEK_ZOOM_DESC_MIN = 0.25;
 /** С этого масштаба в неполном часе видна полоска «добавить» */

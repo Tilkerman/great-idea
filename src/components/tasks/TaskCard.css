@@ -6,11 +6,71 @@
   background: var(--task-bg);
   color: var(--task-text);
   border: 1px solid rgba(0, 0, 0, 0.06);
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
 }
 
 .task-card:active {
   transform: scale(0.98);
+}
+
+.task-card--swipeable {
+  touch-action: pan-y;
+}
+
+.task-card--armed {
+  touch-action: none;
+  z-index: 2;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transform: scale(1.03);
+}
+
+.task-card--armed:active,
+.task-card--swiping,
+.task-card--swiping:active {
+  transform: scale(1.03);
+  transition: none;
+}
+
+.task-card__swipe-reveal {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 8px;
+  background: var(--accent);
+  color: var(--accent-on);
+  font-size: 16px;
+  font-weight: 700;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.task-card__swipe-inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  background: transparent;
+  color: inherit;
+}
+
+.task-card--swiping .task-card__swipe-inner {
+  transition: none;
+  background: var(--task-bg);
+}
+
+.task-card--done .task-card__swipe-inner {
+  background: transparent;
+}
+
+.task-card--done.task-card--swiping .task-card__swipe-inner {
+  background: var(--surface-2);
 }
 
 .task-card--done {
@@ -39,14 +99,23 @@
   min-height: 0;
   margin-bottom: 0;
   border-radius: 4px;
-  padding: 3px 6px 4px 6px;
+  padding: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
 }
 
-.task-card--slot:not(.task-card--no-delete) {
+.task-card--slot .task-card__swipe-inner {
+  flex: 1;
+  min-height: 0;
+  padding: 3px 6px 4px 6px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.task-card--slot:not(.task-card--no-delete) .task-card__swipe-inner {
   padding-right: 22px;
 }
 
@@ -54,11 +123,11 @@
   padding-right: 0;
 }
 
-.task-card--slot.task-card--no-badge {
+.task-card--slot.task-card--no-badge .task-card__swipe-inner {
   padding-left: 6px;
 }
 
-.task-card--slot.task-card--no-title {
+.task-card--slot.task-card--no-title .task-card__swipe-inner {
   padding: 2px;
 }
 

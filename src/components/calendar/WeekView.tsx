@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { useApp } from '../../context/AppContext';
 import { WEEKDAY_NAMES, WEEKDAY_SHORT } from '../../constants/categories';
-import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TIME_GROW_MAX, WEEK_ZOOM_TIME_GROW_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
+import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_COMPLETE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TIME_GROW_MAX, WEEK_ZOOM_TIME_GROW_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
 import { HourSlot } from '../tasks/HourSlot';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import {
@@ -9,6 +9,8 @@ import {
   getHoursRange,
   getWeekDays,
   hourRangeLabels,
+  isPastDay,
+  isToday,
   toLocalDateString,
 } from '../../utils/date';
 import {
@@ -41,7 +43,7 @@ type PendingPaste =
 export function WeekView({ viewportWidth }: { viewportWidth: number }) {
   const {
     focusDate, tasks, settings, weekZoom, setEditingTask, setSheetOpen,
-    requestDelete, gridClipboard, setGridClipboard, pasteGridClipboard,
+    requestDelete, gridClipboard, setGridClipboard, pasteGridClipboard, upsertTask,
   } = useApp();
 
   const headerScrollRef = useRef<HTMLDivElement>(null);
@@ -60,6 +62,7 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
   const showSlotBadge = weekZoomAtLeast(weekZoom, WEEK_ZOOM_BADGE_MIN);
   const showSlotTitle = weekZoomAtLeast(weekZoom, WEEK_ZOOM_TITLE_MIN);
   const showSlotAdd = weekZoomAtLeast(weekZoom, WEEK_ZOOM_ADD_MIN);
+  const swipeComplete = !pick && weekZoomAtLeast(weekZoom, WEEK_ZOOM_COMPLETE_MIN);
   const zoomPct = weekZoomPercent(weekZoom);
   const titlesOnly = showSlotTitle && zoomPct <= Math.round(WEEK_ZOOM_TITLE_ONLY_MAX * 100);
   const showSlotDesc = weekZoomAtLeast(weekZoom, WEEK_ZOOM_DESC_MIN);
@@ -90,6 +93,11 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
     if (pick) return;
     setEditingTask(draft);
     setSheetOpen(true);
+  };
+
+  const completeTask = (task: Task) => {
+    if (pick || task.status === 'completed') return;
+    void upsertTask({ ...task, status: 'completed' });
   };
 
   const showToast = (text: string) => {
@@ -304,6 +312,12 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
               const name = showFullWeekday
                 ? raw.charAt(0) + raw.slice(1).toLowerCase()
                 : WEEKDAY_SHORT[wi];
+              const when = isToday(d) ? 'today' : isPastDay(d) ? 'past' : null;
+              const headClass = [
+                'week-view__day-head',
+                when && `week-view__day-head--${when}`,
+                pickDay && 'week-view__day-head--pick',
+              ].filter(Boolean).join(' ');
               const label = (
                 <>
                   <span className="week-view__day-name">{name}</span>
@@ -315,7 +329,7 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
                   <button
                     key={d.toISOString()}
                     type="button"
-                    className="week-view__day-head week-view__day-head--pick"
+                    className={headClass}
                     onClick={() => onPickDay(d)}
                   >
                     {label}
@@ -323,7 +337,7 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
                 );
               }
               return (
-                <div key={d.toISOString()} className="week-view__day-head">
+                <div key={d.toISOString()} className={headClass}>
                   {label}
                 </div>
               );
@@ -369,8 +383,13 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
           onScroll={() => syncScroll('grid')}
         >
           <div className="week-view__grid" style={{ width: gridWidth }}>
-            {days.map((day) => (
-              <div key={day.toISOString()} className="week-view__col">
+            {days.map((day) => {
+              const when = isToday(day) ? 'today' : isPastDay(day) ? 'past' : null;
+              return (
+              <div
+                key={day.toISOString()}
+                className={['week-view__col', when && `week-view__col--${when}`].filter(Boolean).join(' ')}
+              >
                 {hours.map((h) => {
                   const key = `${toLocalDateString(day)}-${h}`;
                   const slotTasks = tasksBySlot.get(key) ?? [];
@@ -387,6 +406,8 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
                           setSheetOpen(true);
                         }}
                         onTaskDelete={(task) => requestDelete(task)}
+                        onTaskComplete={completeTask}
+                        swipeComplete={swipeComplete}
                         showDelete={showSlotDelete && !pick}
                         showBadge={showSlotBadge}
                         showTitle={showSlotTitle}
@@ -406,7 +427,8 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
                   );
                 })}
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -428,7 +450,7 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
 
 export function DayView() {
   const {
-    focusDate, setFocusDate, tasks, settings, setEditingTask, setSheetOpen, requestDelete,
+    focusDate, setFocusDate, tasks, settings, setEditingTask, setSheetOpen, requestDelete, upsertTask,
   } = useApp();
   const hours = useMemo(
     () => getHoursRange(settings.dayStartHour, settings.dayEndHour),
@@ -487,7 +509,12 @@ export function DayView() {
 
   return (
     <div
-      className={`day-view ${offsetX !== 0 ? 'day-view--dragging' : ''}`}
+      className={[
+        'day-view',
+        offsetX !== 0 && 'day-view--dragging',
+        isToday(focusDate) && 'day-view--today',
+        isPastDay(focusDate) && 'day-view--past',
+      ].filter(Boolean).join(' ')}
       style={{ transform: `translateX(${offsetX * 0.35}px)` }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -515,6 +542,11 @@ export function DayView() {
                   setSheetOpen(true);
                 }}
                 onTaskDelete={(task) => requestDelete(task)}
+                onTaskComplete={(task) => {
+                  if (task.status === 'completed') return;
+                  void upsertTask({ ...task, status: 'completed' });
+                }}
+                swipeComplete
                 onAdd={(draft) => {
                   setEditingTask(draft);
                   setSheetOpen(true);
