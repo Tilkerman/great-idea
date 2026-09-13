@@ -164,7 +164,6 @@ export function TaskCard({
       aria-label={task.title}
       onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
       onContextMenu={(e) => { e.preventDefault(); }}
-      onSelectStart={(e) => { e.preventDefault(); }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
