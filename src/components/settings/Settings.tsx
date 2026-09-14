@@ -20,6 +20,7 @@ export function SettingsHub() {
     { id: 'settings-appearance' as const, label: 'Внешний вид', sub: 'Тема и язык' },
     { id: 'settings-data' as const, label: 'Данные', sub: 'Экспорт и резервная копия' },
     { id: 'settings-install' as const, label: 'Установка', sub: 'PWA на телефон' },
+    { id: 'settings-notifications' as const, label: 'Уведомления', sub: 'Баннеры на iPhone' },
     { id: 'settings-about' as const, label: 'О приложении', sub: 'TiLi Calendar v0.1' },
   ];
 

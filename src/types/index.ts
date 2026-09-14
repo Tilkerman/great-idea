@@ -60,6 +60,7 @@ export type AppScreen =
   | 'settings-data'
   | 'settings-stats'
   | 'settings-install'
+  | 'settings-notifications'
   | 'settings-about';
 
 export type AuthStart = 'choice' | 'register' | 'login';
@@ -75,7 +76,7 @@ export interface UserSettings {
   locale: 'ru' | 'en';
   importantReminderHours: number;
   reminderBeforeMin: number;
-  /** Preference only — push is not delivered yet */
+  /** Local banners on installed PWA; no cloud Web Push yet */
   notificationsEnabled: boolean;
 }
 
