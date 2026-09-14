@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import type { ZoomLevel } from '../types';
-import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomHint } from '../constants/weekZoom';
+import { WEEK_TO_MONTH_OVERSHOOT, WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomHint } from '../constants/weekZoom';
 
 const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
 
@@ -72,12 +72,12 @@ export function usePinchZoom() {
       lastScale.current = scale;
       setPinching(true);
       const z = zoomRef.current;
-      if (z === 'week') {
+      if (z === 'week' || z === 'day') {
         const raw = startWeek.current + (scale - 1) * 0.95;
         if (raw < WEEK_ZOOM_MIN) {
           pendingWeek.current = WEEK_ZOOM_MIN;
-          const extra = 1 - scale;
-          pendingLive.current = Math.max(0.78, 1 - extra * 0.28);
+          const overshoot = WEEK_ZOOM_MIN - raw;
+          pendingLive.current = Math.max(0.72, 1 - overshoot * 0.38);
         } else if (raw > WEEK_ZOOM_MAX) {
           pendingWeek.current = WEEK_ZOOM_MAX;
           pendingLive.current = 1;
@@ -85,8 +85,9 @@ export function usePinchZoom() {
           pendingWeek.current = raw;
           pendingLive.current = 1;
         }
-      } else if (z === 'day') {
-        pendingLive.current = 1;
+        if (z === 'day' && raw < WEEK_ZOOM_MAX - 0.02) {
+          setZoomRef.current('week');
+        }
       } else {
         const t = scale - 1;
         const rubber = Math.sign(t) * Math.min(0.2, Math.abs(t) * 0.32);
@@ -130,15 +131,16 @@ export function usePinchZoom() {
 
       let changed = false;
       if (z === 'week') {
-        if (pendingWeek.current <= 0.03 && scale < 0.8) {
+        const rawEnd = startWeek.current + (scale - 1) * 0.95;
+        if (pendingWeek.current <= 0.03 && rawEnd <= -WEEK_TO_MONTH_OVERSHOOT) {
           stepFromStart(-1);
           changed = true;
         }
       } else if (z === 'day') {
-        if (scale < 0.84) {
-          stepFromStart(-1);
-          changed = true;
+        if (pendingWeek.current < WEEK_ZOOM_MAX - 0.02 || scale < 0.98) {
+          setZoomRef.current('week');
         }
+        changed = scale < 0.84;
       } else if (scale > 1.16) {
         stepFromStart(1);
         changed = true;
@@ -282,11 +284,10 @@ export function usePinchZoom() {
 }
 
 export function zoomHint(level: ZoomLevel, weekZoomLevel = 0, viewportWidth = 390) {
-  if (level === 'week') return weekZoomHint(weekZoomLevel, viewportWidth);
-  const hints: Record<Exclude<ZoomLevel, 'week'>, string> = {
+  if (level === 'week' || level === 'day') return weekZoomHint(weekZoomLevel, viewportWidth);
+  const hints: Record<Exclude<ZoomLevel, 'week' | 'day'>, string> = {
     year: 'Разведи пальцы → месяц',
     month: 'Разведи пальцы → неделя · сведи → год',
-    day: 'Сведи пальцы → неделя',
   };
   return hints[level];
 }

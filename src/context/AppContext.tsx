@@ -159,6 +159,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const weekZoomOut = useCallback(() => {
     setWeekZoom((w) => Math.max(w - 0.1, WEEK_ZOOM_MIN));
+    setZoom((z) => (z === 'day' ? 'week' : z));
   }, []);
 
   useEffect(() => {

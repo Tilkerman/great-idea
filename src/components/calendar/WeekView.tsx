@@ -10,6 +10,7 @@ import {
   getWeekDays,
   hourRangeLabels,
   isPastDay,
+  isSameDay,
   isToday,
   toLocalDateString,
 } from '../../utils/date';
@@ -40,15 +41,21 @@ type PendingPaste =
   | { kind: 'day'; day: Date }
   | { kind: 'hour'; day: Date; hour: number };
 
-export function WeekView({ viewportWidth }: { viewportWidth: number }) {
+export function WeekView({
+  viewportWidth,
+  onHoursScroll,
+}: {
+  viewportWidth: number;
+  onHoursScroll?: (scrollTop: number) => void;
+}) {
   const {
-    focusDate, tasks, settings, weekZoom, setEditingTask, setSheetOpen,
+    focusDate, tasks, settings, weekZoom, zoom, setEditingTask, setSheetOpen,
     requestDelete, gridClipboard, setGridClipboard, pasteGridClipboard, upsertTask,
   } = useApp();
 
-  const headerScrollRef = useRef<HTMLDivElement>(null);
+  const yScrollRef = useRef<HTMLDivElement>(null);
   const gridScrollRef = useRef<HTMLDivElement>(null);
-  const timeScrollRef = useRef<HTMLDivElement>(null);
+  const daysTrackRef = useRef<HTMLDivElement>(null);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [pick, setPick] = useState<ClipPick | null>(null);
@@ -109,6 +116,39 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
   useEffect(() => () => {
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
   }, []);
+
+  useEffect(() => {
+    if (zoom !== 'day') return;
+    const y = yScrollRef.current;
+    const grid = gridScrollRef.current;
+    const daysTrack = daysTrackRef.current;
+    if (!y || !grid) return;
+    const idx = Math.max(0, days.findIndex((d) => isSameDay(d, focusDate)));
+    const now = new Date();
+    const lastHour = settings.dayEndHour;
+    const firstHour = settings.dayStartHour;
+    const hour = isToday(focusDate)
+      ? Math.min(lastHour, Math.max(firstHour, now.getHours()))
+      : firstHour;
+    const top = 48 + (hour - firstHour) * rowHeight;
+    const left = idx * colWidth;
+    const apply = () => {
+      y.scrollTop = top;
+      grid.scrollLeft = left;
+      if (daysTrack) daysTrack.style.transform = `translate3d(${-left}px,0,0)`;
+    };
+    apply();
+    const frame = requestAnimationFrame(apply);
+    return () => cancelAnimationFrame(frame);
+  }, [
+    zoom,
+    focusDate,
+    days,
+    colWidth,
+    rowHeight,
+    settings.dayStartHour,
+    settings.dayEndHour,
+  ]);
 
   const finishCopy = (clip: ReturnType<typeof copyWeekClipboard>, emptyHint: string, filledHint: string) => {
     setGridClipboard(clip);
@@ -190,17 +230,28 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
     setMenuOpen((v) => !v);
   };
 
-  const syncScroll = useCallback((source: 'grid' | 'time') => {
+  const onYScroll = useCallback(() => {
+    onHoursScroll?.(yScrollRef.current?.scrollTop ?? 0);
+  }, [onHoursScroll]);
+
+  const onGridXScroll = useCallback(() => {
     const grid = gridScrollRef.current;
-    const time = timeScrollRef.current;
-    const header = headerScrollRef.current;
-    if (!grid || !time || !header) return;
-    if (source === 'grid') {
-      time.scrollTop = grid.scrollTop;
-      header.scrollLeft = grid.scrollLeft;
-    } else {
-      grid.scrollTop = time.scrollTop;
-    }
+    const daysTrack = daysTrackRef.current;
+    if (!grid || !daysTrack) return;
+    daysTrack.style.transform = `translate3d(${-grid.scrollLeft}px,0,0)`;
+  }, []);
+
+  useEffect(() => {
+    const grid = gridScrollRef.current;
+    const y = yScrollRef.current;
+    if (!grid || !y) return;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < 1 || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      y.scrollTop += e.deltaY;
+      e.preventDefault();
+    };
+    grid.addEventListener('wheel', onWheel, { passive: false });
+    return () => grid.removeEventListener('wheel', onWheel);
   }, []);
 
   const showFullWeekday = weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
@@ -228,124 +279,6 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
       ].filter(Boolean).join(' ')}
       style={style}
     >
-      <div className="week-view__header-row">
-        <div className="week-view__time-spacer">
-          <button
-            type="button"
-            className={`week-view__clip ${gridClipboard ? 'week-view__clip--armed' : ''}`}
-            aria-label={gridClipboard ? 'Копировать или вставить сетку' : 'Копировать сетку'}
-            aria-expanded={menuOpen}
-            onClick={toggleMenu}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-              <rect x="8" y="8" width="12" height="12" rx="2" />
-              <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" strokeLinecap="round" />
-            </svg>
-          </button>
-          {menuOpen && (
-            <>
-              <button type="button" className="week-view__clip-backdrop" aria-label="Закрыть" onClick={() => setMenuOpen(false)} />
-              <div className="week-view__clip-menu" role="menu">
-                <p className="week-view__clip-status">
-                  {gridClipboard
-                    ? `Скопировано: ${clipKindLabel(gridClipboard.kind)} · ${gridClipboard.items.length} ${countWord(gridClipboard.items.length)}`
-                    : 'Скопируйте шаблон, потом вставьте на другую неделю'}
-                </p>
-                {gridClipboard && (
-                  <>
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className="week-view__clip-item week-view__clip-item--paste"
-                      onClick={() => {
-                        if (gridClipboard.kind === 'week') {
-                          requestPaste(
-                            { kind: 'week' },
-                            countTasksInWeek(tasks, focusDate, settings.weekStartsOn),
-                          );
-                          return;
-                        }
-                        startPick(gridClipboard.kind === 'day' ? 'paste-day' : 'paste-hour');
-                      }}
-                    >
-                      <span className="week-view__clip-item-title">
-                        {gridClipboard.kind === 'week' && 'Вставить неделю сюда'}
-                        {gridClipboard.kind === 'day' && 'Вставить день…'}
-                        {gridClipboard.kind === 'hour' && 'Вставить час…'}
-                      </span>
-                      <span className="week-view__clip-item-hint">
-                        {gridClipboard.kind === 'week' && 'Заменит все дни на этом экране'}
-                        {gridClipboard.kind === 'day' && 'Нажмите день в шапке, куда положить'}
-                        {gridClipboard.kind === 'hour' && 'Нажмите слот, куда положить'}
-                      </span>
-                    </button>
-                    <p className="week-view__clip-heading week-view__clip-heading--sub">Или скопировать другое</p>
-                  </>
-                )}
-                {!gridClipboard && (
-                  <p className="week-view__clip-heading">Скопировать</p>
-                )}
-                <button type="button" role="menuitem" className="week-view__clip-item" onClick={copyWeek}>
-                  <span className="week-view__clip-item-title">Эту неделю</span>
-                  <span className="week-view__clip-item-hint">Все незавершённые дела с экрана</span>
-                </button>
-                <button type="button" role="menuitem" className="week-view__clip-item" onClick={() => startPick('copy-day')}>
-                  <span className="week-view__clip-item-title">Один день…</span>
-                  <span className="week-view__clip-item-hint">Потом нажмите Пн–Вс в шапке</span>
-                </button>
-                <button type="button" role="menuitem" className="week-view__clip-item" onClick={() => startPick('copy-hour')}>
-                  <span className="week-view__clip-item-title">Один час…</span>
-                  <span className="week-view__clip-item-hint">Потом нажмите нужный слот</span>
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-        <div
-          className="week-view__header-scroll"
-          ref={headerScrollRef}
-        >
-          <div className="week-view__header-inner" style={{ width: gridWidth }}>
-            {days.map((d) => {
-              const wi = (d.getDay() + 6) % 7;
-              const raw = WEEKDAY_NAMES[wi] ?? '';
-              const name = showFullWeekday
-                ? raw.charAt(0) + raw.slice(1).toLowerCase()
-                : WEEKDAY_SHORT[wi];
-              const when = isToday(d) ? 'today' : isPastDay(d) ? 'past' : null;
-              const headClass = [
-                'week-view__day-head',
-                when && `week-view__day-head--${when}`,
-                pickDay && 'week-view__day-head--pick',
-              ].filter(Boolean).join(' ');
-              const label = (
-                <>
-                  <span className="week-view__day-name">{name}</span>
-                  <span className="week-view__day-num">{d.getDate()}</span>
-                </>
-              );
-              if (pickDay) {
-                return (
-                  <button
-                    key={d.toISOString()}
-                    type="button"
-                    className={headClass}
-                    onClick={() => onPickDay(d)}
-                  >
-                    {label}
-                  </button>
-                );
-              }
-              return (
-                <div key={d.toISOString()} className={headClass}>
-                  {label}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
       {pick && (
         <div className="week-view__pick-bar">
           <span>
@@ -359,30 +292,88 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
       )}
       {toast && !pick && <p className="week-view__clip-toast">{toast}</p>}
 
-      <div className="week-view__body">
-        <div
-          className="week-view__time-col"
-          ref={timeScrollRef}
-          onScroll={() => syncScroll('time')}
-        >
-          {hours.map((h) => {
-            const { start, end } = hourRangeLabels(h);
-            return (
-              <div key={h} className="week-view__time-label">
-                <span className="week-view__time-start">{start}</span>
-                <span className="week-view__time-dash" aria-hidden>–</span>
-                <span className="week-view__time-end">{end}</span>
-              </div>
-            );
-          })}
+      <div className="week-view__y" ref={yScrollRef} onScroll={onYScroll}>
+        <div className="week-view__chrome-spacer" aria-hidden />
+        <div className="week-view__sticky-head">
+          <div className="week-view__time-head">
+            <button
+              type="button"
+              className={`week-view__clip ${gridClipboard ? 'week-view__clip--armed' : ''}`}
+              aria-label={gridClipboard ? 'Копировать или вставить сетку' : 'Копировать сетку'}
+              aria-expanded={menuOpen}
+              onClick={toggleMenu}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+                <rect x="8" y="8" width="12" height="12" rx="2" />
+                <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
+          <div className="week-view__days-clip">
+            <div
+              className="week-view__days-track"
+              ref={daysTrackRef}
+              style={{ width: gridWidth }}
+            >
+              {days.map((d) => {
+                const wi = (d.getDay() + 6) % 7;
+                const raw = WEEKDAY_NAMES[wi] ?? '';
+                const name = showFullWeekday
+                  ? raw.charAt(0) + raw.slice(1).toLowerCase()
+                  : WEEKDAY_SHORT[wi];
+                const when = isToday(d) ? 'today' : isPastDay(d) ? 'past' : null;
+                const headClass = [
+                  'week-view__day-head',
+                  when && `week-view__day-head--${when}`,
+                  pickDay && 'week-view__day-head--pick',
+                ].filter(Boolean).join(' ');
+                const label = (
+                  <>
+                    <span className="week-view__day-name">{name}</span>
+                    <span className="week-view__day-num">{d.getDate()}</span>
+                  </>
+                );
+                if (pickDay) {
+                  return (
+                    <button
+                      key={d.toISOString()}
+                      type="button"
+                      className={headClass}
+                      onClick={() => onPickDay(d)}
+                    >
+                      {label}
+                    </button>
+                  );
+                }
+                return (
+                  <div key={d.toISOString()} className={headClass}>
+                    {label}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
-        <div
-          className={`week-view__grid-scroll ${weekZoom > 0.45 ? 'week-view__grid-scroll--snap' : ''}`}
-          ref={gridScrollRef}
-          onScroll={() => syncScroll('grid')}
-        >
-          <div className="week-view__grid" style={{ width: gridWidth }}>
+        <div className="week-view__hours-row">
+          <div className="week-view__time-col">
+            {hours.map((h) => {
+              const { start, end } = hourRangeLabels(h);
+              return (
+                <div key={h} className="week-view__time-label">
+                  <span className="week-view__time-start">{start}</span>
+                  <span className="week-view__time-dash" aria-hidden>–</span>
+                  <span className="week-view__time-end">{end}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div
+            className={`week-view__grid-scroll ${weekZoom > 0.45 ? 'week-view__grid-scroll--snap' : ''}`}
+            ref={gridScrollRef}
+            onScroll={onGridXScroll}
+          >
+            <div className="week-view__grid" style={{ width: gridWidth }}>
             {days.map((day) => {
               const when = isToday(day) ? 'today' : isPastDay(day) ? 'past' : null;
               return (
@@ -431,7 +422,67 @@ export function WeekView({ viewportWidth }: { viewportWidth: number }) {
             })}
           </div>
         </div>
+        </div>
       </div>
+
+      {menuOpen && (
+        <>
+          <button type="button" className="week-view__clip-backdrop" aria-label="Закрыть" onClick={() => setMenuOpen(false)} />
+          <div className="week-view__clip-menu" role="menu">
+            <p className="week-view__clip-status">
+              {gridClipboard
+                ? `Скопировано: ${clipKindLabel(gridClipboard.kind)} · ${gridClipboard.items.length} ${countWord(gridClipboard.items.length)}`
+                : 'Скопируйте шаблон, потом вставьте на другую неделю'}
+            </p>
+            {gridClipboard && (
+              <>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="week-view__clip-item week-view__clip-item--paste"
+                  onClick={() => {
+                    if (gridClipboard.kind === 'week') {
+                      requestPaste(
+                        { kind: 'week' },
+                        countTasksInWeek(tasks, focusDate, settings.weekStartsOn),
+                      );
+                      return;
+                    }
+                    startPick(gridClipboard.kind === 'day' ? 'paste-day' : 'paste-hour');
+                  }}
+                >
+                  <span className="week-view__clip-item-title">
+                    {gridClipboard.kind === 'week' && 'Вставить неделю сюда'}
+                    {gridClipboard.kind === 'day' && 'Вставить день…'}
+                    {gridClipboard.kind === 'hour' && 'Вставить час…'}
+                  </span>
+                  <span className="week-view__clip-item-hint">
+                    {gridClipboard.kind === 'week' && 'Заменит все дни на этом экране'}
+                    {gridClipboard.kind === 'day' && 'Нажмите день в шапке, куда положить'}
+                    {gridClipboard.kind === 'hour' && 'Нажмите слот, куда положить'}
+                  </span>
+                </button>
+                <p className="week-view__clip-heading week-view__clip-heading--sub">Или скопировать другое</p>
+              </>
+            )}
+            {!gridClipboard && (
+              <p className="week-view__clip-heading">Скопировать</p>
+            )}
+            <button type="button" role="menuitem" className="week-view__clip-item" onClick={copyWeek}>
+              <span className="week-view__clip-item-title">Эту неделю</span>
+              <span className="week-view__clip-item-hint">Все незавершённые дела с экрана</span>
+            </button>
+            <button type="button" role="menuitem" className="week-view__clip-item" onClick={() => startPick('copy-day')}>
+              <span className="week-view__clip-item-title">Один день…</span>
+              <span className="week-view__clip-item-hint">Потом нажмите Пн–Вс в шапке</span>
+            </button>
+            <button type="button" role="menuitem" className="week-view__clip-item" onClick={() => startPick('copy-hour')}>
+              <span className="week-view__clip-item-title">Один час…</span>
+              <span className="week-view__clip-item-hint">Потом нажмите нужный слот</span>
+            </button>
+          </div>
+        </>
+      )}
 
       {pendingPaste && (
         <ConfirmDialog

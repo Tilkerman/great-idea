@@ -1,8 +1,10 @@
 .calendar-canvas {
+  --chrome-overlay-h: 48px;
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
   touch-action: pan-x pan-y;
   -webkit-user-select: none;
   user-select: none;
@@ -21,6 +23,11 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  padding-top: var(--chrome-overlay-h, 48px);
+}
+
+.calendar-canvas__body--flush {
+  padding-top: 0;
 }
 
 .calendar-stage {
@@ -70,10 +77,26 @@
 
 .zoom-tabs {
   display: flex;
+  align-items: center;
   gap: 4px;
-  padding: 8px 12px;
+  box-sizing: border-box;
+  height: var(--chrome-overlay-h, 48px);
+  padding: 6px 12px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 8;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.calendar-canvas--chrome-slim .zoom-tabs,
+.calendar-canvas--chrome-slim .zoom-bar {
+  transform: translateY(-110%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .zoom-tab {
@@ -108,6 +131,12 @@
   gap: 8px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
+  position: absolute;
+  top: var(--chrome-overlay-h, 48px);
+  left: 0;
+  right: 0;
+  z-index: 8;
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .week-zoom-controls {
@@ -311,6 +340,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  position: relative;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   --week-title-scale: 1;
@@ -324,13 +354,59 @@
 }
 
 .week-view__header-row {
-  display: flex;
+  display: none;
+}
+
+.week-view__chrome-spacer {
+  height: var(--chrome-overlay-h, 48px);
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  pointer-events: none;
+}
+
+.week-view__y {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+}
+
+.week-view__sticky-head {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  min-height: 48px;
+}
+
+.week-view__days-clip {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.week-view__days-track {
+  display: flex;
+  will-change: transform;
+}
+
+.week-view__hours-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+.week-view__time-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 21;
+  width: 50px;
+  flex-shrink: 0;
 }
 
 .week-view__time-spacer {
@@ -379,8 +455,8 @@
 
 .week-view__clip-menu {
   position: absolute;
-  top: calc(100% - 2px);
-  left: 0;
+  top: calc(var(--chrome-overlay-h, 48px) + 46px);
+  left: 8px;
   z-index: 21;
   width: min(260px, calc(100vw - 24px));
   padding: 8px 0 6px;
@@ -600,14 +676,8 @@
 .week-view__time-col {
   width: 50px;
   flex-shrink: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: none;
+  overflow: visible;
   background: var(--surface);
-}
-
-.week-view__time-col::-webkit-scrollbar {
-  display: none;
 }
 
 .week-view__time-label {
@@ -672,9 +742,11 @@
 
 .week-view__grid-scroll {
   flex: 1;
-  overflow: auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x pan-y;
+  touch-action: pan-x;
 }
 
 .week-view__grid-scroll--snap {
@@ -705,6 +777,7 @@
   transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.is-pinching .week-view__y,
 .is-pinching .week-view__grid-scroll,
 .is-pinching .day-view {
   touch-action: none;
