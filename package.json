@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:pages": "BASE_PATH=/great-idea/ tsc -b && vite build",
+    "build:pages": "BASE_PATH=/great-idea/ tsc -b && BASE_PATH=/great-idea/ vite build",
     "preview": "vite preview"
   },
   "dependencies": {
