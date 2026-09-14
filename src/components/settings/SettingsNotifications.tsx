@@ -101,6 +101,7 @@ export function SettingsNotifications() {
         >
           Проверить баннером
         </button>
+        {feedback && <p className="settings-note" role="status">{feedback}</p>}
       </div>
     </div>
   );
