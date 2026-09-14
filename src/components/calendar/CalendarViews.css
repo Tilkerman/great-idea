@@ -353,35 +353,28 @@
   --week-title-scale: 0.7;
 }
 
-.week-view__header-row {
-  display: none;
-}
-
-.week-view__chrome-spacer {
+.week-view__chrome-spacer,
+.week-view__head-spacer {
   height: var(--chrome-overlay-h, 48px);
   flex-shrink: 0;
   pointer-events: none;
 }
 
-.week-view__y {
-  flex: 1;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-x pan-y;
-}
-
-.week-view__sticky-head {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  z-index: 20;
+.week-view__head-float {
+  position: absolute;
+  top: var(--chrome-overlay-h, 48px);
+  left: 0;
+  right: 0;
+  z-index: 9;
   display: flex;
   align-items: stretch;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   min-height: 48px;
+}
+
+.calendar-canvas--chrome-slim .week-view__head-float {
+  top: 0;
 }
 
 .week-view__days-clip {
@@ -393,11 +386,6 @@
 .week-view__days-track {
   display: flex;
   will-change: transform;
-}
-
-.week-view__hours-row {
-  display: flex;
-  align-items: flex-start;
 }
 
 .week-view__time-head {
@@ -676,8 +664,15 @@
 .week-view__time-col {
   width: 50px;
   flex-shrink: 0;
-  overflow: visible;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
   background: var(--surface);
+  -webkit-overflow-scrolling: touch;
+}
+
+.week-view__time-col::-webkit-scrollbar {
+  display: none;
 }
 
 .week-view__time-label {
@@ -743,10 +738,9 @@
 .week-view__grid-scroll {
   flex: 1;
   min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
 }
 
 .week-view__grid-scroll--snap {
@@ -777,7 +771,6 @@
   transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.is-pinching .week-view__y,
 .is-pinching .week-view__grid-scroll,
 .is-pinching .day-view {
   touch-action: none;
