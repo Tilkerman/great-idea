@@ -9,6 +9,8 @@
   --accent-dim: #4e8a60;
   --accent-on: #ffffff;
   --danger: #c17b7b;
+  --now: #e24b4a;
+  --now-on: #ffffff;
   --cat-work: #c9a9a6;
   --cat-work-soft: #e8d5d3;
   --cat-work-text: #4a3533;
@@ -32,6 +34,8 @@
   --accent-dim: #6ab86d;
   --accent-on: #ffffff;
   --danger: #c17b7b;
+  --now: #ff6b6a;
+  --now-on: #1a1010;
   --cat-work: #8f736f;
   --cat-work-soft: #3a2e2e;
   --cat-work-text: #f0e4e2;
@@ -145,9 +149,9 @@ select {
   cursor: pointer;
 }
 
-.btn--primary {
-  background: var(--accent);
-  color: var(--accent-on);
+.btn--primary:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .btn--ghost {

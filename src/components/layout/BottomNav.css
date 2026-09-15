@@ -22,6 +22,29 @@
   cursor: pointer;
   color: var(--text-secondary);
   font-size: 10px;
+  touch-action: manipulation;
+}
+
+.bottom-nav__item--add {
+  justify-content: center;
+  padding: 4px;
+}
+
+.bottom-nav__plus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-on);
+}
+
+.bottom-nav__plus svg {
+  display: block;
+  width: 22px;
+  height: 22px;
 }
 
 .bottom-nav__item--active {

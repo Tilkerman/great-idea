@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { useApp } from '../../context/AppContext';
 import { WEEKDAY_NAMES, WEEKDAY_SHORT } from '../../constants/categories';
-import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_COMPLETE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TIME_GROW_MAX, WEEK_ZOOM_TIME_GROW_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
+import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_COMPLETE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
 import { HourSlot } from '../tasks/HourSlot';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import {
@@ -24,6 +24,10 @@ import {
   countTasksInWeek,
 } from '../../utils/gridClipboard';
 import type { Task } from '../../types';
+import { useNow } from '../../hooks/useNow';
+import { nowInHourGrid } from '../../utils/nowIndicator';
+import { NowIndicator } from './NowIndicator';
+import './CalendarViews.css';
 
 function countWord(n: number) {
   const n10 = n % 10;
@@ -32,7 +36,6 @@ function countWord(n: number) {
   if (n10 >= 2 && n10 <= 4 && (n100 < 10 || n100 > 20)) return 'дела';
   return 'дел';
 }
-import './CalendarViews.css';
 
 type ClipPick = 'copy-day' | 'copy-hour' | 'paste-day' | 'paste-hour';
 
@@ -56,6 +59,7 @@ export function WeekView({
   const gridScrollRef = useRef<HTMLDivElement>(null);
   const timeScrollRef = useRef<HTMLDivElement>(null);
   const daysTrackRef = useRef<HTMLDivElement>(null);
+  const now = useNow();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [pick, setPick] = useState<ClipPick | null>(null);
@@ -124,13 +128,13 @@ export function WeekView({
     const daysTrack = daysTrackRef.current;
     if (!grid) return;
     const idx = Math.max(0, days.findIndex((d) => isSameDay(d, focusDate)));
-    const now = new Date();
-    const lastHour = settings.dayEndHour;
     const firstHour = settings.dayStartHour;
-    const hour = isToday(focusDate)
-      ? Math.min(lastHour, Math.max(firstHour, now.getHours()))
-      : firstHour;
-    const top = 48 + (hour - firstHour) * rowHeight;
+    const pos = nowInHourGrid(new Date(), firstHour, settings.dayEndHour);
+    const viewH = grid.clientHeight;
+    const nowY = pos ? pos.ratio * hours.length * rowHeight : 0;
+    const top = pos && isToday(focusDate)
+      ? Math.max(0, nowY - viewH / 3)
+      : 0;
     const left = idx * colWidth;
     const apply = () => {
       grid.scrollLeft = left;
@@ -145,11 +149,42 @@ export function WeekView({
     zoom,
     focusDate,
     days,
+    hours.length,
     colWidth,
     rowHeight,
     settings.dayStartHour,
     settings.dayEndHour,
   ]);
+
+  useEffect(() => {
+    if (zoom !== 'week') return;
+    const grid = gridScrollRef.current;
+    const time = timeScrollRef.current;
+    if (!grid) return;
+    const todayInWeek = days.some((d) => isToday(d));
+    const pos = nowInHourGrid(new Date(), settings.dayStartHour, settings.dayEndHour);
+    if (!todayInWeek || !pos) return;
+    let done = false;
+    const apply = () => {
+      if (done || grid.clientHeight < 48) return;
+      const nowY = pos.ratio * hours.length * rowHeight;
+      const top = Math.max(0, nowY - grid.clientHeight / 3);
+      grid.scrollTop = top;
+      if (time) time.scrollTop = top;
+      done = true;
+    };
+    apply();
+    const frame = requestAnimationFrame(apply);
+    const late = window.setTimeout(apply, 120);
+    const ro = new ResizeObserver(apply);
+    ro.observe(grid);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(late);
+      ro.disconnect();
+    };
+    // rowHeight из замыкания: щипок не должен снова прыгать к «сейчас».
+  }, [zoom, focusDate, days, hours.length, settings.dayStartHour, settings.dayEndHour]);
 
   const finishCopy = (clip: ReturnType<typeof copyWeekClipboard>, emptyHint: string, filledHint: string) => {
     setGridClipboard(clip);
@@ -247,17 +282,12 @@ export function WeekView({
 
   const showFullWeekday = weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
   const gridWidth = colWidth * days.length;
-  const timeT = Math.max(0, Math.min(weekZoom, WEEK_ZOOM_TIME_GROW_MAX) - WEEK_ZOOM_TIME_GROW_MIN);
-  const timeScaleY = 1.22 + timeT * 1.1;
-  const timeFontPx = 12 + timeT * 10;
   const pickDay = pick === 'copy-day' || pick === 'paste-day';
   const pickHour = pick === 'copy-hour' || pick === 'paste-hour';
 
   const style = {
     '--week-col-width': `${colWidth}px`,
     '--week-row-height': `${rowHeight}px`,
-    '--week-time-y': String(timeScaleY),
-    '--week-time-size': `${timeFontPx}px`,
   } as CSSProperties;
 
   return (
@@ -350,8 +380,6 @@ export function WeekView({
           ref={timeScrollRef}
           onScroll={() => syncScroll('time')}
         >
-          <div className="week-view__chrome-spacer" aria-hidden />
-          <div className="week-view__head-spacer" aria-hidden />
           {hours.map((h) => {
             const { start, end } = hourRangeLabels(h);
             return (
@@ -368,8 +396,6 @@ export function WeekView({
           ref={gridScrollRef}
           onScroll={() => syncScroll('grid')}
         >
-          <div className="week-view__chrome-spacer" style={{ width: gridWidth }} aria-hidden />
-          <div className="week-view__head-spacer" style={{ width: gridWidth }} aria-hidden />
           <div className="week-view__grid" style={{ width: gridWidth }}>
             {days.map((day) => {
               const when = isToday(day) ? 'today' : isPastDay(day) ? 'past' : null;
@@ -414,6 +440,14 @@ export function WeekView({
                     </div>
                   );
                 })}
+                {when === 'today' && (zoom !== 'day' || isToday(focusDate)) && (
+                  <NowIndicator
+                    now={now}
+                    dayStartHour={settings.dayStartHour}
+                    dayEndHour={settings.dayEndHour}
+                    showLabel
+                  />
+                )}
               </div>
               );
             })}

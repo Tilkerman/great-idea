@@ -3,11 +3,12 @@ import { createPortal } from 'react-dom';
 import { useApp } from '../../context/AppContext';
 import { CATEGORY_META, REMINDER_OFFSET_OPTIONS } from '../../constants/categories';
 import type { TaskCategory } from '../../types';
-import { getHoursRange, pad, toLocalDateString } from '../../utils/date';
+import { getHoursRange, pad } from '../../utils/date';
 import {
   getDateStrFromTask,
   getHourFromTask,
   getTasksInHour,
+  isUnscheduledTask,
   MAX_TASKS_PER_HOUR,
 } from '../../utils/hourSlot';
 import './TaskSheet.css';
@@ -37,7 +38,7 @@ export function TaskSheet() {
   const [important, setImportant] = useState(false);
   const [reminderOffset, setReminderOffset] = useState<number | null>(null);
   const [slotDate, setSlotDate] = useState('');
-  const [slotHour, setSlotHour] = useState(0);
+  const [slotHour, setSlotHour] = useState<number | null>(null);
   const [whenOpen, setWhenOpen] = useState(false);
   const [error, setError] = useState('');
   const [copyHint, setCopyHint] = useState('');
@@ -50,9 +51,15 @@ export function TaskSheet() {
       setCategory(editingTask.category);
       setImportant(editingTask.important);
       setReminderOffset(editingTask.reminderOffsetMinutes ?? null);
-      setSlotDate(getDateStrFromTask(editingTask));
-      setSlotHour(getHourFromTask(editingTask));
-      setWhenOpen(false);
+      if (isUnscheduledTask(editingTask)) {
+        setSlotDate('');
+        setSlotHour(null);
+        setWhenOpen(true);
+      } else {
+        setSlotDate(getDateStrFromTask(editingTask));
+        setSlotHour(getHourFromTask(editingTask));
+        setWhenOpen(false);
+      }
       setError('');
       setCopyHint('');
     }
@@ -76,7 +83,7 @@ export function TaskSheet() {
 
   const hourOptions = useMemo(() => {
     const hours = getHoursRange(settings.dayStartHour, settings.dayEndHour);
-    if (!hours.includes(slotHour)) hours.push(slotHour);
+    if (slotHour !== null && !hours.includes(slotHour)) hours.push(slotHour);
     return hours.sort((a, b) => a - b);
   }, [settings.dayStartHour, settings.dayEndHour, slotHour]);
 
@@ -87,8 +94,10 @@ export function TaskSheet() {
   const showClipActions = isNew || !isCompleted;
   const canCopy = !isNew && title.trim().length > 0;
   const canPaste = isNew && taskClipboard !== null;
-  const targetCount = getTasksInHour(tasks, slotDate, slotHour)
-    .filter((t) => t.id !== editingTask.id).length;
+  const slotPicked = Boolean(slotDate) && slotHour !== null;
+  const targetCount = slotPicked
+    ? getTasksInHour(tasks, slotDate, slotHour).filter((t) => t.id !== editingTask.id).length
+    : 0;
   const afterAdd = targetCount + 1;
   const hourFull = afterAdd > MAX_TASKS_PER_HOUR;
 
@@ -108,6 +117,11 @@ export function TaskSheet() {
 
   const saveToSlot = async (status?: 'completed') => {
     if (!title.trim()) return;
+    if (!slotPicked || slotHour === null) {
+      setWhenOpen(true);
+      setError('Укажите дату и час');
+      return;
+    }
     if (hourFull) {
       setError('В этом часе уже 5 дел — выберите другой час или день');
       return;
@@ -150,13 +164,16 @@ export function TaskSheet() {
   };
 
   const slotInfo = (() => {
+    if (!slotPicked) return 'Выберите дату и час, иначе сохранить нельзя';
     if (hourFull) return 'Этот час заполнен (5/5)';
     if (afterAdd <= 1) return '1 дело на весь час (60 мин)';
     if (afterAdd <= 4) return `${afterAdd} дела × 15 мин в этом часе`;
     return `${afterAdd} дел × 12 мин в этом часе`;
   })();
 
-  const whenLabel = slotDate ? formatSheetWhen(slotDate, slotHour) : '';
+  const whenLabel = slotPicked && slotHour !== null
+    ? formatSheetWhen(slotDate, slotHour)
+    : 'Дата и час не выбраны';
 
   return createPortal(
     <div className="sheet-overlay" onClick={close}>
@@ -176,7 +193,7 @@ export function TaskSheet() {
             onClick={() => setWhenOpen((v) => !v)}
             aria-expanded={whenOpen}
           >
-            {whenOpen ? 'Свернуть' : 'Изменить'}
+            {whenOpen ? 'Свернуть' : (slotPicked ? 'Изменить' : 'Указать')}
           </button>
           {showClipActions && (
             <>
@@ -210,7 +227,7 @@ export function TaskSheet() {
                   className="task-sheet__select"
                   value={slotDate}
                   onChange={(e) => {
-                    setSlotDate(e.target.value || toLocalDateString(new Date()));
+                    setSlotDate(e.target.value);
                     setError('');
                   }}
                 />
@@ -221,12 +238,14 @@ export function TaskSheet() {
               <span className="select-wrap select-wrap--compact">
                 <select
                   className="task-sheet__select"
-                  value={slotHour}
+                  value={slotHour === null ? '' : String(slotHour)}
                   onChange={(e) => {
-                    setSlotHour(Number(e.target.value));
+                    const v = e.target.value;
+                    setSlotHour(v === '' ? null : Number(v));
                     setError('');
                   }}
                 >
+                  <option value="">Час</option>
                   {hourOptions.map((h) => (
                     <option key={h} value={h}>{pad(h)}:00</option>
                   ))}
@@ -296,7 +315,12 @@ export function TaskSheet() {
         </label>
 
         <div className="task-sheet__actions">
-          <button type="button" className="btn btn--primary" onClick={() => { void saveToSlot(); }}>
+          <button
+            type="button"
+            className="btn btn--primary"
+            disabled={!title.trim() || !slotPicked}
+            onClick={() => { void saveToSlot(); }}
+          >
             {isNew ? 'Создать' : 'Сохранить'}
           </button>
           {!isNew && (

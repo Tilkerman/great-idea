@@ -87,6 +87,27 @@ export function createDraftTask(day: Date, hour: number, existing: Task[]): Task
   };
 }
 
+export function createInboxDraft(): Task {
+  const now = new Date().toISOString();
+  return {
+    id: newTaskId(),
+    title: '',
+    category: 'work',
+    startAt: '',
+    endAt: '',
+    status: 'active',
+    important: false,
+    reminderOffsetMinutes: null,
+    order: 1,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+export function isUnscheduledTask(task: Task) {
+  return !task.startAt;
+}
+
 export function canAddToHour(existingCount: number) {
   return existingCount < MAX_TASKS_PER_HOUR;
 }

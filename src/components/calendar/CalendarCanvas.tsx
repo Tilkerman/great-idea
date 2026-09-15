@@ -91,7 +91,11 @@ export function CalendarCanvas() {
 
   return (
     <div
-      className={`calendar-canvas ${pinching ? 'is-pinching' : ''}`}
+      className={[
+        'calendar-canvas',
+        pinching && 'is-pinching',
+        showDevZoomBar && 'calendar-canvas--dev-zoom',
+      ].filter(Boolean).join(' ')}
       ref={ref}
     >
       <div className="zoom-tabs">

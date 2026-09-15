@@ -1,5 +1,7 @@
 .calendar-canvas {
   --chrome-overlay-h: 48px;
+  --zoom-bar-h: 0px;
+  --chrome-stack-h: calc(var(--chrome-overlay-h) + var(--zoom-bar-h));
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -125,10 +127,16 @@
   background: var(--surface);
 }
 
+.calendar-canvas--dev-zoom {
+  --zoom-bar-h: 40px;
+}
+
 .zoom-bar {
   display: flex;
   align-items: center;
   gap: 8px;
+  box-sizing: border-box;
+  height: var(--zoom-bar-h, 40px);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: absolute;
@@ -341,50 +349,43 @@
   flex: 1;
   min-height: 0;
   position: relative;
+  overflow: hidden;
+  padding-top: var(--chrome-stack-h, var(--chrome-overlay-h, 48px));
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   --week-title-scale: 1;
   --week-title-size: clamp(8px, calc(var(--week-col-width) * 0.042 * var(--week-title-scale)), calc(11px * var(--week-title-scale)));
   --week-desc-size: calc(var(--week-title-size) * 0.82);
   --week-badge-size: calc(var(--week-title-size) * 1.15);
+  --week-day-head-h: 60px;
 }
 
 .week-view--sm-title {
   --week-title-scale: 0.7;
 }
 
-.week-view__chrome-spacer,
-.week-view__head-spacer {
-  height: var(--chrome-overlay-h, 48px);
-  flex-shrink: 0;
-  pointer-events: none;
-}
-
 .week-view__head-float {
-  position: absolute;
-  top: var(--chrome-overlay-h, 48px);
-  left: 0;
-  right: 0;
-  z-index: 9;
+  position: relative;
+  z-index: 30;
+  flex-shrink: 0;
   display: flex;
   align-items: stretch;
+  box-sizing: border-box;
+  height: var(--week-day-head-h, 60px);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  min-height: 48px;
-}
-
-.calendar-canvas--chrome-slim .week-view__head-float {
-  top: 0;
 }
 
 .week-view__days-clip {
   flex: 1;
   min-width: 0;
+  height: 100%;
   overflow: hidden;
 }
 
 .week-view__days-track {
   display: flex;
+  height: 100%;
   will-change: transform;
 }
 
@@ -395,6 +396,7 @@
   z-index: 21;
   width: 50px;
   flex-shrink: 0;
+  height: 100%;
 }
 
 .week-view__time-spacer {
@@ -443,7 +445,7 @@
 
 .week-view__clip-menu {
   position: absolute;
-  top: calc(var(--chrome-overlay-h, 48px) + 46px);
+  top: calc(var(--chrome-stack-h, var(--chrome-overlay-h, 48px)) + var(--week-day-head-h, 60px) - 2px);
   left: 8px;
   z-index: 21;
   width: min(260px, calc(100vw - 24px));
@@ -572,8 +574,13 @@
 
 .week-view__day-head {
   width: var(--week-col-width, 72px);
+  height: 100%;
   flex-shrink: 0;
-  padding: 6px 2px 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 2px;
   text-align: center;
   box-sizing: border-box;
   border-left: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
@@ -605,7 +612,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  margin-top: 1px;
+  margin-top: 0;
   border-radius: 50%;
   background: var(--accent);
   color: var(--accent-on);
@@ -652,6 +659,10 @@
 
 .day-view--past {
   opacity: 0.7;
+}
+
+.calendar-canvas--chrome-slim .week-view {
+  padding-top: 0;
 }
 
 .week-view__body {
@@ -756,11 +767,59 @@
 }
 
 .week-view__col {
+  position: relative;
   width: var(--week-col-width, 72px);
   flex-shrink: 0;
   border-left: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
   box-sizing: border-box;
   transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.now-indicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  height: 0;
+  pointer-events: none;
+}
+
+.now-indicator__dot {
+  position: absolute;
+  left: 2px;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--now);
+  box-shadow: 0 0 0 1px var(--surface);
+  transform: translateY(-50%);
+}
+
+.now-indicator__line {
+  position: absolute;
+  left: 8px;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: var(--now);
+  transform: translateY(-50%);
+}
+
+.now-indicator__label {
+  position: absolute;
+  left: 10px;
+  bottom: 4px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--now);
+  color: var(--now-on);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .week-view__slot {

@@ -19,10 +19,6 @@ export const WEEK_ZOOM_COMPLETE_MIN = 0.15;
 export const WEEK_ZOOM_DESC_MIN = 0.25;
 /** С этого масштаба в неполном часе видна полоска «добавить» */
 export const WEEK_ZOOM_ADD_MIN = 0.2;
-/** С этого масштаба цифры часов начинают расти в высоту */
-export const WEEK_ZOOM_TIME_GROW_MIN = 0.5;
-/** Дальше этого цифры часов не увеличиваются */
-export const WEEK_ZOOM_TIME_GROW_MAX = 0.75;
 /** С этого масштаба в шапке недели полное имя дня */
 export const WEEK_ZOOM_WEEKDAY_FULL_MIN = 0.65;
 export const TIME_COL_WIDTH = 50;
