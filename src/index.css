@@ -149,6 +149,11 @@ select {
   cursor: pointer;
 }
 
+.btn--primary {
+  background: var(--accent);
+  color: var(--accent-on);
+}
+
 .btn--primary:disabled {
   opacity: 0.4;
   cursor: default;
