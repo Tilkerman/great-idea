@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../../context/AppContext';
 import { CATEGORY_META, REMINDER_OFFSET_OPTIONS } from '../../constants/categories';
 import type { TaskCategory } from '../../types';
@@ -63,6 +64,15 @@ export function TaskSheet() {
     el.style.height = 'auto';
     el.style.height = `${Math.max(el.scrollHeight, 36)}px`;
   }, [description, sheetOpen, editingTask]);
+
+  useEffect(() => {
+    if (!sheetOpen || !editingTask) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sheetOpen, editingTask]);
 
   const hourOptions = useMemo(() => {
     const hours = getHoursRange(settings.dayStartHour, settings.dayEndHour);
@@ -148,61 +158,63 @@ export function TaskSheet() {
 
   const whenLabel = slotDate ? formatSheetWhen(slotDate, slotHour) : '';
 
-  return (
+  return createPortal(
     <div className="sheet-overlay" onClick={close}>
       <div className="task-sheet" onClick={(e) => e.stopPropagation()}>
         <div className="task-sheet__header">
-          <div className="task-sheet__header-row">
-            <span className="task-sheet__time">{whenLabel || 'Дата и час'}</span>
-            <button
-              type="button"
-              className="task-sheet__link"
-              onClick={() => setWhenOpen((v) => !v)}
-              aria-expanded={whenOpen}
-            >
-              {whenOpen ? 'Свернуть' : 'Изменить'}
-            </button>
-            {showClipActions && (
-              <>
-                <button
-                  type="button"
-                  className="task-sheet__link"
-                  disabled={!canCopy}
-                  onClick={copyTask}
-                >
-                  {copyHint || 'Копировать'}
-                </button>
-                <button
-                  type="button"
-                  className={`task-sheet__link ${canPaste ? 'task-sheet__link--active' : ''}`}
-                  disabled={!canPaste}
-                  onClick={pasteTask}
-                >
-                  Вставить
-                </button>
-              </>
-            )}
-          </div>
+          <span className="task-sheet__time">{whenLabel || 'Дата и час'}</span>
           <button type="button" className="task-sheet__close" onClick={close} aria-label="Закрыть">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
               <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
             </svg>
           </button>
         </div>
+        <div className="task-sheet__tools">
+          <button
+            type="button"
+            className="task-sheet__link"
+            onClick={() => setWhenOpen((v) => !v)}
+            aria-expanded={whenOpen}
+          >
+            {whenOpen ? 'Свернуть' : 'Изменить'}
+          </button>
+          {showClipActions && (
+            <>
+              <button
+                type="button"
+                className="task-sheet__link"
+                disabled={!canCopy}
+                onClick={copyTask}
+              >
+                {copyHint || 'Копировать'}
+              </button>
+              <button
+                type="button"
+                className={`task-sheet__link ${canPaste ? 'task-sheet__link--active' : ''}`}
+                disabled={!canPaste}
+                onClick={pasteTask}
+              >
+                Вставить
+              </button>
+            </>
+          )}
+        </div>
 
         {whenOpen && (
           <div className="task-sheet__when">
             <label className="task-sheet__field task-sheet__field--inline">
               Дата
-              <input
-                type="date"
-                className="task-sheet__select"
-                value={slotDate}
-                onChange={(e) => {
-                  setSlotDate(e.target.value || toLocalDateString(new Date()));
-                  setError('');
-                }}
-              />
+              <span className="task-sheet__date-wrap">
+                <input
+                  type="date"
+                  className="task-sheet__select"
+                  value={slotDate}
+                  onChange={(e) => {
+                    setSlotDate(e.target.value || toLocalDateString(new Date()));
+                    setError('');
+                  }}
+                />
+              </span>
             </label>
             <label className="task-sheet__field task-sheet__field--inline">
               Час
@@ -300,6 +312,7 @@ export function TaskSheet() {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
