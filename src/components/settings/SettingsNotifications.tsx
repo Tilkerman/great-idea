@@ -7,6 +7,7 @@ import {
   showTiliNotification,
 } from '../../utils/notifications';
 import { isAppleMobile, isStandaloneApp, TILI_PUBLIC_URL } from '../../utils/pwaInstall';
+import { cloudPushConfigured, subscribeTiliPush } from '../../utils/webPush';
 import './Settings.css';
 
 export function SettingsNotifications() {
@@ -26,7 +27,14 @@ export function SettingsNotifications() {
       setPerm(next);
       if (next === 'granted') {
         updateSettings({ notificationsEnabled: true });
-        setFeedback('Разрешение есть. Нажми «Проверить», должен прийти баннер.');
+        const sub = await subscribeTiliPush();
+        if (sub === 'ok') {
+          setFeedback('Разрешение есть, ящик для писем Apple открыт. Нажми «Проверить».');
+        } else if (sub === 'skipped') {
+          setFeedback('Разрешение есть. Нажми «Проверить». Почтальон в Яндексе ещё не подключён — закрытое приложение пока молчит.');
+        } else {
+          setFeedback('Разрешение есть, но ящик Apple не открылся. Нажми «Проверить» — локальный баннер всё равно может прийти.');
+        }
       } else if (next === 'denied') {
         updateSettings({ notificationsEnabled: false });
         setFeedback('Запрещено в настройках iPhone: Настройки → Уведомления → TiLi.');
@@ -64,10 +72,10 @@ export function SettingsNotifications() {
       </header>
       <div className="settings-form">
         <p className="settings-note">
-          На iPhone баннер приходит только из иконки на Домой и с сайта
-          {' '}{TILI_PUBLIC_URL}. Пока приложение открыто (или недавно в памяти),
-          сработают напоминания по делам. Если смахнуть TiLi с экрана приложений —
-          без сервера система баннер не пришлёт; это следующий шаг.
+          На iPhone баннер — только с иконки на Домой и с сайта
+          {' '}{TILI_PUBLIC_URL}. Если календарь открыт, напоминание придёт само.
+          Чтобы стучаться, когда приложение закрыто, нужен почтальон в Яндексе.
+          {cloudPushConfigured() ? ' Он уже указан в сборке.' : ' Его ещё нет — это следующий шаг.'}
         </p>
 
         {ios && !installed && (

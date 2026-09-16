@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { notificationPermission, showTiliNotification } from '../utils/notifications';
+import { cloudPushConfigured, syncCloudReminders } from '../utils/webPush';
 
 const MAX_DELAY_MS = 12 * 60 * 60 * 1000;
 
@@ -11,6 +12,10 @@ export function useTaskReminders() {
   useEffect(() => {
     if (!ready || !settings.notificationsEnabled) return;
     if (notificationPermission() !== 'granted') return;
+
+    if (cloudPushConfigured()) {
+      void syncCloudReminders(tasks, settings.reminderBeforeMin);
+    }
 
     const timers: number[] = [];
     const now = Date.now();

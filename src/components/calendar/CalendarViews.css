@@ -373,7 +373,7 @@
   box-sizing: border-box;
   height: var(--week-day-head-h, 60px);
   background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 0.5px solid var(--grid);
 }
 
 .week-view__days-clip {
@@ -583,7 +583,7 @@
   padding: 4px 2px;
   text-align: center;
   box-sizing: border-box;
-  border-left: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+  border-left: 0.5px solid var(--grid);
   transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -695,7 +695,7 @@
   gap: 0;
   box-sizing: border-box;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 0.5px solid var(--grid);
   padding: 0 2px;
   font-family: "Avenir Next Condensed", "Arial Narrow", "Franklin Gothic Medium", "Helvetica Neue", sans-serif;
   font-weight: 600;
@@ -770,7 +770,7 @@
   position: relative;
   width: var(--week-col-width, 72px);
   flex-shrink: 0;
-  border-left: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+  border-left: 0.5px solid var(--grid);
   box-sizing: border-box;
   transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -824,8 +824,8 @@
 
 .week-view__slot {
   height: var(--week-row-height, 96px);
-  border-bottom: 1px solid var(--border);
-  padding: 3px;
+  border-bottom: 0.5px solid var(--grid);
+  padding: 0;
   box-sizing: border-box;
   transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
