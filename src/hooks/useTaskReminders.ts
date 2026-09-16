@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { notificationPermission, showTiliNotification } from '../utils/notifications';
+import { notificationPermission, REMINDER_NOTICE_BODY, showTiliNotification } from '../utils/notifications';
 import { cloudPushConfigured, syncCloudReminders } from '../utils/webPush';
+import { isUnscheduledTask } from '../utils/hourSlot';
 
 const MAX_DELAY_MS = 12 * 60 * 60 * 1000;
 
@@ -21,7 +22,7 @@ export function useTaskReminders() {
     const now = Date.now();
 
     for (const task of tasks) {
-      if (task.status === 'completed') continue;
+      if (task.status === 'completed' || isUnscheduledTask(task)) continue;
       const mins = task.reminderOffsetMinutes ?? settings.reminderBeforeMin;
       if (mins < 0) continue;
       const at = new Date(task.startAt).getTime() - mins * 60_000;
@@ -32,10 +33,7 @@ export function useTaskReminders() {
       const id = window.setTimeout(() => {
         fired.current.add(key);
         const title = task.title.trim() || 'Дело в календаре';
-        const when = new Date(task.startAt);
-        const hh = String(when.getHours()).padStart(2, '0');
-        const mm = String(when.getMinutes()).padStart(2, '0');
-        void showTiliNotification(title, `Начало в ${hh}:${mm}`, `task-${task.id}`);
+        void showTiliNotification(title, REMINDER_NOTICE_BODY, `task-${task.id}`);
       }, delay);
       timers.push(id);
     }

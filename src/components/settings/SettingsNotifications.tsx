@@ -4,6 +4,7 @@ import {
   notificationPermission,
   notificationsBlockedReason,
   requestNotificationPermission,
+  REMINDER_NOTICE_BODY,
   showTiliNotification,
 } from '../../utils/notifications';
 import { isAppleMobile, isStandaloneApp, TILI_PUBLIC_URL } from '../../utils/pwaInstall';
@@ -54,7 +55,7 @@ export function SettingsNotifications() {
         setFeedback('Сначала нажми «Разрешить уведомления».');
         return;
       }
-      await showTiliNotification('TiLi', 'Если это видно на экране — уведомления на телефоне работают.', 'tili-test');
+      await showTiliNotification('TiLi', REMINDER_NOTICE_BODY, 'tili-test');
       setFeedback('Баннер отправлен. Если его нет — открой TiLi с Домой, не из Safari.');
     } catch {
       setFeedback('Не удалось показать уведомление.');

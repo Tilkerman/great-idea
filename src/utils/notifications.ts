@@ -1,5 +1,8 @@
 import { isAppleMobile, isStandaloneApp } from './pwaInstall';
 
+export const REMINDER_NOTICE_BODY =
+  'В ближайший час вас ждёт важная задача. Обратите на неё внимание!';
+
 export function notificationsSupported() {
   return typeof window !== 'undefined'
     && window.isSecureContext

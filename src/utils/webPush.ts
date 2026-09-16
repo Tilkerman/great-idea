@@ -1,5 +1,6 @@
 import { isUnscheduledTask } from './hourSlot';
 import { newTaskId } from './id';
+import { REMINDER_NOTICE_BODY } from './notifications';
 import type { Task } from '../types';
 
 const DEVICE_KEY = 'tili-push-device';
@@ -75,14 +76,11 @@ export async function syncCloudReminders(
       if (mins < 0) return null;
       const fireAt = new Date(task.startAt).getTime() - mins * 60_000;
       if (fireAt <= now) return null;
-      const when = new Date(task.startAt);
-      const hh = String(when.getHours()).padStart(2, '0');
-      const mm = String(when.getMinutes()).padStart(2, '0');
       return {
         id: task.id,
         fireAt,
         title: task.title.trim() || 'Дело в календаре',
-        body: `Начало в ${hh}:${mm}`,
+        body: REMINDER_NOTICE_BODY,
       };
     })
     .filter((row): row is NonNullable<typeof row> => row !== null);
