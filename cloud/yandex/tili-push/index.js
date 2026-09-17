@@ -95,7 +95,12 @@ async function sendDue(devices) {
       try {
         await webpush.sendNotification(
           device.subscription,
-          JSON.stringify({ title: row.title, body: row.body, tag: `task-${row.id}` }),
+          JSON.stringify({
+            title: row.title,
+            body: row.body,
+            tag: `task-${row.id}`,
+            taskId: row.id,
+          }),
         );
         sent += 1;
       } catch (err) {

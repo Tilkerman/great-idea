@@ -35,11 +35,13 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
 
 export async function showTiliNotification(title: string, body: string, tag = 'tili') {
   const icon = `${import.meta.env.BASE_URL}pwa-192.png`;
+  const taskId = tag.startsWith('task-') ? tag.slice(5) : '';
   const options: NotificationOptions = {
     body,
     icon,
     tag,
     silent: false,
+    data: { taskId },
   };
   const reg = await navigator.serviceWorker?.ready.catch(() => undefined);
   if (reg?.showNotification) {
@@ -50,5 +52,8 @@ export async function showTiliNotification(title: string, body: string, tag = 't
   n.onclick = () => {
     window.focus();
     n.close();
+    if (taskId) {
+      window.dispatchEvent(new CustomEvent('tili-open-task', { detail: taskId }));
+    }
   };
 }

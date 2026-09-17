@@ -19,6 +19,7 @@ import { SettingsStatistics } from './components/settings/SettingsStatistics';
 import { SettingsInstall } from './components/settings/SettingsInstall';
 import { SettingsNotifications } from './components/settings/SettingsNotifications';
 import { useTaskReminders } from './hooks/useTaskReminders';
+import { useOpenTaskFromNotification } from './hooks/useOpenTaskFromNotification';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
@@ -40,6 +41,7 @@ function DeleteConfirm() {
 function AppRouter() {
   const { ready, screen } = useApp();
   useTaskReminders();
+  useOpenTaskFromNotification();
 
   if (!ready) {
     return <div className="app-loading">Загрузка TiLi…</div>;
