@@ -1,7 +1,18 @@
 const webpush = require('web-push');
+const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const ORIGIN = 'https://tilkerman.github.io';
-const devices = new Map();
+const BUCKET = process.env.S3_BUCKET || 'tili-push-box';
+const FILE = 'devices.json';
+
+const s3 = new S3Client({
+  region: 'ru-central1',
+  endpoint: 'https://storage.yandexcloud.net',
+  credentials: {
+    accessKeyId: process.env.S3_KEY,
+    secretAccessKey: process.env.S3_SECRET,
+  },
+});
 
 function corsHeaders() {
   return {
@@ -42,6 +53,27 @@ function routeOf(event, body) {
   return 'health';
 }
 
+async function loadDevices() {
+  try {
+    const out = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: FILE }));
+    const text = await out.Body.transformToString();
+    const data = JSON.parse(text);
+    return data && typeof data === 'object' ? data : {};
+  } catch (err) {
+    if (err.name === 'NoSuchKey' || err.$metadata?.httpStatusCode === 404) return {};
+    throw err;
+  }
+}
+
+async function saveDevices(devices) {
+  await s3.send(new PutObjectCommand({
+    Bucket: BUCKET,
+    Key: FILE,
+    Body: JSON.stringify(devices),
+    ContentType: 'application/json',
+  }));
+}
+
 function configureVapid() {
   const publicKey = process.env.VAPID_PUBLIC;
   const privateKey = process.env.VAPID_PRIVATE;
@@ -51,11 +83,11 @@ function configureVapid() {
   return true;
 }
 
-async function sendDue() {
+async function sendDue(devices) {
   if (!configureVapid()) return { sent: 0, error: 'no-vapid' };
   const now = Date.now();
   let sent = 0;
-  for (const device of devices.values()) {
+  for (const device of Object.values(devices)) {
     if (!device.subscription) continue;
     const due = (device.reminders || []).filter((row) => row.fireAt <= now);
     device.reminders = (device.reminders || []).filter((row) => row.fireAt > now);
@@ -63,16 +95,12 @@ async function sendDue() {
       try {
         await webpush.sendNotification(
           device.subscription,
-          JSON.stringify({
-            title: row.title,
-            body: row.body,
-            tag: `task-${row.id}`,
-          }),
+          JSON.stringify({ title: row.title, body: row.body, tag: `task-${row.id}` }),
         );
         sent += 1;
       } catch (err) {
         if (err.statusCode === 404 || err.statusCode === 410) {
-          devices.delete(device.deviceId);
+          delete devices[device.deviceId];
           break;
         }
       }
@@ -82,8 +110,11 @@ async function sendDue() {
 }
 
 module.exports.handler = async function (event) {
+  const devices = await loadDevices();
+
   if (Array.isArray(event.messages)) {
-    const result = await sendDue();
+    const result = await sendDue(devices);
+    await saveDevices(devices);
     return reply(200, { ok: true, ...result });
   }
 
@@ -94,7 +125,7 @@ module.exports.handler = async function (event) {
   const route = routeOf(event, body);
 
   if (method === 'GET' || route === 'health') {
-    return reply(200, { ok: true, service: 'tili-push', devices: devices.size });
+    return reply(200, { ok: true, service: 'tili-push', devices: Object.keys(devices).length });
   }
 
   if (route === 'subscribe') {
@@ -103,25 +134,28 @@ module.exports.handler = async function (event) {
     if (!deviceId || !subscription || !subscription.endpoint) {
       return reply(400, { ok: false, error: 'bad-subscribe' });
     }
-    const prev = devices.get(deviceId) || { deviceId, reminders: [] };
+    const prev = devices[deviceId] || { deviceId, reminders: [] };
     prev.subscription = subscription;
-    devices.set(deviceId, prev);
+    devices[deviceId] = prev;
+    await saveDevices(devices);
     return reply(200, { ok: true });
   }
 
   if (route === 'reminders') {
     const deviceId = String(body.deviceId || '');
     if (!deviceId) return reply(400, { ok: false, error: 'no-device' });
-    const prev = devices.get(deviceId) || { deviceId, subscription: null, reminders: [] };
+    const prev = devices[deviceId] || { deviceId, subscription: null, reminders: [] };
     prev.reminders = Array.isArray(body.reminders) ? body.reminders : [];
-    devices.set(deviceId, prev);
+    devices[deviceId] = prev;
+    await saveDevices(devices);
     return reply(200, { ok: true, count: prev.reminders.length });
   }
 
   if (route === 'tick') {
-    const result = await sendDue();
+    const result = await sendDue(devices);
+    await saveDevices(devices);
     return reply(200, { ok: true, ...result });
   }
 
-  return reply(200, { ok: true, service: 'tili-push' });
+  return reply(200, { ok: true, service: 'tili-push', devices: Object.keys(devices).length });
 };
