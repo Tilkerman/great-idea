@@ -3,12 +3,11 @@ import { useApp } from '../../context/AppContext';
 import {
   notificationPermission,
   notificationsBlockedReason,
-  requestNotificationPermission,
   REMINDER_NOTICE_BODY,
   showTiliNotification,
 } from '../../utils/notifications';
 import { isAppleMobile, isStandaloneApp, TILI_PUBLIC_URL } from '../../utils/pwaInstall';
-import { cloudPushConfigured, subscribeTiliPush } from '../../utils/webPush';
+import { enablePushFromGesture } from '../../utils/enablePush';
 import './Settings.css';
 
 export function SettingsNotifications() {
@@ -24,21 +23,18 @@ export function SettingsNotifications() {
     setFeedback(null);
     setBusy(true);
     try {
-      const next = await requestNotificationPermission();
-      setPerm(next);
-      if (next === 'granted') {
+      const result = await enablePushFromGesture();
+      setPerm(notificationPermission());
+      if (result === 'granted') {
         updateSettings({ notificationsEnabled: true });
-        const sub = await subscribeTiliPush();
-        if (sub === 'ok') {
-          setFeedback('Разрешение есть, ящик для писем Apple открыт. Нажми «Проверить».');
-        } else if (sub === 'skipped') {
-          setFeedback('Разрешение есть. Нажми «Проверить». Почтальон в Яндексе ещё не подключён — закрытое приложение пока молчит.');
-        } else {
-          setFeedback('Разрешение есть, но ящик Apple не открылся. Нажми «Проверить» — локальный баннер всё равно может прийти.');
-        }
-      } else if (next === 'denied') {
+        setFeedback('Разрешение есть. Нажми «Проверить», или просто поставь время в карточке дела.');
+      } else if (result === 'denied') {
         updateSettings({ notificationsEnabled: false });
-        setFeedback('Запрещено в настройках iPhone: Настройки → Уведомления → TiLi.');
+        setFeedback('Запрещено в настройках телефона: Уведомления → TiLi.');
+      } else if (result === 'blocked') {
+        setFeedback(blocked ?? 'Сейчас система не даст запросить разрешение.');
+      } else if (result === 'unsupported') {
+        setFeedback('Этот браузер не умеет уведомления.');
       } else {
         setFeedback('Запрос закрыт без разрешения.');
       }
@@ -74,9 +70,9 @@ export function SettingsNotifications() {
       <div className="settings-form">
         <p className="settings-note">
           На iPhone баннер — только с иконки на Домой и с сайта
-          {' '}{TILI_PUBLIC_URL}. Если календарь открыт, напоминание придёт само.
-          Чтобы стучаться, когда приложение закрыто, нужен почтальон в Яндексе.
-          {cloudPushConfigured() ? ' Он уже указан в сборке.' : ' Его ещё нет — это следующий шаг.'}
+          {' '}{TILI_PUBLIC_URL}. Достаточно выбрать время в карточке дела
+          («За 15 минут» и т.д.) — приложение само спросит телефон.
+          Эта страница нужна, если хочешь проверить баннер или разрешение уже запретили.
         </p>
 
         {ios && !installed && (

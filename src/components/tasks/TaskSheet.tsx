@@ -11,6 +11,8 @@ import {
   isUnscheduledTask,
   MAX_TASKS_PER_HOUR,
 } from '../../utils/hourSlot';
+import { enablePushFromGesture } from '../../utils/enablePush';
+import { notificationsBlockedReason } from '../../utils/notifications';
 import './TaskSheet.css';
 
 function parseLocalDate(value: string): Date {
@@ -28,7 +30,7 @@ function formatSheetWhen(dateStr: string, hour: number): string {
 export function TaskSheet() {
   const {
     sheetOpen, setSheetOpen, editingTask, setEditingTask,
-    tasks, placeTask, requestDelete, settings,
+    tasks, placeTask, requestDelete, settings, updateSettings,
     taskClipboard, copyTaskToClipboard,
   } = useApp();
 
@@ -297,7 +299,22 @@ export function TaskSheet() {
               value={reminderOffset === null ? '' : String(reminderOffset)}
               onChange={(e) => {
                 const v = e.target.value;
-                setReminderOffset(v === '' ? null : Number(v));
+                const next = v === '' ? null : Number(v);
+                setReminderOffset(next);
+                if (next === null) return;
+                void enablePushFromGesture().then((result) => {
+                  if (result === 'granted') {
+                    void updateSettings({ notificationsEnabled: true });
+                    return;
+                  }
+                  if (result === 'blocked') {
+                    setError(notificationsBlockedReason() ?? 'Уведомления сейчас недоступны.');
+                    return;
+                  }
+                  if (result === 'denied') {
+                    setError('Телефон запретил баннеры. Включи их в настройках системы: Уведомления → TiLi.');
+                  }
+                });
               }}
             >
               {REMINDER_OFFSET_OPTIONS.map((opt) => (

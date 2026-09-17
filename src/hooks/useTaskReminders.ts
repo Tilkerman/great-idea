@@ -1,45 +1,66 @@
 import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { notificationPermission, REMINDER_NOTICE_BODY, showTiliNotification } from '../utils/notifications';
-import { cloudPushConfigured, syncCloudReminders } from '../utils/webPush';
-import { isUnscheduledTask } from '../utils/hourSlot';
+import { cloudPushConfigured, subscribeTiliPush, syncCloudReminders } from '../utils/webPush';
+import { reminderFireAtMs } from '../utils/reminderTime';
 
 const MAX_DELAY_MS = 12 * 60 * 60 * 1000;
 
 export function useTaskReminders() {
-  const { ready, tasks, settings } = useApp();
+  const { ready, tasks, settings, updateSettings } = useApp();
   const fired = useRef(new Set<string>());
 
   useEffect(() => {
-    if (!ready || !settings.notificationsEnabled) return;
+    if (!ready) return;
     if (notificationPermission() !== 'granted') return;
 
-    if (cloudPushConfigured()) {
-      void syncCloudReminders(tasks, settings.reminderBeforeMin);
-    }
-
+    let cancelled = false;
     const timers: number[] = [];
-    const now = Date.now();
 
-    for (const task of tasks) {
-      if (task.status === 'completed' || isUnscheduledTask(task)) continue;
-      const mins = task.reminderOffsetMinutes ?? settings.reminderBeforeMin;
-      if (mins < 0) continue;
-      const at = new Date(task.startAt).getTime() - mins * 60_000;
-      const delay = at - now;
-      if (delay <= 0 || delay > MAX_DELAY_MS) continue;
-      const key = `${task.id}-${at}`;
-      if (fired.current.has(key)) continue;
-      const id = window.setTimeout(() => {
-        fired.current.add(key);
-        const title = task.title.trim() || 'Дело в календаре';
-        void showTiliNotification(title, REMINDER_NOTICE_BODY, `task-${task.id}`);
-      }, delay);
-      timers.push(id);
-    }
+    const armLocal = () => {
+      const now = Date.now();
+      for (const task of tasks) {
+        const at = reminderFireAtMs(task);
+        if (at == null) continue;
+        const delay = at - now;
+        const key = `${task.id}-${at}`;
+        if (fired.current.has(key)) continue;
+        if (delay > MAX_DELAY_MS) continue;
+        if (delay <= 0) {
+          const end = new Date(task.endAt || task.startAt).getTime();
+          if (end <= now) continue;
+          fired.current.add(key);
+          const title = task.title.trim() || 'Дело в календаре';
+          void showTiliNotification(title, REMINDER_NOTICE_BODY, `task-${task.id}`);
+          continue;
+        }
+        const id = window.setTimeout(() => {
+          fired.current.add(key);
+          const title = task.title.trim() || 'Дело в календаре';
+          void showTiliNotification(title, REMINDER_NOTICE_BODY, `task-${task.id}`);
+        }, delay);
+        timers.push(id);
+      }
+    };
+
+    const boot = async () => {
+      if (!settings.notificationsEnabled) {
+        await updateSettings({ notificationsEnabled: true });
+      }
+      if (cloudPushConfigured()) {
+        await subscribeTiliPush();
+        if (cancelled) return;
+        await syncCloudReminders(tasks);
+      }
+      if (cancelled) return;
+      armLocal();
+    };
+
+    void boot();
 
     return () => {
+      cancelled = true;
       for (const id of timers) window.clearTimeout(id);
     };
-  }, [ready, tasks, settings.notificationsEnabled, settings.reminderBeforeMin]);
+  }, [ready, tasks, settings.notificationsEnabled, updateSettings]);
 }

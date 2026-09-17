@@ -1,6 +1,6 @@
-import { isUnscheduledTask } from './hourSlot';
 import { newTaskId } from './id';
 import { REMINDER_NOTICE_BODY } from './notifications';
+import { cloudReminderFireAt, markCloudDueNowSent } from './reminderTime';
 import type { Task } from '../types';
 
 const DEVICE_KEY = 'tili-push-device';
@@ -63,22 +63,17 @@ export async function subscribeTiliPush(): Promise<'ok' | 'skipped' | 'failed'> 
   }
 }
 
-export async function syncCloudReminders(
-  tasks: Task[],
-  reminderBeforeMin: number,
-): Promise<boolean> {
+export async function syncCloudReminders(tasks: Task[]): Promise<boolean> {
   if (!cloudPushConfigured()) return false;
-  const now = Date.now();
+  const dueNowIds: string[] = [];
   const reminders = tasks
-    .filter((task) => task.status !== 'completed' && !isUnscheduledTask(task))
     .map((task) => {
-      const mins = task.reminderOffsetMinutes ?? reminderBeforeMin;
-      if (mins < 0) return null;
-      const fireAt = new Date(task.startAt).getTime() - mins * 60_000;
-      if (fireAt <= now) return null;
+      const plan = cloudReminderFireAt(task);
+      if (!plan) return null;
+      if (plan.dueNow) dueNowIds.push(task.id);
       return {
         id: task.id,
-        fireAt,
+        fireAt: plan.fireAt,
         title: task.title.trim() || 'Дело в календаре',
         body: REMINDER_NOTICE_BODY,
       };
@@ -91,6 +86,7 @@ export async function syncCloudReminders(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'reminders', deviceId: pushDeviceId(), reminders }),
     });
+    if (res.ok) markCloudDueNowSent(dueNowIds);
     return res.ok;
   } catch {
     return false;
