@@ -9,6 +9,24 @@
   position: sticky;
   top: 0;
   z-index: 50;
+  min-height: 52px;
+  max-height: calc(52px + env(safe-area-inset-top));
+  overflow: hidden;
+}
+
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.app-header__mark {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
 }
 
 .app-header__logo {
@@ -16,6 +34,7 @@
   font-weight: 800;
   color: var(--accent);
   letter-spacing: -0.5px;
+  line-height: 1;
 }
 
 .app-header__nav {

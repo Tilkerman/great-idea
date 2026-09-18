@@ -36,7 +36,14 @@ export function Header() {
   return (
     <header className="app-header">
       <div className="app-header__brand">
-        <span className="app-header__logo">TiLi</span>
+        <img
+          className="app-header__mark"
+          src={`${import.meta.env.BASE_URL}logo-tili.png`}
+          alt="TiLi"
+          width={28}
+          height={28}
+        />
+        <span className="app-header__logo">Calendar</span>
       </div>
       <div className="app-header__nav">
         <button type="button" className="app-header__arrow" onClick={prev} aria-label="Назад">‹</button>
