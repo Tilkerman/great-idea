@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   padding: 10px 12px;
   padding-top: calc(10px + env(safe-area-inset-top));
   background: var(--surface);
@@ -41,17 +42,29 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .app-header__arrow {
   width: 32px;
   height: 32px;
+  padding: 0;
   border: none;
   background: var(--surface-2);
   border-radius: 8px;
-  font-size: 20px;
   cursor: pointer;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.app-header__arrow svg {
+  width: 16px;
+  height: 16px;
+  display: block;
 }
 
 .app-header__period {
@@ -63,34 +76,4 @@
   cursor: pointer;
   color: var(--text-primary);
   white-space: nowrap;
-}
-
-.app-header__actions {
-  display: flex;
-  gap: 4px;
-}
-
-.app-header__icon {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: var(--surface-2);
-  cursor: pointer;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  color: var(--text-primary);
-  touch-action: manipulation;
-}
-
-.app-header__icon svg {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-
-.app-header__icon:active {
-  background: color-mix(in srgb, var(--border) 55%, var(--surface-2));
 }

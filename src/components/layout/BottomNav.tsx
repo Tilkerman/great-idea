@@ -3,18 +3,24 @@ import { createInboxDraft } from '../../utils/hourSlot';
 import './BottomNav.css';
 
 const TABS = [
-  { id: 'calendar', label: 'Календарь', icon: '📅', active: true },
-  { id: 'growth', label: 'Развитие', icon: '📈', active: false },
-  { id: 'vault', label: 'База', icon: '🔒', active: false },
-  { id: 'wallet', label: 'Кошелёк', icon: '💰', active: false },
+  { id: 'calendar', label: 'Календарь', icon: '📅' },
+  { id: 'growth', label: 'Развитие', icon: '📈' },
+  { id: 'settings', label: 'Настройки', icon: '⚙️' },
+  { id: 'wallet', label: 'Кошелёк', icon: '💰' },
 ] as const;
 
 export function BottomNav() {
-  const { setScreen, setEditingTask, setSheetOpen } = useApp();
+  const { screen, setScreen, setEditingTask, setSheetOpen } = useApp();
 
   const openNewTask = () => {
     setEditingTask(createInboxDraft());
     setSheetOpen(true);
+  };
+
+  const onTab = (id: (typeof TABS)[number]['id']) => {
+    if (id === 'calendar') setScreen('calendar');
+    else if (id === 'settings') setScreen('settings');
+    else alert('Скоро в TiLi');
   };
 
   return (
@@ -23,11 +29,8 @@ export function BottomNav() {
         <button
           key={tab.id}
           type="button"
-          className={`bottom-nav__item ${tab.active ? 'bottom-nav__item--active' : ''}`}
-          onClick={() => {
-            if (tab.active) setScreen('calendar');
-            else alert('Скоро в TiLi');
-          }}
+          className={`bottom-nav__item ${tab.id === 'calendar' && screen === 'calendar' ? 'bottom-nav__item--active' : ''}`}
+          onClick={() => onTab(tab.id)}
         >
           <span className="bottom-nav__icon">{tab.icon}</span>
           <span className="bottom-nav__label">{tab.label}</span>
@@ -50,9 +53,7 @@ export function BottomNav() {
           key={tab.id}
           type="button"
           className="bottom-nav__item"
-          onClick={() => {
-            alert('Скоро в TiLi');
-          }}
+          onClick={() => onTab(tab.id)}
         >
           <span className="bottom-nav__icon">{tab.icon}</span>
           <span className="bottom-nav__label">{tab.label}</span>

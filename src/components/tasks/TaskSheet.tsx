@@ -182,41 +182,41 @@ export function TaskSheet() {
       <div className="task-sheet" onClick={(e) => e.stopPropagation()}>
         <div className="task-sheet__header">
           <span className="task-sheet__time">{whenLabel || 'Дата и час'}</span>
+          <div className="task-sheet__tools">
+            <button
+              type="button"
+              className="task-sheet__link"
+              onClick={() => setWhenOpen((v) => !v)}
+              aria-expanded={whenOpen}
+            >
+              {whenOpen ? 'Свернуть' : (slotPicked ? 'Изменить' : 'Указать')}
+            </button>
+            {showClipActions && (
+              <>
+                <button
+                  type="button"
+                  className="task-sheet__link"
+                  disabled={!canCopy}
+                  onClick={copyTask}
+                >
+                  {copyHint || 'Копировать'}
+                </button>
+                <button
+                  type="button"
+                  className={`task-sheet__link ${canPaste ? 'task-sheet__link--active' : ''}`}
+                  disabled={!canPaste}
+                  onClick={pasteTask}
+                >
+                  Вставить
+                </button>
+              </>
+            )}
+          </div>
           <button type="button" className="task-sheet__close" onClick={close} aria-label="Закрыть">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
               <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
             </svg>
           </button>
-        </div>
-        <div className="task-sheet__tools">
-          <button
-            type="button"
-            className="task-sheet__link"
-            onClick={() => setWhenOpen((v) => !v)}
-            aria-expanded={whenOpen}
-          >
-            {whenOpen ? 'Свернуть' : (slotPicked ? 'Изменить' : 'Указать')}
-          </button>
-          {showClipActions && (
-            <>
-              <button
-                type="button"
-                className="task-sheet__link"
-                disabled={!canCopy}
-                onClick={copyTask}
-              >
-                {copyHint || 'Копировать'}
-              </button>
-              <button
-                type="button"
-                className={`task-sheet__link ${canPaste ? 'task-sheet__link--active' : ''}`}
-                disabled={!canPaste}
-                onClick={pasteTask}
-              >
-                Вставить
-              </button>
-            </>
-          )}
         </div>
 
         {whenOpen && (
