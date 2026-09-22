@@ -343,4 +343,4 @@ export const ru = {
     newPasswordAgain: 'Новый пароль ещё раз',
     passwordLocalNote: 'Пароль хранится только на этом устройстве. Смена не затрагивает другие телефоны.',
   },
-} as const;
+};
