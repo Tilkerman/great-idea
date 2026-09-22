@@ -1,0 +1,130 @@
+.lumi-root {
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff; /* Белый фон */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.header-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: calc(env(safe-area-inset-top, 0) + 0.55rem) 0.85rem 0.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-left {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.header-logo-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-logo-img {
+  width: 72px;
+  height: auto;
+  display: block;
+  opacity: 0.92;
+  /* Лёгкая тень для читаемости на светлом фоне (лучше, чем box-shadow для SVG с прозрачностью) */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.22));
+}
+
+.header-center {
+  justify-self: center;
+}
+
+.header-lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.header-lang-btn {
+  background: none;
+  border: none;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.15s ease;
+  font-family: inherit;
+}
+
+.header-lang-btn:hover {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.header-lang-btn.active {
+  color: rgba(0, 0, 0, 1);
+}
+
+.header-lang-separator {
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+  user-select: none;
+}
+
+.header-right {
+  justify-self: end;
+  width: 40px;
+  height: 40px;
+}
+
+.header-burger {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-burger-icon {
+  display: grid;
+  gap: 6px;
+}
+
+.header-burger-line {
+  width: 28px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.92);
+  display: block;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .header-content {
+    padding: calc(env(safe-area-inset-top, 0) + 0.55rem) 0.85rem 0.5rem;
+  }
+
+  .header-logo-img {
+    width: 60px;
+  }
+}
+
+
+}

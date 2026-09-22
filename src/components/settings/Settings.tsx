@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useI18n } from '../../i18n/useI18n';
+import { useLumiHost, type LumiSettingsPage } from '../../lumi/LumiHost';
 import {
   changePassword,
   deleteAccount,
@@ -11,34 +12,76 @@ import {
 } from '../../utils/authLocal';
 import './Settings.css';
 
+type HubItem = { id: string; label: string; sub: string };
+
+function SettingsList({ items, onPick }: { items: HubItem[]; onPick: (id: string) => void }) {
+  return (
+    <ul className="settings-list">
+      {items.map((item) => (
+        <li key={item.id}>
+          <button
+            type="button"
+            className="settings-list__item"
+            onClick={() => onPick(item.id)}
+          >
+            <span className="settings-list__label">{item.label}</span>
+            <span className="settings-list__sub">{item.sub}</span>
+            <span className="settings-list__chev">›</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function SettingsHub() {
-  const { setScreen, openAuth, session } = useApp();
+  const { setScreen, mainTab, openAuth, session } = useApp();
+  const { requestOpenSettingsPage } = useLumiHost();
   const { t } = useI18n();
 
-  const items = [
-    { id: 'settings-calendar' as const, label: t('settingsCalendar'), sub: t('settingsCalendarSub') },
-    { id: 'settings-stats' as const, label: t('settingsStats'), sub: t('settingsStatsSub') },
-    { id: 'settings-appearance' as const, label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
-    { id: 'settings-data' as const, label: t('settingsData'), sub: t('settingsDataSub') },
-    { id: 'settings-install' as const, label: t('settingsInstall'), sub: t('settingsInstallSub') },
-    { id: 'settings-notifications' as const, label: t('settingsNotif'), sub: t('settingsNotifSub') },
-    { id: 'settings-about' as const, label: t('settingsAbout'), sub: t('settingsAboutSub') },
+  const tiliItems: HubItem[] = [
+    { id: 'settings-calendar', label: t('settingsCalendar'), sub: t('settingsCalendarSub') },
+    { id: 'settings-stats', label: t('settingsStats'), sub: t('settingsStatsSub') },
+    { id: 'settings-data', label: t('settingsData'), sub: t('settingsDataSub') },
+    { id: 'settings-notifications', label: t('settingsNotif'), sub: t('settingsNotifSub') },
   ];
+
+  const lumiItems: HubItem[] = [
+    { id: 'lumi-tutorial', label: t('settingsLumiHow'), sub: t('settingsLumiHowSub') },
+    { id: 'lumi-settings', label: t('settingsLumiPrefs'), sub: t('settingsLumiPrefsSub') },
+    { id: 'lumi-statistics', label: t('settingsLumiStats'), sub: t('settingsLumiStatsSub') },
+    { id: 'lumi-completed', label: t('settingsLumiDone'), sub: t('settingsLumiDoneSub') },
+    { id: 'lumi-feedback', label: t('settingsLumiFeedback'), sub: t('settingsLumiFeedbackSub') },
+    { id: 'lumi-about', label: t('settingsLumiAbout'), sub: t('settingsLumiAboutSub') },
+  ];
+
+  const commonItems: HubItem[] = [
+    { id: 'settings-appearance', label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
+    { id: 'settings-install', label: t('settingsInstall'), sub: t('settingsInstallSub') },
+    { id: 'lumi-install', label: t('settingsLumiData'), sub: t('settingsLumiDataSub') },
+    { id: 'settings-about', label: t('settingsAbout'), sub: t('settingsAboutSub') },
+  ];
+
+  const contextItems = mainTab === 'lumi' ? lumiItems : tiliItems;
+  const contextTitle = mainTab === 'lumi' ? t('settingsSectionLumi') : t('settingsSectionTili');
+
+  const onPick = (id: string) => {
+    if (id.startsWith('lumi-')) {
+      const page = id.slice('lumi-'.length) as LumiSettingsPage;
+      requestOpenSettingsPage(page);
+      setScreen('lumi');
+      return;
+    }
+    setScreen(id as Parameters<typeof setScreen>[0]);
+  };
 
   return (
     <div className="settings-page">
-      <SettingsTopBar title={t('settings')} onBack={() => setScreen('calendar')} />
-      <ul className="settings-list">
-        {items.map((item) => (
-          <li key={item.id}>
-            <button type="button" className="settings-list__item" onClick={() => setScreen(item.id)}>
-              <span className="settings-list__label">{item.label}</span>
-              <span className="settings-list__sub">{item.sub}</span>
-              <span className="settings-list__chev">›</span>
-            </button>
-          </li>
-        ))}
-      </ul>
+      <SettingsTopBar title={t('settings')} onBack={() => setScreen(mainTab)} />
+      <h2 className="settings-list-heading">{contextTitle}</h2>
+      <SettingsList items={contextItems} onPick={onPick} />
+      <h2 className="settings-list-heading">{t('settingsSectionCommon')}</h2>
+      <SettingsList items={commonItems} onPick={onPick} />
       {session.isGuest && (
         <button type="button" className="btn btn--primary settings-auth-cta" onClick={() => openAuth('choice', 'settings')}>
           {t('authCta')}
@@ -49,7 +92,7 @@ export function SettingsHub() {
 }
 
 export function SettingsProfile() {
-  const { setScreen, openAuth, session, setSession } = useApp();
+  const { setScreen, mainTab, openAuth, session, setSession } = useApp();
   const { t } = useI18n();
   const [name, setName] = useState(session.name ?? '');
   const [email, setEmail] = useState(session.email ?? '');
@@ -94,7 +137,7 @@ export function SettingsProfile() {
 
   return (
     <div className="settings-page">
-      <SettingsTopBar title={t('profile')} onBack={() => setScreen('calendar')} />
+      <SettingsTopBar title={t('profile')} onBack={() => setScreen(mainTab)} />
       <div className="settings-form">
         <div className="settings-profile-card">
           <span className="settings-profile-card__badge">

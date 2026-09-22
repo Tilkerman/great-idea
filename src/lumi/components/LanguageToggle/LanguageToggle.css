@@ -1,0 +1,63 @@
+.lumi-root {
+.lumi-lang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.lumi-lang__btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 0.25rem 0.35rem;
+  transition: color 0.15s ease;
+  font-family: inherit;
+}
+
+.lumi-lang__sep {
+  font-size: 12px;
+  user-select: none;
+}
+
+.lumi-lang--light .lumi-lang__btn {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.lumi-lang--light .lumi-lang__btn.is-active {
+  color: rgba(0, 0, 0, 1);
+}
+
+.lumi-lang--light .lumi-lang__sep {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.lumi-lang--dark .lumi-lang__btn {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.lumi-lang--dark .lumi-lang__btn.is-active {
+  color: rgba(255, 255, 255, 1);
+}
+
+.lumi-lang--dark .lumi-lang__sep {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+html[data-theme='dark'] .lumi-lang--light .lumi-lang__btn {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+html[data-theme='dark'] .lumi-lang--light .lumi-lang__btn.is-active {
+  color: rgba(255, 255, 255, 1);
+}
+
+html[data-theme='dark'] .lumi-lang--light .lumi-lang__sep {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+}

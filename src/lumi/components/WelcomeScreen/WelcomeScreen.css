@@ -1,0 +1,215 @@
+.lumi-root {
+.welcome-screen {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: env(safe-area-inset-top, 0) 1.5rem 2.75rem;
+  background: #0b0b0c;
+  color: #ffffff;
+  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  z-index: 1;
+  animation: fadeIn 0.2s ease-in;
+}
+
+
+
+/* Language switcher */
+.welcome-lang-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  margin-top: 0;
+  width: 100%;
+}
+
+.welcome-lang-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.15s ease;
+  font-family: inherit;
+}
+
+.welcome-lang-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.welcome-lang-btn.active {
+  color: rgba(255, 255, 255, 1);
+}
+
+.welcome-lang-separator {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  user-select: none;
+}
+
+/* Logo */
+.welcome-logo-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  margin-top: clamp(8px, 3vw, 16px);
+}
+
+.welcome-logo-img {
+  width: min(196px, 70vw);
+  height: auto;
+  display: block;
+  opacity: 0.92;
+  /* Чуть отделяем от тёмного фона */
+  filter:
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 1px rgba(255, 255, 255, 0.15));
+}
+
+/* Mandala */
+.welcome-mandala {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.welcome-mandala-img {
+  width: clamp(160px, 40vw, 230px);
+  height: auto;
+  display: block;
+  /* белый/светло-серый, мягкий */
+  filter: none;
+  opacity: 0.86;
+}
+
+/* Subtitle */
+.welcome-subtitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-bottom: 0.85rem;
+  text-align: center;
+}
+
+.welcome-subtitle-line {
+  font-size: clamp(10px, 2.5vw, 12px);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+/* Primary button */
+.welcome-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 61px;
+  min-height: 61px;
+  padding: 0 47px;
+  cursor: pointer;
+  width: min(178px, 72vw);
+  border: 1px solid #ffffff;
+  background: #dbdbdb;
+  /* Figma: TL 6, TR 15, BR 6, BL 15 */
+  border-radius: 6px 15px 6px 15px;
+  margin-bottom: 0;
+  transition: transform 0.1s ease, filter 0.15s ease, background 0.15s ease;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: none;
+}
+
+.welcome-button:hover {
+  filter: brightness(0.98);
+}
+
+.welcome-button:active {
+  transform: scale(0.98);
+  filter: brightness(0.96);
+}
+
+.welcome-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 4px;
+  border-radius: 8px 17px 8px 17px;
+}
+
+.welcome-button-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(18px, 4.6vw, 24px);
+  font-weight: 500;
+  color: #4a4a4a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+
+/* Tablet and desktop */
+@media (min-width: 768px) {
+  .welcome-screen {
+    max-width: 520px;
+    margin: 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .welcome-mandala-img {
+    width: 260px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 360px) {
+  .welcome-logo-img {
+    width: min(180px, 70vw);
+    margin-top: 18px;
+  }
+
+  .welcome-mandala-img {
+    width: 180px;
+  }
+
+  .welcome-subtitle-line {
+    font-size: 10px;
+  }
+
+  .welcome-button {
+    width: min(178px, 84vw);
+  }
+}
+
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -63,7 +63,8 @@ export type AppScreen =
   | 'settings-stats'
   | 'settings-install'
   | 'settings-notifications'
-  | 'settings-about';
+  | 'settings-about'
+  | 'lumi';
 
 export type AuthStart = 'choice' | 'register' | 'login';
 

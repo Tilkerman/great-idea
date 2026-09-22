@@ -7,7 +7,7 @@
   background: var(--surface);
   border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom);
-  z-index: 50;
+  z-index: 1100;
 }
 
 .bottom-nav__item {

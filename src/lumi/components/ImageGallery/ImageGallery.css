@@ -1,0 +1,111 @@
+.lumi-root {
+.image-gallery {
+  width: 100%;
+  position: relative;
+}
+
+.image-gallery-container {
+  width: 100%;
+  max-height: 400px;
+  overflow: hidden;
+  background: var(--bg-placeholder);
+  position: relative;
+  touch-action: pan-y;
+}
+
+.image-gallery-slider {
+  display: flex;
+  transition: transform 0.3s ease-in-out;
+  width: 100%;
+}
+
+.image-gallery-slide {
+  min-width: 100%;
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+.image-gallery-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Кнопки навигации */
+.image-gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+  opacity: 0;
+}
+
+.image-gallery:hover .image-gallery-nav {
+  opacity: 1;
+}
+
+.image-gallery-nav:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.image-gallery-nav-prev {
+  left: 1rem;
+}
+
+.image-gallery-nav-next {
+  right: 1rem;
+}
+
+/* На мобильных скрываем кнопки навигации */
+@media (max-width: 768px) {
+  .image-gallery-nav {
+    display: none;
+  }
+}
+
+/* Индикаторы (точки) */
+.image-gallery-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--bg-primary);
+}
+
+.image-gallery-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: var(--border-color);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.image-gallery-indicator:hover {
+  background: var(--text-tertiary);
+  transform: scale(1.2);
+}
+
+.image-gallery-indicator.active {
+  background: var(--accent-color);
+  transform: scale(1.3);
+}
+
+
+}

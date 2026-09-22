@@ -1,0 +1,449 @@
+.lumi-root {
+.life-wheel-screen {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden; /* scroll lives in .life-wheel-content */
+}
+
+/* Fixed header: logo left, language center, burger right */
+.life-wheel-header {
+  position: sticky;
+  top: 0;
+  left: auto;
+  right: auto;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  background: var(--bg-primary); /* non-transparent */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.life-wheel-header-left {
+  justify-self: start;
+}
+
+.life-wheel-logo-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.life-wheel-logo {
+  width: 52px;
+  height: auto;
+  display: block;
+  opacity: 0.92;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.22));
+}
+
+.life-wheel-header-center {
+  justify-self: center;
+}
+
+.life-wheel-lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.life-wheel-lang-btn {
+  background: none;
+  border: none;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.15s ease;
+  font-family: inherit;
+}
+
+.life-wheel-lang-btn:hover {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.life-wheel-lang-btn.active {
+  color: rgba(0, 0, 0, 1);
+}
+
+.life-wheel-lang-separator {
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+  user-select: none;
+}
+
+.life-wheel-header-right {
+  justify-self: end;
+  width: 52px;
+  height: 40px;
+}
+
+.life-wheel-burger {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.life-wheel-burger-icon {
+  display: grid;
+  gap: 6px;
+}
+
+.life-wheel-burger-line {
+  width: 28px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.92);
+  display: block;
+}
+
+.life-wheel-header-spacer {
+  height: calc(env(safe-area-inset-top, 0) + 0.55rem + 72px + 0.5rem + 1px);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.life-wheel-content {
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0.1rem 0.9rem 0;
+}
+
+.life-wheel-title {
+  text-align: center;
+  margin: 0.85rem 0 0;
+  flex-shrink: 0;
+}
+
+.life-wheel-title-main {
+  font-size: clamp(0.72rem, 3.1vw, 0.88rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  line-height: 1.15;
+  white-space: nowrap; /* в одну строку без переносов */
+}
+
+.life-wheel-title-sub {
+  font-size: clamp(0.58rem, 2.4vw, 0.68rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  line-height: 1.2;
+  margin-top: 0.1rem;
+}
+
+.life-wheel-all-link {
+  display: inline-block;
+  margin-top: 0.1rem;
+  margin-bottom: 0;
+  border: none;
+  background: transparent;
+  padding: 0.1rem 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-color);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.life-wheel-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0;
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+.life-wheel-svg {
+  touch-action: pan-y;
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+  overflow: visible;
+}
+
+.life-wheel-all-button {
+  width: 100%;
+  height: 54px;
+  min-height: 54px;
+  padding: 0 18px;
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: transparent;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 0.86rem;
+  font-weight: 900;
+  border-radius: 6px 15px 6px 15px; /* TL TR BR BL */
+  cursor: pointer;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.life-wheel-all-button:hover {
+  background: var(--bg-hover);
+}
+
+.life-wheel-label-group {
+  transition: opacity 0.2s;
+}
+
+.life-wheel-label-group:hover {
+  opacity: 0.8;
+}
+
+.life-wheel-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  fill: color-mix(in srgb, var(--text-primary) 72%, transparent);
+  user-select: none;
+  pointer-events: none; /* чтобы тапы проходили в эллипс, а не в текст */
+  /* без "выпирающей" обводки — ближе к референсу */
+}
+
+.life-wheel-ring {
+  fill: none;
+  stroke: color-mix(in srgb, var(--text-primary) 18%, transparent);
+  stroke-width: 1.1;
+}
+
+.life-wheel-divider {
+  stroke: color-mix(in srgb, var(--text-primary) 40%, transparent);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.life-wheel-outline {
+  fill: none;
+  stroke: color-mix(in srgb, var(--text-primary) 25%, transparent);
+  stroke-width: 1.6;
+}
+
+.life-wheel-glow {
+  /* На светлом фоне делаем легкий “ореол”, чтобы колесо не терялось */
+  fill: rgba(0, 0, 0, 0.04);
+  stroke: rgba(0, 0, 0, 0.08);
+  stroke-width: 1;
+}
+
+.life-wheel-center-bg {
+  fill: var(--bg-card);
+  stroke: color-mix(in srgb, var(--text-primary) 12%, transparent);
+  stroke-width: 1;
+}
+
+.life-wheel-cards-title {
+  margin-top: 0.15rem;
+  margin-bottom: 0.3rem;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: clamp(0.72rem, 3.1vw, 0.9rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  line-height: 1.15;
+}
+
+.life-wheel-cards-sub {
+  margin-top: 0.35rem;
+  text-align: center;
+  font-size: clamp(0.62rem, 2.7vw, 0.74rem);
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.life-wheel-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 0;
+  align-items: start;
+  flex-shrink: 0;
+}
+
+.life-area-tile {
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: center;
+  cursor: pointer;
+}
+
+.life-area-label {
+  font-size: clamp(0.55rem, 2.4vw, 0.65rem);
+  color: var(--text-secondary);
+  margin: 0 0 6px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.life-area-rect {
+  border-radius: 14px;
+  width: 100%;
+  height: clamp(34px, 8.5vw, 46px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  margin: 0 auto;
+}
+
+.life-area-count {
+  font-size: clamp(0.85rem, 3.1vw, 1.05rem);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+}
+
+.life-wheel-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: var(--bg-primary); /* non-transparent */
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  /* уменьшаем нижний бар: меньше padding и высота кнопок */
+  padding: 0.45rem 0.9rem calc(0.4rem + env(safe-area-inset-bottom));
+}
+
+/* Тёмная тема: возвращаем контраст для хедера/элементов управления */
+[data-theme='dark'] .life-wheel-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .life-wheel-lang-btn {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme='dark'] .life-wheel-lang-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme='dark'] .life-wheel-lang-btn.active {
+  color: rgba(255, 255, 255, 1);
+}
+
+[data-theme='dark'] .life-wheel-lang-separator {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme='dark'] .life-wheel-burger-line {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+[data-theme='dark'] .life-wheel-all-button {
+  border: 1px solid rgba(219, 219, 219, 0.95);
+  color: rgba(219, 219, 219, 0.95);
+}
+
+[data-theme='dark'] .life-wheel-glow {
+  fill: rgba(255, 255, 255, 0.92);
+  stroke: rgba(255, 255, 255, 0.65);
+}
+
+[data-theme='dark'] .life-wheel-logo {
+  /* На тёмном фоне добавляем немного “ореола”, чтобы не сливался */
+  filter:
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.65))
+    drop-shadow(0 0 1px rgba(255, 255, 255, 0.18));
+}
+
+.life-wheel-bottom-row {
+  max-width: 600px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.life-wheel-create {
+  width: 100%;
+  height: 54px;
+  min-height: 54px;
+  padding: 0 18px;
+  font-size: 0.86rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, 0.92);
+  background: #dbdbdb;
+  border: 1px solid #ffffff;
+  border-radius: 6px 15px 6px 15px; /* TL TR BR BL */
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.life-wheel-create:hover {
+  filter: brightness(0.98);
+}
+
+@media (max-width: 480px) {
+  .life-wheel-content {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .life-wheel-grid {
+    gap: 7px;
+  }
+
+  .life-area-rect {
+    border-radius: 12px;
+  }
+}
+
+
+
+}

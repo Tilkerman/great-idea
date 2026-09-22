@@ -1,0 +1,139 @@
+.lumi-root {
+.week-dots {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.week-dots-bytype {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.week-dots-row {
+  /* Важно для iOS: фиксируем колонку подписей, чтобы кружки начинались с одной линии */
+  display: grid;
+  /* Second column must be shrinkable on narrow screens (iOS) */
+  grid-template-columns: var(--week-label-width, 8ch) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.6rem;
+}
+
+.week-dots-row-label {
+  width: var(--week-label-width, 8ch);
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  user-select: none;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.week-dots-row-dots {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+}
+
+.week-dots-row-progress {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.action-items-progress-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+/* Mobile: prevent dots from overflowing outside cards on narrow screens */
+@media (max-width: 420px) {
+  .week-dots-small.week-dots-bytype {
+    /* Уменьшаем ширину подписей чтобы освободить место для точек */
+    --week-label-width: 6.5ch;
+  }
+
+  .week-dots-row {
+    column-gap: 0.35rem;
+  }
+
+  .week-dots-row-dots {
+    gap: 0.15rem;
+    flex-wrap: nowrap;
+  }
+
+  .week-dots-small .week-dot {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* Подстраиваем ширину колонки подписей под размеры */
+.week-dots-small.week-dots-bytype {
+  /* Полные подписи (Notes/Thoughts/Steps; Записи/Мысли/Шаги) */
+  --week-label-width: 8ch;
+}
+
+.week-dots-medium.week-dots-bytype,
+.week-dots-large.week-dots-bytype {
+  --week-label-width: 11ch;
+}
+
+.week-dots-small .week-dot {
+  width: 9px;
+  height: 9px;
+}
+
+.week-dots-medium .week-dot {
+  width: 11px;
+  height: 11px;
+}
+
+.week-dots-large .week-dot {
+  width: 14px;
+  height: 14px;
+}
+
+.week-dot {
+  display: inline-block;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.02);
+}
+
+.week-dot-none {
+  background: transparent;
+}
+
+.week-dot-entry {
+  background: #5a7ba7;
+  border-color: #5a7ba7;
+}
+
+.week-dot-thought {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.week-dot-step {
+  background: #f4c542;
+  border-color: #f4c542;
+}
+
+.week-dot-mixed {
+  background: linear-gradient(135deg, #5a7ba7 0%, var(--accent-color) 50%, #f4c542 100%);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme='dark'] .week-dot {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+}

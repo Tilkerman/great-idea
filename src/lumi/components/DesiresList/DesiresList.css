@@ -1,0 +1,333 @@
+.lumi-root {
+/* DesiresList Component Styles */
+
+.desires-list-back {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.45rem 0.65rem;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.desires-list-back:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 1);
+}
+
+.desires-list-container {
+  min-height: 100vh;
+  padding: 2rem 1.5rem 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Блок информации под шапкой */
+.desires-info-block {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* Количество желаний */
+.desires-count {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+  font-weight: 400;
+}
+
+/* Пояснение фокуса */
+.desires-focus-instruction {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  font-weight: 400;
+}
+
+.desires-focus-hint {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-tertiary);
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Список желаний */
+.desires-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* Карточка желания */
+.desire-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* Более “живая” карточка: мягкая многослойная тень */
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 10px 24px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.desire-card:hover {
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    0 14px 34px rgba(0, 0, 0, 0.12);
+  /* Карточки не должны выглядеть кликабельными как кнопки согласно ТЗ */
+}
+
+/* Карточка в фокусе - менее агрессивная рамка, тёплый акцентный цвет */
+.desire-card-focused {
+  border-color: #b8866b; /* Тёплый коричневый/бежевый, менее насыщенный */
+  background: var(--bg-card);
+  border-width: 2px;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.10),
+    0 18px 44px rgba(0, 0, 0, 0.14);
+}
+
+[data-theme='dark'] .desire-card-focused {
+  border-color: #c9a882; /* Светлее для тёмной темы */
+  background: var(--bg-card);
+}
+
+[data-theme='dark'] .desire-card {
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 16px 38px rgba(0, 0, 0, 0.45);
+}
+
+/* Верхняя часть карточки: название и бейдж */
+.desire-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+/* Название желания - главный визуальный якорь */
+.desire-card-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.2;
+  flex: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Бейдж "Сегодня в фокусе" - спокойный, без акцента */
+.desire-card-focus-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  /* Маленький чип, чтобы не конкурировать с длинным названием */
+  font-size: 0.68rem;
+  font-weight: 400;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0.18rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+  background: var(--bg-primary);
+  color: var(--text-tertiary);
+}
+
+.focus-checkmark {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.focus-text {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+/* Фраза "это то, к которому ты сегодня возвращаешься" */
+.desire-card-return-hint {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-tertiary);
+  margin: 0.5rem 0 0 0;
+  font-weight: 300;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Содержимое карточки */
+.desire-card-content {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-top: 1rem;
+}
+
+/* Превью-изображение (горизонтальное) */
+.desire-card-image {
+  flex-shrink: 0;
+  width: 140px;
+  height: 92px; /* чуть выше, чтобы низ картинки совпадал с нижней строкой (iPhone) */
+  /* Скругление края картинки (как на референсе с iPhone) */
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-placeholder);
+}
+
+.desire-card-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* На iOS иногда лучше явно наследовать радиус, чтобы край был ровным */
+  border-radius: inherit;
+}
+
+.desire-card-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-placeholder);
+  border-radius: 12px;
+}
+
+/* Блок контактов - справа */
+.desire-card-contacts-block {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.desire-card-contacts-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+  font-weight: 400;
+}
+
+.desire-card-contacts {
+  margin-top: 0;
+}
+
+/* Контейнер для кнопки добавления желания - закреплен внизу */
+.desires-list-add-button-container {
+  display: none;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  z-index: 50;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 1.5rem;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Кнопка добавления желания - такая же форма как на главной */
+.desires-list-add-button {
+  width: 100%;
+  height: 54px;
+  min-height: 54px;
+  padding: 0 18px;
+  font-size: 0.86rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(26, 26, 26, 0.92);
+  background: #dbdbdb;
+  border: 1px solid #ffffff;
+  border-radius: 6px 15px 6px 15px; /* TL TR BR BL - такая же форма как на главной */
+  cursor: pointer;
+  box-shadow: none;
+  transition: filter 0.15s ease;
+}
+
+.desires-list-add-button:hover {
+  filter: brightness(0.98);
+}
+
+.desires-list-add-button:active {
+  filter: brightness(0.96);
+}
+
+/* Пустое состояние */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-tertiary);
+}
+
+.empty-state p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.empty-state-hint {
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
+/* Загрузка */
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .desires-list-container {
+    padding: 1.5rem 1rem 5.5rem; /* Отступ снизу для кнопки на мобильных */
+  }
+
+  .desires-list-add-button-container {
+    padding: 0.875rem 1rem;
+  }
+
+  .desire-card {
+    padding: 1.25rem;
+  }
+
+  .desire-card-title {
+    font-size: 1.5rem;
+  }
+
+  .desire-card-image {
+    width: 110px;
+    height: 78px; /* чуть выше для выравнивания с блоком контакта на iOS */
+  }
+}
+
+/* На очень узких экранах оставляем только ✓, чтобы бейдж не мешал длинному названию */
+@media (max-width: 360px) {
+  .desire-card-focus-badge .focus-text {
+    display: none;
+  }
+  .desire-card-focus-badge {
+    gap: 0;
+    padding: 0.16rem 0.32rem;
+  }
+}
+
+}

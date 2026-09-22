@@ -1,0 +1,183 @@
+.lumi-root {
+.image-editor {
+  background: var(--bg-primary);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.image-editor-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.image-editor-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+}
+
+.image-editor-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+  line-height: 1;
+}
+
+.image-editor-close:hover {
+  background: var(--bg-hover);
+}
+
+.image-editor-content {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.image-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.image-editor-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: var(--bg-placeholder);
+}
+
+.image-editor-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-editor-item-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.image-editor-item:hover .image-editor-item-actions {
+  opacity: 1;
+}
+
+.image-editor-action-btn {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.image-editor-action-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.image-editor-action-btn-danger:hover {
+  background: rgba(231, 76, 60, 0.9);
+}
+
+.image-editor-add-btn {
+  aspect-ratio: 1;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.image-editor-add-btn:hover {
+  border-color: var(--accent-color);
+  background: var(--bg-hover);
+  color: var(--accent-color);
+}
+
+.image-editor-add-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.image-editor-add-text {
+  font-size: 0.85rem;
+}
+
+.image-editor-info {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.image-editor-count {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.image-editor-limit {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin: 0.5rem 0 0 0;
+}
+
+.image-editor-footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .image-editor-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .image-editor-header,
+  .image-editor-content,
+  .image-editor-footer {
+    padding: 1rem;
+  }
+}
+
+
+}

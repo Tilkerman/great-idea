@@ -1,0 +1,234 @@
+.lumi-root {
+.intro-screen {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background: #0b0b0c;
+  color: #ffffff;
+  padding: env(safe-area-inset-top, 0) 1.5rem 2.75rem;
+  overflow: hidden;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+/* Language switcher (same visual as Welcome) */
+.intro-lang-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  margin-top: 0;
+  width: 100%;
+}
+
+.intro-lang-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.15s ease;
+  font-family: inherit;
+}
+
+.intro-lang-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.intro-lang-btn.active {
+  color: rgba(255, 255, 255, 1);
+}
+
+.intro-lang-separator {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  user-select: none;
+}
+
+.intro-content {
+  width: min(100%, 420px);
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto 1fr auto 1fr auto 1fr auto;
+  align-items: center;
+  padding: 14px 0 0;
+  gap: 0;
+  text-align: center;
+}
+
+.intro-upper {
+  display: contents;
+}
+
+.intro-title {
+  grid-row: 1;
+  margin: 14px 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.25;
+  white-space: pre-line;
+}
+
+.intro-steps-wrap {
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0;
+  transform: none;
+}
+
+.intro-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center; /* центрируем ВЕСЬ блок списка */
+  width: max-content;  /* одна общая ширина по самой длинной строке */
+  max-width: 100%;
+}
+
+.intro-step {
+  /* Важно: единая колонка под квадратик и единый левый край текста */
+  display: grid;
+  grid-template-columns: 28px auto;
+  column-gap: 14px;
+  align-items: center;
+  width: 100%; /* все строки одной ширины (берут ширину списка) */
+  justify-items: start;
+}
+
+.intro-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
+}
+
+.intro-step-text {
+  text-align: left; /* текст выровнен по левому краю относительно общей колонки */
+  color: rgba(255, 255, 255, 0.92);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  font-weight: 600;
+  font-size: 15px;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.10);
+}
+
+.intro-mandala {
+  grid-row: 5;
+  display: flex;
+  justify-content: center;
+  /* Мандалу НЕ сдвигаем padding'ом внутри grid-строки:
+     иначе центр "между заголовком и мандалой" считается неверно и список липнет к заголовку. */
+  padding-top: 0;
+}
+
+.intro-mandala-img {
+  width: min(170px, 46vw);
+  height: auto;
+  object-fit: contain;
+  filter: none;
+  opacity: 0.55;
+  user-select: none;
+  pointer-events: none;
+}
+
+.intro-footer-text {
+  margin: 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.78);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  line-height: 1.45;
+  white-space: pre-line;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.intro-mid {
+  grid-row: 7;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+.intro-bottom {
+  grid-row: 9;
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 12px 0 0;
+}
+
+.intro-go {
+  width: min(178px, 72vw);
+  height: 61px;
+  min-height: 61px;
+  padding: 0 47px;
+  border: 1px solid #ffffff;
+  background: #dbdbdb;
+  border-radius: 6px 15px 6px 15px; /* TL TR BR BL */
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-go-text {
+  color: rgba(0, 0, 0, 0.62);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro-go:active {
+  transform: translateY(1px);
+}
+
+.intro-go:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+  border-radius: 8px 17px 8px 17px;
+}
+
+@media (max-height: 740px) {
+  .intro-content {
+    gap: 12px;
+  }
+  .intro-mandala-img {
+    width: min(130px, 40vw);
+  }
+  .intro-title {
+    font-size: 15px;
+  }
+  .intro-step-text {
+    font-size: 14px;
+  }
+}
+
+
+
+}

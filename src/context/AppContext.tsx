@@ -40,11 +40,30 @@ import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 
 const ONBOARDING_KEY = 'tili-onboarding-done';
 const SESSION_KEY = 'tili-session';
+const MAIN_TAB_KEY = 'tili-main-tab';
+
+function readMainTab(): 'calendar' | 'lumi' {
+  try {
+    return sessionStorage.getItem(MAIN_TAB_KEY) === 'lumi' ? 'lumi' : 'calendar';
+  } catch {
+    return 'calendar';
+  }
+}
+
+function writeMainTab(tab: 'calendar' | 'lumi') {
+  try {
+    sessionStorage.setItem(MAIN_TAB_KEY, tab);
+  } catch {
+    /* private mode */
+  }
+}
 
 interface AppContextValue {
   ready: boolean;
   screen: AppScreen;
   setScreen: (s: AppScreen) => void;
+  /** Календарь или желания: куда возвращать из Настроек / Профиля. */
+  mainTab: 'calendar' | 'lumi';
   zoom: ZoomLevel;
   setZoom: (z: ZoomLevel) => void;
   zoomIn: () => void;
@@ -99,7 +118,16 @@ const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
-  const [screen, setScreen] = useState<AppScreen>('onboarding');
+  const [screen, setScreenState] = useState<AppScreen>('onboarding');
+  const [mainTab, setMainTab] = useState<'calendar' | 'lumi'>(readMainTab);
+  const setScreen = useCallback((s: AppScreen) => {
+    setScreenState(s);
+    if (s === 'calendar' || s === 'lumi') {
+      setMainTab(s);
+      writeMainTab(s);
+    }
+  }, []);
+
   const [zoom, setZoom] = useState<ZoomLevel>('week');
   const [weekZoom, setWeekZoom] = useState(WEEK_ZOOM_MIN);
   const [focusDate, setFocusDate] = useState(new Date());
@@ -134,10 +162,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           /* ignore */
         }
       }
-      setScreen(onboardingDone ? 'calendar' : 'onboarding');
+      setScreen(onboardingDone ? readMainTab() : 'onboarding');
       setReady(true);
     })();
-  }, [refreshTasks]);
+  }, [refreshTasks, setScreen]);
 
   const zoomIn = useCallback(() => {
     setZoom((z) => {
@@ -253,14 +281,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const completeOnboarding = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, '1');
     setScreen('calendar');
-  }, []);
+  }, [setScreen]);
 
   const openAuth = useCallback((start: AuthStart, back: AppScreen = 'calendar') => {
     localStorage.setItem(ONBOARDING_KEY, '1');
     setAuthStart(start);
     setAuthBackScreen(back);
     setScreen('auth');
-  }, []);
+  }, [setScreen]);
 
   const copyTaskToClipboard = useCallback((data: TaskClipboard) => {
     setTaskClipboard(data);
@@ -312,6 +340,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ready,
       screen,
       setScreen,
+      mainTab,
       zoom,
       setZoom,
       zoomIn,
@@ -355,7 +384,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       pasteGridClipboard,
     }),
     [
-      ready, screen, zoom, zoomIn, zoomOut, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
+      ready, screen, mainTab, setScreen, zoom, zoomIn, zoomOut, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
       focusDate, selectedDay, tasks,
       refreshTasks, upsertTask, saveHourSlot, placeTask, deleteTaskInHour, removeTask, settings, updateSettings,
       session, authStart, authBackScreen, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding, openAuth, taskClipboard, copyTaskToClipboard, gridClipboard, pasteGridClipboard,

@@ -1,4 +1,5 @@
 import { AppProvider, useApp } from './context/AppContext';
+import { LumiHostProvider } from './lumi/LumiHost';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { Header } from './components/layout/Header';
 import { BottomNav } from './components/layout/BottomNav';
@@ -21,6 +22,7 @@ import { SettingsNotifications } from './components/settings/SettingsNotificatio
 import { useTaskReminders } from './hooks/useTaskReminders';
 import { useOpenTaskFromNotification } from './hooks/useOpenTaskFromNotification';
 import { useI18n } from './i18n/useI18n';
+import { LumiEmbed } from './lumi/LumiEmbed';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
@@ -40,21 +42,8 @@ function DeleteConfirm() {
   );
 }
 
-function AppRouter() {
-  const { ready, screen } = useApp();
-  useTaskReminders();
-  useOpenTaskFromNotification();
-
-  const { t } = useI18n();
-  if (!ready) {
-    return <div className="app-loading">{t('loading')}</div>;
-  }
-
+function SettingsScreens({ screen }: { screen: string }) {
   switch (screen) {
-    case 'onboarding':
-      return <Onboarding />;
-    case 'auth':
-      return <AuthScreen />;
     case 'settings':
       return <SettingsHub />;
     case 'settings-profile':
@@ -75,10 +64,32 @@ function AppRouter() {
       return <SettingsNotifications />;
     case 'settings-about':
       return <SettingsAbout />;
-    case 'calendar':
     default:
-      return (
-        <div className="app-shell">
+      return null;
+  }
+}
+
+function AppRouter() {
+  const { ready, screen, mainTab } = useApp();
+  useTaskReminders();
+  useOpenTaskFromNotification();
+
+  const { t } = useI18n();
+  if (!ready) {
+    return <div className="app-loading">{t('loading')}</div>;
+  }
+
+  if (screen === 'onboarding') return <Onboarding />;
+  if (screen === 'auth') return <AuthScreen />;
+
+  const inSettings = screen.startsWith('settings');
+  const showCalendar = screen === 'calendar' || (inSettings && mainTab === 'calendar');
+  const showLumi = screen === 'lumi' || (inSettings && mainTab === 'lumi');
+
+  return (
+    <>
+      {showCalendar && (
+        <div className={`app-shell${screen === 'calendar' ? '' : ' app-shell--off'}`}>
           <Header />
           <main className="app-shell__main">
             <CalendarCanvas />
@@ -86,15 +97,28 @@ function AppRouter() {
           <BottomNav />
           <TaskSheet />
         </div>
-      );
-  }
+      )}
+      {showLumi && (
+        <div className={`app-shell app-shell--lumi${screen === 'lumi' ? '' : ' app-shell--off'}`}>
+          <main className="app-shell__main">
+            <LumiEmbed />
+          </main>
+          <BottomNav />
+          <TaskSheet />
+        </div>
+      )}
+      {inSettings && <SettingsScreens screen={screen} />}
+    </>
+  );
 }
 
 export default function App() {
   return (
     <AppProvider>
-      <AppRouter />
-      <DeleteConfirm />
+      <LumiHostProvider>
+        <AppRouter />
+        <DeleteConfirm />
+      </LumiHostProvider>
     </AppProvider>
   );
 }

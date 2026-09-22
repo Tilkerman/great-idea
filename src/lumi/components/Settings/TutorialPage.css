@@ -1,0 +1,217 @@
+.lumi-root {
+/* Визуализация колеса жизни */
+.tutorial-wheel-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+/* Визуализация индикаторов контакта */
+.tutorial-indicators-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.tutorial-indicators-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.tutorial-indicator-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: help;
+}
+
+.tutorial-indicator-filled {
+  background: linear-gradient(135deg, #5a7ba7 0%, #49a078 100%);
+  border: 2px solid var(--border-color);
+  color: white;
+}
+
+.tutorial-indicator-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.tutorial-indicator-dot:hover .tutorial-indicator-tooltip {
+  opacity: 1;
+}
+
+.tutorial-indicators-caption {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  text-align: center;
+}
+
+/* Визуализация типов контактов */
+.tutorial-contact-types {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.tutorial-contact-type {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 80px;
+}
+
+.tutorial-contact-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  border: 2px solid var(--border-color);
+}
+
+.tutorial-contact-entry {
+  background: linear-gradient(135deg, #5a7ba7 0%, #2d4f7a 100%);
+}
+
+.tutorial-contact-thought {
+  background: linear-gradient(135deg, #f2b6c6 0%, #c44d58 100%);
+}
+
+.tutorial-contact-step {
+  background: linear-gradient(135deg, #49a078 0%, #58c6d6 100%);
+}
+
+.tutorial-contact-type span {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Визуализация бейджа "В фокусе" */
+.tutorial-focus-badge-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.tutorial-focus-badge-example {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.tutorial-focus-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 400;
+  white-space: nowrap;
+  padding: 0.18rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+  background: var(--bg-primary);
+  color: var(--text-tertiary);
+}
+
+.tutorial-focus-checkmark {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.tutorial-focus-text {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.tutorial-focus-caption {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+  text-align: center;
+  max-width: 400px;
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+  .tutorial-wheel-visual svg {
+    width: 160px;
+    height: 160px;
+  }
+
+  .tutorial-contact-types {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .tutorial-contact-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .tutorial-indicator-dot {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+
+  .tutorial-focus-badge-visual {
+    padding: 1rem;
+  }
+}
+
+
+}

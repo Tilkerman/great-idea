@@ -1,0 +1,484 @@
+.lumi-root {
+/* Overlay для модального окна */
+.activity-calendar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+
+
+/* Модальное окно календаря */
+.activity-calendar-modal {
+  background: var(--bg-primary, #ffffff);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: scaleUp 0.2s ease-out;
+  overflow: hidden;
+}
+
+
+
+/* Заголовок модального окна */
+.activity-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.activity-calendar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary, #213547);
+}
+
+.activity-calendar-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-secondary, #666);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.activity-calendar-close:hover {
+  background-color: var(--bg-secondary, #f5f5f5);
+}
+
+/* Контент календаря */
+.activity-calendar-content {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.activity-calendar-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary, #666);
+}
+
+/* Заголовок месяца */
+.activity-calendar-month-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.activity-calendar-month-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary, #213547);
+}
+
+.activity-calendar-nav-button {
+  background: var(--bg-secondary, #f5f5f5);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: var(--text-primary, #213547);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.activity-calendar-nav-button:hover {
+  background-color: var(--bg-tertiary, #e8e8e8);
+  border-color: var(--border-color-hover, #ccc);
+}
+
+/* Дни недели */
+.activity-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.activity-calendar-weekday {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary, #666);
+  padding: 0.5rem 0;
+}
+
+/* Сетка календаря */
+.activity-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* День календаря */
+.activity-calendar-day {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background-color: var(--bg-secondary, #f5f5f5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary, #213547);
+  transition: transform 0.15s, box-shadow 0.15s;
+  padding: 0;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.activity-calendar-day:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.activity-calendar-day-other-month {
+  opacity: 0.4;
+}
+
+.activity-calendar-day-other-month .activity-calendar-day-number {
+  color: #666666;
+  text-shadow: none;
+}
+
+.activity-calendar-day-today {
+  border-color: var(--accent-color, #646cff);
+  border-width: 3px;
+}
+
+/* Дни до создания желания */
+.activity-calendar-day-before-creation {
+  opacity: 0.3;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.activity-calendar-day-before-creation::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 0, 0, 0.2);
+}
+
+.activity-calendar-day-before-creation:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* День создания желания */
+.activity-calendar-day-creation {
+  position: relative;
+  border: 2px dashed var(--accent-color, #646cff) !important;
+  border-width: 2px !important;
+}
+
+.activity-calendar-creation-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 0.75rem;
+  background: var(--accent-color, #646cff);
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.activity-calendar-day-number {
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Информация о дате создания */
+.activity-calendar-creation-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  background: rgba(100, 108, 255, 0.1);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-primary, #213547);
+}
+
+.activity-calendar-creation-icon {
+  font-size: 1rem;
+}
+
+.activity-calendar-creation-text {
+  font-weight: 500;
+}
+
+/* Легенда */
+.activity-calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+.activity-calendar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #666);
+}
+
+.activity-calendar-legend-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Модальное окно деталей дня */
+.day-details-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.day-details-modal {
+  background: var(--bg-primary, #ffffff);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 320px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: scaleUp 0.15s ease-out;
+  overflow: hidden;
+}
+
+.day-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.day-details-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary, #213547);
+}
+
+.day-details-close {
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-secondary, #666);
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.day-details-close:hover {
+  background-color: var(--bg-secondary, #f5f5f5);
+}
+
+.day-details-content {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.day-details-empty {
+  text-align: center;
+  color: var(--text-secondary, #666);
+  padding: 1rem 0;
+}
+
+.day-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.day-details-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background-color: var(--bg-secondary, #f5f5f5);
+}
+
+.day-details-item-yes {
+  background-color: rgba(76, 175, 80, 0.1);
+}
+
+.day-details-item-no {
+  opacity: 0.6;
+}
+
+.day-details-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.day-details-item-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.day-details-item-label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-primary, #213547);
+}
+
+.day-details-item-status {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #666);
+}
+
+.day-details-item-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #666);
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+.day-details-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.day-details-close-button {
+  background: var(--accent-color, #646cff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.day-details-close-button:hover {
+  background-color: var(--accent-color-hover, #535bf2);
+}
+
+/* Темная тема */
+@media (prefers-color-scheme: dark) {
+  .activity-calendar-modal,
+  .day-details-modal {
+    background: var(--bg-primary, #1a1a1a);
+    color: var(--text-primary, #ffffff);
+  }
+
+  .activity-calendar-title,
+  .day-details-title {
+    color: var(--text-primary, #ffffff);
+  }
+
+  .activity-calendar-day {
+    color: #ffffff;
+  }
+
+  .activity-calendar-day-other-month {
+    opacity: 0.3;
+  }
+
+  .activity-calendar-day-before-creation::after {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .activity-calendar-creation-info {
+    background: rgba(100, 108, 255, 0.15);
+    color: var(--text-primary, #ffffff);
+  }
+}
+
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

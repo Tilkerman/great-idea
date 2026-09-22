@@ -1,31 +1,39 @@
 import { useApp } from '../../context/AppContext';
 import { createInboxDraft } from '../../utils/hourSlot';
 import { useI18n } from '../../i18n/useI18n';
+import { useLumiHost } from '../../lumi/LumiHost';
 import './BottomNav.css';
 
 const TAB_IDS = ['calendar', 'growth', 'settings', 'profile'] as const;
 
 export function BottomNav() {
   const { screen, setScreen, setEditingTask, setSheetOpen } = useApp();
+  const { api: lumi } = useLumiHost();
   const { t } = useI18n();
 
-  const openNewTask = () => {
+  const openNew = () => {
+    if (screen === 'lumi' && lumi) {
+      lumi.createWish();
+      return;
+    }
     setEditingTask(createInboxDraft());
     setSheetOpen(true);
   };
 
   const tabs = [
     { id: 'calendar' as const, label: t('navCalendar'), icon: '📅' },
-    { id: 'growth' as const, label: t('navGrowth'), icon: '📈' },
+    { id: 'growth' as const, label: t('navGrowth'), icon: '✨' },
     { id: 'settings' as const, label: t('navSettings'), icon: '⚙️' },
     { id: 'profile' as const, label: t('navProfile'), icon: '👤' },
   ];
 
   const onTab = (id: (typeof TAB_IDS)[number]) => {
     if (id === 'calendar') setScreen('calendar');
-    else if (id === 'settings') setScreen('settings');
+    else if (id === 'growth') {
+      if (screen === 'lumi' && lumi) lumi.toggleListAndWheel();
+      else setScreen('lumi');
+    } else if (id === 'settings') setScreen('settings');
     else if (id === 'profile') setScreen('settings-profile');
-    else alert(t('soon'));
   };
 
   return (
@@ -34,7 +42,7 @@ export function BottomNav() {
         <button
           key={tab.id}
           type="button"
-          className={`bottom-nav__item ${tab.id === 'calendar' && screen === 'calendar' ? 'bottom-nav__item--active' : ''}`}
+          className={`bottom-nav__item ${(tab.id === 'calendar' && screen === 'calendar') || (tab.id === 'growth' && screen === 'lumi') ? 'bottom-nav__item--active' : ''}`}
           onClick={() => onTab(tab.id)}
         >
           <span className="bottom-nav__icon">{tab.icon}</span>
@@ -44,8 +52,8 @@ export function BottomNav() {
       <button
         type="button"
         className="bottom-nav__item bottom-nav__item--add"
-        aria-label={t('navNewTask')}
-        onClick={openNewTask}
+        aria-label={screen === 'lumi' ? t('navNewWish') : t('navNewTask')}
+        onClick={openNew}
       >
         <span className="bottom-nav__plus" aria-hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
