@@ -1,3 +1,6 @@
+import { tLocale } from '../i18n/catalog';
+import type { Locale } from '../types';
+
 export const TILI_PUBLIC_URL = 'https://tilkerman.github.io/great-idea/';
 
 export interface BeforeInstallPromptEvent extends Event {
@@ -42,12 +45,12 @@ export async function copyAppLink() {
   return url;
 }
 
-export async function shareAppLink() {
+export async function shareAppLink(locale: Locale = 'ru') {
   const url = getAppShareUrl();
   if (canWebShare()) {
     await navigator.share({
       title: 'TiLi Calendar',
-      text: 'Календарь TiLi на телефон — PWA, работает офлайн',
+      text: tLocale(locale, 'shareText'),
       url,
     });
     return 'shared' as const;

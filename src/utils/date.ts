@@ -61,12 +61,11 @@ export function formatTime(d: Date) {
   return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export function formatDateRange(start: Date, end: Date) {
-  const months = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+export function formatDateRange(start: Date, end: Date, monthsGen: readonly string[]) {
   if (isSameDay(start, end)) {
-    return `${start.getDate()} ${months[start.getMonth()]} ${start.getFullYear()}`;
+    return `${start.getDate()} ${monthsGen[start.getMonth()]} ${start.getFullYear()}`;
   }
-  return `${start.getDate()} ${months[start.getMonth()]} – ${end.getDate()} ${months[end.getMonth()]} ${end.getFullYear()}`;
+  return `${start.getDate()} ${monthsGen[start.getMonth()]} – ${end.getDate()} ${monthsGen[end.getMonth()]} ${end.getFullYear()}`;
 }
 
 export function getHoursRange(startHour: number, endHour: number) {

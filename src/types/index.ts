@@ -1,3 +1,5 @@
+export type Locale = 'ru' | 'en' | 'es';
+
 export type ZoomLevel = 'year' | 'month' | 'week' | 'day';
 
 export type TaskCategory = 'work' | 'personal' | 'family';
@@ -73,7 +75,7 @@ export interface UserSettings {
   hideEmptyHours: boolean;
   showCompleted: boolean;
   theme: 'system' | 'light' | 'dark';
-  locale: 'ru' | 'en';
+  locale: Locale;
   importantReminderHours: number;
   reminderBeforeMin: number;
   /** Local banners on installed PWA; no cloud Web Push yet */

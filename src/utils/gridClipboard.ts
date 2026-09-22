@@ -1,4 +1,5 @@
-import type { GridClipItem, GridClipboard, Task } from '../types';
+import type { GridClipItem, GridClipboard, Locale, Task } from '../types';
+import { tLocale } from '../i18n/catalog';
 import { newTaskId } from './id';
 import { getWeekDays, toLocalDateString } from './date';
 import { MAX_TASKS_PER_HOUR, rebalanceHourTasks } from './hourSlot';
@@ -170,8 +171,8 @@ export function idsInHour(tasks: Task[], day: Date, hour: number) {
   }).map((t) => t.id);
 }
 
-export function clipKindLabel(kind: GridClipboard['kind']) {
-  if (kind === 'week') return 'неделя';
-  if (kind === 'day') return 'день';
-  return 'час';
+export function clipKindLabel(kind: GridClipboard['kind'], locale: Locale = 'ru') {
+  if (kind === 'week') return tLocale(locale, 'kindWeek');
+  if (kind === 'day') return tLocale(locale, 'kindDay');
+  return tLocale(locale, 'kindHour');
 }

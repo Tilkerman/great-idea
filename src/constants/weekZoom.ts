@@ -1,3 +1,6 @@
+import { tLocale } from '../i18n/catalog';
+import type { Locale } from '../types';
+
 export const WEEK_ZOOM_MIN = 0;
 export const WEEK_ZOOM_MAX = 1;
 /**
@@ -44,14 +47,14 @@ export function getWeekZoomMetrics(level: number, viewportWidth: number) {
   return { level: t, colWidth, rowHeight, daysVisible: avail / colWidth };
 }
 
-export function weekZoomHint(level: number, viewportWidth = 390) {
+export function weekZoomHint(level: number, viewportWidth = 390, locale: Locale = 'ru') {
   const { daysVisible } = getWeekZoomMetrics(level, viewportWidth);
   const days = daysVisible.toFixed(1);
   if (level >= WEEK_ZOOM_MAX - 0.02) {
-    return `Один день · листай в стороны · сведи пальцы — вся неделя`;
+    return tLocale(locale, 'weekZoomOneDay');
   }
   if (level <= WEEK_ZOOM_MIN + 0.02) {
-    return `Вся неделя на экране · в месяц — сведите сильно`;
+    return tLocale(locale, 'weekZoomFull');
   }
-  return `${days} дня на экране · разведи/сведи плавно`;
+  return tLocale(locale, 'weekZoomDays', { days });
 }

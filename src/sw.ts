@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 import { clientsClaim } from 'workbox-core';
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
+import { tLocale } from './i18n/catalog';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -22,7 +23,7 @@ function taskIdFromTag(tag: string) {
 
 self.addEventListener('push', (event) => {
   let title = 'TiLi';
-  let body = 'Напоминание';
+  let body = tLocale('ru', 'reminderFallback');
   let tag = 'tili-push';
   let taskId = '';
   try {

@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useI18n } from '../../i18n/useI18n';
+import { CATEGORY_LABEL_KEY } from '../../constants/categories';
 import {
   CATEGORY_ORDER,
   STATS_PERIOD_OPTIONS,
-  categoryLabel,
   computeTaskStats,
   dynamicsText,
   formatHours,
@@ -24,35 +25,45 @@ function MetricRow({ label, value, sub }: { label: string; value: string; sub?: 
   );
 }
 
+const PERIOD_KEY: Record<StatsPeriod, 'periodDay' | 'periodWeek' | 'periodMonth' | 'periodYear'> = {
+  day: 'periodDay',
+  week: 'periodWeek',
+  month: 'periodMonth',
+  year: 'periodYear',
+};
+
 export function SettingsStatistics() {
   const { setScreen, tasks, settings, session, openAuth } = useApp();
+  const { t, taskWord, locale } = useI18n();
   const [period, setPeriod] = useState<StatsPeriod>('day');
   const report = useMemo(
-    () => computeTaskStats(tasks, period, settings.weekStartsOn),
-    [tasks, period, settings.weekStartsOn],
+    () => computeTaskStats(tasks, period, settings.weekStartsOn, locale),
+    [tasks, period, settings.weekStartsOn, locale],
   );
 
-  const dynamics = dynamicsText(period, report.dynamics.completedHoursDeltaPct);
+  const hours = (h: number) => formatHours(h, locale);
+  const signedHours = (h: number) => formatSignedHours(h, locale);
+  const dynamics = dynamicsText(period, report.dynamics.completedHoursDeltaPct, locale);
   const hasTails = report.tails.over3Days.count > 0;
 
   return (
     <div className="settings-page">
       <header className="settings-topbar">
-        <button type="button" onClick={() => setScreen('settings')}>‹ Назад</button>
-        <span>Статистика</span>
+        <button type="button" onClick={() => setScreen('settings')}>{t('back')}</button>
+        <span>{t('stats')}</span>
         <span />
       </header>
 
       <div className="settings-form stats-page">
         <div className="stats-period-tabs">
-          {STATS_PERIOD_OPTIONS.map((opt) => (
+          {STATS_PERIOD_OPTIONS.map((id) => (
             <button
-              key={opt.id}
+              key={id}
               type="button"
-              className={`stats-period-tab ${period === opt.id ? 'stats-period-tab--active' : ''}`}
-              onClick={() => setPeriod(opt.id)}
+              className={`stats-period-tab ${period === id ? 'stats-period-tab--active' : ''}`}
+              onClick={() => setPeriod(id)}
             >
-              {opt.label}
+              {t(PERIOD_KEY[id])}
             </button>
           ))}
         </div>
@@ -61,13 +72,13 @@ export function SettingsStatistics() {
 
         {!report.hasData ? (
           <div className="stats-empty">
-            <p>За этот период часов в календаре пока нет.</p>
-            <p className="settings-note">Создай задачи — статистика считается по их длительности.</p>
+            <p>{t('statsEmpty')}</p>
+            <p className="settings-note">{t('statsEmptyHint')}</p>
           </div>
         ) : (
           <>
-            <section className="stats-hero" aria-label="Выполнение по времени">
-              <h2 className="stats-hero__title">Выполнение по времени</h2>
+            <section className="stats-hero" aria-label={t('statsTime')}>
+              <h2 className="stats-hero__title">{t('statsTime')}</h2>
               <p className="stats-hero__big">{report.hours.completionPct}%</p>
               <div
                 className="stats-hero__bar"
@@ -75,49 +86,52 @@ export function SettingsStatistics() {
                 aria-valuenow={report.hours.completionPct}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-label={`Выполнено ${formatHours(report.hours.completed)} из ${formatHours(report.hours.scheduled)}`}
+                aria-label={t('statsDoneOf', {
+                  done: hours(report.hours.completed),
+                  scheduled: hours(report.hours.scheduled),
+                })}
               >
                 <span className="stats-hero__bar-fill" style={{ width: `${report.hours.completionPct}%` }} />
               </div>
-              <MetricRow label="Запланировано" value={formatHours(report.hours.scheduled)} />
-              <MetricRow label="Выполнено" value={formatHours(report.hours.completed)} />
+              <MetricRow label={t('scheduled')} value={hours(report.hours.scheduled)} />
+              <MetricRow label={t('doneHours')} value={hours(report.hours.completed)} />
             </section>
 
             {(report.past.hoursClosed > 0 || report.past.hoursOverdue > 0) && (
               <section className="stats-section">
-                <h2 className="stats-section__title">Уже прошло по времени</h2>
+                <h2 className="stats-section__title">{t('statsPastTitle')}</h2>
                 <p className="stats-section__lead">
-                  Закрыто {report.past.closedPct}% прошедших часов
+                  {t('statsPastLead', { pct: report.past.closedPct })}
                 </p>
                 <MetricRow
-                  label="Закрыто"
-                  value={formatHours(report.past.hoursClosed)}
-                  sub={` · ${report.past.tasksClosed} ${report.past.tasksClosed === 1 ? 'дело' : 'дел'}`}
+                  label={t('closed')}
+                  value={hours(report.past.hoursClosed)}
+                  sub={` · ${report.past.tasksClosed} ${taskWord(report.past.tasksClosed)}`}
                 />
                 <MetricRow
-                  label="Просрочено"
-                  value={formatHours(report.past.hoursOverdue)}
-                  sub={` · ${report.past.tasksOverdue} ${report.past.tasksOverdue === 1 ? 'дело' : 'дел'}`}
+                  label={t('overdue')}
+                  value={hours(report.past.hoursOverdue)}
+                  sub={` · ${report.past.tasksOverdue} ${taskWord(report.past.tasksOverdue)}`}
                 />
               </section>
             )}
 
             <section className="stats-section">
-              <h2 className="stats-section__title">План vs факт</h2>
-              <MetricRow label="Запланировано" value={formatHours(report.planFact.plannedHours)} />
-              <MetricRow label="Фактически" value={formatHours(report.planFact.actualHours)} />
+              <h2 className="stats-section__title">{t('statsPlanFact')}</h2>
+              <MetricRow label={t('planned')} value={hours(report.planFact.plannedHours)} />
+              <MetricRow label={t('actual')} value={hours(report.planFact.actualHours)} />
               <MetricRow
-                label="Разница"
+                label={t('delta')}
                 value={
                   report.planFact.diffPct !== null
-                    ? `${formatSignedHours(report.planFact.diffHours)} (${report.planFact.diffPct > 0 ? '+' : ''}${report.planFact.diffPct}%)`
-                    : formatSignedHours(report.planFact.diffHours)
+                    ? `${signedHours(report.planFact.diffHours)} (${report.planFact.diffPct > 0 ? '+' : ''}${report.planFact.diffPct}%)`
+                    : signedHours(report.planFact.diffHours)
                 }
               />
             </section>
 
             <section className="stats-section">
-              <h2 className="stats-section__title">Баланс по категориям</h2>
+              <h2 className="stats-section__title">{t('statsBalance')}</h2>
               {CATEGORY_ORDER.map((cat) => {
                 const row = report.byCategory[cat];
                 if (row.hoursScheduled <= 0) return null;
@@ -125,17 +139,17 @@ export function SettingsStatistics() {
                 return (
                   <div key={cat} className="stats-cat" data-cat={cat}>
                     <div className="stats-cat__head">
-                      <span className="stats-cat__name">{categoryLabel(cat)}</span>
+                      <span className="stats-cat__name">{t(CATEGORY_LABEL_KEY[cat])}</span>
                       <span className="stats-cat__nums">
-                        {formatHours(row.hoursScheduled)} · {share}%
+                        {hours(row.hoursScheduled)} · {share}%
                       </span>
                     </div>
                     <div className="stats-cat__bar" aria-hidden>
                       <span className="stats-cat__bar-done" style={{ width: `${share}%` }} />
                     </div>
                     <p className="stats-cat__hint">
-                      Выполнено {formatHours(row.hoursCompleted)}
-                      {row.hoursMissed > 0 && ` · просрочено ${formatHours(row.hoursMissed)}`}
+                      {t('statsCatDone', { hours: hours(row.hoursCompleted) })}
+                      {row.hoursMissed > 0 && t('statsCatMissed', { hours: hours(row.hoursMissed) })}
                     </p>
                   </div>
                 );
@@ -143,37 +157,40 @@ export function SettingsStatistics() {
             </section>
 
             <section className="stats-section">
-              <h2 className="stats-section__title">Нагрузка</h2>
+              <h2 className="stats-section__title">{t('statsLoad')}</h2>
               <MetricRow
-                label="Среднее в день"
-                value={formatHours(report.load.avgHoursPerDay)}
-                sub={` · ${report.load.daysInPeriod} дн.`}
+                label={t('avgDay')}
+                value={hours(report.load.avgHoursPerDay)}
+                sub={t('statsDaysShort', { n: report.load.daysInPeriod })}
               />
-              <MetricRow label="Всего за период" value={formatHours(report.hours.scheduled)} />
+              <MetricRow label={t('totalPeriod')} value={hours(report.hours.scheduled)} />
               {report.load.busiestWeekday && (
                 <MetricRow
-                  label="Самый загруженный день"
+                  label={t('busiest')}
                   value={report.load.busiestWeekday}
-                  sub={` · ${formatHours(report.load.busiestWeekdayHours)}`}
+                  sub={` · ${hours(report.load.busiestWeekdayHours)}`}
                 />
               )}
             </section>
 
             {report.important.hoursScheduled > 0 && (
               <section className="stats-section">
-                <h2 className="stats-section__title">Важные задачи</h2>
+                <h2 className="stats-section__title">{t('statsImportantTitle')}</h2>
                 <p className="stats-section__lead">
-                  {report.important.completionPct}% по времени · {report.important.taskCount}{' '}
-                  {report.important.taskCount === 1 ? 'дело' : 'дел'}
+                  {t('statsImportantLead', {
+                    pct: report.important.completionPct,
+                    n: report.important.taskCount,
+                    word: taskWord(report.important.taskCount),
+                  })}
                 </p>
-                <MetricRow label="Запланировано" value={formatHours(report.important.hoursScheduled)} />
-                <MetricRow label="Выполнено" value={formatHours(report.important.hoursCompleted)} />
+                <MetricRow label={t('scheduled')} value={hours(report.important.hoursScheduled)} />
+                <MetricRow label={t('doneHours')} value={hours(report.important.hoursCompleted)} />
               </section>
             )}
 
             {report.dynamics.hasPrevious && dynamics && (
               <section className="stats-section stats-dynamics">
-                <h2 className="stats-section__title">Динамика</h2>
+                <h2 className="stats-section__title">{t('statsDynamics')}</h2>
                 <p
                   className={`stats-dynamics__value ${
                     (report.dynamics.completedHoursDeltaPct ?? 0) >= 0
@@ -183,36 +200,36 @@ export function SettingsStatistics() {
                 >
                   {dynamics}
                 </p>
-                <p className="stats-cat__hint">Сравнение выполненных часов с {report.dynamics.previousLabel.toLowerCase()}</p>
+                <p className="stats-cat__hint">{t('statsDynamicsHint', { label: report.dynamics.previousLabel })}</p>
               </section>
             )}
 
             <p className="stats-tasks-note">
-              Дополнительно: {report.tasks.completed} / {report.tasks.total} дел закрыто
-              {report.tasks.planned > 0 && ` · ${report.tasks.planned} впереди`}
+              {t('statsExtra', { done: report.tasks.completed, total: report.tasks.total })}
+              {report.tasks.planned > 0 && t('statsAhead', { n: report.tasks.planned })}
             </p>
           </>
         )}
 
         {hasTails && (
           <section className="stats-section stats-tails">
-            <h2 className="stats-section__title">Хвосты</h2>
-            <p className="stats-section__lead">Незакрытые дела, время которых прошло</p>
+            <h2 className="stats-section__title">{t('statsTails')}</h2>
+            <p className="stats-section__lead">{t('statsTailsLead')}</p>
             <MetricRow
-              label="Старше 3 дней"
-              value={`${report.tails.over3Days.count} · ${formatHours(report.tails.over3Days.hours)}`}
+              label={t('older3')}
+              value={`${report.tails.over3Days.count} · ${hours(report.tails.over3Days.hours)}`}
             />
             <MetricRow
-              label="Старше 7 дней"
-              value={`${report.tails.over7Days.count} · ${formatHours(report.tails.over7Days.hours)}`}
+              label={t('older7')}
+              value={`${report.tails.over7Days.count} · ${hours(report.tails.over7Days.hours)}`}
             />
             {report.tails.oldest.length > 0 && (
               <ul className="stats-tail-list">
-                {report.tails.oldest.map((t) => (
-                  <li key={t.id} className="stats-tail-item">
-                    <span className="stats-tail-item__title">{t.title}</span>
+                {report.tails.oldest.map((item) => (
+                  <li key={item.id} className="stats-tail-item">
+                    <span className="stats-tail-item__title">{item.title}</span>
                     <span className="stats-tail-item__meta">
-                      {t.daysOpen} дн. · {formatHours(t.hours)}
+                      {t('statsTailMeta', { days: item.daysOpen, hours: hours(item.hours) })}
                     </span>
                   </li>
                 ))}
@@ -224,16 +241,15 @@ export function SettingsStatistics() {
         {session.isGuest ? (
           <div className="stats-upsell">
             <p className="stats-upsell__text">
-              Сейчас статистика считается на этом телефоне. С аккаунтом позже можно будет
-              сохранять её между устройствами.
+              {t('statsUpsell')}
             </p>
             <button type="button" className="btn btn--ghost settings-full" onClick={() => openAuth('choice', 'settings-stats')}>
-              Создать аккаунт
+              {t('onbRegister')}
             </button>
           </div>
         ) : (
           <p className="settings-note stats-footer-note">
-            Все метрики — по длительности задач в календаре. Просрочено — время прошло, дело не завершено.
+            {t('statsFooter')}
           </p>
         )}
       </div>

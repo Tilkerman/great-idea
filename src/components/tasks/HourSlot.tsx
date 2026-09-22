@@ -1,4 +1,5 @@
 import type { Task } from '../../types';
+import { useI18n } from '../../i18n/useI18n';
 import { canAddToHour, createDraftTask, MAX_TASKS_PER_HOUR } from '../../utils/hourSlot';
 import { TaskCard } from './TaskCard';
 import './HourSlot.css';
@@ -36,6 +37,7 @@ export function HourSlot({
   showAddStrip = true,
   onAdd,
 }: HourSlotProps) {
+  const { t } = useI18n();
   const count = tasks.length;
   const showAdd = canAddToHour(count) && showAddStrip;
   const density = count <= 1 ? 'single' : count <= 2 ? 'double' : count <= 3 ? 'triple' : 'quad';
@@ -50,7 +52,7 @@ export function HourSlot({
         type="button"
         className={`hour-slot hour-slot--empty ${compact ? 'hour-slot--compact' : ''}`}
         onClick={addDraft}
-        aria-label="Добавить дело"
+        aria-label={t('addTask')}
       >
         <span className="hour-slot__add-icon">+</span>
       </button>
@@ -81,7 +83,7 @@ export function HourSlot({
           type="button"
           className="hour-slot__add-strip"
           onClick={addDraft}
-          aria-label={`Добавить дело (${count}/${MAX_TASKS_PER_HOUR})`}
+          aria-label={`${t('addTask')} (${count}/${MAX_TASKS_PER_HOUR})`}
         >
           <span className="hour-slot__add-strip-plus" aria-hidden>+</span>
         </button>

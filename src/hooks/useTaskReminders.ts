@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { notificationPermission, REMINDER_NOTICE_BODY, showTiliNotification } from '../utils/notifications';
+import { notificationPermission, reminderNoticeBody, showTiliNotification } from '../utils/notifications';
+import { tLocale } from '../i18n/catalog';
 import { cloudPushConfigured, subscribeTiliPush, syncCloudReminders } from '../utils/webPush';
 import { reminderFireAtMs, alreadyCloudDueNow, markCloudDueNowSent } from '../utils/reminderTime';
 
@@ -32,14 +33,14 @@ export function useTaskReminders() {
           if (alreadyCloudDueNow(task.id)) continue;
           fired.current.add(key);
           markCloudDueNowSent([task.id]);
-          const title = task.title.trim() || 'Дело в календаре';
-          void showTiliNotification(title, REMINDER_NOTICE_BODY, `task-${task.id}`);
+          const title = task.title.trim() || tLocale(settings.locale, 'untitledTask');
+          void showTiliNotification(title, reminderNoticeBody(settings.locale), `task-${task.id}`);
           continue;
         }
         const id = window.setTimeout(() => {
           fired.current.add(key);
-          const title = task.title.trim() || 'Дело в календаре';
-          void showTiliNotification(title, REMINDER_NOTICE_BODY, `task-${task.id}`);
+          const title = task.title.trim() || tLocale(settings.locale, 'untitledTask');
+          void showTiliNotification(title, reminderNoticeBody(settings.locale), `task-${task.id}`);
         }, delay);
         timers.push(id);
       }
@@ -52,7 +53,7 @@ export function useTaskReminders() {
       if (cloudPushConfigured()) {
         await subscribeTiliPush();
         if (cancelled) return;
-        await syncCloudReminders(tasks);
+        await syncCloudReminders(tasks, settings.locale);
       }
       if (cancelled) return;
       armLocal();
@@ -64,5 +65,5 @@ export function useTaskReminders() {
       cancelled = true;
       for (const id of timers) window.clearTimeout(id);
     };
-  }, [ready, tasks, settings.notificationsEnabled, updateSettings]);
+  }, [ready, tasks, settings.notificationsEnabled, settings.locale, updateSettings]);
 }

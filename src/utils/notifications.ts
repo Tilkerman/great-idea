@@ -1,7 +1,10 @@
+import { tLocale } from '../i18n/catalog';
+import type { Locale } from '../types';
 import { isAppleMobile, isStandaloneApp } from './pwaInstall';
 
-export const REMINDER_NOTICE_BODY =
-  'В ближайший час вас ждёт важная задача. Обратите на неё внимание!';
+export function reminderNoticeBody(locale: Locale) {
+  return tLocale(locale, 'reminderBody');
+}
 
 export function notificationsSupported() {
   return typeof window !== 'undefined'
@@ -15,15 +18,15 @@ export function notificationPermission(): NotificationPermission | 'unsupported'
 }
 
 /** iOS показывает системный запрос только из PWA на Домой и по HTTPS. */
-export function notificationsBlockedReason(): string | null {
+export function notificationsBlockedReason(locale: Locale = 'ru'): string | null {
   if (!notificationsSupported()) {
     if (typeof window !== 'undefined' && !window.isSecureContext) {
-      return 'Нужен HTTPS. Открой приложение с иконки на Домой (сайт GitHub Pages), не локальный адрес по Wi‑Fi.';
+      return tLocale(locale, 'httpsNeeded');
     }
-    return 'Этот браузер не умеет уведомления.';
+    return tLocale(locale, 'browserNoNotif');
   }
   if (isAppleMobile() && !isStandaloneApp()) {
-    return 'На iPhone уведомления работают только из иконки на Домой, не из вкладки Safari.';
+    return tLocale(locale, 'iosHomeOnly');
   }
   return null;
 }

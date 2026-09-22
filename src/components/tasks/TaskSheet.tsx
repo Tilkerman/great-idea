@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from '../../context/AppContext';
-import { CATEGORY_META, REMINDER_OFFSET_OPTIONS } from '../../constants/categories';
+import { CATEGORY_LABEL_KEY, REMINDER_OFFSET_OPTIONS } from '../../constants/categories';
+import { useI18n } from '../../i18n/useI18n';
 import type { TaskCategory } from '../../types';
 import { getHoursRange, pad } from '../../utils/date';
 import {
@@ -20,10 +21,14 @@ function parseLocalDate(value: string): Date {
   return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
 }
 
-function formatSheetWhen(dateStr: string, hour: number): string {
+function formatSheetWhen(
+  dateStr: string,
+  hour: number,
+  dateTag: string,
+): string {
   const d = parseLocalDate(dateStr);
-  const weekday = d.toLocaleDateString('ru-RU', { weekday: 'short' }).replace(/\./g, '');
-  const month = d.toLocaleDateString('ru-RU', { month: 'short' }).replace(/\./g, '');
+  const weekday = d.toLocaleDateString(dateTag, { weekday: 'short' }).replace(/\./g, '');
+  const month = d.toLocaleDateString(dateTag, { month: 'short' }).replace(/\./g, '');
   return `${weekday}, ${d.getDate()} ${month} ${pad(hour)}:00`;
 }
 
@@ -33,6 +38,7 @@ export function TaskSheet() {
     tasks, placeTask, requestDelete, settings, updateSettings,
     taskClipboard, copyTaskToClipboard,
   } = useApp();
+  const { t, dateTag } = useI18n();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -121,17 +127,17 @@ export function TaskSheet() {
     if (!title.trim()) return;
     if (!slotPicked || slotHour === null) {
       setWhenOpen(true);
-      setError('Укажите дату и час');
+      setError(t('sheetPickWhen'));
       return;
     }
     if (hourFull) {
-      setError('В этом часе уже 5 дел — выберите другой час или день');
+      setError(t('sheetHourFull'));
       return;
     }
     const updated = status ? { ...buildUpdated(), status } : buildUpdated();
     const result = await placeTask(updated, parseLocalDate(slotDate), slotHour);
     if (result === 'full') {
-      setError('В этом часе уже 5 дел — выберите другой час или день');
+      setError(t('sheetHourFull'));
       return;
     }
     close();
@@ -151,7 +157,7 @@ export function TaskSheet() {
       important: data.important,
       reminderOffsetMinutes: data.reminderOffsetMinutes ?? null,
     });
-    setCopyHint('Скопировано');
+    setCopyHint(t('sheetCopied'));
     window.setTimeout(() => setCopyHint(''), 1600);
   };
 
@@ -166,22 +172,22 @@ export function TaskSheet() {
   };
 
   const slotInfo = (() => {
-    if (!slotPicked) return 'Выберите дату и час, иначе сохранить нельзя';
-    if (hourFull) return 'Этот час заполнен (5/5)';
-    if (afterAdd <= 1) return '1 дело на весь час (60 мин)';
-    if (afterAdd <= 4) return `${afterAdd} дела × 15 мин в этом часе`;
-    return `${afterAdd} дел × 12 мин в этом часе`;
+    if (!slotPicked) return t('sheetPickWhenHint');
+    if (hourFull) return t('sheetHourFullHint');
+    if (afterAdd <= 1) return t('sheetOneHour');
+    if (afterAdd <= 4) return t('sheetN15', { n: afterAdd });
+    return t('sheetN12', { n: afterAdd });
   })();
 
   const whenLabel = slotPicked && slotHour !== null
-    ? formatSheetWhen(slotDate, slotHour)
-    : 'Дата и час не выбраны';
+    ? formatSheetWhen(slotDate, slotHour, dateTag)
+    : t('sheetWhenMissing');
 
   return createPortal(
     <div className="sheet-overlay" onClick={close}>
       <div className="task-sheet" onClick={(e) => e.stopPropagation()}>
         <div className="task-sheet__header">
-          <span className="task-sheet__time">{whenLabel || 'Дата и час'}</span>
+          <span className="task-sheet__time">{whenLabel || t('sheetWhenFallback')}</span>
           <div className="task-sheet__tools">
             <button
               type="button"
@@ -189,7 +195,7 @@ export function TaskSheet() {
               onClick={() => setWhenOpen((v) => !v)}
               aria-expanded={whenOpen}
             >
-              {whenOpen ? 'Свернуть' : (slotPicked ? 'Изменить' : 'Указать')}
+              {whenOpen ? t('sheetCollapse') : (slotPicked ? t('sheetEdit') : t('sheetSet'))}
             </button>
             {showClipActions && (
               <>
@@ -199,7 +205,7 @@ export function TaskSheet() {
                   disabled={!canCopy}
                   onClick={copyTask}
                 >
-                  {copyHint || 'Копировать'}
+                  {copyHint || t('sheetCopy')}
                 </button>
                 <button
                   type="button"
@@ -207,12 +213,12 @@ export function TaskSheet() {
                   disabled={!canPaste}
                   onClick={pasteTask}
                 >
-                  Вставить
+                  {t('sheetPaste')}
                 </button>
               </>
             )}
           </div>
-          <button type="button" className="task-sheet__close" onClick={close} aria-label="Закрыть">
+          <button type="button" className="task-sheet__close" onClick={close} aria-label={t('close')}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
               <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
             </svg>
@@ -222,7 +228,7 @@ export function TaskSheet() {
         {whenOpen && (
           <div className="task-sheet__when">
             <label className="task-sheet__field task-sheet__field--inline">
-              Дата
+              {t('sheetDate')}
               <span className="task-sheet__date-wrap">
                 <input
                   type="date"
@@ -236,7 +242,7 @@ export function TaskSheet() {
               </span>
             </label>
             <label className="task-sheet__field task-sheet__field--inline">
-              Час
+              {t('sheetHour')}
               <span className="select-wrap select-wrap--compact">
                 <select
                   className="task-sheet__select"
@@ -247,7 +253,7 @@ export function TaskSheet() {
                     setError('');
                   }}
                 >
-                  <option value="">Час</option>
+                  <option value="">{t('sheetHour')}</option>
                   {hourOptions.map((h) => (
                     <option key={h} value={h}>{pad(h)}:00</option>
                   ))}
@@ -262,7 +268,7 @@ export function TaskSheet() {
 
         <input
           className="task-sheet__title"
-          placeholder="Название задачи"
+          placeholder={t('sheetTitlePh')}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           autoFocus
@@ -270,29 +276,29 @@ export function TaskSheet() {
         <textarea
           ref={descRef}
           className="task-sheet__desc"
-          placeholder="Описание (необязательно)"
+          placeholder={t('sheetDescPh')}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={1}
         />
 
         <div className="task-sheet__categories">
-          {(Object.keys(CATEGORY_META) as TaskCategory[]).map((cat) => (
+          {(Object.keys(CATEGORY_LABEL_KEY) as TaskCategory[]).map((cat) => (
             <button
               key={cat}
               type="button"
               data-cat={cat}
               className={`cat-chip ${category === cat ? 'cat-chip--active' : ''}`}
-              aria-label={CATEGORY_META[cat].label}
+              aria-label={t(CATEGORY_LABEL_KEY[cat])}
               onClick={() => setCategory(cat)}
             >
-              {CATEGORY_META[cat].label.split(' ')[0]}
+              {t(CATEGORY_LABEL_KEY[cat]).split(' ')[0]}
             </button>
           ))}
         </div>
 
         <label className="task-sheet__field">
-          Напомнить
+          {t('sheetRemind')}
           <span className="select-wrap">
             <select
               className="task-sheet__select"
@@ -308,18 +314,18 @@ export function TaskSheet() {
                     return;
                   }
                   if (result === 'blocked') {
-                    setError(notificationsBlockedReason() ?? 'Уведомления сейчас недоступны.');
+                    setError(notificationsBlockedReason(settings.locale) ?? t('sheetNotifyBlocked'));
                     return;
                   }
                   if (result === 'denied') {
-                    setError('Телефон запретил баннеры. Включи их в настройках системы: Уведомления → TiLi.');
+                    setError(t('sheetNotifyDenied'));
                   }
                 });
               }}
             >
               {REMINDER_OFFSET_OPTIONS.map((opt) => (
                 <option key={String(opt.value)} value={opt.value === null ? '' : String(opt.value)}>
-                  {opt.label}
+                  {t(opt.labelKey)}
                 </option>
               ))}
             </select>
@@ -328,7 +334,7 @@ export function TaskSheet() {
 
         <label className="task-sheet__check">
           <input type="checkbox" checked={important} onChange={(e) => setImportant(e.target.checked)} />
-          Важная задача
+          {t('sheetImportant')}
         </label>
 
         <div className="task-sheet__actions">
@@ -338,16 +344,16 @@ export function TaskSheet() {
             disabled={!title.trim() || !slotPicked}
             onClick={() => { void saveToSlot(); }}
           >
-            {isNew ? 'Создать' : 'Сохранить'}
+            {isNew ? t('create') : t('save')}
           </button>
           {!isNew && (
             <div className="task-sheet__actions-row">
-              <button type="button" className="btn btn--ghost" onClick={() => { void saveToSlot('completed'); }}>Завершить</button>
+              <button type="button" className="btn btn--ghost" onClick={() => { void saveToSlot('completed'); }}>{t('complete')}</button>
               <button type="button" className="btn btn--danger" onClick={del}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                   <path d="M4 7h16M9 7V5h6v2m-8 0v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V7" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Удалить
+                {t('delete')}
               </button>
             </div>
           )}

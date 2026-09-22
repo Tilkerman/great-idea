@@ -304,7 +304,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       root.dataset.theme = prefersDark ? 'dark' : 'light';
     }
-  }, [settings.theme]);
+    root.lang = settings.locale;
+  }, [settings.theme, settings.locale]);
 
   const value = useMemo(
     () => ({

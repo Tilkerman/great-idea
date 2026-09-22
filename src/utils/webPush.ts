@@ -1,7 +1,8 @@
 import { newTaskId } from './id';
-import { REMINDER_NOTICE_BODY } from './notifications';
+import { reminderNoticeBody } from './notifications';
+import { tLocale } from '../i18n/catalog';
 import { cloudReminderFireAt, markCloudDueNowSent } from './reminderTime';
-import type { Task } from '../types';
+import type { Locale, Task } from '../types';
 
 const DEVICE_KEY = 'tili-push-device';
 
@@ -63,7 +64,7 @@ export async function subscribeTiliPush(): Promise<'ok' | 'skipped' | 'failed'> 
   }
 }
 
-export async function syncCloudReminders(tasks: Task[]): Promise<boolean> {
+export async function syncCloudReminders(tasks: Task[], locale: Locale = 'ru'): Promise<boolean> {
   if (!cloudPushConfigured()) return false;
   const dueNowIds: string[] = [];
   const reminders = tasks
@@ -74,8 +75,8 @@ export async function syncCloudReminders(tasks: Task[]): Promise<boolean> {
       return {
         id: task.id,
         fireAt: plan.fireAt,
-        title: task.title.trim() || 'Дело в календаре',
-        body: REMINDER_NOTICE_BODY,
+        title: task.title.trim() || tLocale(locale, 'untitledTask'),
+        body: reminderNoticeBody(locale),
       };
     })
     .filter((row): row is NonNullable<typeof row> => row !== null);

@@ -23,6 +23,11 @@
   touch-action: pan-y;
 }
 
+.task-card--armed,
+.task-card--swiping {
+  touch-action: none;
+}
+
 .task-card--armed {
   touch-action: none;
   z-index: 2;
@@ -58,10 +63,17 @@
   height: 100%;
   background: transparent;
   color: inherit;
+  will-change: transform;
 }
 
 .task-card--swiping .task-card__swipe-inner {
   transition: none;
+  background: var(--task-bg);
+}
+
+.task-card--swipe-back .task-card__swipe-inner,
+.task-card--swipe-out .task-card__swipe-inner {
+  transition: transform 0.2s ease-out;
   background: var(--task-bg);
 }
 

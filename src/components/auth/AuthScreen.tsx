@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useI18n } from '../../i18n/useI18n';
 import type { AuthStart } from '../../types';
 import {
   createAccount,
@@ -33,6 +34,7 @@ function stepFromStart(start: AuthStart): Step {
 
 export function AuthScreen() {
   const { session, setSession, setScreen, authStart, authBackScreen } = useApp();
+  const { t } = useI18n();
   const [step, setStep] = useState<Step>(() => stepFromStart(authStart));
   const [name, setName] = useState(session.name ?? '');
   const [email, setEmail] = useState(session.email ?? '');
@@ -65,10 +67,10 @@ export function AuthScreen() {
   };
 
   const title =
-    step.startsWith('register') ? 'Регистрация'
-      : step.startsWith('forgot') ? 'Пароль'
-        : step.startsWith('login') ? 'Вход'
-          : 'Аккаунт';
+    step.startsWith('register') ? t('authRegister')
+      : step.startsWith('forgot') ? t('authPassword')
+        : step.startsWith('login') ? t('authLogin')
+          : t('authAccount');
 
   const progress =
     step === 'register-name' ? '1 / 3'
@@ -78,11 +80,11 @@ export function AuthScreen() {
 
   async function submitRegister() {
     if (password.length < 6) {
-      setError('Пароль — минимум 6 символов');
+      setError(t('authPasswordMinShort'));
       return;
     }
     if (password !== password2) {
-      setError('Пароли не совпадают');
+      setError(t('passwordMismatch'));
       return;
     }
     setBusy(true);
@@ -98,8 +100,8 @@ export function AuthScreen() {
       setStep('register-done');
     } catch (e) {
       setError(e instanceof Error && e.message === 'exists'
-        ? 'Этот email уже есть на этом телефоне. Войдите.'
-        : 'Не получилось создать аккаунт');
+        ? t('authEmailTakenLogin')
+        : t('authCreateFail'));
     } finally {
       setBusy(false);
     }
@@ -111,8 +113,8 @@ export function AuthScreen() {
       const account = await verifyPassword(email, password);
       if (!account) {
         setError(findAccount(email)
-          ? 'Неверный пароль'
-          : 'Аккаунта с этим email на этом телефоне нет');
+          ? t('authBadPassword')
+          : t('authNoAccount'));
         return;
       }
       setSession(sessionFromAccount(account));
@@ -124,18 +126,18 @@ export function AuthScreen() {
 
   async function submitReset() {
     if (password.length < 6) {
-      setError('Пароль — минимум 6 символов');
+      setError(t('authPasswordMinShort'));
       return;
     }
     if (password !== password2) {
-      setError('Пароли не совпадают');
+      setError(t('passwordMismatch'));
       return;
     }
     setBusy(true);
     try {
       const ok = await resetPassword(email, password);
       if (!ok) {
-        setError('Аккаунта с этим email на этом телефоне нет');
+        setError(t('authNoAccount'));
         return;
       }
       setPassword('');
@@ -149,7 +151,7 @@ export function AuthScreen() {
   return (
     <div className="settings-page auth-page">
       <header className="settings-topbar">
-        <button type="button" onClick={goBack}>‹ Назад</button>
+        <button type="button" onClick={goBack}>{t('back')}</button>
         <span>{title}</span>
         <span className="auth-progress">{progress}</span>
       </header>
@@ -158,31 +160,30 @@ export function AuthScreen() {
         {step === 'choice' && (
           <>
             <p className="auth-form__intro">
-              Можно пользоваться без аккаунта — всё останется на этом телефоне.
-              Регистрация нужна позже для синхронизации, не для уведомлений.
+              {t('authIntro')}
             </p>
             <button type="button" className="btn btn--primary settings-full" onClick={() => { setError(''); setStep('register-name'); }}>
-              Создать аккаунт
+              {t('onbRegister')}
             </button>
             <button type="button" className="btn btn--ghost settings-full" onClick={() => { setError(''); setStep('login-email'); }}>
-              У меня уже есть аккаунт
+              {t('authHaveAccount')}
             </button>
             <button type="button" className="btn btn--ghost settings-full" onClick={backToApp}>
-              Продолжить без аккаунта
+              {t('authContinueGuest')}
             </button>
           </>
         )}
 
         {step === 'register-name' && (
           <>
-            <h2 className="auth-form__title">Как к тебе обращаться?</h2>
-            <p className="auth-form__intro">Имя можно сменить в настройках в любой момент.</p>
+            <h2 className="auth-form__title">{t('authHowAddress')}</h2>
+            <p className="auth-form__intro">{t('authNameLater')}</p>
             <label className="settings-field">
-              Имя
+              {t('name')}
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Например, Алекс"
+                placeholder={t('authNamePh')}
                 autoComplete="name"
                 autoFocus
               />
@@ -192,24 +193,24 @@ export function AuthScreen() {
               className="btn btn--primary settings-full"
               onClick={() => {
                 if (name.trim().length < 2) {
-                  setError('Имя — хотя бы 2 символа');
+                  setError(t('nameTooShort'));
                   return;
                 }
                 setError('');
                 setStep('register-email');
               }}
             >
-              Далее
+              {t('onbNext')}
             </button>
           </>
         )}
 
         {step === 'register-email' && (
           <>
-            <h2 className="auth-form__title">Email</h2>
-            <p className="auth-form__intro">Пока аккаунт живёт только на этом устройстве. Облака ещё нет.</p>
+            <h2 className="auth-form__title">{t('email')}</h2>
+            <p className="auth-form__intro">{t('authEmailDevice')}</p>
             <label className="settings-field">
-              Email
+              {t('email')}
               <input
                 type="email"
                 value={email}
@@ -225,26 +226,26 @@ export function AuthScreen() {
               className="btn btn--primary settings-full"
               onClick={() => {
                 if (!isValidEmail(email)) {
-                  setError('Введите нормальный email');
+                  setError(t('badEmail'));
                   return;
                 }
                 if (findAccount(email)) {
-                  setError('Этот email уже есть. Войдите или укажите другой.');
+                  setError(t('authEmailExistsOther'));
                   return;
                 }
                 setError('');
                 setStep('register-password');
               }}
             >
-              Далее
+              {t('onbNext')}
             </button>
           </>
         )}
 
         {step === 'register-password' && (
           <>
-            <h2 className="auth-form__title">Придумай пароль</h2>
-            <p className="auth-form__intro">Минимум 6 символов. Запомни его — восстановить получится только на этом телефоне.</p>
+            <h2 className="auth-form__title">{t('authPickPassword')}</h2>
+            <p className="auth-form__intro">{t('authPasswordHint')}</p>
             <PasswordFields
               password={password}
               password2={password2}
@@ -255,30 +256,29 @@ export function AuthScreen() {
               autoComplete="new-password"
             />
             <button type="button" className="btn btn--primary settings-full" disabled={busy} onClick={() => { void submitRegister(); }}>
-              Создать аккаунт
+              {t('onbRegister')}
             </button>
           </>
         )}
 
         {step === 'register-done' && (
           <>
-            <h2 className="auth-form__title">Готово, {session.name}</h2>
+            <h2 className="auth-form__title">{t('authDoneHello', { name: session.name ?? '' })}</h2>
             <p className="auth-form__intro">
-              Аккаунт сохранён на этом телефоне. Календарь уже работает.
-              Имя, email и пароль можно сменить в настройках.
+              {t('authDoneBody')}
             </p>
             <button type="button" className="btn btn--primary settings-full" onClick={() => setScreen('calendar')}>
-              Открыть календарь
+              {t('authOpenCalendar')}
             </button>
           </>
         )}
 
         {step === 'login-email' && (
           <>
-            <h2 className="auth-form__title">Вход</h2>
-            <p className="auth-form__intro">Войти можно в аккаунт, который создавали на этом устройстве.</p>
+            <h2 className="auth-form__title">{t('authLogin')}</h2>
+            <p className="auth-form__intro">{t('authLoginIntro')}</p>
             <label className="settings-field">
-              Email
+              {t('email')}
               <input
                 type="email"
                 value={email}
@@ -293,7 +293,7 @@ export function AuthScreen() {
               className="btn btn--primary settings-full"
               onClick={() => {
                 if (!isValidEmail(email)) {
-                  setError('Введите нормальный email');
+                  setError(t('badEmail'));
                   return;
                 }
                 setError('');
@@ -301,20 +301,20 @@ export function AuthScreen() {
                 setStep('login-password');
               }}
             >
-              Далее
+              {t('onbNext')}
             </button>
             <button type="button" className="auth-form__switch" onClick={() => { setError(''); setStep('register-name'); }}>
-              Нет аккаунта? Зарегистрироваться
+              {t('authNoAccountRegister')}
             </button>
           </>
         )}
 
         {step === 'login-password' && (
           <>
-            <h2 className="auth-form__title">Пароль</h2>
+            <h2 className="auth-form__title">{t('password')}</h2>
             <p className="auth-form__intro">{normalizeEmail(email)}</p>
             <label className="settings-field">
-              Пароль
+              {t('password')}
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
@@ -324,25 +324,25 @@ export function AuthScreen() {
               />
             </label>
             <button type="button" className="auth-form__switch" onClick={() => setShowPassword((v) => !v)}>
-              {showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+              {showPassword ? t('hidePassword') : t('showPassword')}
             </button>
             <button type="button" className="btn btn--primary settings-full" disabled={busy} onClick={() => { void submitLogin(); }}>
-              Войти
+              {t('authSignIn')}
             </button>
             <button type="button" className="auth-form__switch" onClick={() => { setError(''); setPassword(''); setPassword2(''); setStep('forgot-email'); }}>
-              Не помню пароль
+              {t('authForgot')}
             </button>
           </>
         )}
 
         {step === 'forgot-email' && (
           <>
-            <h2 className="auth-form__title">Сброс пароля</h2>
+            <h2 className="auth-form__title">{t('authResetTitle')}</h2>
             <p className="auth-form__intro">
-              Письма никуда не уходят. Новый пароль можно задать, только если аккаунт уже есть на этом телефоне.
+              {t('authResetIntro')}
             </p>
             <label className="settings-field">
-              Email
+              {t('email')}
               <input
                 type="email"
                 value={email}
@@ -357,11 +357,11 @@ export function AuthScreen() {
               className="btn btn--primary settings-full"
               onClick={() => {
                 if (!isValidEmail(email)) {
-                  setError('Введите нормальный email');
+                  setError(t('badEmail'));
                   return;
                 }
                 if (!findAccount(email)) {
-                  setError('Этого аккаунта на этом телефоне нет');
+                  setError(t('authNoAccountOnPhone'));
                   return;
                 }
                 setError('');
@@ -370,14 +370,14 @@ export function AuthScreen() {
                 setStep('forgot-password');
               }}
             >
-              Далее
+              {t('onbNext')}
             </button>
           </>
         )}
 
         {step === 'forgot-password' && (
           <>
-            <h2 className="auth-form__title">Новый пароль</h2>
+            <h2 className="auth-form__title">{t('newPassword')}</h2>
             <PasswordFields
               password={password}
               password2={password2}
@@ -388,17 +388,17 @@ export function AuthScreen() {
               autoComplete="new-password"
             />
             <button type="button" className="btn btn--primary settings-full" disabled={busy} onClick={() => { void submitReset(); }}>
-              Сохранить пароль
+              {t('savePassword')}
             </button>
           </>
         )}
 
         {step === 'forgot-done' && (
           <>
-            <h2 className="auth-form__title">Пароль обновлён</h2>
-            <p className="auth-form__intro">Теперь можно войти с новым паролем.</p>
+            <h2 className="auth-form__title">{t('authPasswordUpdated')}</h2>
+            <p className="auth-form__intro">{t('authPasswordUpdatedBody')}</p>
             <button type="button" className="btn btn--primary settings-full" onClick={() => { setPassword(''); setStep('login-password'); }}>
-              Войти
+              {t('authSignIn')}
             </button>
           </>
         )}
@@ -426,19 +426,20 @@ function PasswordFields({
   onToggle: () => void;
   autoComplete: string;
 }) {
+  const { t } = useI18n();
   const type = show ? 'text' : 'password';
   return (
     <>
       <label className="settings-field">
-        Пароль
+        {t('password')}
         <input type={type} value={password} onChange={(e) => onPassword(e.target.value)} autoComplete={autoComplete} />
       </label>
       <label className="settings-field">
-        Ещё раз
+        {t('authPasswordAgain')}
         <input type={type} value={password2} onChange={(e) => onPassword2(e.target.value)} autoComplete={autoComplete} />
       </label>
       <button type="button" className="auth-form__switch" onClick={onToggle}>
-        {show ? 'Скрыть пароль' : 'Показать пароль'}
+        {show ? t('hidePassword') : t('showPassword')}
       </button>
     </>
   );

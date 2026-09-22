@@ -1,31 +1,36 @@
 import { useApp } from '../../context/AppContext';
 import { createInboxDraft } from '../../utils/hourSlot';
+import { useI18n } from '../../i18n/useI18n';
 import './BottomNav.css';
 
-const TABS = [
-  { id: 'calendar', label: 'Календарь', icon: '📅' },
-  { id: 'growth', label: 'Развитие', icon: '📈' },
-  { id: 'settings', label: 'Настройки', icon: '⚙️' },
-  { id: 'wallet', label: 'Кошелёк', icon: '💰' },
-] as const;
+const TAB_IDS = ['calendar', 'growth', 'settings', 'profile'] as const;
 
 export function BottomNav() {
   const { screen, setScreen, setEditingTask, setSheetOpen } = useApp();
+  const { t } = useI18n();
 
   const openNewTask = () => {
     setEditingTask(createInboxDraft());
     setSheetOpen(true);
   };
 
-  const onTab = (id: (typeof TABS)[number]['id']) => {
+  const tabs = [
+    { id: 'calendar' as const, label: t('navCalendar'), icon: '📅' },
+    { id: 'growth' as const, label: t('navGrowth'), icon: '📈' },
+    { id: 'settings' as const, label: t('navSettings'), icon: '⚙️' },
+    { id: 'profile' as const, label: t('navProfile'), icon: '👤' },
+  ];
+
+  const onTab = (id: (typeof TAB_IDS)[number]) => {
     if (id === 'calendar') setScreen('calendar');
     else if (id === 'settings') setScreen('settings');
-    else alert('Скоро в TiLi');
+    else if (id === 'profile') setScreen('settings-profile');
+    else alert(t('soon'));
   };
 
   return (
     <nav className="bottom-nav">
-      {TABS.slice(0, 2).map((tab) => (
+      {tabs.slice(0, 2).map((tab) => (
         <button
           key={tab.id}
           type="button"
@@ -39,7 +44,7 @@ export function BottomNav() {
       <button
         type="button"
         className="bottom-nav__item bottom-nav__item--add"
-        aria-label="Новая задача"
+        aria-label={t('navNewTask')}
         onClick={openNewTask}
       >
         <span className="bottom-nav__plus" aria-hidden>
@@ -48,7 +53,7 @@ export function BottomNav() {
           </svg>
         </span>
       </button>
-      {TABS.slice(2).map((tab) => (
+      {tabs.slice(2).map((tab) => (
         <button
           key={tab.id}
           type="button"

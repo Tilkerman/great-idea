@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useI18n } from '../../i18n/useI18n';
 import {
   type BeforeInstallPromptEvent,
   canWebShare,
@@ -13,31 +14,33 @@ import {
 import './Settings.css';
 
 function InstallGuide({ ios }: { ios: boolean }) {
+  const { t } = useI18n();
   if (ios) {
     return (
       <ol className="settings-install__steps">
-        <li>Открой <strong>Safari</strong> (на iPhone установка только через него).</li>
-        <li>Перейди на <strong>{TILI_PUBLIC_URL}</strong></li>
-        <li>Нажми кнопку <strong>«Поделиться»</strong> (квадрат со стрелкой вниз).</li>
-        <li>Выбери <strong>«На экран Домой»</strong>.</li>
-        <li>Нажми <strong>«Добавить»</strong> — иконка TiLi появится на главном экране.</li>
+        <li>{t('installIos1')}</li>
+        <li>{t('installGo')} <strong>{TILI_PUBLIC_URL}</strong></li>
+        <li>{t('installIos3')}</li>
+        <li>{t('installIos4')}</li>
+        <li>{t('installIos5')}</li>
       </ol>
     );
   }
 
   return (
     <ol className="settings-install__steps">
-      <li>Открой <strong>Chrome</strong> на Android.</li>
-      <li>Перейди на <strong>{TILI_PUBLIC_URL}</strong></li>
-      <li>Нажми меню <strong>(⋮)</strong> справа вверху.</li>
-      <li>Выбери <strong>«Установить приложение»</strong> или <strong>«На главный экран»</strong>.</li>
-      <li>Подтверди — иконка TiLi появится рядом с другими приложениями.</li>
+      <li>{t('installAnd1')}</li>
+      <li>{t('installGo')} <strong>{TILI_PUBLIC_URL}</strong></li>
+      <li>{t('installAnd3')}</li>
+      <li>{t('installAnd4')}</li>
+      <li>{t('installAnd5')}</li>
     </ol>
   );
 }
 
 export function SettingsInstall() {
   const { setScreen } = useApp();
+  const { t, locale } = useI18n();
   const isInstalled = useMemo(() => isStandaloneApp(), []);
   const isIos = useMemo(() => isAppleMobile(), []);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -74,7 +77,7 @@ export function SettingsInstall() {
         await installPrompt.prompt();
         const { outcome } = await installPrompt.userChoice;
         if (outcome === 'accepted') {
-          setFeedback('Устанавливаем… Иконка скоро появится на главном экране.');
+          setFeedback(t('installBusy'));
           setInstallPrompt(null);
           setShowGuide(false);
         } else {
@@ -93,17 +96,17 @@ export function SettingsInstall() {
     setFeedback(null);
     setShareBusy(true);
     try {
-      const result = await shareAppLink();
+      const result = await shareAppLink(locale);
       if (result === 'copied') {
-        setFeedback('Ссылка скопирована — отправь её на телефон или в чат.');
+        setFeedback(t('linkCopied'));
       }
     } catch (err) {
       if ((err as Error).name === 'AbortError') return;
       try {
         await copyAppLink();
-        setFeedback('Ссылка скопирована — отправь её на телефон или в чат.');
+        setFeedback(t('linkCopied'));
       } catch {
-        setFeedback('Не удалось поделиться. Скопируй ссылку из адресной строки Safari или Chrome.');
+        setFeedback(t('shareFail'));
       }
     } finally {
       setShareBusy(false);
@@ -113,14 +116,14 @@ export function SettingsInstall() {
   return (
     <div className="settings-page">
       <header className="settings-topbar">
-        <button type="button" onClick={() => setScreen('settings')}>‹ Назад</button>
-        <span>Установка</span>
+        <button type="button" onClick={() => setScreen('settings')}>{t('back')}</button>
+        <span>{t('settingsInstall')}</span>
         <span />
       </header>
 
       <div className="settings-form settings-install-page">
-        <p className="settings-install__heading">Установить на телефон</p>
-        <p className="settings-install__lead">PWA — как обычное приложение, но без App Store</p>
+        <p className="settings-install__heading">{t('installOnPhone')}</p>
+        <p className="settings-install__lead">{t('installLead')}</p>
 
         <div className="settings-install__actions">
           {!isInstalled && (
@@ -131,7 +134,7 @@ export function SettingsInstall() {
               data-track="install-button-click"
               onClick={() => { void onInstall(); }}
             >
-              Установить на телефон
+              {t('installOnPhone')}
             </button>
           )}
           <button
@@ -140,57 +143,50 @@ export function SettingsInstall() {
             disabled={shareBusy}
             onClick={() => { void onShare(); }}
           >
-            {showShare ? 'Поделиться ссылкой' : 'Скопировать ссылку'}
+            {showShare ? t('shareLink') : t('copyLink')}
           </button>
         </div>
 
         {feedback && <p className="settings-install__feedback" role="status">{feedback}</p>}
 
         {showGuide && !isInstalled && (
-          <div ref={guideRef} className="settings-install__guide" role="region" aria-label="Как установить">
+          <div ref={guideRef} className="settings-install__guide" role="region" aria-label={t('howInstall')}>
             <p className="settings-install__guide-title">
-              {isIos ? 'Установка на iPhone' : 'Установка на Android'}
+              {isIos ? t('installIos') : t('installAndroid')}
             </p>
             <InstallGuide ios={isIos} />
             <p className="settings-install__text">
-              После этого открывай TiLi с главного экрана — так работает офлайн и быстрее запуск.
+              {t('afterInstall')}
             </p>
           </div>
         )}
 
         {isInstalled ? (
           <p className="settings-install__text">
-            TiLi уже на главном экране телефона. Данные хранятся только на этом устройстве.
+            {t('alreadyHome')}
           </p>
         ) : (
           <>
             <p className="settings-install__text">
-              TiLi — Progressive Web App. Ставится на iPhone или Android прямо из браузера,
-              работает офлайн после первой загрузки.
+              {t('pwaExplainLong')}
             </p>
             <div className="settings-install__box">
-              <p className="settings-install__box-title">Работает без интернета</p>
+              <p className="settings-install__box-title">{t('installOfflineTitle')}</p>
               <p className="settings-install__text">
-                Календарь и задачи хранятся на телефоне. Сеть нужна только чтобы один раз
-                открыть и установить приложение.
+                {t('installOfflineBody')}
               </p>
             </div>
             {!showGuide && (
               <>
-                <p className="settings-install__subhead">Кратко</p>
+                <p className="settings-install__subhead">{t('installBrief')}</p>
                 <ul className="settings-install__list">
-                  <li>
-                    <strong>Android:</strong> Chrome → меню (⋮) → «Установить приложение»
-                  </li>
-                  <li>
-                    <strong>iPhone:</strong> Safari → «Поделиться» → «На экран Домой»
-                  </li>
+                  <li>{t('installBriefAndroid')}</li>
+                  <li>{t('installBriefIos')}</li>
                 </ul>
               </>
             )}
             <p className="settings-install__text">
-              Нажми «Установить на телефон» — откроется подробная инструкция или системное окно
-              установки.
+              {t('installTapHint')}
             </p>
           </>
         )}

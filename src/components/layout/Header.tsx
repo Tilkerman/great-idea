@@ -1,12 +1,13 @@
 import { useApp } from '../../context/AppContext';
-import { MONTH_NAMES } from '../../constants/categories';
 import { addDays, addMonths } from '../../utils/date';
+import { useI18n } from '../../i18n/useI18n';
 import './Header.css';
 
 export function Header() {
   const {
     focusDate, setFocusDate, setZoom, zoom,
   } = useApp();
+  const { t, months, dateTag } = useI18n();
 
   const goToday = () => {
     setFocusDate(new Date());
@@ -30,8 +31,8 @@ export function Header() {
   const title = zoom === 'year'
     ? String(focusDate.getFullYear())
     : zoom === 'day'
-      ? focusDate.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' })
-      : `${MONTH_NAMES[focusDate.getMonth()]} ${focusDate.getFullYear()}`;
+      ? focusDate.toLocaleDateString(dateTag, { weekday: 'short', day: 'numeric', month: 'long' })
+      : `${months[focusDate.getMonth()]} ${focusDate.getFullYear()}`;
 
   return (
     <header className="app-header">
@@ -46,13 +47,13 @@ export function Header() {
         <span className="app-header__logo">Calendar</span>
       </div>
       <div className="app-header__nav">
-        <button type="button" className="app-header__arrow" onClick={prev} aria-label="Назад">
+        <button type="button" className="app-header__arrow" onClick={prev} aria-label={t('headerBack')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
             <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
         <button type="button" className="app-header__period" onClick={goToday}>{title}</button>
-        <button type="button" className="app-header__arrow" onClick={next} aria-label="Вперёд">
+        <button type="button" className="app-header__arrow" onClick={next} aria-label={t('headerForward')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
             <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

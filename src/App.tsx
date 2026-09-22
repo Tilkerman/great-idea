@@ -20,18 +20,20 @@ import { SettingsInstall } from './components/settings/SettingsInstall';
 import { SettingsNotifications } from './components/settings/SettingsNotifications';
 import { useTaskReminders } from './hooks/useTaskReminders';
 import { useOpenTaskFromNotification } from './hooks/useOpenTaskFromNotification';
+import { useI18n } from './i18n/useI18n';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
+  const { t } = useI18n();
   if (!pendingDelete) return null;
   return (
     <ConfirmDialog
-      title="Удалить запись?"
+      title={t('deleteTitle')}
       message={pendingDelete.title
-        ? `«${pendingDelete.title}» будет удалена. Это нельзя отменить.`
-        : 'Эта запись будет удалена. Это нельзя отменить.'}
-      confirmLabel="Удалить"
-      cancelLabel="Отмена"
+        ? t('deleteNamed', { title: pendingDelete.title })
+        : t('deleteUnnamed')}
+      confirmLabel={t('delete')}
+      cancelLabel={t('cancel')}
       onCancel={cancelDelete}
       onConfirm={() => { void confirmDelete(); }}
     />
@@ -43,8 +45,9 @@ function AppRouter() {
   useTaskReminders();
   useOpenTaskFromNotification();
 
+  const { t } = useI18n();
   if (!ready) {
-    return <div className="app-loading">Загрузка TiLi…</div>;
+    return <div className="app-loading">{t('loading')}</div>;
   }
 
   switch (screen) {

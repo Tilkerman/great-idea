@@ -1,10 +1,11 @@
 import { useApp } from '../../context/AppContext';
-import { MONTH_NAMES_SHORT } from '../../constants/categories';
+import { useI18n } from '../../i18n/useI18n';
 import { isToday } from '../../utils/date';
 import './CalendarViews.css';
 
 export function YearView() {
   const { focusDate, setFocusDate, setZoom } = useApp();
+  const { monthsShort } = useI18n();
   const year = focusDate.getFullYear();
 
   return (
@@ -23,7 +24,7 @@ export function YearView() {
                 setZoom('month');
               }}
             >
-              <span className="year-mini-month__label">{MONTH_NAMES_SHORT[m]}</span>
+              <span className="year-mini-month__label">{monthsShort[m]}</span>
               <MiniMonthGrid year={year} month={m} />
             </button>
           );

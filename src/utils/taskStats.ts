@@ -1,5 +1,5 @@
-import { CATEGORY_META, WEEKDAY_NAMES } from '../constants/categories';
-import type { Task, TaskCategory } from '../types';
+import { dateTag, getPack, tLocale } from '../i18n/catalog';
+import type { Locale, Task, TaskCategory } from '../types';
 import { addDays, addMonths, getWeekStart, startOfDay, toLocalDateString } from './date';
 
 export type StatsPeriod = 'day' | 'week' | 'month' | 'year';
@@ -136,14 +136,16 @@ export function taskHours(task: Task): number {
 function periodRange(
   period: StatsPeriod,
   weekStartsOn: 0 | 1,
+  locale: Locale,
   now = new Date(),
 ): { start: Date; end: Date; label: string } {
   const today = startOfDay(now);
+  const tag = dateTag(locale);
   if (period === 'day') {
     const start = today;
     const end = new Date(today);
     end.setHours(23, 59, 59, 999);
-    const label = today.toLocaleDateString('ru-RU', {
+    const label = today.toLocaleDateString(tag, {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
@@ -154,27 +156,27 @@ function periodRange(
     const start = getWeekStart(today, weekStartsOn);
     const end = addDays(start, 6);
     end.setHours(23, 59, 59, 999);
-    const fmt = (d: Date) => d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
-    return { start, end, label: `Неделя ${fmt(start)} – ${fmt(end)}` };
+    const fmt = (d: Date) => d.toLocaleDateString(tag, { day: 'numeric', month: 'short' });
+    return { start, end, label: tLocale(locale, 'statsWeekRange', { start: fmt(start), end: fmt(end) }) };
   }
   if (period === 'month') {
-    return monthRange(today);
+    return monthRange(today, locale);
   }
-  return yearRange(today);
+  return yearRange(today, locale);
 }
 
-function monthRange(today: Date) {
+function monthRange(today: Date, locale: Locale) {
   const start = new Date(today.getFullYear(), today.getMonth(), 1);
   const end = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
-  const label = start.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+  const label = start.toLocaleDateString(dateTag(locale), { month: 'long', year: 'numeric' });
   return { start, end, label: label.charAt(0).toUpperCase() + label.slice(1) };
 }
 
-function yearRange(today: Date) {
+function yearRange(today: Date, locale: Locale) {
   const y = today.getFullYear();
   const start = new Date(y, 0, 1);
   const end = new Date(y, 11, 31, 23, 59, 59, 999);
-  return { start, end, label: `${y} год` };
+  return { start, end, label: tLocale(locale, 'statsYearLabel', { y }) };
 }
 
 function previousPeriodAnchor(period: StatsPeriod, weekStartsOn: 0 | 1, now: Date): Date {
@@ -299,7 +301,7 @@ function computeTails(tasks: Task[], now: Date) {
   };
 }
 
-function busiestWeekday(hoursByWeekday: number[], weekStartsOn: 0 | 1) {
+function busiestWeekday(hoursByWeekday: number[], weekStartsOn: 0 | 1, locale: Locale) {
   let max = 0;
   let idx = -1;
   hoursByWeekday.forEach((h, i) => {
@@ -310,7 +312,7 @@ function busiestWeekday(hoursByWeekday: number[], weekStartsOn: 0 | 1) {
   });
   if (idx < 0 || max <= 0) return { label: null, hours: 0 };
   const mapMonFirst = weekStartsOn === 1 ? idx : (idx + 6) % 7;
-  const raw = WEEKDAY_NAMES[mapMonFirst];
+  const raw = getPack(locale).weekdays[mapMonFirst];
   const label = raw ? raw.charAt(0) + raw.slice(1).toLowerCase() : null;
   return { label, hours: max };
 }
@@ -319,18 +321,19 @@ export function computeTaskStats(
   tasks: Task[],
   period: StatsPeriod,
   weekStartsOn: 0 | 1,
+  locale: Locale,
   now = new Date(),
 ): TaskStatsReport {
-  const { start, end, label } = periodRange(period, weekStartsOn, now);
+  const { start, end, label } = periodRange(period, weekStartsOn, locale, now);
   const current = accumulatePeriod(tasks, start, end, weekStartsOn, now);
 
   const prevAnchor = previousPeriodAnchor(period, weekStartsOn, now);
-  const prevRange = periodRange(period, weekStartsOn, prevAnchor);
+  const prevRange = periodRange(period, weekStartsOn, locale, prevAnchor);
   const previous = accumulatePeriod(tasks, prevRange.start, prevRange.end, weekStartsOn, now);
 
   const pastHoursTotal = current.hoursPastClosed + current.hoursPastOverdue;
   const days = daysInPeriod(start, end);
-  const busy = busiestWeekday(current.hoursByWeekday, weekStartsOn);
+  const busy = busiestWeekday(current.hoursByWeekday, weekStartsOn, locale);
   const tails = computeTails(tasks, now);
 
   const diffHours = current.hoursCompleted - current.hoursScheduled;
@@ -384,31 +387,22 @@ export function computeTaskStats(
   };
 }
 
-export const STATS_PERIOD_OPTIONS: { id: StatsPeriod; label: string }[] = [
-  { id: 'day', label: 'День' },
-  { id: 'week', label: 'Неделя' },
-  { id: 'month', label: 'Месяц' },
-  { id: 'year', label: 'Год' },
-];
+export const STATS_PERIOD_OPTIONS: StatsPeriod[] = ['day', 'week', 'month', 'year'];
 
 export const CATEGORY_ORDER: TaskCategory[] = ['work', 'personal', 'family'];
 
-export function categoryLabel(cat: TaskCategory) {
-  return CATEGORY_META[cat].label;
-}
-
-export function formatHours(h: number) {
-  if (h <= 0) return '0 мин';
-  if (h < 1) return `${Math.round(h * 60)} мин`;
+export function formatHours(h: number, locale: Locale = 'ru') {
+  if (h <= 0) return tLocale(locale, 'fmtZeroMin');
+  if (h < 1) return tLocale(locale, 'fmtMins', { n: Math.round(h * 60) });
   const whole = Math.floor(h);
   const mins = Math.round((h - whole) * 60);
-  if (mins === 0) return `${whole} ч`;
-  return `${whole} ч ${mins} мин`;
+  if (mins === 0) return tLocale(locale, 'fmtHours', { n: whole });
+  return tLocale(locale, 'fmtHoursMins', { n: whole, m: mins });
 }
 
-export function formatSignedHours(h: number) {
+export function formatSignedHours(h: number, locale: Locale = 'ru') {
   const sign = h > 0 ? '+' : h < 0 ? '−' : '';
-  return `${sign}${formatHours(Math.abs(h))}`;
+  return `${sign}${formatHours(Math.abs(h), locale)}`;
 }
 
 export function formatDeltaPct(delta: number | null) {
@@ -417,13 +411,13 @@ export function formatDeltaPct(delta: number | null) {
   return `${sign}${delta}%`;
 }
 
-export function dynamicsText(period: StatsPeriod, delta: number | null) {
+export function dynamicsText(period: StatsPeriod, delta: number | null, locale: Locale = 'ru') {
   if (delta === null) return null;
   const periodWord =
-    period === 'day' ? 'прошлым днём' :
-    period === 'week' ? 'прошлой неделей' :
-    period === 'month' ? 'прошлым месяцем' :
-    'прошлым годом';
+    period === 'day' ? tLocale(locale, 'vsPrevDay') :
+    period === 'week' ? tLocale(locale, 'vsPrevWeek') :
+    period === 'month' ? tLocale(locale, 'vsPrevMonth') :
+    tLocale(locale, 'vsPrevYear');
   const sign = formatDeltaPct(delta);
-  return `${sign} выполнено по времени vs ${periodWord}`;
+  return tLocale(locale, 'dynamicsLine', { sign: sign ?? '', period: periodWord });
 }

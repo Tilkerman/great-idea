@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useI18n } from '../../i18n/useI18n';
 import {
   notificationPermission,
   notificationsBlockedReason,
-  REMINDER_NOTICE_BODY,
+  reminderNoticeBody,
   showTiliNotification,
 } from '../../utils/notifications';
 import { isAppleMobile, isStandaloneApp, TILI_PUBLIC_URL } from '../../utils/pwaInstall';
@@ -12,12 +13,19 @@ import './Settings.css';
 
 export function SettingsNotifications() {
   const { setScreen, settings, updateSettings } = useApp();
+  const { t, locale } = useI18n();
   const [perm, setPerm] = useState(() => notificationPermission());
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const blocked = useMemo(() => notificationsBlockedReason(), []);
+  const blocked = useMemo(() => notificationsBlockedReason(locale), [locale]);
   const ios = useMemo(() => isAppleMobile(), []);
   const installed = useMemo(() => isStandaloneApp(), []);
+
+  const permLabel =
+    perm === 'granted' ? t('notifStatusGranted')
+      : perm === 'denied' ? t('notifStatusDenied')
+        : perm === 'unsupported' ? t('notifStatusOff')
+          : t('notifStatusAsk');
 
   const onEnable = async () => {
     setFeedback(null);
@@ -27,16 +35,16 @@ export function SettingsNotifications() {
       setPerm(notificationPermission());
       if (result === 'granted') {
         updateSettings({ notificationsEnabled: true });
-        setFeedback('Разрешение есть. Нажми «Проверить», или просто поставь время в карточке дела.');
+        setFeedback(t('notifGranted'));
       } else if (result === 'denied') {
         updateSettings({ notificationsEnabled: false });
-        setFeedback('Запрещено в настройках телефона: Уведомления → TiLi.');
+        setFeedback(t('notifDenied'));
       } else if (result === 'blocked') {
-        setFeedback(blocked ?? 'Сейчас система не даст запросить разрешение.');
+        setFeedback(blocked ?? t('notifBlocked'));
       } else if (result === 'unsupported') {
-        setFeedback('Этот браузер не умеет уведомления.');
+        setFeedback(t('browserNoNotif'));
       } else {
-        setFeedback('Запрос закрыт без разрешения.');
+        setFeedback(t('notifDismissed'));
       }
     } finally {
       setBusy(false);
@@ -48,13 +56,13 @@ export function SettingsNotifications() {
     setBusy(true);
     try {
       if (notificationPermission() !== 'granted') {
-        setFeedback('Сначала нажми «Разрешить уведомления».');
+        setFeedback(t('notifNeedAllow'));
         return;
       }
-      await showTiliNotification('TiLi', REMINDER_NOTICE_BODY, 'tili-test');
-      setFeedback('Баннер отправлен. Если его нет — открой TiLi с Домой, не из Safari.');
+      await showTiliNotification('TiLi', reminderNoticeBody(locale), 'tili-test');
+      setFeedback(t('notifTestSent'));
     } catch {
-      setFeedback('Не удалось показать уведомление.');
+      setFeedback(t('notifTestFail'));
     } finally {
       setBusy(false);
     }
@@ -63,21 +71,18 @@ export function SettingsNotifications() {
   return (
     <div className="settings-page">
       <header className="settings-topbar">
-        <button type="button" onClick={() => setScreen('settings')}>‹ Назад</button>
-        <span>Уведомления</span>
+        <button type="button" onClick={() => setScreen('settings')}>{t('back')}</button>
+        <span>{t('settingsNotif')}</span>
         <span />
       </header>
       <div className="settings-form">
         <p className="settings-note">
-          На iPhone баннер — только с иконки на Домой и с сайта
-          {' '}{TILI_PUBLIC_URL}. Достаточно выбрать время в карточке дела
-          («За 15 минут» и т.д.) — приложение само спросит телефон.
-          Эта страница нужна, если хочешь проверить баннер или разрешение уже запретили.
+          {t('notifNote', { url: TILI_PUBLIC_URL })}
         </p>
 
         {ios && !installed && (
           <p className="settings-note" role="status">
-            Сейчас открыто не как приложение. Добавь TiLi на Домой и зайди с иконки.
+            {t('notifNotStandalone')}
           </p>
         )}
 
@@ -86,8 +91,8 @@ export function SettingsNotifications() {
         )}
 
         <p className="settings-note">
-          Статус: {perm === 'granted' ? 'разрешено' : perm === 'denied' ? 'запрещено' : perm === 'unsupported' ? 'недоступно' : 'ещё не спрашивали'}
-          {settings.notificationsEnabled ? ' · напоминания по делам включены' : ''}
+          {t('notifStatusPrefix')} {permLabel}
+          {settings.notificationsEnabled ? t('notifEnabledSuffix') : ''}
         </p>
 
         <button
@@ -96,7 +101,7 @@ export function SettingsNotifications() {
           disabled={busy || Boolean(blocked)}
           onClick={() => { void onEnable(); }}
         >
-          Разрешить уведомления
+          {t('notifAllow')}
         </button>
         <button
           type="button"
@@ -104,7 +109,7 @@ export function SettingsNotifications() {
           disabled={busy || perm !== 'granted'}
           onClick={() => { void onTest(); }}
         >
-          Проверить баннером
+          {t('notifTest')}
         </button>
         {feedback && <p className="settings-note" role="status">{feedback}</p>}
       </div>

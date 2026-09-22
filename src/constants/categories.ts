@@ -1,23 +1,26 @@
 import type { TaskCategory } from '../types';
 
+export const CATEGORY_LABEL_KEY: Record<TaskCategory, 'catWork' | 'catPersonal' | 'catFamily'> = {
+  work: 'catWork',
+  personal: 'catPersonal',
+  family: 'catFamily',
+};
+
 export const CATEGORY_META: Record<
   TaskCategory,
-  { label: string; bg: string; text: string; dot: string }
+  { bg: string; text: string; dot: string }
 > = {
   work: {
-    label: 'Работа',
     bg: 'var(--cat-work)',
     text: 'var(--cat-work-text)',
     dot: 'var(--cat-work)',
   },
   personal: {
-    label: 'Личное / отдых',
     bg: 'var(--cat-personal)',
     text: 'var(--cat-personal-text)',
     dot: 'var(--cat-personal)',
   },
   family: {
-    label: 'Семья',
     bg: 'var(--cat-family)',
     text: 'var(--cat-family-text)',
     dot: 'var(--cat-family)',
@@ -40,14 +43,17 @@ export const WEEKDAY_NAMES = [
 
 export const WEEKDAY_SHORT = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
 
-export const REMINDER_OFFSET_OPTIONS: { value: number | null; label: string }[] = [
-  { value: null, label: 'Не напоминать' },
-  { value: 0, label: 'Вовремя' },
-  { value: 5, label: 'За 5 минут' },
-  { value: 15, label: 'За 15 минут' },
-  { value: 30, label: 'За 30 минут' },
-  { value: 60, label: 'За 1 час' },
-  { value: 1440, label: 'За 1 день' },
+export const REMINDER_OFFSET_OPTIONS: {
+  value: number | null;
+  labelKey: 'reminderNone' | 'reminderOnTime' | 'reminderMin5' | 'reminderMin15' | 'reminderMin30' | 'reminderHour1' | 'reminderDay1';
+}[] = [
+  { value: null, labelKey: 'reminderNone' },
+  { value: 0, labelKey: 'reminderOnTime' },
+  { value: 5, labelKey: 'reminderMin5' },
+  { value: 15, labelKey: 'reminderMin15' },
+  { value: 30, labelKey: 'reminderMin30' },
+  { value: 60, labelKey: 'reminderHour1' },
+  { value: 1440, labelKey: 'reminderDay1' },
 ];
 
 export const DEFAULT_SETTINGS = {

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext';
-import type { ZoomLevel } from '../types';
+import { tLocale } from '../i18n/catalog';
+import type { Locale, ZoomLevel } from '../types';
 import { WEEK_TO_MONTH_OVERSHOOT, WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomHint } from '../constants/weekZoom';
 
 const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
@@ -283,11 +284,7 @@ export function usePinchZoom() {
   return { ref, liveScale, pinching };
 }
 
-export function zoomHint(level: ZoomLevel, weekZoomLevel = 0, viewportWidth = 390) {
-  if (level === 'week' || level === 'day') return weekZoomHint(weekZoomLevel, viewportWidth);
-  const hints: Record<Exclude<ZoomLevel, 'week' | 'day'>, string> = {
-    year: 'Разведи пальцы → месяц',
-    month: 'Разведи пальцы → неделя · сведи → год',
-  };
-  return hints[level];
+export function zoomHint(level: ZoomLevel, weekZoomLevel = 0, viewportWidth = 390, locale: Locale = 'ru') {
+  if (level === 'week' || level === 'day') return weekZoomHint(weekZoomLevel, viewportWidth, locale);
+  return tLocale(locale, level === 'year' ? 'pinchYear' : 'pinchMonth');
 }

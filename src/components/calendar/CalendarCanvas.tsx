@@ -3,9 +3,9 @@ import { useApp } from '../../context/AppContext';
 import { YearView } from './YearView';
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
-import { usePinchZoom, zoomHint } from '../../hooks/usePinchZoom';
-import { ZOOM_LABELS } from '../../constants/categories';
-import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomPercent } from '../../constants/weekZoom';
+import { usePinchZoom } from '../../hooks/usePinchZoom';
+import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomHint, weekZoomPercent } from '../../constants/weekZoom';
+import { useI18n } from '../../i18n/useI18n';
 import type { ZoomLevel } from '../../types';
 import './CalendarViews.css';
 
@@ -13,6 +13,7 @@ const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
 
 export function CalendarCanvas() {
   const { zoom, setZoom, setFocusDate, weekZoom, weekZoomIn, weekZoomOut } = useApp();
+  const { t, locale } = useI18n();
   const { ref, liveScale, pinching } = usePinchZoom();
   const [viewportWidth, setViewportWidth] = useState(
     typeof window === 'undefined' ? 390 : window.innerWidth,
@@ -109,13 +110,22 @@ export function CalendarCanvas() {
               setZoom(z);
             }}
           >
-            {ZOOM_LABELS[z]}
+            {t(
+              z === 'year' ? 'zoomYear'
+                : z === 'month' ? 'zoomMonth'
+                  : z === 'week' ? 'zoomWeek'
+                    : 'zoomDay',
+            )}
           </button>
         ))}
       </div>
       {showDevZoomBar && (
       <div className="zoom-bar">
-        <p className="zoom-hint">{zoomHint(zoom, weekZoom, viewportWidth)}</p>
+        <p className="zoom-hint">
+          {zoom === 'year' ? t('pinchYear')
+            : zoom === 'month' ? t('pinchMonth')
+              : weekZoomHint(weekZoom, viewportWidth, locale)}
+        </p>
         {(zoom === 'week' || zoom === 'day') && (
           <div className="week-zoom-controls">
             <button
@@ -123,7 +133,7 @@ export function CalendarCanvas() {
               className="week-zoom-btn"
               disabled={weekZoom <= WEEK_ZOOM_MIN}
               onClick={weekZoomOut}
-              aria-label="Уменьшить"
+              aria-label={t('zoomOut')}
             >
               −
             </button>
@@ -133,7 +143,7 @@ export function CalendarCanvas() {
               className="week-zoom-btn"
               disabled={weekZoom >= WEEK_ZOOM_MAX}
               onClick={weekZoomIn}
-              aria-label="Увеличить"
+              aria-label={t('zoomIn')}
             >
               +
             </button>

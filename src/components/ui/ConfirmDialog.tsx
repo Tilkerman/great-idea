@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useI18n } from '../../i18n/useI18n';
 import './ConfirmDialog.css';
 
 interface ConfirmDialogProps {
@@ -15,12 +16,15 @@ interface ConfirmDialogProps {
 export function ConfirmDialog({
   title,
   message,
-  confirmLabel = 'Удалить',
-  cancelLabel = 'Отмена',
+  confirmLabel,
+  cancelLabel,
   confirmTone = 'danger',
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const { t } = useI18n();
+  const confirmText = confirmLabel ?? t('delete');
+  const cancelText = cancelLabel ?? t('cancel');
   const openedAt = useRef(Date.now());
   const ignoreBackdrop = useRef(true);
 
@@ -60,14 +64,14 @@ export function ConfirmDialog({
         <p className="confirm-dialog__message">{message}</p>
         <div className="confirm-dialog__actions">
           <button type="button" className="btn btn--ghost" onClick={onCancel}>
-            {cancelLabel}
+            {cancelText}
           </button>
           <button
             type="button"
             className={`btn ${confirmTone === 'primary' ? 'btn--primary' : 'btn--danger'}`}
             onClick={onConfirm}
           >
-            {confirmLabel}
+            {confirmText}
           </button>
         </div>
       </div>

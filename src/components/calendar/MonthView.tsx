@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
-import { MONTH_NAMES, MONTH_NAMES_SHORT } from '../../constants/categories';
+import { useI18n } from '../../i18n/useI18n';
 import { CategoryDot } from '../tasks/TaskCard';
 import type { Task } from '../../types';
 import {
@@ -15,6 +15,7 @@ import './CalendarViews.css';
 
 export function MonthView() {
   const { focusDate, setFocusDate, setZoom, tasks, settings } = useApp();
+  const { t, months, monthsShort, monthsGen } = useI18n();
   const year = focusDate.getFullYear();
   const month = focusDate.getMonth();
   const weeks = useMemo(
@@ -36,7 +37,7 @@ export function MonthView() {
     <div className="month-view">
       <div className="month-view__hero">
         <div className="month-view__mini-card">
-          <span className="month-view__mini-title">{MONTH_NAMES[month]} {year}</span>
+          <span className="month-view__mini-title">{months[month]} {year}</span>
           <div className="month-view__mini-dots" />
         </div>
         <button
@@ -44,7 +45,7 @@ export function MonthView() {
           className="month-view__pill"
           onClick={() => setZoom('week')}
         >
-          {MONTH_NAMES_SHORT[month]}
+          {monthsShort[month]}
         </button>
       </div>
       <div className="week-cards-scroll">
@@ -64,10 +65,10 @@ export function MonthView() {
               }}
             >
               <div className="week-card__header">
-                {formatDateRange(w.start, w.end)}
+                {formatDateRange(w.start, w.end, monthsGen)}
               </div>
               {weekTasks.length === 0 ? (
-                <p className="week-card__empty">Нет задач</p>
+                <p className="week-card__empty">{t('noTasks')}</p>
               ) : (
                 <WeekDotGrid start={w.start} tasksByDay={tasksByDay} />
               )}

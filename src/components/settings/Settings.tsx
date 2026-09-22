@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { useI18n } from '../../i18n/useI18n';
 import {
   changePassword,
   deleteAccount,
@@ -12,21 +13,21 @@ import './Settings.css';
 
 export function SettingsHub() {
   const { setScreen, openAuth, session } = useApp();
+  const { t } = useI18n();
 
   const items = [
-    { id: 'settings-profile' as const, label: 'Профиль', sub: session.isGuest ? (session.name ? `${session.name} · гость` : 'Гостевой режим') : (session.name || session.email) },
-    { id: 'settings-calendar' as const, label: 'Календарь', sub: 'Часы, неделя, слоты' },
-    { id: 'settings-stats' as const, label: 'Статистика', sub: 'Выполнено и по категориям' },
-    { id: 'settings-appearance' as const, label: 'Внешний вид', sub: 'Тема и язык' },
-    { id: 'settings-data' as const, label: 'Данные', sub: 'Экспорт и резервная копия' },
-    { id: 'settings-install' as const, label: 'Установка', sub: 'PWA на телефон' },
-    { id: 'settings-notifications' as const, label: 'Уведомления', sub: 'Баннеры на iPhone' },
-    { id: 'settings-about' as const, label: 'О приложении', sub: 'TiLi Calendar v0.1' },
+    { id: 'settings-calendar' as const, label: t('settingsCalendar'), sub: t('settingsCalendarSub') },
+    { id: 'settings-stats' as const, label: t('settingsStats'), sub: t('settingsStatsSub') },
+    { id: 'settings-appearance' as const, label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
+    { id: 'settings-data' as const, label: t('settingsData'), sub: t('settingsDataSub') },
+    { id: 'settings-install' as const, label: t('settingsInstall'), sub: t('settingsInstallSub') },
+    { id: 'settings-notifications' as const, label: t('settingsNotif'), sub: t('settingsNotifSub') },
+    { id: 'settings-about' as const, label: t('settingsAbout'), sub: t('settingsAboutSub') },
   ];
 
   return (
     <div className="settings-page">
-      <SettingsTopBar title="Настройки" onBack={() => setScreen('calendar')} />
+      <SettingsTopBar title={t('settings')} onBack={() => setScreen('calendar')} />
       <ul className="settings-list">
         {items.map((item) => (
           <li key={item.id}>
@@ -40,7 +41,7 @@ export function SettingsHub() {
       </ul>
       {session.isGuest && (
         <button type="button" className="btn btn--primary settings-auth-cta" onClick={() => openAuth('choice', 'settings')}>
-          Создать аккаунт / Войти
+          {t('authCta')}
         </button>
       )}
     </div>
@@ -49,6 +50,7 @@ export function SettingsHub() {
 
 export function SettingsProfile() {
   const { setScreen, openAuth, session, setSession } = useApp();
+  const { t } = useI18n();
   const [name, setName] = useState(session.name ?? '');
   const [email, setEmail] = useState(session.email ?? '');
   const [message, setMessage] = useState('');
@@ -60,16 +62,16 @@ export function SettingsProfile() {
     setError('');
     setMessage('');
     if (name.trim().length < 2) {
-      setError('Имя — хотя бы 2 символа');
+      setError(t('nameTooShort'));
       return;
     }
     if (session.isGuest) {
       setSession({ ...session, isGuest: true, name: name.trim() });
-      setMessage('Имя сохранено');
+      setMessage(t('nameSaved'));
       return;
     }
     if (!isValidEmail(email)) {
-      setError('Введите нормальный email');
+      setError(t('badEmail'));
       return;
     }
     try {
@@ -78,41 +80,41 @@ export function SettingsProfile() {
         email,
       });
       if (!updated) {
-        setError('Аккаунт на этом телефоне не найден');
+        setError(t('accountNotFound'));
         return;
       }
       setSession({ isGuest: false, name: updated.name, email: updated.email });
-      setMessage('Профиль сохранён');
+      setMessage(t('profileSaved'));
     } catch (e) {
       setError(e instanceof Error && e.message === 'exists'
-        ? 'Этот email уже занят на этом телефоне'
-        : 'Не получилось сохранить');
+        ? t('emailTaken')
+        : t('saveFailed'));
     }
   };
 
   return (
     <div className="settings-page">
-      <SettingsTopBar title="Профиль" onBack={() => setScreen('settings')} />
+      <SettingsTopBar title={t('profile')} onBack={() => setScreen('calendar')} />
       <div className="settings-form">
         <div className="settings-profile-card">
           <span className="settings-profile-card__badge">
-            {session.isGuest ? 'Гость' : 'Аккаунт на этом телефоне'}
+            {session.isGuest ? t('guest') : t('accountOnPhone')}
           </span>
           <p className="settings-profile-card__hint">
             {session.isGuest
-              ? 'Календарь работает без регистрации. Задачи хранятся только здесь. Аккаунт можно создать в любой момент.'
-              : 'Пока нет облака: имя, почта и пароль живут на этом устройстве. Синхронизации и пушей ещё нет.'}
+              ? t('guestHint')
+              : t('accountHint')}
           </p>
         </div>
 
         <label className="settings-field">
-          Имя
+          {t('name')}
           <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
         </label>
 
         {!session.isGuest && (
           <label className="settings-field">
-            Email
+            {t('email')}
             <input
               type="email"
               value={email}
@@ -127,26 +129,26 @@ export function SettingsProfile() {
         {message && <p className="settings-note">{message}</p>}
 
         <button type="button" className="btn btn--primary settings-full" onClick={saveProfile}>
-          Сохранить
+          {t('save')}
         </button>
 
         {session.isGuest ? (
           <button type="button" className="btn btn--ghost settings-full" onClick={() => openAuth('choice', 'settings-profile')}>
-            Создать аккаунт / Войти
+            {t('authCta')}
           </button>
         ) : (
           <>
             <button type="button" className="btn btn--ghost settings-full" onClick={() => setScreen('settings-password')}>
-              Сменить пароль
+              {t('changePassword')}
             </button>
             <button type="button" className="btn btn--ghost settings-full" onClick={() => setConfirmExit(true)}>
-              Выйти
+              {t('logout')}
             </button>
             <button type="button" className="btn btn--danger settings-full" onClick={() => setConfirmDelete(true)}>
-              Удалить аккаунт
+              {t('deleteAccount')}
             </button>
             <p className="settings-note">
-              Выход и удаление аккаунта не трогают задачи. Удаляется только вход на этом телефоне.
+              {t('logoutNote')}
             </p>
           </>
         )}
@@ -154,10 +156,10 @@ export function SettingsProfile() {
 
       {confirmExit && (
         <ConfirmDialog
-          title="Выйти из аккаунта?"
-          message="Задачи останутся. Снова войти можно с тем же email на этом телефоне."
-          confirmLabel="Выйти"
-          cancelLabel="Отмена"
+          title={t('logoutTitle')}
+          message={t('logoutMsg')}
+          confirmLabel={t('logout')}
+          cancelLabel={t('cancel')}
           onCancel={() => setConfirmExit(false)}
           onConfirm={() => {
             setSession({ isGuest: true, name: session.name });
@@ -168,10 +170,10 @@ export function SettingsProfile() {
       )}
       {confirmDelete && session.email && (
         <ConfirmDialog
-          title="Удалить аккаунт?"
-          message="Email и пароль сотрутся с этого телефона. Задачи календаря останутся."
-          confirmLabel="Удалить"
-          cancelLabel="Отмена"
+          title={t('deleteAccountTitle')}
+          message={t('deleteAccountMsg')}
+          confirmLabel={t('delete')}
+          cancelLabel={t('cancel')}
           onCancel={() => setConfirmDelete(false)}
           onConfirm={() => {
             deleteAccount(session.email!);
@@ -187,6 +189,7 @@ export function SettingsProfile() {
 
 export function SettingsPassword() {
   const { setScreen, session } = useApp();
+  const { t } = useI18n();
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
   const [next2, setNext2] = useState('');
@@ -197,27 +200,27 @@ export function SettingsPassword() {
   const save = async () => {
     setError('');
     if (!session.email) {
-      setError('Сначала войдите в аккаунт');
+      setError(t('loginFirst'));
       return;
     }
     if (next.length < 6) {
-      setError('Новый пароль — минимум 6 символов');
+      setError(t('passwordMin'));
       return;
     }
     if (next !== next2) {
-      setError('Пароли не совпадают');
+      setError(t('passwordMismatch'));
       return;
     }
     setBusy(true);
     try {
       const okCurrent = await verifyPassword(session.email, current);
       if (!okCurrent) {
-        setError('Текущий пароль неверный');
+        setError(t('passwordWrong'));
         return;
       }
       const ok = await changePassword(session.email, current, next);
       if (!ok) {
-        setError('Не получилось сменить пароль');
+        setError(t('passwordChangeFail'));
         return;
       }
       setScreen('settings-profile');
@@ -230,29 +233,29 @@ export function SettingsPassword() {
 
   return (
     <div className="settings-page">
-      <SettingsTopBar title="Пароль" onBack={() => setScreen('settings-profile')} />
+      <SettingsTopBar title={t('password')} onBack={() => setScreen('settings-profile')} />
       <div className="settings-form">
         <p className="settings-note">
-          Пароль хранится только на этом устройстве. Смена не затрагивает другие телефоны.
+          {t('passwordLocalNote')}
         </p>
         <label className="settings-field">
-          Текущий пароль
+          {t('currentPassword')}
           <input type={type} value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" />
         </label>
         <label className="settings-field">
-          Новый пароль
+          {t('newPassword')}
           <input type={type} value={next} onChange={(e) => setNext(e.target.value)} autoComplete="new-password" />
         </label>
         <label className="settings-field">
-          Ещё раз
+          {t('newPasswordAgain')}
           <input type={type} value={next2} onChange={(e) => setNext2(e.target.value)} autoComplete="new-password" />
         </label>
         <button type="button" className="auth-form__switch" onClick={() => setShow((v) => !v)}>
-          {show ? 'Скрыть пароль' : 'Показать пароль'}
+          {show ? t('hidePassword') : t('showPassword')}
         </button>
         {error && <p className="auth-form__error" role="alert">{error}</p>}
         <button type="button" className="btn btn--primary settings-full" disabled={busy} onClick={() => { void save(); }}>
-          Сохранить пароль
+          {t('savePassword')}
         </button>
       </div>
     </div>
@@ -261,13 +264,14 @@ export function SettingsPassword() {
 
 export function SettingsCalendar() {
   const { setScreen, settings, updateSettings } = useApp();
+  const { t } = useI18n();
 
   return (
     <div className="settings-page">
-      <SettingsTopBar title="Календарь" onBack={() => setScreen('settings')} />
+      <SettingsTopBar title={t('settingsCalendar')} onBack={() => setScreen('settings')} />
       <div className="settings-form">
         <label className="settings-field">
-          Начало дня
+          {t('dayStart')}
           <span className="select-wrap">
             <select
               value={settings.dayStartHour}
@@ -280,7 +284,7 @@ export function SettingsCalendar() {
           </span>
         </label>
         <label className="settings-field">
-          Конец дня
+          {t('dayEnd')}
           <span className="select-wrap">
             <select
               value={settings.dayEndHour}
@@ -293,7 +297,7 @@ export function SettingsCalendar() {
           </span>
         </label>
         <label className="settings-switch-row">
-          <span className="settings-switch-row__title">Скрывать пустые часы</span>
+          <span className="settings-switch-row__title">{t('hideEmptyHours')}</span>
           <input
             type="checkbox"
             className="settings-switch"
@@ -302,7 +306,7 @@ export function SettingsCalendar() {
           />
         </label>
         <label className="settings-switch-row">
-          <span className="settings-switch-row__title">Показывать выполненные</span>
+          <span className="settings-switch-row__title">{t('showCompleted')}</span>
           <input
             type="checkbox"
             className="settings-switch"
@@ -317,33 +321,35 @@ export function SettingsCalendar() {
 
 export function SettingsAppearance() {
   const { setScreen, settings, updateSettings } = useApp();
+  const { t } = useI18n();
 
   return (
     <div className="settings-page">
-      <SettingsTopBar title="Внешний вид" onBack={() => setScreen('settings')} />
+      <SettingsTopBar title={t('settingsAppearance')} onBack={() => setScreen('settings')} />
       <div className="settings-form">
         <label className="settings-field">
-          Тема
+          {t('theme')}
           <span className="select-wrap">
             <select
               value={settings.theme}
               onChange={(e) => updateSettings({ theme: e.target.value as typeof settings.theme })}
             >
-              <option value="system">Системная</option>
-              <option value="light">Светлая</option>
-              <option value="dark">Тёмная</option>
+              <option value="system">{t('themeSystem')}</option>
+              <option value="light">{t('themeLight')}</option>
+              <option value="dark">{t('themeDark')}</option>
             </select>
           </span>
         </label>
         <label className="settings-field">
-          Язык
+          {t('language')}
           <span className="select-wrap">
             <select
               value={settings.locale}
               onChange={(e) => updateSettings({ locale: e.target.value as typeof settings.locale })}
             >
-              <option value="ru">Русский</option>
-              <option value="en">English</option>
+              <option value="ru">{t('langRu')}</option>
+              <option value="en">{t('langEn')}</option>
+              <option value="es">{t('langEs')}</option>
             </select>
           </span>
         </label>
@@ -354,6 +360,7 @@ export function SettingsAppearance() {
 
 export function SettingsData() {
   const { setScreen } = useApp();
+  const { t } = useI18n();
 
   const exportData = async () => {
     const { exportData: exp } = await import('../../db');
@@ -368,7 +375,7 @@ export function SettingsData() {
   };
 
   const clearData = async () => {
-    if (!confirm('Удалить все задачи? Это нельзя отменить.')) return;
+    if (!confirm(t('clearConfirm'))) return;
     const { clearAllData } = await import('../../db');
     await clearAllData();
     window.location.reload();
@@ -376,16 +383,16 @@ export function SettingsData() {
 
   return (
     <div className="settings-page">
-      <SettingsTopBar title="Данные" onBack={() => setScreen('settings')} />
+      <SettingsTopBar title={t('settingsData')} onBack={() => setScreen('settings')} />
       <div className="settings-form">
         <button type="button" className="btn btn--ghost settings-full" onClick={exportData}>
-          Экспорт JSON
+          {t('exportJson')}
         </button>
         <p className="settings-note">
-          Это и есть резервная копия. Аккаунт в облако не сохраняет — только этот телефон.
+          {t('exportNote')}
         </p>
         <button type="button" className="btn btn--danger settings-full" onClick={clearData}>
-          Очистить все данные
+          {t('clearAll')}
         </button>
       </div>
     </div>
@@ -394,16 +401,17 @@ export function SettingsData() {
 
 export function SettingsAbout() {
   const { setScreen } = useApp();
+  const { t } = useI18n();
 
   return (
     <div className="settings-page">
-      <SettingsTopBar title="О приложении" onBack={() => setScreen('settings')} />
+      <SettingsTopBar title={t('settingsAbout')} onBack={() => setScreen('settings')} />
       <div className="settings-about">
         <p className="settings-about__logo">TiLi Calendar</p>
-        <p className="settings-about__ver">v0.1.0 — MVP</p>
-        <p className="settings-about__tagline">Управляй своей жизнью с TiLi</p>
+        <p className="settings-about__ver">{t('mvp')}</p>
+        <p className="settings-about__tagline">{t('aboutTagline')}</p>
         <button type="button" className="btn btn--ghost settings-full" onClick={() => setScreen('onboarding')}>
-          Показать введение
+          {t('showIntro')}
         </button>
       </div>
     </div>
@@ -411,9 +419,10 @@ export function SettingsAbout() {
 }
 
 function SettingsTopBar({ title, onBack }: { title: string; onBack: () => void }) {
+  const { t } = useI18n();
   return (
     <header className="settings-topbar">
-      <button type="button" onClick={onBack}>‹ Назад</button>
+      <button type="button" onClick={onBack}>{t('back')}</button>
       <span>{title}</span>
       <span />
     </header>
