@@ -31,13 +31,13 @@ export function alreadyCloudDueNow(taskId: string) {
   return dueNowSent().has(taskId);
 }
 
-/** Для облака: будущее время или один раз «уже пора», если дело ещё идёт. */
+/** Для облака: будущее время или один догон, если слот ещё не начался. */
 export function cloudReminderFireAt(task: Task, now = Date.now()): { fireAt: number; dueNow: boolean } | null {
   const fireAt = reminderFireAtMs(task);
   if (fireAt == null) return null;
   if (fireAt > now) return { fireAt, dueNow: false };
-  const end = new Date(task.endAt || task.startAt).getTime();
-  if (!Number.isFinite(end) || end <= now) return null;
+  const start = new Date(task.startAt).getTime();
+  if (!Number.isFinite(start) || start <= now) return null;
   if (alreadyCloudDueNow(task.id)) return null;
   return { fireAt: now, dueNow: true };
 }

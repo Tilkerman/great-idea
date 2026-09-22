@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { notificationPermission, REMINDER_NOTICE_BODY, showTiliNotification } from '../utils/notifications';
 import { cloudPushConfigured, subscribeTiliPush, syncCloudReminders } from '../utils/webPush';
-import { reminderFireAtMs } from '../utils/reminderTime';
+import { reminderFireAtMs, alreadyCloudDueNow, markCloudDueNowSent } from '../utils/reminderTime';
 
 const MAX_DELAY_MS = 12 * 60 * 60 * 1000;
 
@@ -27,9 +27,11 @@ export function useTaskReminders() {
         if (fired.current.has(key)) continue;
         if (delay > MAX_DELAY_MS) continue;
         if (delay <= 0) {
-          const end = new Date(task.endAt || task.startAt).getTime();
-          if (end <= now) continue;
+          const start = new Date(task.startAt).getTime();
+          if (!Number.isFinite(start) || start <= now) continue;
+          if (alreadyCloudDueNow(task.id)) continue;
           fired.current.add(key);
+          markCloudDueNowSent([task.id]);
           const title = task.title.trim() || 'Дело в календаре';
           void showTiliNotification(title, REMINDER_NOTICE_BODY, `task-${task.id}`);
           continue;
