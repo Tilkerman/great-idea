@@ -1,5 +1,6 @@
 import type { Task } from '../../types';
 import { useI18n } from '../../i18n/useI18n';
+import { isLockedCreateDay } from '../../utils/date';
 import { canAddToHour, createDraftTask, MAX_TASKS_PER_HOUR } from '../../utils/hourSlot';
 import { TaskCard } from './TaskCard';
 import './HourSlot.css';
@@ -39,14 +40,23 @@ export function HourSlot({
 }: HourSlotProps) {
   const { t } = useI18n();
   const count = tasks.length;
-  const showAdd = canAddToHour(count) && showAddStrip;
+  const createLocked = isLockedCreateDay(day);
+  const showAdd = canAddToHour(count) && showAddStrip && !createLocked;
   const density = count <= 1 ? 'single' : count <= 2 ? 'double' : count <= 3 ? 'triple' : 'quad';
 
   const addDraft = () => {
+    if (createLocked) return;
     onAdd(createDraftTask(day, hour, tasks));
   };
 
   if (count === 0) {
+    if (createLocked) {
+      return (
+        <div
+          className={`hour-slot hour-slot--empty hour-slot--locked ${compact ? 'hour-slot--compact' : ''}`}
+        />
+      );
+    }
     return (
       <button
         type="button"

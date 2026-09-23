@@ -1,7 +1,7 @@
 .settings-page {
   min-height: 100dvh;
   background: var(--bg);
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  padding-bottom: calc(64px + env(safe-area-inset-bottom));
 }
 
 .settings-topbar {
@@ -193,29 +193,55 @@
 }
 
 .settings-about {
-  padding: 32px 16px;
-  text-align: center;
+  padding: 16px 16px 32px;
+  text-align: left;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 16px;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.settings-about p {
+  margin: 0;
+}
+
+.settings-about__intro {
+  margin-bottom: 8px;
+  padding: 16px;
+  background: var(--surface-2);
+  border-radius: 12px;
+  border-left: 4px solid var(--accent);
 }
 
 .settings-about__logo {
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--accent);
-  margin: 0 0 8px;
+  margin: 0 0 4px;
 }
 
 .settings-about__ver {
   color: var(--text-secondary);
-  margin: 0 0 16px;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+.settings-about__subtitle {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 6px;
 }
 
 .settings-about__tagline {
   font-size: 15px;
-  color: var(--text-primary);
+  color: var(--text-secondary);
+}
+
+.settings-about__heart {
+  font-weight: 600;
 }
 
 .settings-profile-card {

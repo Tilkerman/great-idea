@@ -28,12 +28,11 @@ import {
   MAX_TASKS_PER_HOUR,
   rebalanceHourTasks,
 } from '../utils/hourSlot';
-import { toLocalDateString } from '../utils/date';
+import { getWeekDays, isLockedCreateDay, toLocalDateString } from '../utils/date';
 import {
   buildPastedTasks,
   idsInDay,
   idsInHour,
-  idsInWeek,
 } from '../utils/gridClipboard';
 import { SEED_TASKS } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
@@ -80,7 +79,7 @@ interface AppContextValue {
   refreshTasks: () => Promise<void>;
   upsertTask: (task: Task) => Promise<void>;
   saveHourSlot: (day: Date, hour: number, slotTasks: Task[]) => Promise<void>;
-  placeTask: (task: Task, day: Date, hour: number) => Promise<'ok' | 'full'>;
+  placeTask: (task: Task, day: Date, hour: number) => Promise<'ok' | 'full' | 'past'>;
   deleteTaskInHour: (task: Task) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
   settings: UserSettings;
@@ -206,10 +205,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await refreshTasks();
   }, [refreshTasks]);
 
-  const placeTask = useCallback(async (task: Task, day: Date, hour: number): Promise<'ok' | 'full'> => {
+  const placeTask = useCallback(async (task: Task, day: Date, hour: number): Promise<'ok' | 'full' | 'past'> => {
     const all = await getAllTasks();
     const newDateStr = toLocalDateString(day);
     const existing = all.find((t) => t.id === task.id);
+    if (isLockedCreateDay(day) && (!existing || getDateStrFromTask(existing) !== newDateStr)) {
+      return 'past';
+    }
     const same = Boolean(
       existing
       && getDateStrFromTask(existing) === newDateStr
@@ -301,19 +303,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
       | { kind: 'hour'; day: Date; hour: number },
   ) => {
     if (!gridClipboard || gridClipboard.kind !== target.kind) return;
+    if ((target.kind === 'day' || target.kind === 'hour') && isLockedCreateDay(target.day)) return;
     const all = await getAllTasks();
-    const removeIds = target.kind === 'week'
-      ? idsInWeek(all, target.focusDate, settings.weekStartsOn)
-      : target.kind === 'day'
-        ? idsInDay(all, target.day)
-        : idsInHour(all, target.day, target.hour);
+    if (target.kind === 'week') {
+      const days = getWeekDays(target.focusDate, settings.weekStartsOn);
+      const liveDates = new Set(days.filter((d) => !isLockedCreateDay(d)).map(toLocalDateString));
+      if (liveDates.size === 0) return;
+      const removeIds = all
+        .filter((task) => liveDates.has(toLocalDateString(new Date(task.startAt))))
+        .map((task) => task.id);
+      await deleteTasks(removeIds);
+      const incoming = buildPastedTasks(
+        gridClipboard,
+        { kind: 'week', focusDate: target.focusDate, weekStartsOn: settings.weekStartsOn },
+      ).filter((task) => liveDates.has(toLocalDateString(new Date(task.startAt))));
+      await saveTasks(incoming);
+      await refreshTasks();
+      return;
+    }
+    const removeIds = target.kind === 'day'
+      ? idsInDay(all, target.day)
+      : idsInHour(all, target.day, target.hour);
     await deleteTasks(removeIds);
-    const incoming = buildPastedTasks(
-      gridClipboard,
-      target.kind === 'week'
-        ? { kind: 'week', focusDate: target.focusDate, weekStartsOn: settings.weekStartsOn }
-        : target,
-    );
+    const incoming = buildPastedTasks(gridClipboard, target);
     await saveTasks(incoming);
     await refreshTasks();
   }, [gridClipboard, refreshTasks, settings.weekStartsOn]);

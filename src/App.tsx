@@ -94,8 +94,6 @@ function AppRouter() {
           <main className="app-shell__main">
             <CalendarCanvas />
           </main>
-          <BottomNav />
-          <TaskSheet />
         </div>
       )}
       {showLumi && (
@@ -103,11 +101,15 @@ function AppRouter() {
           <main className="app-shell__main">
             <LumiEmbed />
           </main>
-          <BottomNav />
-          <TaskSheet />
         </div>
       )}
-      {inSettings && <SettingsScreens screen={screen} />}
+      {inSettings && (
+        <div className="settings-overlay">
+          <SettingsScreens screen={screen} />
+        </div>
+      )}
+      <BottomNav />
+      <TaskSheet />
     </>
   );
 }

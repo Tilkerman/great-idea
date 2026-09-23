@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { CATEGORY_LABEL_KEY, REMINDER_OFFSET_OPTIONS } from '../../constants/categories';
 import { useI18n } from '../../i18n/useI18n';
 import type { TaskCategory } from '../../types';
-import { getHoursRange, pad } from '../../utils/date';
+import { getHoursRange, isLockedCreateDay, pad, toLocalDateString } from '../../utils/date';
 import {
   getDateStrFromTask,
   getHourFromTask,
@@ -108,6 +108,14 @@ export function TaskSheet() {
     : 0;
   const afterAdd = targetCount + 1;
   const hourFull = afterAdd > MAX_TASKS_PER_HOUR;
+  const todayStr = toLocalDateString(new Date());
+  const slotDay = slotDate ? parseLocalDate(slotDate) : null;
+  const originalDate = isUnscheduledTask(editingTask) ? '' : getDateStrFromTask(editingTask);
+  const blockedPast = Boolean(
+    slotDay
+    && isLockedCreateDay(slotDay)
+    && (isNew || originalDate !== slotDate),
+  );
 
   const close = () => {
     setSheetOpen(false);
@@ -134,10 +142,18 @@ export function TaskSheet() {
       setError(t('sheetHourFull'));
       return;
     }
+    if (blockedPast) {
+      setError(t('sheetNoPastDay'));
+      return;
+    }
     const updated = status ? { ...buildUpdated(), status } : buildUpdated();
     const result = await placeTask(updated, parseLocalDate(slotDate), slotHour);
     if (result === 'full') {
       setError(t('sheetHourFull'));
+      return;
+    }
+    if (result === 'past') {
+      setError(t('sheetNoPastDay'));
       return;
     }
     close();
@@ -174,6 +190,7 @@ export function TaskSheet() {
   const slotInfo = (() => {
     if (!slotPicked) return t('sheetPickWhenHint');
     if (hourFull) return t('sheetHourFullHint');
+    if (blockedPast) return t('sheetNoPastDay');
     if (afterAdd <= 1) return t('sheetOneHour');
     if (afterAdd <= 4) return t('sheetN15', { n: afterAdd });
     return t('sheetN12', { n: afterAdd });
@@ -233,6 +250,7 @@ export function TaskSheet() {
                 <input
                   type="date"
                   className="task-sheet__select"
+                  min={slotDate && slotDate < todayStr ? slotDate : todayStr}
                   value={slotDate}
                   onChange={(e) => {
                     setSlotDate(e.target.value);
@@ -341,7 +359,7 @@ export function TaskSheet() {
           <button
             type="button"
             className="btn btn--primary"
-            disabled={!title.trim() || !slotPicked}
+            disabled={!title.trim() || !slotPicked || blockedPast}
             onClick={() => { void saveToSlot(); }}
           >
             {isNew ? t('create') : t('save')}

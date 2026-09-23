@@ -43,6 +43,11 @@ export function isPastDay(d: Date, now = new Date()) {
   return startOfDay(d).getTime() < startOfDay(now).getTime();
 }
 
+/** Новое дело или перенос можно только на сегодня и дальше. */
+export function isLockedCreateDay(d: Date, now = new Date()) {
+  return isPastDay(d, now);
+}
+
 export function getWeekStart(d: Date, weekStartsOn: 0 | 1 = 1) {
   const date = startOfDay(d);
   const day = date.getDay();

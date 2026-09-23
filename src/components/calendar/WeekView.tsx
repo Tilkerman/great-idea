@@ -9,6 +9,7 @@ import {
   getHoursRange,
   getWeekDays,
   hourRangeLabels,
+  isLockedCreateDay,
   isPastDay,
   isSameDay,
   isToday,
@@ -95,6 +96,7 @@ export function WeekView({
 
   const openDraft = (draft: Task) => {
     if (pick) return;
+    if (isLockedCreateDay(new Date(draft.startAt))) return;
     setEditingTask(draft);
     setSheetOpen(true);
   };
@@ -194,6 +196,21 @@ export function WeekView({
   const requestPaste = (target: PendingPaste, count: number) => {
     setMenuOpen(false);
     setPick(null);
+    if (target.kind === 'day' && isLockedCreateDay(target.day)) {
+      showToast(t('sheetNoPastDay'));
+      return;
+    }
+    if (target.kind === 'hour' && isLockedCreateDay(target.day)) {
+      showToast(t('sheetNoPastDay'));
+      return;
+    }
+    if (target.kind === 'week') {
+      const live = getWeekDays(focusDate, settings.weekStartsOn).some((d) => !isLockedCreateDay(d));
+      if (!live) {
+        showToast(t('sheetNoPastDay'));
+        return;
+      }
+    }
     if (count === 0) {
       void pasteGridClipboard(target.kind === 'week' ? { kind: 'week', focusDate } : target);
       showToast(t('pasted'));
@@ -626,6 +643,7 @@ export function DayView() {
                 }}
                 swipeComplete
                 onAdd={(draft) => {
+                  if (isLockedCreateDay(focusDate)) return;
                   setEditingTask(draft);
                   setSheetOpen(true);
                 }}

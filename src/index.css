@@ -138,6 +138,15 @@ select {
   display: none !important;
 }
 
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .app-shell__main {
   flex: 1;
   overflow: hidden;

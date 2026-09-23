@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { notificationPermission, reminderNoticeBody, showTiliNotification } from '../utils/notifications';
 import { tLocale } from '../i18n/catalog';
 import { cloudPushConfigured, subscribeTiliPush, syncCloudReminders } from '../utils/webPush';
-import { reminderFireAtMs, alreadyCloudDueNow, markCloudDueNowSent } from '../utils/reminderTime';
+import { reminderFireAtMs, alreadyCloudDueNow, markCloudDueNowSent, reminderStillInSlot } from '../utils/reminderTime';
 
 const MAX_DELAY_MS = 12 * 60 * 60 * 1000;
 
@@ -28,9 +28,7 @@ export function useTaskReminders() {
         if (fired.current.has(key)) continue;
         if (delay > MAX_DELAY_MS) continue;
         if (delay <= 0) {
-          const start = new Date(task.startAt).getTime();
-          if (!Number.isFinite(start) || start <= now) continue;
-          if (alreadyCloudDueNow(task.id)) continue;
+          if (alreadyCloudDueNow(task.id) || !reminderStillInSlot(task, now)) continue;
           fired.current.add(key);
           markCloudDueNowSent([task.id]);
           const title = task.title.trim() || tLocale(settings.locale, 'untitledTask');

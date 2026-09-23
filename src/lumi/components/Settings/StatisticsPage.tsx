@@ -197,16 +197,15 @@ export default function StatisticsPage({ onBack, onDesireClick }: StatisticsPage
       <div className="settings-page">
         <div className="settings-page-content">
           <h1 className="settings-page-title">{t('settings.statistics.title')}</h1>
-          <p className="settings-page-text">{t('settings.statistics.description')}</p>
-          
-          {/* Секция "Как читать статистику" */}
+
           {desires.length > 0 && (
             <div className="statistics-help-section">
-              <details className="statistics-help-details" open>
+              <details className="statistics-help-details">
                 <summary className="statistics-help-summary">
                   <span>{t('settings.statistics.howToRead.title')}</span>
                 </summary>
                 <div className="statistics-help-content">
+                  <p className="settings-page-text">{t('settings.statistics.description')}</p>
                   <p className="statistics-help-intro">{t('settings.statistics.howToRead.intro')}</p>
                   
                   <div className="statistics-help-item">

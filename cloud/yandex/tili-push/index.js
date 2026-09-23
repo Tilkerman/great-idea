@@ -175,7 +175,15 @@ module.exports.handler = async function (event) {
     const deviceId = String(body.deviceId || '');
     if (!deviceId) return reply(400, { ok: false, error: 'no-device' });
     const prev = devices[deviceId] || { deviceId, subscription: null, reminders: [] };
-    prev.reminders = Array.isArray(body.reminders) ? body.reminders : [];
+    const incoming = Array.isArray(body.reminders) ? body.reminders : [];
+    const incomingIds = new Set(incoming.map((row) => row && row.id).filter(Boolean));
+    const now = Date.now();
+    const keepDue = (prev.reminders || []).filter((row) => {
+      if (!row || !row.id || incomingIds.has(row.id)) return false;
+      if (isLumiDaily(row)) return false;
+      return Number(row.fireAt) <= now;
+    });
+    prev.reminders = incoming.concat(keepDue);
     devices[deviceId] = prev;
     await saveDevices(devices);
     return reply(200, { ok: true, count: prev.reminders.length });

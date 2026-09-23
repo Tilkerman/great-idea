@@ -7,13 +7,14 @@ import './BottomNav.css';
 const TAB_IDS = ['calendar', 'growth', 'settings', 'profile'] as const;
 
 export function BottomNav() {
-  const { screen, setScreen, setEditingTask, setSheetOpen } = useApp();
+  const { screen, setScreen, mainTab, setEditingTask, setSheetOpen } = useApp();
   const { api: lumi } = useLumiHost();
   const { t } = useI18n();
 
   const openNew = () => {
-    if (screen === 'lumi' && lumi) {
-      lumi.createWish();
+    if (screen === 'lumi' || mainTab === 'lumi') {
+      if (screen !== 'lumi') setScreen('lumi');
+      lumi?.createWish();
       return;
     }
     setEditingTask(createInboxDraft());
@@ -30,11 +31,14 @@ export function BottomNav() {
   const onTab = (id: (typeof TAB_IDS)[number]) => {
     if (id === 'calendar') setScreen('calendar');
     else if (id === 'growth') {
-      if (screen === 'lumi' && lumi) lumi.toggleListAndWheel();
-      else setScreen('lumi');
+      setScreen('lumi');
+      lumi?.goWheel();
     } else if (id === 'settings') setScreen('settings');
     else if (id === 'profile') setScreen('settings-profile');
   };
+
+  const settingsOn = screen.startsWith('settings') && screen !== 'settings-profile';
+  const profileOn = screen === 'settings-profile' || screen === 'settings-password';
 
   return (
     <nav className="bottom-nav">
@@ -52,7 +56,7 @@ export function BottomNav() {
       <button
         type="button"
         className="bottom-nav__item bottom-nav__item--add"
-        aria-label={screen === 'lumi' ? t('navNewWish') : t('navNewTask')}
+        aria-label={screen === 'lumi' || mainTab === 'lumi' ? t('navNewWish') : t('navNewTask')}
         onClick={openNew}
       >
         <span className="bottom-nav__plus" aria-hidden>
@@ -65,7 +69,7 @@ export function BottomNav() {
         <button
           key={tab.id}
           type="button"
-          className="bottom-nav__item"
+          className={`bottom-nav__item ${tab.id === 'settings' && settingsOn ? 'bottom-nav__item--active' : ''} ${tab.id === 'profile' && profileOn ? 'bottom-nav__item--active' : ''}`}
           onClick={() => onTab(tab.id)}
         >
           <span className="bottom-nav__icon">{tab.icon}</span>

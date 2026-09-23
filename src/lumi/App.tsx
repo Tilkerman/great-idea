@@ -72,13 +72,12 @@ function App() {
           setCurrentView(forcedView);
           return;
         }
-        const desires = await desireService.getAllDesires();
-        if (desires.length === 0) {
-          // Если нет желаний, показываем WelcomeScreen (или пропускаем, если онбординг уже пройден)
-          const onboardingDone = localStorage.getItem(ONBOARDING_DONE_KEY) === '1';
-          setCurrentView(onboardingDone ? 'wheel' : 'welcome');
+        const onboardingDone = localStorage.getItem(ONBOARDING_DONE_KEY) === '1';
+        if (!onboardingDone) {
+          const desires = await desireService.getAllDesires();
+          setCurrentView(desires.length === 0 ? 'welcome' : 'wheel');
         } else {
-          setCurrentView('list');
+          setCurrentView('wheel');
         }
       } catch (error) {
         console.error('Ошибка при проверке желаний:', error);

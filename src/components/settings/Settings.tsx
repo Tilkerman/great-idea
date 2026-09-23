@@ -43,6 +43,7 @@ export function SettingsHub() {
     { id: 'settings-calendar', label: t('settingsCalendar'), sub: t('settingsCalendarSub') },
     { id: 'settings-stats', label: t('settingsStats'), sub: t('settingsStatsSub') },
     { id: 'settings-notifications', label: t('settingsNotif'), sub: t('settingsNotifSub') },
+    { id: 'settings-about', label: t('settingsAbout'), sub: t('settingsAboutSub') },
   ];
 
   const lumiItems: HubItem[] = [
@@ -57,7 +58,6 @@ export function SettingsHub() {
   const commonItems: HubItem[] = [
     { id: 'settings-appearance', label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
     { id: 'settings-install', label: t('settingsInstall'), sub: t('settingsInstallSub') },
-    { id: 'settings-about', label: t('settingsAbout'), sub: t('settingsAboutSub') },
   ];
 
   const contextItems = mainTab === 'lumi' ? lumiItems : tiliItems;
@@ -447,9 +447,17 @@ export function SettingsAbout() {
     <div className="settings-page">
       <SettingsTopBar title={t('settingsAbout')} onBack={() => setScreen('settings')} />
       <div className="settings-about">
-        <p className="settings-about__logo">TiLi Calendar</p>
-        <p className="settings-about__ver">{t('mvp')}</p>
-        <p className="settings-about__tagline">{t('aboutTagline')}</p>
+        <div className="settings-about__intro">
+          <p className="settings-about__logo">TiLi Calendar</p>
+          <p className="settings-about__ver">{t('mvp')}</p>
+          <p className="settings-about__subtitle">{t('aboutSubtitle')}</p>
+          <p className="settings-about__tagline">{t('aboutTagline')}</p>
+        </div>
+        <p>{t('aboutText1')}</p>
+        <p>{t('aboutText2')}</p>
+        <p>{t('aboutText3')}</p>
+        <p>{t('aboutText4')}</p>
+        <p className="settings-about__heart">{t('aboutText5')}</p>
         <button type="button" className="btn btn--ghost settings-full" onClick={() => setScreen('onboarding')}>
           {t('showIntro')}
         </button>
