@@ -6,22 +6,28 @@ const DUE_NOW_KEY = 'tili-push-due-now';
 export function reminderFireAtMs(task: Task): number | null {
   if (task.status === 'completed' || isUnscheduledTask(task)) return null;
   if (task.reminderOffsetMinutes == null || task.reminderOffsetMinutes < 0) return null;
-  const start = new Date(task.startAt).getTime();
-  if (!Number.isFinite(start)) return null;
-  return start - task.reminderOffsetMinutes * 60_000;
+  const start = new Date(task.startAt);
+  if (!Number.isFinite(start.getTime())) return null;
+  if (task.reminderOffsetMinutes === 0) {
+    const hourStart = new Date(start);
+    hourStart.setMinutes(0, 0, 0);
+    return hourStart.getTime();
+  }
+  return start.getTime() - task.reminderOffsetMinutes * 60_000;
 }
 
-function hourEndMs(task: Task, start: number) {
-  const end = new Date(task.endAt).getTime();
-  if (Number.isFinite(end) && end > start) return end;
-  return start + 60 * 60 * 1000;
+function calendarHourEndMs(task: Task) {
+  const hourStart = new Date(task.startAt);
+  if (!Number.isFinite(hourStart.getTime())) return NaN;
+  hourStart.setMinutes(0, 0, 0);
+  return hourStart.getTime() + 60 * 60 * 1000;
 }
 
-/** «Вовремя» = fireAt совпадает со стартом часа: после 13:00 слот уже «начался», но баннер ещё нужен. */
+/** Догон, пока календарный час ещё идёт (не 15-минутный кусок внутри часа). */
 export function reminderStillInSlot(task: Task, now = Date.now()) {
-  const start = new Date(task.startAt).getTime();
-  if (!Number.isFinite(start)) return false;
-  return now < hourEndMs(task, start) + 2 * 60 * 1000;
+  const hourEnd = calendarHourEndMs(task);
+  if (!Number.isFinite(hourEnd)) return false;
+  return now < hourEnd + 2 * 60 * 1000;
 }
 
 function dueNowSent(): Set<string> {
