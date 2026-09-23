@@ -23,7 +23,7 @@ interface SettingsPageProps {
   onGoHome?: () => void;
 }
 
-export default function SettingsPage({ onBack, onSettingsClick, onGoHome }: SettingsPageProps) {
+export default function SettingsPage({ onBack }: SettingsPageProps) {
   const { t } = useI18n();
   const { settings } = useApp();
   const [notifications, setNotifications] = useState(() => areNotificationsEnabled());

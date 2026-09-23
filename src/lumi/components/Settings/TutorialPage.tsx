@@ -144,7 +144,7 @@ interface TutorialPageProps {
   onGoHome?: () => void;
 }
 
-export default function TutorialPage({ onBack, onCreateDesire, onSettingsClick, onGoHome }: TutorialPageProps) {
+export default function TutorialPage({ onBack, onCreateDesire }: TutorialPageProps) {
   const { t } = useI18n();
 
   return (

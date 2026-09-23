@@ -28,7 +28,7 @@ interface DesireStatistics extends Desire {
   daysUntilCompleted?: number; // сколько дней заняло до выполнения (если выполнено)
 }
 
-export default function StatisticsPage({ onBack, onSettingsClick, onGoHome, onDesireClick }: StatisticsPageProps) {
+export default function StatisticsPage({ onBack, onDesireClick }: StatisticsPageProps) {
   const { t, locale } = useI18n();
   const statLocale = locale === 'ru' ? 'ru' : 'en';
   const [desires, setDesires] = useState<DesireStatistics[]>([]);

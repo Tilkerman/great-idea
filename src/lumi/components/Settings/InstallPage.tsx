@@ -11,7 +11,7 @@ interface InstallPageProps {
   onGoHome?: () => void;
 }
 
-export default function InstallPage({ onBack, onSettingsClick, onDataCleared, onGoHome }: InstallPageProps) {
+export default function InstallPage({ onBack, onDataCleared }: InstallPageProps) {
   const { t } = useI18n();
   const [isClearing, setIsClearing] = useState(false);
 

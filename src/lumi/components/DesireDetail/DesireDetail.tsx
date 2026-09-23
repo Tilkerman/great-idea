@@ -15,7 +15,7 @@ interface DesireDetailProps {
   onEdit?: () => void;
 }
 
-export default function DesireDetail({ desireId, onBack, onSettingsClick, onGoHome, onEdit }: DesireDetailProps) {
+export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailProps) {
   const { t, locale } = useI18n();
   const [desire, setDesire] = useState<Desire | null>(null);
   const [isLoading, setIsLoading] = useState(true);

@@ -12,7 +12,7 @@ interface BackupPageProps {
   onGoHome?: () => void;
 }
 
-export default function BackupPage({ onBack, onSettingsClick, onGoHome }: BackupPageProps) {
+export default function BackupPage({ onBack }: BackupPageProps) {
   const { t } = useI18n();
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);

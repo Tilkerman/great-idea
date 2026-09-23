@@ -8,7 +8,7 @@ interface AboutPageProps {
   onGoHome?: () => void;
 }
 
-export default function AboutPage({ onBack, onSettingsClick, onGoHome }: AboutPageProps) {
+export default function AboutPage({ onBack }: AboutPageProps) {
   const { t } = useI18n();
 
   return (

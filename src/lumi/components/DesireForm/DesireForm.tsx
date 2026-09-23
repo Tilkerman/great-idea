@@ -15,7 +15,7 @@ interface DesireFormProps {
   onGoHome?: () => void;
 }
 
-export default function DesireForm({ onSave, initialDesire, onBack, presetArea, onSettingsClick, onGoHome }: DesireFormProps) {
+export default function DesireForm({ onSave, initialDesire, onBack, presetArea }: DesireFormProps) {
   const { t } = useI18n();
   const [title, setTitle] = useState(initialDesire?.title || '');
   const [details, setDetails] = useState(initialDesire?.details || '');

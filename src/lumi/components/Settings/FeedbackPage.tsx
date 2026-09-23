@@ -10,7 +10,7 @@ interface FeedbackPageProps {
   onGoHome?: () => void;
 }
 
-export default function FeedbackPage({ onBack, onSettingsClick, onGoHome }: FeedbackPageProps) {
+export default function FeedbackPage({ onBack }: FeedbackPageProps) {
   const { t } = useI18n();
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState<number | null>(null);

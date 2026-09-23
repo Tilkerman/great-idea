@@ -11,7 +11,7 @@ interface ClearDataPageProps {
   onGoHome?: () => void;
 }
 
-export default function ClearDataPage({ onBack, onDataCleared, onSettingsClick, onGoHome }: ClearDataPageProps) {
+export default function ClearDataPage({ onBack, onDataCleared }: ClearDataPageProps) {
   const { t } = useI18n();
   const [isClearing, setIsClearing] = useState(false);
 

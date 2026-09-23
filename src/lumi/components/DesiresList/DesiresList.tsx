@@ -40,8 +40,6 @@ export default function DesiresList({
   onBack,
   useAreaBorderColors,
   filterArea,
-  onSettingsClick,
-  onGoHome,
   showCompleted = false,
 }: DesiresListProps) {
   const { t, locale } = useI18n();
@@ -154,14 +152,6 @@ export default function DesiresList({
     
     // Открываем детальный экран желания
     onDesireClick(desire);
-  };
-
-  const handleSettingsClick = () => {
-    if (onSettingsClick) {
-      onSettingsClick();
-    } else {
-      alert(t('settings.comingSoon'));
-    }
   };
 
   if (isLoading) {
