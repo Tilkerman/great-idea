@@ -3,27 +3,25 @@
 
 .desires-list-back {
   appearance: none;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.9);
-  color: rgba(0, 0, 0, 0.85);
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 0.45rem 0.65rem;
-  border-radius: 10px;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 0;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.desires-list-back:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: rgba(0, 0, 0, 1);
+  text-align: left;
 }
 
 .desires-list-container {
-  min-height: 100vh;
-  padding: 2rem 1.5rem 1.5rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 1.5rem 1.5rem;
   max-width: 600px;
+  width: 100%;
   margin: 0 auto;
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -245,17 +243,15 @@
 /* Кнопка добавления желания - такая же форма как на главной */
 .desires-list-add-button {
   width: 100%;
-  height: 54px;
-  min-height: 54px;
-  padding: 0 18px;
-  font-size: 0.86rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(26, 26, 26, 0.92);
-  background: #dbdbdb;
-  border: 1px solid #ffffff;
-  border-radius: 6px 15px 6px 15px; /* TL TR BR BL - такая же форма как на главной */
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent-on);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
   cursor: pointer;
   box-shadow: none;
   transition: filter 0.15s ease;

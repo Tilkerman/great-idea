@@ -1,45 +1,29 @@
-/* Tokens only under .lumi-root so TiLi calendar colors stay intact. */
+/* Lumi chrome uses TiLi tokens from :root. Life-area tile colors stay in components. */
 .lumi-root {
-  --bg-primary: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-focused: #f8f9ff;
-  --bg-placeholder: #f5f5f5;
-  --bg-hover: rgba(0, 0, 0, 0.05);
-  --text-primary: #213547;
-  --text-secondary: #666666;
-  --text-tertiary: #999999;
-  --border-color: #e0e0e0;
-  --accent-color: #33d6cf;
-  --button-bg: #213547;
-  --button-bg-hover: #2d3a4f;
-  --button-text: #ffffff;
+  --bg-primary: var(--bg);
+  --bg-card: var(--surface);
+  --bg-card-focused: var(--surface-2);
+  --bg-placeholder: var(--surface-2);
+  --bg-hover: color-mix(in srgb, var(--text-primary) 6%, transparent);
+  --text-tertiary: var(--text-secondary);
+  --border-color: var(--border);
+  --accent-color: var(--accent);
+  --button-bg: var(--accent);
+  --button-bg-hover: var(--accent-dim);
+  --button-text: var(--accent-on);
   box-sizing: border-box;
   flex: 1;
   min-height: 0;
   height: 100%;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   position: relative;
-  background: var(--bg-primary);
+  background: var(--bg);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-}
-
-html[data-theme='dark'] .lumi-root {
-  --bg-primary: #1a1a1a;
-  --bg-card: #2d2d2d;
-  --bg-card-focused: #2a2a3a;
-  --bg-placeholder: #404040;
-  --bg-hover: rgba(255, 255, 255, 0.1);
-  --text-primary: #e0e0e0;
-  --text-secondary: #b0b0b0;
-  --text-tertiary: #888888;
-  --border-color: #404040;
-  --accent-color: #33d6cf;
-  --button-bg: #2d3a4f;
-  --button-bg-hover: #3d4a5f;
-  --button-text: #ffffff;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.45;
 }
 
 .lumi-root *,
@@ -51,14 +35,14 @@ html[data-theme='dark'] .lumi-root {
 .lumi-root h1,
 .lumi-root h2,
 .lumi-root h3 {
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: 700;
+  line-height: 1.25;
   color: var(--text-primary);
 }
 
 .lumi-root button,
 .lumi-root input,
-.lumi-root textarea {
+.lumi-root textarea,
+.lumi-root select {
   font-family: inherit;
-  font-size: inherit;
 }

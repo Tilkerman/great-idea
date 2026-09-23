@@ -1,7 +1,10 @@
 .lumi-root {
 .desire-detail {
-  min-height: 100vh;
-  background: var(--bg-primary); /* Вернули базовый фон (белый в светлой теме) */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg-primary);
   color: var(--text-primary);
 }
 
@@ -225,17 +228,15 @@
 /* Кнопки действий */
 .desire-detail-action-button {
   width: 100%;
-  height: 54px;
-  min-height: 54px;
-  padding: 0 18px;
-  background: #ff9500; /* Оранжевый цвет как на скриншоте */
-  color: #ffffff;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--accent);
+  color: var(--accent-on);
   border: none;
-  border-radius: 6px 15px 6px 15px; /* TL TR BR BL - такая же форма как на главной */
-  font-size: 0.86rem;
-  font-weight: 400; /* Не жирный шрифт */
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: filter 0.15s ease, box-shadow 0.15s ease;
@@ -258,7 +259,7 @@
 }
 
 .desire-detail-action-button-done {
-  background: #ff9500; /* Оранжевый цвет */
+  background: var(--accent); /* Оранжевый цвет */
   color: #ffffff;
   border: none;
   opacity: 0.7;
@@ -295,17 +296,15 @@
 
 /* Кнопки сохранения и отмены */
 .desire-detail-save-button {
-  height: 54px;
-  min-height: 54px;
-  padding: 0 18px;
-  background: #dbdbdb;
-  color: rgba(26, 26, 26, 0.92);
-  border: 1px solid #ffffff;
-  border-radius: 6px 15px 6px 15px; /* TL TR BR BL - такая же форма как на главной */
-  font-size: 0.86rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--accent);
+  color: var(--accent-on);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: none;
   transition: filter 0.15s ease;
@@ -416,18 +415,15 @@
 }
 
 .desire-detail-secondary-button {
-  height: 54px;
-  min-height: 54px;
-  padding: 0 18px;
-  background: #dbdbdb;
-  color: rgba(26, 26, 26, 0.92);
-  border: 1px solid #ffffff;
-  border-bottom: 1px solid var(--border-color);
-  border-radius: 6px 15px 6px 15px; /* TL TR BR BL - такая же форма как на главной */
-  font-size: 0.86rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: none;
   transition: filter 0.15s ease;
@@ -436,12 +432,12 @@
 }
 
 .desire-detail-secondary-button:first-child {
-  border-top: 1px solid #ffffff;
-  border-radius: 6px 15px 6px 15px;
+  border-top: 1px solid var(--border);
+  border-radius: 8px;
 }
 
 .desire-detail-secondary-button:last-of-type {
-  border-radius: 6px 15px 6px 15px;
+  border-radius: 8px;
 }
 
 .desire-detail-secondary-button:hover {
@@ -449,17 +445,15 @@
 }
 
 .desire-detail-complete-button {
-  height: 54px;
-  min-height: 54px;
-  padding: 0 18px;
-  background: #49a078; /* Зеленый цвет */
-  color: #ffffff;
-  border: 1px solid #49a078;
-  border-radius: 6px 15px 6px 15px; /* TL TR BR BL - такая же форма как на главной */
-  font-size: 0.86rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--accent);
+  color: var(--accent-on);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: none;
   transition: filter 0.15s ease;
@@ -469,8 +463,8 @@
 }
 
 .desire-detail-complete-button:hover:not(:disabled) {
-  filter: brightness(0.9);
-  background: #3d8a63; /* Темнее при наведении */
+  filter: brightness(0.95);
+  background: var(--accent-dim);
 }
 
 .desire-detail-complete-button:disabled {
@@ -480,17 +474,15 @@
 }
 
 .desire-detail-delete-button {
-  height: 54px;
-  min-height: 54px;
-  padding: 0 18px;
-  background: #e74c3c; /* Красный цвет */
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--danger);
   color: #ffffff;
-  border: 1px solid #e74c3c;
-  border-radius: 6px 15px 6px 15px; /* TL TR BR BL - такая же форма как на главной */
-  font-size: 0.86rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: none;
   transition: filter 0.15s ease;
@@ -500,8 +492,7 @@
 }
 
 .desire-detail-delete-button:hover {
-  filter: brightness(0.9);
-  background: #c0392b; /* Темнее при наведении */
+  filter: brightness(0.95);
 }
 
 /* Визуальное подтверждение сохранения */
@@ -557,7 +548,7 @@
   background: transparent;
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 6px 15px 6px 15px; /* TL TR BR BL - такая же форма как на главной */
+  border-radius: 8px;
   font-size: 0.85rem;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s, color 0.2s;
@@ -815,7 +806,7 @@
   min-width: 24px;
   min-height: 24px;
   border-radius: 8px; /* Квадрат с максимально скруглёнными углами */
-  background: #ffffff;
+  background: var(--surface);
   border: 2px solid rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
   flex-shrink: 0;
@@ -826,12 +817,12 @@
 .action-item-checkbox:checked ~ .action-item-checkbox-text::before,
 .action-item-checkbox-label:has(.action-item-checkbox:checked)::before {
   content: '✓';
-  color: #ff9500; /* Оранжевая галочка */
+  color: var(--accent); /* Оранжевая галочка */
   font-size: 16px;
   font-weight: 900;
   line-height: 1;
   border-color: rgba(0, 0, 0, 0.1);
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 8px; /* Квадрат с максимально скруглёнными углами */
 }
 

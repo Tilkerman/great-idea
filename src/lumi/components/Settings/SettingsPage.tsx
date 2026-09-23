@@ -14,6 +14,8 @@ import {
   hasAskedForPermission,
 } from '../../utils/notifications';
 import { restartReminderScheduler, stopReminderScheduler } from '../../services/reminderScheduler';
+import { useApp } from '../../../context/AppContext';
+import { cloudPushConfigured, refreshCloudReminders, subscribeTiliPush } from '../../../utils/webPush';
 
 interface SettingsPageProps {
   onBack: () => void;
@@ -23,6 +25,7 @@ interface SettingsPageProps {
 
 export default function SettingsPage({ onBack, onSettingsClick, onGoHome }: SettingsPageProps) {
   const { t } = useI18n();
+  const { settings } = useApp();
   const [notifications, setNotifications] = useState(() => areNotificationsEnabled());
   const [notificationTime, setNotificationTimeState] = useState(() => getNotificationTime());
   const [permission, setPermission] = useState<NotificationPermission>(() => getNotificationPermission());
@@ -59,11 +62,12 @@ export default function SettingsPage({ onBack, onSettingsClick, onGoHome }: Sett
         }
       }
       
-      // Включаем уведомления
       setNotifications(true);
       setNotificationsEnabled(true);
-      
-      // Ждем готовности service worker перед запуском планировщика
+      if (cloudPushConfigured()) {
+        await subscribeTiliPush();
+        await refreshCloudReminders(settings.locale);
+      }
       if ('serviceWorker' in navigator) {
         try {
           await navigator.serviceWorker.ready;
@@ -75,10 +79,12 @@ export default function SettingsPage({ onBack, onSettingsClick, onGoHome }: Sett
         restartReminderScheduler();
       }
     } else {
-      // Выключаем уведомления
       setNotifications(false);
       setNotificationsEnabled(false);
       stopReminderScheduler();
+      if (cloudPushConfigured()) {
+        await refreshCloudReminders(settings.locale);
+      }
     }
   };
 
@@ -89,6 +95,9 @@ export default function SettingsPage({ onBack, onSettingsClick, onGoHome }: Sett
     // Если уведомления включены, перезапускаем планировщик с новым временем
     if (notifications) {
       restartReminderScheduler();
+      if (cloudPushConfigured()) {
+        void refreshCloudReminders(settings.locale);
+      }
     }
   };
 
@@ -108,13 +117,8 @@ export default function SettingsPage({ onBack, onSettingsClick, onGoHome }: Sett
   return (
     <>
       <Header
-        leftSlot={
-          <button type="button" className="settings-page-back" onClick={onBack}>
-            ← {t('common.back')}
-          </button>
-        }
-        onSettingsClick={onSettingsClick}
-        onLogoClick={onGoHome}
+        onBack={onBack}
+        title={t('settings.page.title')}
       />
       <div className="settings-page">
         <div className="settings-page-content">
@@ -137,18 +141,16 @@ export default function SettingsPage({ onBack, onSettingsClick, onGoHome }: Sett
 
             {isNotificationAvailable && canEnableNotifications && (
               <>
-                <div className="settings-switch-container">
-                  <label className="settings-switch">
-                    <input
-                      type="checkbox"
-                      checked={notifications}
-                      onChange={(e) => handleNotificationToggle(e.target.checked)}
-                      disabled={isRequesting}
-                    />
-                    <span className="settings-switch-slider"></span>
-                  </label>
-                  <span className="settings-switch-label">{t('settings.page.notificationsLabel')}</span>
-                </div>
+                <label className="settings-switch-row">
+                  <span className="settings-switch-row__title">{t('settings.page.notificationsLabel')}</span>
+                  <input
+                    type="checkbox"
+                    className="settings-switch"
+                    checked={notifications}
+                    onChange={(e) => handleNotificationToggle(e.target.checked)}
+                    disabled={isRequesting}
+                  />
+                </label>
 
                 {notifications && permission === 'granted' && (
                   <>

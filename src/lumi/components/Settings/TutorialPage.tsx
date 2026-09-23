@@ -150,13 +150,8 @@ export default function TutorialPage({ onBack, onCreateDesire, onSettingsClick, 
   return (
     <>
       <Header
-        leftSlot={
-          <button type="button" className="settings-page-back" onClick={onBack}>
-            ← {t('common.back')}
-          </button>
-        }
-        onSettingsClick={onSettingsClick}
-        onLogoClick={onGoHome}
+        onBack={onBack}
+        title={t('settings.menu.tutorial')}
       />
       <div className="settings-page">
         <div className="settings-page-content">

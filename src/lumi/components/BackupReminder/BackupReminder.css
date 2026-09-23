@@ -17,14 +17,14 @@
 
 
 .backup-reminder-modal {
-  background: var(--bg-primary, #ffffff);
+  background: var(--bg);
   border-radius: 16px;
   padding: 2rem;
   max-width: 400px;
   width: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   animation: slideUp 0.3s ease-out;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 
@@ -40,7 +40,7 @@
   font-weight: 600;
   margin: 0 0 1rem 0;
   text-align: center;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 .backup-reminder-text {
@@ -48,7 +48,7 @@
   line-height: 1.5;
   margin: 0 0 1.5rem 0;
   text-align: center;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
 }
 
 .backup-reminder-actions {
@@ -69,12 +69,12 @@
 }
 
 .backup-reminder-button-primary {
-  background: #646cff;
+  background: var(--accent);
   color: white;
 }
 
 .backup-reminder-button-primary:hover {
-  background: #535bf2;
+  background: var(--accent-dim);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3);
 }
@@ -85,12 +85,12 @@
 
 .backup-reminder-button-secondary {
   background: transparent;
-  color: var(--text-primary, #333333);
-  border: 1px solid var(--border-color, #e0e0e0);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
 }
 
 .backup-reminder-button-secondary:hover {
-  background: var(--bg-secondary, #f5f5f5);
+  background: var(--surface-2);
 }
 
 .backup-reminder-button:disabled {
@@ -102,11 +102,11 @@
 @media (prefers-color-scheme: dark) {
   .backup-reminder-modal {
     background: var(--bg-primary, #1a1a1a);
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .backup-reminder-title {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .backup-reminder-text {
@@ -114,8 +114,8 @@
   }
 
   .backup-reminder-button-secondary {
-    color: var(--text-primary, #ffffff);
-    border-color: var(--border-color, #333333);
+    color: var(--text-primary);
+    border-color: var(--border);
   }
 
   .backup-reminder-button-secondary:hover {

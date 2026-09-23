@@ -97,13 +97,8 @@ export default function FeedbackPage({ onBack, onSettingsClick, onGoHome }: Feed
   return (
     <>
       <Header
-        leftSlot={
-          <button type="button" className="settings-page-back" onClick={onBack}>
-            ← {t('common.back')}
-          </button>
-        }
-        onSettingsClick={onSettingsClick}
-        onLogoClick={onGoHome}
+        onBack={onBack}
+        title={t('settings.feedback.title')}
       />
       <div className="settings-page">
         <div className="settings-page-content">

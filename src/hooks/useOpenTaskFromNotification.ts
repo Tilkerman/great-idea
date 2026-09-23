@@ -3,17 +3,33 @@ import { useApp } from '../context/AppContext';
 import { isUnscheduledTask } from '../utils/hourSlot';
 
 const PENDING_KEY = 'tili-open-task';
+const PENDING_LUMI_KEY = 'tili-open-lumi';
+
+function stripQueryParam(name: string) {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has(name)) return;
+  params.delete(name);
+  const q = params.toString();
+  history.replaceState(null, '', `${window.location.pathname}${q ? `?${q}` : ''}${window.location.hash}`);
+}
 
 function takeTaskIdFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('task');
   if (id) {
     sessionStorage.setItem(PENDING_KEY, id);
-    params.delete('task');
-    const q = params.toString();
-    history.replaceState(null, '', `${window.location.pathname}${q ? `?${q}` : ''}${window.location.hash}`);
+    stripQueryParam('task');
   }
   return sessionStorage.getItem(PENDING_KEY);
+}
+
+function takeLumiFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('lumi') === '1') {
+    sessionStorage.setItem(PENDING_LUMI_KEY, '1');
+    stripQueryParam('lumi');
+  }
+  return sessionStorage.getItem(PENDING_LUMI_KEY) === '1';
 }
 
 export function useOpenTaskFromNotification() {
@@ -24,7 +40,12 @@ export function useOpenTaskFromNotification() {
   useEffect(() => {
     if (!ready) return;
 
-    const open = (taskId: string) => {
+    const openLumi = () => {
+      sessionStorage.removeItem(PENDING_LUMI_KEY);
+      setScreen('lumi');
+    };
+
+    const openTask = (taskId: string) => {
       const task = tasks.find((row) => row.id === taskId);
       if (!task) return false;
       sessionStorage.removeItem(PENDING_KEY);
@@ -36,20 +57,26 @@ export function useOpenTaskFromNotification() {
       return true;
     };
 
+    if (takeLumiFromUrl()) openLumi();
     const pending = takeTaskIdFromUrl();
-    if (pending) open(pending);
+    if (pending) openTask(pending);
 
     const onSwMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'tili-open-lumi') {
+        sessionStorage.setItem(PENDING_LUMI_KEY, '1');
+        openLumi();
+        return;
+      }
       if (event.data?.type === 'tili-open-task' && typeof event.data.taskId === 'string') {
         sessionStorage.setItem(PENDING_KEY, event.data.taskId);
-        open(event.data.taskId);
+        openTask(event.data.taskId);
       }
     };
     const onLocal = (event: Event) => {
       const taskId = (event as CustomEvent<string>).detail;
       if (typeof taskId === 'string' && taskId) {
         sessionStorage.setItem(PENDING_KEY, taskId);
-        open(taskId);
+        openTask(taskId);
       }
     };
     navigator.serviceWorker?.addEventListener('message', onSwMessage);

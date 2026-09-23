@@ -137,7 +137,7 @@ export async function showDailyReminder(): Promise<void> {
     body: 'Время для ежедневного ритуала! Вернитесь к своим желаниям.',
     icon: iconPath,
     badge: iconPath,
-    tag: 'daily-reminder',
+    tag: 'lumi-daily',
     requireInteraction: false,
     vibrate: [200, 100, 200],
   };

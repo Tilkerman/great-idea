@@ -7,12 +7,12 @@
 }
 
 .statistics-card {
-  background: var(--bg-secondary, #f5f5f5);
+  background: var(--surface-2);
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
 }
@@ -20,7 +20,7 @@
 .statistics-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--accent-color, #646cff);
+  border-color: var(--accent);
 }
 
 .statistics-card-image {
@@ -29,7 +29,7 @@
   object-fit: cover;
   position: relative;
   overflow: hidden;
-  background: var(--bg-primary, #ffffff);
+  background: var(--bg);
 }
 
 .statistics-card-image img {
@@ -44,8 +44,8 @@
   justify-content: center;
   font-size: 3rem;
   font-weight: 600;
-  color: var(--text-secondary, #999999);
-  background: linear-gradient(135deg, var(--bg-primary, #ffffff) 0%, var(--bg-secondary, #f5f5f5) 100%);
+  color: var(--text-secondary);
+  background: linear-gradient(135deg, var(--bg) 0%, var(--surface-2) 100%);
 }
 
 .statistics-card-completed-badge {
@@ -76,7 +76,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 0.75rem 0;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -96,7 +96,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
 }
 
 .statistics-stat-icon {
@@ -106,22 +106,22 @@
 
 .statistics-stat-value {
   font-weight: 500;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 /* Темная тема */
 @media (prefers-color-scheme: dark) {
   .statistics-card {
     background: var(--bg-secondary, #2a2a2a);
-    border-color: var(--border-color, #333333);
+    border-color: var(--border);
   }
 
   .statistics-card-title {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-stat-value {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-stat-item {
@@ -129,7 +129,7 @@
   }
 
   .statistics-card-image-placeholder {
-    color: var(--text-secondary, #666666);
+    color: var(--text-secondary);
     background: linear-gradient(135deg, var(--bg-primary, #1a1a1a) 0%, var(--bg-secondary, #2a2a2a) 100%);
   }
 }
@@ -152,7 +152,7 @@
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
   margin-bottom: 0.25rem;
   font-weight: 500;
 }
@@ -160,14 +160,14 @@
 .statistics-activity-bar-track {
   width: 100%;
   height: 6px;
-  background: var(--bg-primary, #e0e0e0);
+  background: var(--surface-2);
   border-radius: 3px;
   overflow: hidden;
 }
 
 .statistics-activity-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #646cff 0%, #535bf2 100%);
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dim) 100%);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -176,10 +176,10 @@
 .statistics-activity-indicator {
   margin: 0.75rem 0;
   padding: 0.75rem;
-  background: var(--bg-primary, #ffffff);
+  background: var(--bg);
   border-radius: 8px;
   border-left: 4px solid;
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: 1px solid var(--border);
 }
 
 .statistics-indicator-header {
@@ -202,13 +202,13 @@
 .statistics-indicator-label {
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
   margin-bottom: 0.25rem;
 }
 
 .statistics-indicator-frequency {
   font-size: 0.8rem;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
 }
 
 .statistics-comparison-badge {
@@ -231,11 +231,11 @@
 
 .statistics-indicator-recommendation {
   font-size: 0.8rem;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
   line-height: 1.4;
   font-style: italic;
   padding-top: 0.5rem;
-  border-top: 1px solid var(--border-color, #e0e0e0);
+  border-top: 1px solid var(--border);
 }
 
 /* Информация о выполненных желаниях */
@@ -255,7 +255,7 @@
 }
 
 .statistics-completed-text {
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -265,9 +265,9 @@
 }
 
 .statistics-help-details {
-  background: var(--bg-secondary, #f5f5f5);
+  background: var(--surface-2);
   border-radius: 8px;
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -279,7 +279,7 @@
   cursor: pointer;
   list-style: none;
   font-weight: 500;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
   transition: background 0.2s ease;
   user-select: none;
 }
@@ -303,7 +303,7 @@
 
 .statistics-help-content {
   padding: 0 1.25rem 1.25rem 1.25rem;
-  border-top: 1px solid var(--border-color, #e0e0e0);
+  border-top: 1px solid var(--border);
   margin-top: 0;
 }
 
@@ -319,14 +319,14 @@
   font-size: 0.95rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 .statistics-help-item-text {
   font-size: 0.875rem;
   line-height: 1.6;
   margin: 0 0 0.75rem 0;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
 }
 
 .statistics-help-intro {
@@ -336,8 +336,8 @@
   padding: 0.75rem;
   background: rgba(100, 108, 255, 0.1);
   border-radius: 8px;
-  border-left: 3px solid #646cff;
-  color: var(--text-primary, #333333);
+  border-left: 3px solid var(--accent);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -356,9 +356,9 @@
 .statistics-help-visual {
   margin-top: 0.75rem;
   padding: 1rem;
-  background: var(--bg-primary, #ffffff);
+  background: var(--bg);
   border-radius: 8px;
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: 1px solid var(--border);
 }
 
 .statistics-help-example {
@@ -375,7 +375,7 @@
 .statistics-help-example-bar {
   width: 100%;
   height: 20px;
-  background: var(--bg-secondary, #e0e0e0);
+  background: var(--surface-2);
   border-radius: 10px;
   overflow: hidden;
   position: relative;
@@ -383,14 +383,14 @@
 
 .statistics-help-example-fill {
   height: 100%;
-  background: linear-gradient(90deg, #646cff 0%, #535bf2 100%);
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dim) 100%);
   border-radius: 10px;
   transition: width 0.3s ease;
 }
 
 .statistics-help-example-label {
   font-size: 0.8rem;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
   text-align: center;
 }
 
@@ -411,7 +411,7 @@
 .statistics-help-activity-plus,
 .statistics-help-activity-equals {
   font-size: 1rem;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
@@ -426,9 +426,9 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: var(--bg-secondary, #f5f5f5);
+  background: var(--surface-2);
   border-radius: 8px;
-  border-left: 3px solid var(--border-color, #e0e0e0);
+  border-left: 3px solid var(--border);
 }
 
 .statistics-help-level-icon {
@@ -445,13 +445,13 @@
 
 .statistics-help-level-info strong {
   font-size: 0.9rem;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
   font-weight: 600;
 }
 
 .statistics-help-level-info span {
   font-size: 0.8rem;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
 }
 
 .statistics-insight-hint {
@@ -471,9 +471,9 @@
 .statistics-insights {
   margin: 2rem 0;
   padding: 1.5rem;
-  background: var(--bg-secondary, #f5f5f5);
+  background: var(--surface-2);
   border-radius: 12px;
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: 1px solid var(--border);
 }
 
 .statistics-insights-header {
@@ -484,14 +484,14 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 .statistics-insights-subtitle {
   font-size: 0.875rem;
   line-height: 1.5;
   margin: 0;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
 }
 
 /* Топ-3 */
@@ -503,7 +503,7 @@
   font-size: 1rem;
   font-weight: 600;
   margin: 0 0 0.75rem 0;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 .statistics-top3-list {
@@ -517,9 +517,9 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: var(--bg-primary, #ffffff);
+  background: var(--bg);
   border-radius: 8px;
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: 1px solid var(--border);
   transition: all 0.2s ease;
 }
 
@@ -531,7 +531,7 @@
 .statistics-top3-rank {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #646cff;
+  color: var(--accent);
   min-width: 2rem;
   text-align: center;
 }
@@ -544,7 +544,7 @@
 .statistics-top3-name {
   flex: 1;
   font-weight: 600;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -567,7 +567,7 @@
 
 .statistics-top3-frequency {
   font-size: 0.75rem;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
@@ -580,14 +580,14 @@
   font-size: 1rem;
   font-weight: 600;
   margin: 0 0 0.75rem 0;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 .statistics-correlation-content {
   padding: 1rem;
-  background: var(--bg-primary, #ffffff);
+  background: var(--bg);
   border-radius: 8px;
-  border: 1px solid var(--border-color, #e0e0e0);
+  border: 1px solid var(--border);
 }
 
 .statistics-correlation-icon {
@@ -599,7 +599,7 @@
   margin: 0 0 0.75rem 0;
   font-size: 0.9rem;
   line-height: 1.6;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 .statistics-correlation-insight {
@@ -609,9 +609,9 @@
   border-radius: 6px;
   font-size: 0.85rem;
   line-height: 1.5;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
   font-weight: 500;
-  border-left: 3px solid #646cff;
+  border-left: 3px solid var(--accent);
 }
 
 /* Горячие желания */
@@ -626,14 +626,14 @@
   font-size: 1rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 .statistics-hot-text {
   margin: 0 0 0.75rem 0;
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--text-secondary, #666666);
+  color: var(--text-secondary);
 }
 
 .statistics-hot-list {
@@ -655,7 +655,7 @@
 
 .statistics-hot-name {
   font-weight: 500;
-  color: var(--text-primary, #333333);
+  color: var(--text-primary);
 }
 
 .statistics-hot-metric {
@@ -667,15 +667,15 @@
 @media (prefers-color-scheme: dark) {
   .statistics-card {
     background: var(--bg-secondary, #2a2a2a);
-    border-color: var(--border-color, #333333);
+    border-color: var(--border);
   }
 
   .statistics-card-title {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-stat-value {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-stat-item {
@@ -683,17 +683,17 @@
   }
 
   .statistics-card-image-placeholder {
-    color: var(--text-secondary, #666666);
+    color: var(--text-secondary);
     background: linear-gradient(135deg, var(--bg-primary, #1a1a1a) 0%, var(--bg-secondary, #2a2a2a) 100%);
   }
 
   .statistics-insights {
     background: var(--bg-secondary, #2a2a2a);
-    border-color: var(--border-color, #333333);
+    border-color: var(--border);
   }
 
   .statistics-insights-title {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-insights-subtitle {
@@ -703,25 +703,25 @@
   .statistics-top3-title,
   .statistics-correlation-title,
   .statistics-hot-title {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-top3-item,
   .statistics-correlation-content {
     background: var(--bg-primary, #1a1a1a);
-    border-color: var(--border-color, #333333);
+    border-color: var(--border);
   }
 
   .statistics-top3-name {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-correlation-text {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-activity-bar-track {
-    background: var(--bg-primary, #333333);
+    background: var(--bg);
   }
 
   .statistics-completed-info {
@@ -729,16 +729,16 @@
   }
 
   .statistics-completed-text {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-activity-indicator {
     background: var(--bg-primary, #1a1a1a);
-    border-color: var(--border-color, #333333);
+    border-color: var(--border);
   }
 
   .statistics-indicator-label {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-indicator-frequency {
@@ -747,11 +747,11 @@
 
   .statistics-indicator-recommendation {
     color: var(--text-secondary, #cccccc);
-    border-top-color: var(--border-color, #333333);
+    border-top-color: var(--border);
   }
 
   .statistics-top3-name {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-top3-frequency {
@@ -760,7 +760,7 @@
 
   .statistics-correlation-text,
   .statistics-correlation-insight {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-hot-item {
@@ -768,7 +768,7 @@
   }
 
   .statistics-hot-name {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-hot-text {
@@ -777,11 +777,11 @@
 
   .statistics-help-details {
     background: var(--bg-secondary, #2a2a2a);
-    border-color: var(--border-color, #333333);
+    border-color: var(--border);
   }
 
   .statistics-help-summary {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-help-summary:hover {
@@ -789,11 +789,11 @@
   }
 
   .statistics-help-content {
-    border-top-color: var(--border-color, #333333);
+    border-top-color: var(--border);
   }
 
   .statistics-help-item-title {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-help-item-text {
@@ -802,17 +802,17 @@
 
   .statistics-help-intro {
     background: rgba(100, 108, 255, 0.15);
-    color: var(--text-primary, #ffffff);
-    border-left-color: #646cff;
+    color: var(--text-primary);
+    border-left-color: var(--accent);
   }
 
   .statistics-help-visual {
     background: var(--bg-primary, #1a1a1a);
-    border-color: var(--border-color, #333333);
+    border-color: var(--border);
   }
 
   .statistics-help-example-bar {
-    background: var(--bg-secondary, #333333);
+    background: var(--surface-2);
   }
 
   .statistics-help-example-label {
@@ -821,11 +821,11 @@
 
   .statistics-help-level {
     background: var(--bg-secondary, #2a2a2a);
-    border-left-color: var(--border-color, #333333);
+    border-left-color: var(--border);
   }
 
   .statistics-help-level-info strong {
-    color: var(--text-primary, #ffffff);
+    color: var(--text-primary);
   }
 
   .statistics-help-level-info span {
@@ -841,7 +841,7 @@
 }
 
 .statistics-card-activity-button {
-  background: var(--accent-color, #646cff);
+  background: var(--accent);
   color: white;
   border: none;
   border-radius: 8px;
@@ -858,7 +858,7 @@
 }
 
 .statistics-card-activity-button:hover {
-  background: var(--accent-color-hover, #535bf2);
+  background: var(--accent-dim);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(100, 108, 255, 0.3);
 }

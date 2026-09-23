@@ -83,23 +83,48 @@ function configureVapid() {
   return true;
 }
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function isLumiDaily(row) {
+  return row && (row.kind === 'lumi-daily' || row.id === 'lumi-daily');
+}
+
+function nextLumiFireAt(fireAt, now) {
+  let t = Number(fireAt) || now;
+  while (t <= now) t += DAY_MS;
+  return t;
+}
+
 async function sendDue(devices) {
   if (!configureVapid()) return { sent: 0, error: 'no-vapid' };
   const now = Date.now();
   let sent = 0;
   for (const device of Object.values(devices)) {
     if (!device.subscription) continue;
-    const due = (device.reminders || []).filter((row) => row.fireAt <= now);
-    device.reminders = (device.reminders || []).filter((row) => row.fireAt > now);
+    const due = [];
+    const next = [];
+    for (const row of device.reminders || []) {
+      if (row.fireAt > now) {
+        next.push(row);
+        continue;
+      }
+      due.push(row);
+      if (isLumiDaily(row)) {
+        next.push({ ...row, kind: 'lumi-daily', fireAt: nextLumiFireAt(row.fireAt, now) });
+      }
+    }
+    device.reminders = next;
     for (const row of due) {
+      const lumi = isLumiDaily(row);
       try {
         await webpush.sendNotification(
           device.subscription,
           JSON.stringify({
             title: row.title,
             body: row.body,
-            tag: `task-${row.id}`,
-            taskId: row.id,
+            tag: lumi ? 'lumi-daily' : `task-${row.id}`,
+            taskId: lumi ? '' : row.id,
+            open: lumi ? 'lumi' : 'task',
           }),
         );
         sent += 1;

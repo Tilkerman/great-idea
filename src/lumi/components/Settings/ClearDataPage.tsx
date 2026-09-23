@@ -40,13 +40,8 @@ export default function ClearDataPage({ onBack, onDataCleared, onSettingsClick, 
   return (
     <>
       <Header
-        leftSlot={
-          <button type="button" className="settings-page-back" onClick={onBack}>
-            ← {t('common.back')}
-          </button>
-        }
-        onSettingsClick={onSettingsClick}
-        onLogoClick={onGoHome}
+        onBack={onBack}
+        title={t('settings.clear.title')}
       />
       <div className="settings-page">
         <div className="settings-page-content">

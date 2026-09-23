@@ -168,15 +168,8 @@ export default function DesiresList({
     return (
       <>
         <Header
-          leftSlot={
-            onBack ? (
-              <button type="button" className="desires-list-back" onClick={onBack}>
-                ← {t('common.back')}
-              </button>
-            ) : null
-          }
-          onLogoClick={onGoHome}
-          onSettingsClick={handleSettingsClick}
+          onBack={onBack}
+          title={showCompleted ? t('settings.menu.completed') : t('wheel.allDesires')}
         />
         <div className="desires-list-container">
           <div className="loading">{t('common.loading')}</div>
@@ -188,15 +181,8 @@ export default function DesiresList({
   return (
     <>
       <Header
-        leftSlot={
-          onBack ? (
-            <button type="button" className="desires-list-back" onClick={onBack}>
-              ← {t('common.back')}
-            </button>
-          ) : null
-        }
-        onLogoClick={onGoHome}
-        onSettingsClick={handleSettingsClick}
+        onBack={onBack}
+        title={showCompleted ? t('settings.menu.completed') : t('wheel.allDesires')}
       />
       <div className="desires-list-container">
         {/* Блок информации под шапкой */}

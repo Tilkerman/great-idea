@@ -64,22 +64,62 @@ export async function subscribeTiliPush(): Promise<'ok' | 'skipped' | 'failed'> 
   }
 }
 
+export const LUMI_DAILY_ID = 'lumi-daily';
+
+function nextLumiDailyFireAt(time: string): number {
+  const [hours, minutes] = time.split(':').map(Number);
+  const target = new Date();
+  target.setHours(Number.isFinite(hours) ? hours : 20, Number.isFinite(minutes) ? minutes : 0, 0, 0);
+  if (target.getTime() <= Date.now()) {
+    target.setDate(target.getDate() + 1);
+  }
+  return target.getTime();
+}
+
+function lumiDailySlot(locale: Locale) {
+  try {
+    if (typeof localStorage === 'undefined') return null;
+    if (localStorage.getItem('lumi-notifications-enabled') !== 'true') return null;
+    if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') return null;
+    const time = localStorage.getItem('lumi-notification-time') || '20:00';
+    return {
+      id: LUMI_DAILY_ID,
+      kind: 'lumi-daily' as const,
+      fireAt: nextLumiDailyFireAt(time),
+      title: tLocale(locale, 'lumiDailyTitle'),
+      body: tLocale(locale, 'lumiDailyBody'),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function syncCloudReminders(tasks: Task[], locale: Locale = 'ru'): Promise<boolean> {
   if (!cloudPushConfigured()) return false;
   const dueNowIds: string[] = [];
-  const reminders = tasks
-    .map((task) => {
-      const plan = cloudReminderFireAt(task);
-      if (!plan) return null;
-      if (plan.dueNow) dueNowIds.push(task.id);
-      return {
-        id: task.id,
-        fireAt: plan.fireAt,
-        title: task.title.trim() || tLocale(locale, 'untitledTask'),
-        body: reminderNoticeBody(locale),
-      };
-    })
-    .filter((row): row is NonNullable<typeof row> => row !== null);
+  const reminders: Array<{
+    id: string;
+    kind?: 'task' | 'lumi-daily';
+    fireAt: number;
+    title: string;
+    body: string;
+  }> = [];
+
+  for (const task of tasks) {
+    const plan = cloudReminderFireAt(task);
+    if (!plan) continue;
+    if (plan.dueNow) dueNowIds.push(task.id);
+    reminders.push({
+      id: task.id,
+      kind: 'task',
+      fireAt: plan.fireAt,
+      title: task.title.trim() || tLocale(locale, 'untitledTask'),
+      body: reminderNoticeBody(locale),
+    });
+  }
+
+  const lumi = lumiDailySlot(locale);
+  if (lumi) reminders.push(lumi);
 
   try {
     const res = await fetch(pushApiUrl(), {
@@ -92,4 +132,9 @@ export async function syncCloudReminders(tasks: Task[], locale: Locale = 'ru'): 
   } catch {
     return false;
   }
+}
+
+export async function refreshCloudReminders(locale: Locale = 'ru'): Promise<boolean> {
+  const { getAllTasks } = await import('../db');
+  return syncCloudReminders(await getAllTasks(), locale);
 }

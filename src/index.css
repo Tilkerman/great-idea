@@ -146,19 +146,13 @@ select {
   padding-bottom: calc(64px + env(safe-area-inset-bottom));
 }
 
-/* Lumi: без серой щели над вкладками (фон календаря --bg, меню белое) */
 .app-shell--lumi,
 .app-shell--lumi .app-shell__main {
-  background: #ffffff;
+  background: var(--bg);
 }
 
 .app-shell--lumi .app-shell__main {
   padding-bottom: calc(52px + env(safe-area-inset-bottom));
-}
-
-html[data-theme='dark'] .app-shell--lumi,
-html[data-theme='dark'] .app-shell--lumi .app-shell__main {
-  background: #1a1a1a;
 }
 
 .btn {

@@ -256,13 +256,8 @@ export default function DesireDetail({ desireId, onBack, onSettingsClick, onGoHo
     <div className="desire-detail">
       {/* Шапка с главной страницы */}
       <Header
-        leftSlot={
-          <button type="button" className="desires-list-back" onClick={onBack}>
-            ← {t('common.back')}
-          </button>
-        }
-        onLogoClick={onGoHome}
-        onSettingsClick={onSettingsClick}
+        onBack={onBack}
+        title={desire.title}
       />
 
       {/* Визуальный якорь - галерея изображений */}

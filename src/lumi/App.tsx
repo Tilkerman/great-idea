@@ -17,6 +17,8 @@ import StatisticsPage from './components/Settings/StatisticsPage';
 import WelcomeScreen from './components/WelcomeScreen/WelcomeScreen';
 import IntroScreen from './components/IntroScreen/IntroScreen';
 import { startReminderScheduler } from './services/reminderScheduler';
+import { areNotificationsEnabled } from './utils/notifications';
+import { cloudPushConfigured, refreshCloudReminders, subscribeTiliPush } from '../utils/webPush';
 import { useLumiHost } from './LumiHost';
 import { useApp } from '../context/AppContext';
 
@@ -39,7 +41,7 @@ const ONBOARDING_DONE_KEY = 'tili-lumi-onboarding-done-v1';
 
 function App() {
   const { t } = useI18n();
-  const { setScreen } = useApp();
+  const { setScreen, settings } = useApp();
   const {
     setApi,
     settingsOpenNonce,
@@ -91,13 +93,16 @@ function App() {
 
   // Инициализируем планировщик напоминаний при загрузке
   useEffect(() => {
-    // Ждем регистрации service worker перед запуском планировщика
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(() => {
+      navigator.serviceWorker.ready.then(async () => {
         startReminderScheduler();
+        if (cloudPushConfigured() && areNotificationsEnabled() && Notification.permission === 'granted') {
+          await subscribeTiliPush();
+          await refreshCloudReminders(settings.locale);
+        }
       }).catch(console.error);
     }
-  }, []);
+  }, [settings.locale]);
 
   const handleCreateDesire = () => {
     setEditingDesire(undefined);
@@ -210,7 +215,7 @@ function App() {
         setCurrentView('tutorial');
         break;
       case 'install':
-        setCurrentView('install');
+        setScreen('settings-install');
         break;
       case 'settings':
         setCurrentView('settings');

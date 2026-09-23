@@ -250,15 +250,8 @@ export default function DesireForm({ onSave, initialDesire, onBack, presetArea, 
     <div className="desire-form-container">
       {/* Шапка с главной страницы */}
       <Header
-        leftSlot={
-          onBack ? (
-            <button type="button" className="desires-list-back" onClick={onBack}>
-              ← {t('common.back')}
-            </button>
-          ) : null
-        }
-        onLogoClick={onGoHome}
-        onSettingsClick={onSettingsClick}
+        onBack={onBack}
+        title={initialDesire ? t('form.editTitle') : t('form.newTitle')}
       />
       
       <form className="desire-form" onSubmit={handleSubmit}>

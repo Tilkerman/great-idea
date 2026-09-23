@@ -42,7 +42,6 @@ export function SettingsHub() {
   const tiliItems: HubItem[] = [
     { id: 'settings-calendar', label: t('settingsCalendar'), sub: t('settingsCalendarSub') },
     { id: 'settings-stats', label: t('settingsStats'), sub: t('settingsStatsSub') },
-    { id: 'settings-data', label: t('settingsData'), sub: t('settingsDataSub') },
     { id: 'settings-notifications', label: t('settingsNotif'), sub: t('settingsNotifSub') },
   ];
 
@@ -58,7 +57,6 @@ export function SettingsHub() {
   const commonItems: HubItem[] = [
     { id: 'settings-appearance', label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
     { id: 'settings-install', label: t('settingsInstall'), sub: t('settingsInstallSub') },
-    { id: 'lumi-install', label: t('settingsLumiData'), sub: t('settingsLumiDataSub') },
     { id: 'settings-about', label: t('settingsAbout'), sub: t('settingsAboutSub') },
   ];
 
@@ -405,18 +403,6 @@ export function SettingsData() {
   const { setScreen } = useApp();
   const { t } = useI18n();
 
-  const exportData = async () => {
-    const { exportData: exp } = await import('../../db');
-    const json = await exp();
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `tili-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   const clearData = async () => {
     if (!confirm(t('clearConfirm'))) return;
     const { clearAllData } = await import('../../db');
@@ -424,19 +410,30 @@ export function SettingsData() {
     window.location.reload();
   };
 
+  const clearWishes = async () => {
+    if (!confirm(t('clearWishesConfirm'))) return;
+    const { db } = await import('../../lumi/services/db');
+    await db.desires.clear();
+    await db.contacts.clear();
+    await db.lifeAreas.clear();
+    await db.feedbacks.clear();
+    await db.actionItems.clear();
+    window.location.reload();
+  };
+
   return (
     <div className="settings-page">
       <SettingsTopBar title={t('settingsData')} onBack={() => setScreen('settings')} />
       <div className="settings-form">
-        <button type="button" className="btn btn--ghost settings-full" onClick={exportData}>
-          {t('exportJson')}
-        </button>
-        <p className="settings-note">
-          {t('exportNote')}
-        </p>
         <button type="button" className="btn btn--danger settings-full" onClick={clearData}>
           {t('clearAll')}
         </button>
+        <button type="button" className="btn btn--danger settings-full" onClick={clearWishes}>
+          {t('clearWishes')}
+        </button>
+        <p className="settings-note">
+          {t('clearWishesNote')}
+        </p>
       </div>
     </div>
   );

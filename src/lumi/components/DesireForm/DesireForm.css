@@ -1,28 +1,25 @@
 .lumi-root {
 .desire-form-container {
-  min-height: 100vh;
-  background: #f5f5f0; /* Бежевый фон как в макете */
-  color: #333;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+  color: var(--text-primary);
 }
 
 /* Стили для кнопки назад как на главной */
 .desires-list-back {
   appearance: none;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.9);
-  color: rgba(0, 0, 0, 0.85);
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 0.45rem 0.65rem;
-  border-radius: 10px;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 0;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.desires-list-back:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: rgba(0, 0, 0, 1);
+  text-align: left;
 }
 
 /* Шапка экрана (sticky) */
@@ -30,7 +27,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #f5f5f0; /* Бежевый фон */
+  background: var(--bg); /* Бежевый фон */
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding: 1rem 1.5rem;
   display: grid;
@@ -57,7 +54,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
-  color: #333;
+  color: var(--text-primary);
   line-height: 1.2;
 }
 
@@ -92,7 +89,7 @@
   width: 28px;
   height: 4px;
   border-radius: 999px;
-  background: #333;
+  background: var(--text-primary);
   display: block;
 }
 
@@ -103,7 +100,7 @@
   padding: 0.5rem;
   border-radius: 0.5rem;
   transition: background-color 0.2s;
-  color: #333;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -125,15 +122,15 @@
 .desire-form {
   max-width: 600px;
   margin: 0 auto;
-  background: #f5f5f0; /* Бежевый фон */
-  color: #333;
+  background: var(--bg); /* Бежевый фон */
+  color: var(--text-primary);
   padding: 2rem 1.5rem;
 }
 
 .desire-form-error {
   background: rgba(255, 200, 200, 0.2);
   border: 1px solid rgba(255, 100, 100, 0.3);
-  border-radius: 18px;
+  border-radius: 8px;
   padding: 0.75rem 1rem;
   margin-bottom: 1.5rem;
   color: var(--text-primary);
@@ -152,15 +149,14 @@
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: 700;
-  font-size: 1rem;
-  color: #333;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
 }
 
 .form-label-hint {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0 0 0.75rem 0;
   font-weight: 400;
   font-style: normal;
@@ -172,12 +168,12 @@
   width: 100%;
   padding: 0.875rem 1rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 18px;
+  border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background: #ffffff; /* Белые поля как в макете */
-  color: #333;
+  background: var(--surface); /* Белые поля как в макете */
+  color: var(--text-primary);
   line-height: 1.5;
 }
 
@@ -193,8 +189,8 @@
 .form-group input[type="date"]:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #ff9500; /* Оранжевый акцент */
-  box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.1);
+  border-color: var(--accent); /* Оранжевый акцент */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .form-group textarea {
@@ -224,7 +220,7 @@
 .image-preview-item {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 18px;
+  border-radius: 8px;
   overflow: hidden;
   border: 1px solid var(--border-color);
   background: var(--bg-placeholder);
@@ -300,9 +296,9 @@
 .upload-button-grid {
   aspect-ratio: 1;
   border: 2px dashed rgba(0, 0, 0, 0.2);
-  border-radius: 18px;
-  background: #ffffff; /* Белый фон как в макете */
-  color: #999;
+  border-radius: 8px;
+  background: var(--surface); /* Белый фон как в макете */
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -313,24 +309,22 @@
 }
 
 .upload-button-grid:hover {
-  border-color: #ff9500; /* Оранжевый при наведении */
-  background: #fff;
-  color: #ff9500;
+  border-color: var(--accent); /* Оранжевый при наведении */
+  background: var(--surface);
+  color: var(--accent);
 }
 
 .submit-button {
   width: 100%;
-  height: 54px;
-  min-height: 54px;
-  padding: 0 18px;
-  background: #ff9500; /* Оранжевый цвет как на скриншоте */
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--accent);
   border: none;
-  border-radius: 6px 15px 6px 15px; /* TL TR BR BL - такая же форма как на главной */
-  color: #ffffff;
-  font-size: 0.86rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  border-radius: 8px;
+  color: var(--accent-on);
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: filter 0.15s ease, box-shadow 0.15s ease;
@@ -366,32 +360,32 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem;
-  background: #ffffff; /* Белый фон как в макете */
+  background: var(--surface); /* Белый фон как в макете */
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 18px;
+  border-radius: 8px;
 }
 
 .action-item-text {
   flex: 1;
-  color: #333;
+  color: var(--text-primary);
   font-size: 0.95rem;
 }
 
 .action-item-edit-input {
   flex: 1;
   padding: 0.5rem;
-  border: 1px solid #ff9500; /* Оранжевый акцент */
-  border-radius: 18px;
+  border: 1px solid var(--accent); /* Оранжевый акцент */
+  border-radius: 8px;
   font-size: 0.95rem;
   font-family: inherit;
-  background: #ffffff;
-  color: #333;
+  background: var(--surface);
+  color: var(--text-primary);
 }
 
 .action-item-edit-input:focus {
   outline: none;
-  border-color: #ff9500;
-  box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .action-item-edit-btn,
@@ -443,18 +437,18 @@
   flex: 1;
   padding: 0.75rem 1rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 18px;
+  border-radius: 8px;
   font-size: 0.95rem;
   font-family: inherit;
-  background: #ffffff; /* Белое поле как в макете */
-  color: #333;
+  background: var(--surface); /* Белое поле как в макете */
+  color: var(--text-primary);
   transition: border-color 0.2s;
 }
 
 .action-item-input:focus {
   outline: none;
-  border-color: #ff9500; /* Оранжевый акцент */
-  box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.1);
+  border-color: var(--accent); /* Оранжевый акцент */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 .action-item-input::placeholder {
@@ -467,8 +461,8 @@
   width: 40px;
   height: 40px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 16px; /* Максимально скруглённый квадрат (почти круг) */
-  background: #ffffff; /* Белая кнопка как в макете */
+  border-radius: 8px;
+  background: var(--surface); /* Белая кнопка как в макете */
   color: transparent; /* Скрываем оригинальный плюсик */
   font-size: 1.5rem;
   cursor: pointer;
@@ -492,18 +486,18 @@
   transform: translate(-50%, calc(-50% - 2px)); /* Поднимаем плюсик чуть выше */
   font-weight: 600;
   line-height: 1;
-  color: #333;
+  color: var(--text-primary);
   font-size: 1.5rem;
 }
 
 .action-item-add-btn:hover:not(:disabled)::after {
-  color: #ff9500;
+  color: var(--accent);
 }
 
 .action-item-add-btn:hover:not(:disabled) {
-  background: #f5f5f0;
-  border-color: #ff9500; /* Оранжевый при наведении */
-  color: #ff9500;
+  background: var(--bg);
+  border-color: var(--accent); /* Оранжевый при наведении */
+  color: var(--accent);
 }
 
 .action-item-add-btn:disabled {

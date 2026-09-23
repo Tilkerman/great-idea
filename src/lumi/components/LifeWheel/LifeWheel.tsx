@@ -4,7 +4,7 @@ import { desireService, lifeAreaService } from '../../services/db';
 import './LifeWheel.css';
 import { useI18n } from '../../i18n';
 import mandalaPng from '../../assets/Мандала.png';
-import logoMark from '../../assets/group-29.svg';
+import LumiWordmark from '../Header/LumiWordmark';
 
 const AREAS: LifeArea[] = ['health', 'love', 'growth', 'family', 'home', 'work', 'hobby', 'finance'];
 
@@ -129,7 +129,7 @@ export default function LifeWheel({
             }}
             aria-label={t('header.home')}
           >
-            <img className="life-wheel-logo" src={logoMark} alt={t('header.appName')} draggable={false} />
+            <LumiWordmark className="life-wheel-logo" title={t('header.appName')} />
           </button>
         </div>
 
