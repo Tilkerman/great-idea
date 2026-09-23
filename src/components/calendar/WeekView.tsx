@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
-import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
+import { getWeekZoomMetrics, keepPinchScroll, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
+import type { PinchFocus } from '../../hooks/usePinchZoom';
 import { HourSlot } from '../tasks/HourSlot';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import {
@@ -40,9 +41,13 @@ type PendingPaste =
 export function WeekView({
   viewportWidth,
   onHoursScroll,
+  pinching = false,
+  pinchFocusRef,
 }: {
   viewportWidth: number;
   onHoursScroll?: (scrollTop: number) => void;
+  pinching?: boolean;
+  pinchFocusRef?: MutableRefObject<PinchFocus | null>;
 }) {
   const {
     focusDate, tasks, settings, weekZoom, zoom, setEditingTask, setSheetOpen,
@@ -53,6 +58,7 @@ export function WeekView({
   const gridScrollRef = useRef<HTMLDivElement>(null);
   const timeScrollRef = useRef<HTMLDivElement>(null);
   const daysTrackRef = useRef<HTMLDivElement>(null);
+  const pinchMetricsRef = useRef<{ colWidth: number; rowHeight: number } | null>(null);
   const now = useNow();
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -117,7 +123,7 @@ export function WeekView({
   }, []);
 
   useEffect(() => {
-    if (zoom !== 'day') return;
+    if (zoom !== 'day' || pinching) return;
     const grid = gridScrollRef.current;
     const time = timeScrollRef.current;
     const daysTrack = daysTrackRef.current;
@@ -149,7 +155,32 @@ export function WeekView({
     rowHeight,
     settings.dayStartHour,
     settings.dayEndHour,
+    pinching,
   ]);
+
+  useLayoutEffect(() => {
+    const grid = gridScrollRef.current;
+    const time = timeScrollRef.current;
+    const daysTrack = daysTrackRef.current;
+    const prev = pinchMetricsRef.current;
+    pinchMetricsRef.current = { colWidth, rowHeight };
+    if (!grid || !pinching || !pinchFocusRef) return;
+    const focus = pinchFocusRef.current;
+    if (!focus || !prev) return;
+    if (prev.colWidth === colWidth && prev.rowHeight === rowHeight) return;
+
+    const rect = grid.getBoundingClientRect();
+    const viewX = focus.x - rect.left;
+    const viewY = focus.y - rect.top;
+    const maxLeft = Math.max(0, grid.scrollWidth - grid.clientWidth);
+    const maxTop = Math.max(0, grid.scrollHeight - grid.clientHeight);
+    const nextLeft = keepPinchScroll(grid.scrollLeft, viewX, prev.colWidth, colWidth, maxLeft);
+    const nextTop = keepPinchScroll(grid.scrollTop, viewY, prev.rowHeight, rowHeight, maxTop);
+    grid.scrollLeft = nextLeft;
+    grid.scrollTop = nextTop;
+    if (time) time.scrollTop = nextTop;
+    if (daysTrack) daysTrack.style.transform = `translate3d(${-nextLeft}px,0,0)`;
+  }, [colWidth, rowHeight, pinching, pinchFocusRef]);
 
   useEffect(() => {
     if (zoom !== 'week') return;
@@ -402,7 +433,7 @@ export function WeekView({
           })}
         </div>
         <div
-          className={`week-view__grid-scroll ${weekZoom > 0.45 ? 'week-view__grid-scroll--snap' : ''}`}
+          className={`week-view__grid-scroll ${weekZoom > 0.45 && !pinching ? 'week-view__grid-scroll--snap' : ''}`}
           ref={gridScrollRef}
           onScroll={() => syncScroll('grid')}
         >

@@ -14,7 +14,7 @@ const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
 export function CalendarCanvas() {
   const { zoom, setZoom, setFocusDate, weekZoom, weekZoomIn, weekZoomOut } = useApp();
   const { t, locale } = useI18n();
-  const { ref, liveScale, pinching } = usePinchZoom();
+  const { ref, liveScale, pinching, pinchFocusRef } = usePinchZoom();
   const [viewportWidth, setViewportWidth] = useState(
     typeof window === 'undefined' ? 390 : window.innerWidth,
   );
@@ -163,7 +163,12 @@ export function CalendarCanvas() {
           {zoom === 'year' && <YearView />}
           {zoom === 'month' && <MonthView />}
           {(zoom === 'week' || zoom === 'day') && (
-            <WeekView viewportWidth={viewportWidth} onHoursScroll={onHoursScroll} />
+            <WeekView
+              viewportWidth={viewportWidth}
+              onHoursScroll={onHoursScroll}
+              pinching={pinching}
+              pinchFocusRef={pinchFocusRef}
+            />
           )}
         </div>
       </div>

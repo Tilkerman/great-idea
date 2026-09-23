@@ -446,22 +446,72 @@ export function SettingsAbout() {
   return (
     <div className="settings-page">
       <SettingsTopBar title={t('settingsAbout')} onBack={() => setScreen('settings')} />
-      <div className="settings-about">
+      <article className="settings-about">
         <div className="settings-about__intro">
-          <p className="settings-about__logo">TiLi Calendar</p>
-          <p className="settings-about__ver">{t('mvp')}</p>
-          <p className="settings-about__subtitle">{t('aboutSubtitle')}</p>
-          <p className="settings-about__tagline">{t('aboutTagline')}</p>
+          <p className="settings-about__logo">{t('aboutHeadline')}</p>
+          <p className="settings-about__tagline">{t('aboutLead')}</p>
         </div>
-        <p>{t('aboutText1')}</p>
-        <p>{t('aboutText2')}</p>
-        <p>{t('aboutText3')}</p>
-        <p>{t('aboutText4')}</p>
-        <p className="settings-about__heart">{t('aboutText5')}</p>
+        <p>{t('aboutLead2')}</p>
+
+        <h2 className="settings-about__h">{t('aboutHowTitle')}</h2>
+        <h3 className="settings-about__h2">{t('aboutHow1Title')}</h3>
+        <p>{t('aboutHow1a')}</p>
+        <p>{t('aboutHow1Not')}</p>
+        <p className="settings-about__quote">{t('aboutHow1Bad')}</p>
+        <p>{t('aboutHow1But')}</p>
+        <p className="settings-about__quote">{t('aboutHow1Good')}</p>
+        <p>{t('aboutHow1b')}</p>
+
+        <h3 className="settings-about__h2">{t('aboutHow2Title')}</h3>
+        <p>{t('aboutHow2a')}</p>
+        <p>{t('aboutHow2b')}</p>
+
+        <h3 className="settings-about__h2">{t('aboutHow3Title')}</h3>
+        <p>{t('aboutHow3a')}</p>
+        <ul className="settings-about__list">
+          <li>{t('aboutHow3Work')}</li>
+          <li>{t('aboutHow3Personal')}</li>
+          <li>{t('aboutHow3Family')}</li>
+        </ul>
+        <p>{t('aboutHow3b')}</p>
+
+        <h3 className="settings-about__h2">{t('aboutHow4Title')}</h3>
+        <p>{t('aboutHow4a')}</p>
+        <ul className="settings-about__list">
+          <li>{t('aboutHow4Name')}</li>
+          <li>{t('aboutHow4Desc')}</li>
+          <li>{t('aboutHow4Cat')}</li>
+          <li>{t('aboutHow4Imp')}</li>
+          <li>{t('aboutHow4Rem')}</li>
+        </ul>
+        <p>{t('aboutHow4b')}</p>
+
+        <h2 className="settings-about__h">{t('aboutRemindTitle')}</h2>
+        <p>{t('aboutRemindLead')}</p>
+        <ul className="settings-about__list">
+          <li>{t('aboutRemind0')}</li>
+          <li>{t('aboutRemind5')}</li>
+          <li>{t('aboutRemind15')}</li>
+          <li>{t('aboutRemind30')}</li>
+          <li>{t('aboutRemind60')}</li>
+          <li>{t('aboutRemindDay')}</li>
+        </ul>
+        <p>{t('aboutRemindYou')}</p>
+
+        <h2 className="settings-about__h">{t('aboutUseTitle')}</h2>
+        <p>{t('aboutUseLead')}</p>
+        <p className="settings-about__levels">{t('aboutUseLevels')}</p>
+        <p>{t('aboutUsePinch')}</p>
+        <p>{t('aboutUseIn')}</p>
+        <p>{t('aboutUseOut')}</p>
+
+        <h2 className="settings-about__h">{t('aboutMainTitle')}</h2>
+        <p>{t('aboutMain')}</p>
+
         <button type="button" className="btn btn--ghost settings-full" onClick={() => setScreen('onboarding')}>
           {t('showIntro')}
         </button>
-      </div>
+      </article>
     </div>
   );
 }

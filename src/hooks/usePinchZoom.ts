@@ -8,6 +8,12 @@ const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
 
 type PinchSource = 'gesture' | 'touch' | 'pointer';
 
+export type PinchFocus = { x: number; y: number };
+
+function midpoint(a: { x: number; y: number }, b: { x: number; y: number }): PinchFocus {
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+}
+
 function isAppleMobile() {
   return /iPhone|iPad|iPod/.test(navigator.userAgent);
 }
@@ -25,6 +31,7 @@ export function usePinchZoom() {
   const ref = useRef<HTMLDivElement>(null);
   const [liveScale, setLiveScale] = useState(1);
   const [pinching, setPinching] = useState(false);
+  const pinchFocusRef = useRef<PinchFocus | null>(null);
 
   const zoomRef = useRef(zoom);
   const weekRef = useRef(weekZoom);
@@ -110,12 +117,30 @@ export function usePinchZoom() {
       return true;
     };
 
+    const setFocusFromGesture = (event: Event) => {
+      const e = event as Event & { clientX?: number; clientY?: number };
+      if (typeof e.clientX === 'number' && typeof e.clientY === 'number') {
+        pinchFocusRef.current = { x: e.clientX, y: e.clientY };
+      }
+    };
+
+    const setFocusFromTouches = (list: TouchList) => {
+      if (list.length < 2) return;
+      const a = list[0];
+      const b = list[1];
+      pinchFocusRef.current = midpoint(
+        { x: a.clientX, y: a.clientY },
+        { x: b.clientX, y: b.clientY },
+      );
+    };
+
     const finish = () => {
       if (!pinchSource.current) return;
       pinchSource.current = null;
       startDist.current = 0;
       pointers.current.clear();
       touches.current.clear();
+      pinchFocusRef.current = null;
 
       if (consumed.current) {
         setPinching(false);
@@ -168,14 +193,23 @@ export function usePinchZoom() {
     const cleanups: Array<() => void> = [];
 
     if (isAppleMobile()) {
-      const onStart = () => {
+      const onStart = (event: Event) => {
+        setFocusFromGesture(event);
         begin('gesture');
       };
       const onChange = (event: Event) => {
         if (pinchSource.current !== 'gesture') return;
         event.preventDefault();
+        setFocusFromGesture(event);
         const scale = (event as Event & { scale?: number }).scale;
         if (typeof scale === 'number') applyScale(scale);
+      };
+      const onTouchStart = (event: TouchEvent) => {
+        setFocusFromTouches(event.touches);
+      };
+      const onTouchMove = (event: TouchEvent) => {
+        if (pinchSource.current !== 'gesture') return;
+        setFocusFromTouches(event.touches);
       };
       const onEnd = (event: Event) => {
         if (pinchSource.current !== 'gesture') return;
@@ -186,10 +220,14 @@ export function usePinchZoom() {
       el.addEventListener('gesturestart', onStart, { passive: false });
       el.addEventListener('gesturechange', onChange, { passive: false });
       el.addEventListener('gestureend', onEnd, { passive: false });
+      el.addEventListener('touchstart', onTouchStart, { passive: true });
+      el.addEventListener('touchmove', onTouchMove, { passive: true });
       cleanups.push(() => {
         el.removeEventListener('gesturestart', onStart);
         el.removeEventListener('gesturechange', onChange);
         el.removeEventListener('gestureend', onEnd);
+        el.removeEventListener('touchstart', onTouchStart);
+        el.removeEventListener('touchmove', onTouchMove);
       });
     } else if (isTouchMobile()) {
       const onTouchStart = (event: TouchEvent) => {
@@ -200,6 +238,7 @@ export function usePinchZoom() {
         if (touches.current.size === 2) {
           const [a, b] = [...touches.current.values()];
           startDist.current = dist(a, b);
+          pinchFocusRef.current = midpoint(a, b);
           if (startDist.current > 0) begin('touch');
         }
       };
@@ -209,6 +248,8 @@ export function usePinchZoom() {
         syncTouches(event.touches);
         if (touches.current.size === 2 && startDist.current > 0) {
           event.preventDefault();
+          const [a, b] = [...touches.current.values()];
+          pinchFocusRef.current = midpoint(a, b);
           applyTwoTouchScale();
         }
       };
@@ -240,6 +281,7 @@ export function usePinchZoom() {
         if (pointers.current.size === 2) {
           const [a, b] = [...pointers.current.values()];
           startDist.current = dist(a, b);
+          pinchFocusRef.current = midpoint(a, b);
           if (startDist.current > 0) begin('pointer');
         }
       };
@@ -251,6 +293,7 @@ export function usePinchZoom() {
         if (pointers.current.size === 2 && startDist.current > 0) {
           event.preventDefault();
           const [a, b] = [...pointers.current.values()];
+          pinchFocusRef.current = midpoint(a, b);
           applyScale(dist(a, b) / startDist.current);
         }
       };
@@ -281,7 +324,7 @@ export function usePinchZoom() {
     };
   }, [schedule]);
 
-  return { ref, liveScale, pinching };
+  return { ref, liveScale, pinching, pinchFocusRef };
 }
 
 export function zoomHint(level: ZoomLevel, weekZoomLevel = 0, viewportWidth = 390, locale: Locale = 'ru') {
