@@ -16,7 +16,7 @@ export default defineConfig(({ command }) => {
       srcDir: 'src',
       filename: 'sw.ts',
       includeAssets: [
-        'favicon.svg',
+        'favicon.png',
         'icon-tili-192.png',
         'icon-tili-512.png',
         'icon-lumi-192.png',
