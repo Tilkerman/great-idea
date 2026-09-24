@@ -1,14 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { useApp } from '../context/AppContext';
 import { tLocale } from '../i18n/catalog';
 import type { Locale, ZoomLevel } from '../types';
 import { WEEK_TO_MONTH_OVERSHOOT, WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomHint } from '../constants/weekZoom';
+import type { PinchFocus, WeekPinchLive } from '../utils/weekPinchLive';
 
 const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
+const SCALE_SMOOTH = 0.42;
+const WEEK_PINCH_GAIN = 0.82;
 
 type PinchSource = 'gesture' | 'touch' | 'pointer';
 
-export type PinchFocus = { x: number; y: number };
+export type { PinchFocus };
 
 function midpoint(a: { x: number; y: number }, b: { x: number; y: number }): PinchFocus {
   return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
@@ -26,12 +29,14 @@ function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
-export function usePinchZoom() {
+export function usePinchZoom(weekPinchLive?: MutableRefObject<WeekPinchLive>) {
   const { zoom, weekZoom, setWeekZoom, setZoom } = useApp();
   const ref = useRef<HTMLDivElement>(null);
   const [liveScale, setLiveScale] = useState(1);
   const [pinching, setPinching] = useState(false);
+  const pinchingRef = useRef(false);
   const pinchFocusRef = useRef<PinchFocus | null>(null);
+  const smoothScale = useRef(1);
 
   const zoomRef = useRef(zoom);
   const weekRef = useRef(weekZoom);
@@ -46,6 +51,7 @@ export function usePinchZoom() {
   const startLevel = useRef<ZoomLevel>('week');
   const startDist = useRef(0);
   const lastScale = useRef(1);
+  const rawScale = useRef(1);
   const frame = useRef<number | null>(null);
   const pendingWeek = useRef(weekZoom);
   const pendingLive = useRef(1);
@@ -57,9 +63,16 @@ export function usePinchZoom() {
 
   const flush = useCallback(() => {
     frame.current = null;
+    const z = zoomRef.current;
+    const live = weekPinchLive?.current;
+    if (pinchingRef.current && live && (z === 'week' || z === 'day')) {
+      live.apply(pendingWeek.current, pinchFocusRef.current);
+      setLiveScale(pendingLive.current);
+      return;
+    }
     setWeekRef.current(pendingWeek.current);
     setLiveScale(pendingLive.current);
-  }, []);
+  }, [weekPinchLive]);
 
   const schedule = useCallback(() => {
     if (frame.current !== null) return;
@@ -77,11 +90,17 @@ export function usePinchZoom() {
     };
 
     const applyScale = (scale: number) => {
-      lastScale.current = scale;
-      setPinching(true);
+      rawScale.current = scale;
+      smoothScale.current += (scale - smoothScale.current) * SCALE_SMOOTH;
+      const used = smoothScale.current;
+      lastScale.current = used;
+      if (!pinchingRef.current) {
+        pinchingRef.current = true;
+        setPinching(true);
+      }
       const z = zoomRef.current;
       if (z === 'week' || z === 'day') {
-        const raw = startWeek.current + (scale - 1) * 0.95;
+        const raw = startWeek.current + (used - 1) * WEEK_PINCH_GAIN;
         if (raw < WEEK_ZOOM_MIN) {
           pendingWeek.current = WEEK_ZOOM_MIN;
           const overshoot = WEEK_ZOOM_MIN - raw;
@@ -97,7 +116,7 @@ export function usePinchZoom() {
           setZoomRef.current('week');
         }
       } else {
-        const t = scale - 1;
+        const t = used - 1;
         const rubber = Math.sign(t) * Math.min(0.2, Math.abs(t) * 0.32);
         pendingLive.current = 1 + rubber;
       }
@@ -111,6 +130,8 @@ export function usePinchZoom() {
       startLevel.current = zoomRef.current;
       startWeek.current = weekRef.current;
       lastScale.current = 1;
+      rawScale.current = 1;
+      smoothScale.current = 1;
       pendingLive.current = 1;
       pendingWeek.current = weekRef.current;
       consumed.current = false;
@@ -141,6 +162,9 @@ export function usePinchZoom() {
       pointers.current.clear();
       touches.current.clear();
       pinchFocusRef.current = null;
+      weekPinchLive?.current.reset();
+      pinchingRef.current = false;
+      setWeekRef.current(pendingWeek.current);
 
       if (consumed.current) {
         setPinching(false);
@@ -149,7 +173,7 @@ export function usePinchZoom() {
         return;
       }
       consumed.current = true;
-      const scale = lastScale.current;
+      const scale = rawScale.current;
       const z = startLevel.current;
       setPinching(false);
       pendingLive.current = 1;
@@ -157,7 +181,7 @@ export function usePinchZoom() {
 
       let changed = false;
       if (z === 'week') {
-        const rawEnd = startWeek.current + (scale - 1) * 0.95;
+        const rawEnd = startWeek.current + (scale - 1) * WEEK_PINCH_GAIN;
         if (pendingWeek.current <= 0.03 && rawEnd <= -WEEK_TO_MONTH_OVERSHOOT) {
           stepFromStart(-1);
           changed = true;
@@ -200,7 +224,6 @@ export function usePinchZoom() {
       const onChange = (event: Event) => {
         if (pinchSource.current !== 'gesture') return;
         event.preventDefault();
-        setFocusFromGesture(event);
         const scale = (event as Event & { scale?: number }).scale;
         if (typeof scale === 'number') applyScale(scale);
       };
@@ -322,7 +345,7 @@ export function usePinchZoom() {
       for (const off of cleanups) off();
       if (frame.current !== null) cancelAnimationFrame(frame.current);
     };
-  }, [schedule]);
+  }, [schedule, weekPinchLive]);
 
   return { ref, liveScale, pinching, pinchFocusRef };
 }

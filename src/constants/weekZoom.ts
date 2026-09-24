@@ -47,18 +47,9 @@ export function getWeekZoomMetrics(level: number, viewportWidth: number) {
   return { level: t, colWidth, rowHeight, daysVisible: avail / colWidth };
 }
 
-/** Удержать точку щипка: контент под пальцем не должен уезжать к понедельнику. */
-export function keepPinchScroll(
-  scroll: number,
-  viewCoord: number,
-  fromSize: number,
-  toSize: number,
-  maxScroll: number,
-) {
-  if (fromSize <= 0) return Math.min(maxScroll, Math.max(0, scroll));
-  const scale = toSize / fromSize;
-  const next = scroll * scale + viewCoord * (scale - 1);
-  return Math.min(maxScroll, Math.max(0, next));
+/** Скролл от якоря щипка: день/час в долях колонки, без накопления ошибки по кадрам. */
+export function keepPinchByOrigin(origin: number, size: number, viewCoord: number, maxScroll: number) {
+  return Math.min(maxScroll, Math.max(0, origin * size - viewCoord));
 }
 
 export function weekZoomHint(level: number, viewportWidth = 390, locale: Locale = 'ru') {

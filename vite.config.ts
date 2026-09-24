@@ -13,7 +13,16 @@ export default defineConfig({
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.ts',
-      includeAssets: ['favicon.svg'],
+      includeAssets: [
+        'favicon.svg',
+        'icon-tili-192.png',
+        'icon-tili-512.png',
+        'icon-lumi-192.png',
+        'icon-lumi-512.png',
+        'apple-touch-icon.png',
+        'pwa-192.png',
+        'pwa-512.png',
+      ],
       manifest: {
         name: 'TiLi Calendar',
         short_name: 'TiLi',
@@ -29,11 +38,13 @@ export default defineConfig({
             src: 'pwa-192.png',
             sizes: '192x192',
             type: 'image/png',
+            purpose: 'any',
           },
           {
             src: 'pwa-512.png',
             sizes: '512x512',
             type: 'image/png',
+            purpose: 'any',
           },
         ],
       },
@@ -42,6 +53,6 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    allowedHosts: ['.trycloudflare.com'],
+    allowedHosts: true,
   },
 });

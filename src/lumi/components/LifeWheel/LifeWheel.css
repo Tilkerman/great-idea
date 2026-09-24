@@ -36,12 +36,23 @@
   padding: 0;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.life-wheel-logo {
-  height: 44px;
+.life-wheel-header .header-logo-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.life-wheel-header .header-logo-img {
+  height: 36px;
   width: auto;
-  max-width: 132px;
+  max-width: 120px;
   display: block;
   color: var(--accent);
 }

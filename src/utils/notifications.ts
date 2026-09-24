@@ -1,5 +1,6 @@
 import { tLocale } from '../i18n/catalog';
 import type { Locale } from '../types';
+import { tiliIconUrl } from './appIcons';
 import { isAppleMobile, isStandaloneApp } from './pwaInstall';
 
 export function reminderNoticeBody(locale: Locale) {
@@ -37,11 +38,12 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
 }
 
 export async function showTiliNotification(title: string, body: string, tag = 'tili') {
-  const icon = `${import.meta.env.BASE_URL}pwa-192.png`;
+  const icon = tiliIconUrl();
   const taskId = tag.startsWith('task-') ? tag.slice(5) : '';
   const options: NotificationOptions = {
     body,
     icon,
+    badge: icon,
     tag,
     silent: false,
     data: { taskId },

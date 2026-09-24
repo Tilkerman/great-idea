@@ -44,10 +44,12 @@ self.addEventListener('push', (event) => {
     if (text) body = text;
   }
   if (open !== 'lumi' && !taskId) taskId = taskIdFromTag(tag);
-  const icon = new URL('pwa-192.png', self.registration.scope).href;
+  const iconFile = open === 'lumi' ? 'icon-lumi-192.png' : 'icon-tili-192.png';
+  const icon = new URL(iconFile, self.registration.scope).href;
   event.waitUntil(self.registration.showNotification(title, {
     body,
     icon,
+    badge: icon,
     tag,
     data: { taskId, open },
   }));

@@ -833,6 +833,13 @@
 .is-pinching .week-view__grid-scroll,
 .is-pinching .day-view {
   touch-action: none;
+  -webkit-overflow-scrolling: auto;
+  overscroll-behavior: none;
+}
+
+.is-pinching .week-view__time-col {
+  -webkit-overflow-scrolling: auto;
+  overscroll-behavior: none;
 }
 
 .is-pinching .week-view__day-head,

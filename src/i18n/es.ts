@@ -54,7 +54,7 @@ export const es: typeof ru = {
     untitledTask: 'Tarea del calendario',
     reminderBody: 'Tienes una tarea importante en la próxima hora. ¡Ponle atención!',
     reminderFallback: 'Recordatorio',
-    lumiDailyTitle: 'LUMI',
+    lumiDailyTitle: 'Lumi',
     lumiDailyBody: 'Hora del ritual diario. Abre tus deseos.',
     deleteTitle: '¿Eliminar esta entrada?',
     deleteNamed: '“{title}” se eliminará. Esto no se puede deshacer.',

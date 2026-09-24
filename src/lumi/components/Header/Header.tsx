@@ -1,7 +1,7 @@
 import '../../../components/settings/Settings.css';
 import './Header.css';
 import { useI18n } from '../../i18n';
-import LumiWordmark from './LumiWordmark';
+import { LumiBrand } from './LumiBrand';
 
 interface HeaderProps {
   onSettingsClick?: () => void;
@@ -34,10 +34,10 @@ export default function Header({ onLogoClick, onBack, title }: HeaderProps) {
               aria-label={t('header.home')}
               type="button"
             >
-              <LumiWordmark className="header-logo-img" title={t('header.appName')} />
+              <LumiBrand title={t('header.appName')} />
             </button>
           ) : (
-            <LumiWordmark className="header-logo-img" title={t('header.appName')} />
+            <LumiBrand title={t('header.appName')} />
           )}
         </div>
         <div className="header-center" />

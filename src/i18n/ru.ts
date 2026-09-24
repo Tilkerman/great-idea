@@ -52,7 +52,7 @@ export const ru = {
     untitledTask: 'Дело в календаре',
     reminderBody: 'В ближайший час вас ждёт важная задача. Обратите на неё внимание!',
     reminderFallback: 'Напоминание',
-    lumiDailyTitle: 'LUMI',
+    lumiDailyTitle: 'Lumi',
     lumiDailyBody: 'Время для ежедневного ритуала. Открой желания.',
     deleteTitle: 'Удалить запись?',
     deleteNamed: '«{title}» будет удалена. Это нельзя отменить.',

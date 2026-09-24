@@ -5,6 +5,7 @@ import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { usePinchZoom } from '../../hooks/usePinchZoom';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomHint, weekZoomPercent } from '../../constants/weekZoom';
+import { emptyWeekPinchLive, type WeekPinchLive } from '../../utils/weekPinchLive';
 import { useI18n } from '../../i18n/useI18n';
 import type { ZoomLevel } from '../../types';
 import './CalendarViews.css';
@@ -14,7 +15,8 @@ const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
 export function CalendarCanvas() {
   const { zoom, setZoom, setFocusDate, weekZoom, weekZoomIn, weekZoomOut } = useApp();
   const { t, locale } = useI18n();
-  const { ref, liveScale, pinching, pinchFocusRef } = usePinchZoom();
+  const weekPinchLive = useRef<WeekPinchLive>(emptyWeekPinchLive());
+  const { ref, liveScale, pinching } = usePinchZoom(weekPinchLive);
   const [viewportWidth, setViewportWidth] = useState(
     typeof window === 'undefined' ? 390 : window.innerWidth,
   );
@@ -155,7 +157,7 @@ export function CalendarCanvas() {
         <div
           key={stageKey}
           className={`calendar-stage calendar-stage--${enterKind}`}
-          style={pinching ? { transform: `scale(${liveScale})` } : undefined}
+          style={pinching && Math.abs(liveScale - 1) > 0.002 ? { transform: `scale(${liveScale})` } : undefined}
           onAnimationEnd={(e) => {
             if (e.target === e.currentTarget) setEnterKind('none');
           }}
@@ -167,7 +169,7 @@ export function CalendarCanvas() {
               viewportWidth={viewportWidth}
               onHoursScroll={onHoursScroll}
               pinching={pinching}
-              pinchFocusRef={pinchFocusRef}
+              weekPinchLive={weekPinchLive}
             />
           )}
         </div>

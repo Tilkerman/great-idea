@@ -1,4 +1,4 @@
-// Утилиты для работы с уведомлениями
+import { lumiIconUrl } from '../../utils/appIcons';
 
 const NOTIFICATION_PERMISSION_KEY = 'lumi-notification-permission-asked';
 const NOTIFICATION_ENABLED_KEY = 'lumi-notifications-enabled';
@@ -87,9 +87,7 @@ export function getNotificationTime(): string {
  * Получает путь к иконке с учетом base path
  */
 function getIconPath(): string {
-  // В production base path = '/calendar-of-desires/', в dev = '/'
-  const base = import.meta.env.BASE_URL || '/';
-  return `${base}apple-touch-icon.png`.replace(/\/+/g, '/');
+  return lumiIconUrl();
 }
 
 /**
@@ -107,7 +105,7 @@ export async function showTestNotification(): Promise<void> {
   const registration = await navigator.serviceWorker.ready;
   const iconPath = getIconPath();
   
-  await registration.showNotification('LUMI', {
+  await registration.showNotification('Lumi', {
     body: 'Это тестовое уведомление. Напоминания работают!',
     icon: iconPath,
     badge: iconPath,
@@ -142,6 +140,6 @@ export async function showDailyReminder(): Promise<void> {
     vibrate: [200, 100, 200],
   };
 
-  await registration.showNotification('LUMI', options);
+  await registration.showNotification('Lumi', options);
 }
 
