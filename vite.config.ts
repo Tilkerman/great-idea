@@ -2,9 +2,11 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
-const base = process.env.BASE_PATH ?? '/';
+export default defineConfig(({ command }) => {
+  const base =
+    process.env.BASE_PATH ?? (command === 'build' ? '/great-idea/' : '/');
 
-export default defineConfig({
+  return {
   base,
   plugins: [
     react(),
@@ -55,4 +57,5 @@ export default defineConfig({
     port: 5173,
     allowedHosts: true,
   },
+  };
 });
