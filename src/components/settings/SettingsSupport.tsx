@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
-import { SUPPORT_TG_WALLET_ADDRESS, supportTonTransferUrl } from '../../constants/support';
-import { copyToClipboard, openExternalUrl } from '../../utils/openExternal';
+import { SUPPORT_TG_WALLET_ADDRESS } from '../../constants/support';
+import { copyToClipboard, openSupportTransfer } from '../../utils/openExternal';
 import './Settings.css';
 
 export function SettingsSupport() {
@@ -19,10 +19,15 @@ export function SettingsSupport() {
     setFeedback(ok ? t('supportCopied') : t('supportCopyFail'));
   };
 
-  const onSend = () => {
+  const onSend = async () => {
     if (!hasAddress) return;
     setFeedback(null);
-    openExternalUrl(supportTonTransferUrl(address));
+    const { mode, copied } = await openSupportTransfer(address);
+    if (mode === 'ton-deeplink') {
+      setFeedback(copied ? t('supportSendTon') : t('supportSendTonNoCopy'));
+      return;
+    }
+    setFeedback(copied ? t('supportSendWeb') : t('supportSendWebNoCopy'));
   };
 
   return (
@@ -42,7 +47,7 @@ export function SettingsSupport() {
             <div className="support-wallet" role="group" aria-label={t('supportWalletLabel')}>
               <code className="support-wallet__address">{address}</code>
             </div>
-            <button type="button" className="btn btn--primary settings-full" onClick={onSend}>
+            <button type="button" className="btn btn--primary settings-full" onClick={() => { void onSend(); }}>
               {t('supportSendTelegram')}
             </button>
             <button type="button" className="btn btn--ghost settings-full" onClick={() => { void onCopy(); }}>

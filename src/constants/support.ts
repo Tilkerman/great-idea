@@ -7,9 +7,18 @@ export const SUPPORT_TG_WALLET_ADDRESS = 'UQCIwouZflLPjN5Rq_XAiFkoE0NOx6SrizGKc2
 /** Комментарий к переводу (необязательно). */
 export const SUPPORT_TRANSFER_COMMENT = 'TiLi';
 
-/** Ссылка ton:// — открывает Telegram Wallet с уже указанным получателем. */
+export const TELEGRAM_WALLET_URL = 'https://t.me/wallet';
+
+/** Ссылка ton:// — только на телефоне в обычном браузере (не PWA / не Mac). */
 export function supportTonTransferUrl(address = SUPPORT_TG_WALLET_ADDRESS) {
   const trimmed = address.trim();
   const params = new URLSearchParams({ text: SUPPORT_TRANSFER_COMMENT });
   return `ton://transfer/${trimmed}?${params.toString()}`;
+}
+
+/** HTTPS-страница перевода — запасной путь, если ton:// не открывается. */
+export function supportTonkeeperTransferUrl(address = SUPPORT_TG_WALLET_ADDRESS) {
+  const trimmed = address.trim();
+  const params = new URLSearchParams({ text: SUPPORT_TRANSFER_COMMENT });
+  return `https://app.tonkeeper.com/transfer/${trimmed}?${params.toString()}`;
 }
