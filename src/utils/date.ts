@@ -70,7 +70,37 @@ export function formatDateRange(start: Date, end: Date, monthsGen: readonly stri
   if (isSameDay(start, end)) {
     return `${start.getDate()} ${monthsGen[start.getMonth()]} ${start.getFullYear()}`;
   }
+  if (start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear()) {
+    return `${start.getDate()}–${end.getDate()} ${monthsGen[end.getMonth()]} ${end.getFullYear()}`;
+  }
   return `${start.getDate()} ${monthsGen[start.getMonth()]} – ${end.getDate()} ${monthsGen[end.getMonth()]} ${end.getFullYear()}`;
+}
+
+/** Заголовок шапки в режиме «неделя»: «21–27 сентября 2026». */
+export function formatWeekHeaderTitle(
+  focusDate: Date,
+  weekStartsOn: 0 | 1,
+  localeTag: string,
+  monthsGen: readonly string[],
+) {
+  const days = getWeekDays(focusDate, weekStartsOn);
+  const start = days[0];
+  const end = days[6];
+
+  if (typeof Intl !== 'undefined' && 'DateTimeFormat' in Intl) {
+    const fmt = new Intl.DateTimeFormat(localeTag, {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }) as Intl.DateTimeFormat & { formatRange?: (a: Date, b: Date) => string };
+    if (typeof fmt.formatRange === 'function') {
+      let title = fmt.formatRange(start, end);
+      if (localeTag.startsWith('ru')) title = title.replace(/\s*г\.\s*$/, '');
+      return title;
+    }
+  }
+
+  return formatDateRange(start, end, monthsGen);
 }
 
 export function getHoursRange(startHour: number, endHour: number) {

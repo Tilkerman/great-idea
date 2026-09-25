@@ -58,6 +58,7 @@ export function SettingsHub() {
   const commonItems: HubItem[] = [
     { id: 'settings-appearance', label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
     { id: 'settings-install', label: t('settingsInstall'), sub: t('settingsInstallSub') },
+    { id: 'settings-support', label: t('supportTitle'), sub: t('supportSub') },
   ];
 
   const contextItems = mainTab === 'lumi' ? lumiItems : tiliItems;
@@ -510,6 +511,10 @@ export function SettingsAbout() {
 
         <button type="button" className="btn btn--ghost settings-full" onClick={() => setScreen('onboarding')}>
           {t('showIntro')}
+        </button>
+
+        <button type="button" className="btn btn--ghost settings-full" onClick={() => setScreen('settings-support')}>
+          {t('supportTitle')}
         </button>
       </article>
     </div>

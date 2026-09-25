@@ -192,6 +192,22 @@
   width: calc(100% - 32px);
 }
 
+.support-wallet {
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.support-wallet__address {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-all;
+  color: var(--text-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 .settings-about {
   padding: 16px 16px 32px;
   text-align: left;

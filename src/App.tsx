@@ -19,6 +19,7 @@ import {
 import { SettingsStatistics } from './components/settings/SettingsStatistics';
 import { SettingsInstall } from './components/settings/SettingsInstall';
 import { SettingsNotifications } from './components/settings/SettingsNotifications';
+import { SettingsSupport } from './components/settings/SettingsSupport';
 import { useTaskReminders } from './hooks/useTaskReminders';
 import { useOpenTaskFromNotification } from './hooks/useOpenTaskFromNotification';
 import { useI18n } from './i18n/useI18n';
@@ -64,6 +65,8 @@ function SettingsScreens({ screen }: { screen: string }) {
       return <SettingsNotifications />;
     case 'settings-about':
       return <SettingsAbout />;
+    case 'settings-support':
+      return <SettingsSupport />;
     default:
       return null;
   }

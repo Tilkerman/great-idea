@@ -18,24 +18,16 @@
 .app-header__brand {
   display: flex;
   align-items: center;
-  gap: 6px;
   min-width: 0;
-}
-
-.app-header__mark {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
   flex-shrink: 0;
-  display: block;
 }
 
 .app-header__logo {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--accent);
-  letter-spacing: -0.5px;
-  line-height: 1;
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
 }
 
 .app-header__nav {

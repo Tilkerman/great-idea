@@ -1,13 +1,13 @@
 import { useApp } from '../../context/AppContext';
-import { addDays, addMonths } from '../../utils/date';
+import { addDays, addMonths, formatWeekHeaderTitle } from '../../utils/date';
 import { useI18n } from '../../i18n/useI18n';
 import './Header.css';
 
 export function Header() {
   const {
-    focusDate, setFocusDate, setZoom, zoom,
+    focusDate, setFocusDate, setZoom, zoom, settings,
   } = useApp();
-  const { t, months, dateTag } = useI18n();
+  const { t, months, monthsGen, dateTag } = useI18n();
 
   const goToday = () => {
     setFocusDate(new Date());
@@ -32,19 +32,20 @@ export function Header() {
     ? String(focusDate.getFullYear())
     : zoom === 'day'
       ? focusDate.toLocaleDateString(dateTag, { weekday: 'short', day: 'numeric', month: 'long' })
-      : `${months[focusDate.getMonth()]} ${focusDate.getFullYear()}`;
+      : zoom === 'week'
+        ? formatWeekHeaderTitle(focusDate, settings.weekStartsOn, dateTag, monthsGen)
+        : `${months[focusDate.getMonth()]} ${focusDate.getFullYear()}`;
 
   return (
     <header className="app-header">
       <div className="app-header__brand">
         <img
-          className="app-header__mark"
-          src={`${import.meta.env.BASE_URL}icon-tili-192.png`}
-          alt=""
-          width={36}
-          height={36}
+          className="app-header__logo"
+          src={`${import.meta.env.BASE_URL}logo-tili-header.png`}
+          alt="TiLi Calendar"
+          width={189}
+          height={93}
         />
-        <span className="app-header__logo">TiLi</span>
       </div>
       <div className="app-header__nav">
         <button type="button" className="app-header__arrow" onClick={prev} aria-label={t('headerBack')}>

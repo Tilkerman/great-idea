@@ -64,6 +64,9 @@ export function WeekView({
   const gridInnerRef = useRef<HTMLDivElement>(null);
   const pinchOriginRef = useRef<{ col: number; row: number } | null>(null);
   const horizontalScrollRef = useRef(0);
+  const ignoreGridScrollRef = useRef(false);
+  const ignoreTimeScrollRef = useRef(false);
+  const headerCompactRef = useRef(false);
   const layoutRef = useRef({ viewportWidth, dayCount: 7, hourCount: 15 });
   const now = useNow();
 
@@ -321,13 +324,27 @@ export function WeekView({
     setMenuOpen((v) => !v);
   };
 
+  const updateHeaderCompact = useCallback((scrollTop: number) => {
+    if (pinching) return;
+    const compact = scrollTop > 20;
+    if (headerCompactRef.current === compact) return;
+    headerCompactRef.current = compact;
+    setHeaderCompact(compact);
+    onHoursScroll?.(scrollTop);
+  }, [onHoursScroll, pinching]);
+
   const syncScroll = useCallback((source: 'grid' | 'time') => {
     const grid = gridScrollRef.current;
     const time = timeScrollRef.current;
     const daysTrack = daysTrackRef.current;
     if (!grid || !time) return;
     if (source === 'grid') {
+      if (ignoreGridScrollRef.current) {
+        ignoreGridScrollRef.current = false;
+        return;
+      }
       if (Math.abs(time.scrollTop - grid.scrollTop) > 1) {
+        ignoreTimeScrollRef.current = true;
         time.scrollTop = grid.scrollTop;
       }
       if (daysTrack && horizontalScrollRef.current !== grid.scrollLeft) {
@@ -335,15 +352,17 @@ export function WeekView({
         daysTrack.style.transform = `translate3d(${-grid.scrollLeft}px,0,0)`;
       }
     } else {
+      if (ignoreTimeScrollRef.current) {
+        ignoreTimeScrollRef.current = false;
+        return;
+      }
       if (Math.abs(grid.scrollTop - time.scrollTop) > 1) {
+        ignoreGridScrollRef.current = true;
         grid.scrollTop = time.scrollTop;
       }
     }
-    if (!pinching) {
-      setHeaderCompact(grid.scrollTop > 20);
-      onHoursScroll?.(grid.scrollTop);
-    }
-  }, [onHoursScroll, pinching]);
+    updateHeaderCompact(source === 'grid' ? grid.scrollTop : time.scrollTop);
+  }, [updateHeaderCompact]);
 
   const showFullWeekday = weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
   const layoutCol = pinching ? metricsHold.current.colWidth : colWidth;
@@ -453,7 +472,7 @@ export function WeekView({
           className="week-view__time-col"
           ref={timeScrollRef}
           onScroll={(event) => {
-            if (!pinching) setHeaderCompact(event.currentTarget.scrollTop > 20);
+            updateHeaderCompact(event.currentTarget.scrollTop);
             syncScroll('time');
           }}
         >
@@ -472,7 +491,7 @@ export function WeekView({
           className={`week-view__grid-scroll ${weekZoom > 0.45 && !pinching ? 'week-view__grid-scroll--snap' : ''}`}
           ref={gridScrollRef}
           onScroll={(event) => {
-            if (!pinching) setHeaderCompact(event.currentTarget.scrollTop > 20);
+            updateHeaderCompact(event.currentTarget.scrollTop);
             syncScroll('grid');
           }}
         >
