@@ -1,9 +1,5 @@
-import {
-  SUPPORT_TRANSFER_COMMENT,
-  supportTonTransferUrl,
-  TELEGRAM_WALLET_URL,
-} from '../constants/support';
-import { isAppleMobile, isStandaloneApp } from './pwaInstall';
+import { TELEGRAM_WALLET_URL } from '../constants/support';
+import { isAppleMobile } from './pwaInstall';
 
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
@@ -30,24 +26,20 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
-/** Переход во внешний браузер — не in-app WebView с оплатой. */
+/** Открыть https-ссылку (Telegram). На iPhone надёжнее, чем ton:// или window.open. */
 export function openExternalUrl(url: string) {
-  window.open(url, '_blank', 'noopener,noreferrer');
+  window.location.assign(url);
 }
 
 function isMobilePhone() {
   return isAppleMobile() || /Android/i.test(navigator.userAgent);
 }
 
-function isDesktop() {
-  return !isMobilePhone();
-}
-
-export type SupportTransferMode = 'copy-only' | 'ton-deeplink' | 'telegram-web';
+export type SupportTransferMode = 'copy-only' | 'telegram';
 
 /**
- * Mac и PWA не умеют ton:// и Tonkeeper без установленного приложения.
- * На компьютере — только копируем адрес. На телефоне в PWA — Telegram. В Safari — ton://.
+ * ton:// на iPhone в Safari не работает («адрес недействителен»).
+ * Везде: копируем адрес; на телефоне открываем https://t.me/wallet.
  */
 export async function openSupportTransfer(address: string): Promise<{
   mode: SupportTransferMode;
@@ -56,17 +48,12 @@ export async function openSupportTransfer(address: string): Promise<{
   const trimmed = address.trim();
   const copied = await copyToClipboard(trimmed);
 
-  if (isDesktop()) {
+  if (!isMobilePhone()) {
     return { mode: 'copy-only', copied };
   }
 
-  if (isStandaloneApp()) {
-    openExternalUrl(TELEGRAM_WALLET_URL);
-    return { mode: 'telegram-web', copied };
-  }
-
-  window.location.assign(supportTonTransferUrl(trimmed));
-  return { mode: 'ton-deeplink', copied };
+  openExternalUrl(TELEGRAM_WALLET_URL);
+  return { mode: 'telegram', copied };
 }
 
-export { SUPPORT_TRANSFER_COMMENT, TELEGRAM_WALLET_URL };
+export { TELEGRAM_WALLET_URL };

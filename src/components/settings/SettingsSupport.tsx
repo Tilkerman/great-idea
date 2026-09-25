@@ -27,10 +27,6 @@ export function SettingsSupport() {
       setFeedback(copied ? t('supportSendCopyOnly') : t('supportSendCopyOnlyFail'));
       return;
     }
-    if (mode === 'ton-deeplink') {
-      setFeedback(copied ? t('supportSendTon') : t('supportSendTonNoCopy'));
-      return;
-    }
     setFeedback(copied ? t('supportSendWeb') : t('supportSendWebNoCopy'));
   };
 
@@ -48,6 +44,11 @@ export function SettingsSupport() {
         {hasAddress ? (
           <>
             <p className="settings-note">{t('supportNetworkNote')}</p>
+            <ol className="support-steps">
+              <li>{t('supportStep1')}</li>
+              <li>{t('supportStep2')}</li>
+              <li>{t('supportStep3')}</li>
+            </ol>
             <div className="support-wallet" role="group" aria-label={t('supportWalletLabel')}>
               <code className="support-wallet__address">{address}</code>
             </div>
