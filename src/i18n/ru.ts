@@ -136,7 +136,7 @@ export const ru = {
     supportSendCopyOnlyFail: 'Telegram → Кошелёк → Перевести → вставьте адрес ниже. USDT, сеть TON.',
     supportSendTon: 'Адрес скопирован. Откроется кошелёк — выберите USDT (TON) и сумму.',
     supportSendTonNoCopy: 'Откроется кошелёк. Если адрес пустой — нажмите «Скопировать адрес».',
-    supportSendWeb: 'Адрес скопирован. Откроется Telegram — Кошелёк → Перевести → вставьте адрес, USDT (TON).',
+    supportSendWeb: 'Адрес скопирован. Откроется Telegram — Кошелёк → Перевести → вставьте адрес (долгое нажатие), USDT (TON).',
     supportSendWebNoCopy: 'Откроется Telegram. Скопируйте адрес кнопкой ниже и вставьте в перевод.',
     supportOpenTelegram: 'Открыть Telegram Wallet',
     supportAddressPending: 'Адрес кошелька скоро появится здесь.',

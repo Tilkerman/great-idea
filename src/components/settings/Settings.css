@@ -220,6 +220,22 @@
   margin-top: 6px;
 }
 
+.support-feedback {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.support-feedback--ok {
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+
 .settings-about {
   padding: 16px 16px 32px;
   text-align: left;

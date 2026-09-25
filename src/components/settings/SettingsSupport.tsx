@@ -2,27 +2,29 @@ import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
 import { SUPPORT_TG_WALLET_ADDRESS } from '../../constants/support';
-import { copyToClipboard, openSupportTransfer } from '../../utils/openExternal';
+import { copyToClipboardSync, openSupportTransfer } from '../../utils/openExternal';
 import './Settings.css';
 
 export function SettingsSupport() {
   const { setScreen } = useApp();
   const { t } = useI18n();
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedbackOk, setFeedbackOk] = useState(false);
   const address = SUPPORT_TG_WALLET_ADDRESS.trim();
   const hasAddress = address.length > 0;
 
-  const onCopy = async () => {
+  const onCopy = () => {
     if (!hasAddress) return;
-    setFeedback(null);
-    const ok = await copyToClipboard(address);
+    const ok = copyToClipboardSync(address);
+    setFeedbackOk(ok);
     setFeedback(ok ? t('supportCopied') : t('supportCopyFail'));
   };
 
-  const onSend = async () => {
+  const onSend = () => {
     if (!hasAddress) return;
-    setFeedback(null);
-    const { mode, copied } = await openSupportTransfer(address);
+    const { mode, copied } = openSupportTransfer(address);
+    const ok = copied || mode === 'telegram';
+    setFeedbackOk(ok);
     if (mode === 'copy-only') {
       setFeedback(copied ? t('supportSendCopyOnly') : t('supportSendCopyOnlyFail'));
       return;
@@ -52,10 +54,10 @@ export function SettingsSupport() {
             <div className="support-wallet" role="group" aria-label={t('supportWalletLabel')}>
               <code className="support-wallet__address">{address}</code>
             </div>
-            <button type="button" className="btn btn--primary settings-full" onClick={() => { void onSend(); }}>
+            <button type="button" className="btn btn--primary settings-full" onClick={onSend}>
               {t('supportSendTelegram')}
             </button>
-            <button type="button" className="btn btn--ghost settings-full" onClick={() => { void onCopy(); }}>
+            <button type="button" className="btn btn--ghost settings-full" onClick={onCopy}>
               {t('supportCopyAddress')}
             </button>
           </>
@@ -64,7 +66,9 @@ export function SettingsSupport() {
         )}
 
         {feedback && (
-          <p className="settings-note" role="status">{feedback}</p>
+          <p className={`support-feedback ${feedbackOk ? 'support-feedback--ok' : ''}`} role="status">
+            {feedback}
+          </p>
         )}
       </div>
     </div>
