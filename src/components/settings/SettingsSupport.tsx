@@ -23,6 +23,10 @@ export function SettingsSupport() {
     if (!hasAddress) return;
     setFeedback(null);
     const { mode, copied } = await openSupportTransfer(address);
+    if (mode === 'copy-only') {
+      setFeedback(copied ? t('supportSendCopyOnly') : t('supportSendCopyOnlyFail'));
+      return;
+    }
     if (mode === 'ton-deeplink') {
       setFeedback(copied ? t('supportSendTon') : t('supportSendTonNoCopy'));
       return;

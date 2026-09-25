@@ -15,10 +15,3 @@ export function supportTonTransferUrl(address = SUPPORT_TG_WALLET_ADDRESS) {
   const params = new URLSearchParams({ text: SUPPORT_TRANSFER_COMMENT });
   return `ton://transfer/${trimmed}?${params.toString()}`;
 }
-
-/** HTTPS-страница перевода — запасной путь, если ton:// не открывается. */
-export function supportTonkeeperTransferUrl(address = SUPPORT_TG_WALLET_ADDRESS) {
-  const trimmed = address.trim();
-  const params = new URLSearchParams({ text: SUPPORT_TRANSFER_COMMENT });
-  return `https://app.tonkeeper.com/transfer/${trimmed}?${params.toString()}`;
-}

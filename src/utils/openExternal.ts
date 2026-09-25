@@ -1,6 +1,5 @@
 import {
   SUPPORT_TRANSFER_COMMENT,
-  supportTonkeeperTransferUrl,
   supportTonTransferUrl,
   TELEGRAM_WALLET_URL,
 } from '../constants/support';
@@ -44,9 +43,12 @@ function isDesktop() {
   return !isMobilePhone();
 }
 
-export type SupportTransferMode = 'ton-deeplink' | 'tonkeeper-web' | 'telegram-web';
+export type SupportTransferMode = 'copy-only' | 'ton-deeplink' | 'telegram-web';
 
-/** Открыть перевод: на Mac/PWA ton:// не работает — копируем адрес и открываем https. */
+/**
+ * Mac и PWA не умеют ton:// и Tonkeeper без установленного приложения.
+ * На компьютере — только копируем адрес. На телефоне в PWA — Telegram. В Safari — ton://.
+ */
 export async function openSupportTransfer(address: string): Promise<{
   mode: SupportTransferMode;
   copied: boolean;
@@ -54,18 +56,17 @@ export async function openSupportTransfer(address: string): Promise<{
   const trimmed = address.trim();
   const copied = await copyToClipboard(trimmed);
 
-  if (isDesktop() || isStandaloneApp()) {
-    openExternalUrl(supportTonkeeperTransferUrl(trimmed));
-    return { mode: 'tonkeeper-web', copied };
+  if (isDesktop()) {
+    return { mode: 'copy-only', copied };
   }
 
-  if (isMobilePhone()) {
-    window.location.assign(supportTonTransferUrl(trimmed));
-    return { mode: 'ton-deeplink', copied };
+  if (isStandaloneApp()) {
+    openExternalUrl(TELEGRAM_WALLET_URL);
+    return { mode: 'telegram-web', copied };
   }
 
-  openExternalUrl(TELEGRAM_WALLET_URL);
-  return { mode: 'telegram-web', copied };
+  window.location.assign(supportTonTransferUrl(trimmed));
+  return { mode: 'ton-deeplink', copied };
 }
 
 export { SUPPORT_TRANSFER_COMMENT, TELEGRAM_WALLET_URL };
