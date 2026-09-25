@@ -134,6 +134,11 @@ select {
   background: var(--bg);
 }
 
+.app-shell:not(.app-shell--lumi) {
+  height: 100dvh;
+  overflow: hidden;
+}
+
 .app-shell--off {
   display: none !important;
 }
@@ -149,6 +154,7 @@ select {
 
 .app-shell__main {
   flex: 1;
+  min-height: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;

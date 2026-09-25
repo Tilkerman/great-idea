@@ -71,6 +71,8 @@ export const ru = {
     sheetCollapse: 'Свернуть',
     sheetEdit: 'Изменить',
     sheetSet: 'Указать',
+    sheetFromLumi: '✦ {title}',
+    sheetOpenLumi: 'Открыть в Lumi',
     sheetCopy: 'Копировать',
     sheetPaste: 'Вставить',
     sheetTitlePh: 'Название задачи',

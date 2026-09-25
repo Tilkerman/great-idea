@@ -73,6 +73,8 @@ export const es: typeof ru = {
     sheetCollapse: 'Cerrar',
     sheetEdit: 'Editar',
     sheetSet: 'Elegir',
+    sheetFromLumi: '✦ {title}',
+    sheetOpenLumi: 'Abrir en Lumi',
     sheetCopy: 'Copiar',
     sheetPaste: 'Pegar',
     sheetTitlePh: 'Nombre de la tarea',

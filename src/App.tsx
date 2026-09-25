@@ -96,13 +96,11 @@ function AppRouter() {
           </main>
         </div>
       )}
-      {showLumi && (
-        <div className={`app-shell app-shell--lumi${screen === 'lumi' ? '' : ' app-shell--off'}`}>
-          <main className="app-shell__main">
-            <LumiEmbed />
-          </main>
-        </div>
-      )}
+      <div className={`app-shell app-shell--lumi${showLumi ? '' : ' app-shell--off'}`}>
+        <main className="app-shell__main">
+          <LumiEmbed />
+        </main>
+      </div>
       {inSettings && (
         <div className="settings-overlay">
           <SettingsScreens screen={screen} />

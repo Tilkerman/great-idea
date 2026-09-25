@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import DesireForm from './components/DesireForm/DesireForm';
 import DesireDetail from './components/DesireDetail/DesireDetail';
 import type { Desire, LifeArea } from './types';
@@ -46,6 +46,8 @@ function App() {
     setApi,
     settingsOpenNonce,
     pendingSettingsPage,
+    pendingDesireId,
+    consumePendingDesire,
     consumePendingSettingsPage,
     consumeReturnToSettingsHub,
   } = useLumiHost();
@@ -61,6 +63,8 @@ function App() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [previousView, setPreviousView] = useState<View | null>(null);
   const [previousViewBeforeEdit, setPreviousViewBeforeEdit] = useState<View | null>(null);
+  const pendingDesireRef = useRef(pendingDesireId);
+  pendingDesireRef.current = pendingDesireId;
 
   // Проверяем наличие желаний при загрузке
   useEffect(() => {
@@ -73,7 +77,11 @@ function App() {
           return;
         }
         const onboardingDone = localStorage.getItem(ONBOARDING_DONE_KEY) === '1';
-        if (!onboardingDone) {
+        const pending = pendingDesireRef.current;
+        if (pending) {
+          setSelectedDesireId(pending);
+          setCurrentView('detail');
+        } else if (!onboardingDone) {
           const desires = await desireService.getAllDesires();
           setCurrentView(desires.length === 0 ? 'welcome' : 'wheel');
         } else {
@@ -89,6 +97,14 @@ function App() {
 
     checkDesires();
   }, [forcedView]);
+
+  useEffect(() => {
+    if (isLoading || !pendingDesireId) return;
+    setIsSettingsModalOpen(false);
+    setSelectedDesireId(pendingDesireId);
+    setCurrentView('detail');
+    consumePendingDesire();
+  }, [isLoading, pendingDesireId, consumePendingDesire]);
 
   // Инициализируем планировщик напоминаний при загрузке
   useEffect(() => {
@@ -125,6 +141,12 @@ function App() {
     setCurrentView('wheel');
   }, []);
 
+  const openDesire = useCallback((desireId: string) => {
+    setIsSettingsModalOpen(false);
+    setSelectedDesireId(desireId);
+    setCurrentView('detail');
+  }, []);
+
   const toggleListAndWheel = useCallback(() => {
     setCurrentView((v) => {
       if (v === 'list') return 'wheel';
@@ -139,9 +161,10 @@ function App() {
       showAllWishes,
       goWheel,
       toggleListAndWheel,
+      openDesire,
     });
     return () => setApi(null);
-  }, [setApi, createWishFromNav, showAllWishes, goWheel, toggleListAndWheel]);
+  }, [setApi, createWishFromNav, showAllWishes, goWheel, toggleListAndWheel, openDesire]);
 
   useEffect(() => {
     if (settingsOpenNonce > 0) setIsSettingsModalOpen(true);

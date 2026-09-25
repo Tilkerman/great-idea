@@ -36,6 +36,7 @@ import {
 } from '../utils/gridClipboard';
 import { SEED_TASKS } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
+import { afterTaskDeleted, afterTaskWritten } from '../utils/wishTaskBridge';
 
 const ONBOARDING_KEY = 'tili-onboarding-done';
 const SESSION_KEY = 'tili-session';
@@ -196,6 +197,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const upsertTask = useCallback(async (task: Task) => {
     await saveTask({ ...task, updatedAt: new Date().toISOString() });
+    await afterTaskWritten(task);
     await refreshTasks();
   }, [refreshTasks]);
 
@@ -235,6 +237,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ? getTasksInHour(all, newDateStr, hour).map((t) => (t.id === task.id ? task : t))
       : [...others, task];
     await saveTasks(rebalanceHourTasks(day, hour, merged));
+    await afterTaskWritten(task);
     await refreshTasks();
     return 'ok';
   }, [refreshTasks]);
@@ -246,6 +249,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const remaining = getTasksInHour(await getAllTasks(), dateStr, hour)
       .filter((t) => t.id !== task.id);
     await deleteTask(task.id);
+    await afterTaskDeleted(task);
     if (remaining.length > 0) {
       await saveTasks(rebalanceHourTasks(day, hour, remaining));
     }
@@ -270,7 +274,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [pendingDelete, deleteTaskInHour]);
 
   const removeTask = useCallback(async (id: string) => {
+    const task = (await getAllTasks()).find((row) => row.id === id);
     await deleteTask(id);
+    if (task) await afterTaskDeleted(task);
     await refreshTasks();
   }, [refreshTasks]);
 
@@ -309,9 +315,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const days = getWeekDays(target.focusDate, settings.weekStartsOn);
       const liveDates = new Set(days.filter((d) => !isLockedCreateDay(d)).map(toLocalDateString));
       if (liveDates.size === 0) return;
-      const removeIds = all
-        .filter((task) => liveDates.has(toLocalDateString(new Date(task.startAt))))
-        .map((task) => task.id);
+      const removeRows = all.filter((task) => liveDates.has(toLocalDateString(new Date(task.startAt))));
+      const removeIds = removeRows.map((task) => task.id);
+      for (const row of removeRows) await afterTaskDeleted(row);
       await deleteTasks(removeIds);
       const incoming = buildPastedTasks(
         gridClipboard,
@@ -321,9 +327,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await refreshTasks();
       return;
     }
+    const removeRows = all.filter((task) => (target.kind === 'day'
+      ? idsInDay(all, target.day).includes(task.id)
+      : idsInHour(all, target.day, target.hour).includes(task.id)));
     const removeIds = target.kind === 'day'
       ? idsInDay(all, target.day)
       : idsInHour(all, target.day, target.hour);
+    for (const row of removeRows) await afterTaskDeleted(row);
     await deleteTasks(removeIds);
     const incoming = buildPastedTasks(gridClipboard, target);
     await saveTasks(incoming);

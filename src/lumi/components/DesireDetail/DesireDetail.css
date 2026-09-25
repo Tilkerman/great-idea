@@ -761,29 +761,122 @@
 }
 
 /* Стили для шагов действий (action items) */
+.action-items-progress {
+  margin: 0 0 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.action-item-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  min-height: 40px;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.action-item-row--next {
+  padding-left: 0.4rem;
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 0;
+  border-left: 2px solid var(--accent, #5b9a6f);
+  background: transparent;
+}
+
+.action-item-next-label {
+  display: none;
+}
+
+.action-item-bridge {
+  align-self: center;
+  margin-left: 0;
+  border: none;
+  background: none;
+  padding: 0.25rem 0;
+  min-height: 36px;
+  font: inherit;
+  font-size: 0.75rem;
+  color: var(--accent, #5b9a6f);
+  font-weight: 600;
+  text-align: right;
+  cursor: pointer;
+  touch-action: manipulation;
+  flex-shrink: 0;
+  max-width: 42%;
+  line-height: 1.25;
+}
+
+.action-item-add {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+
+.action-item-add-input {
+  flex: 1;
+  width: auto;
+  box-sizing: border-box;
+  min-height: 40px;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.12));
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9375rem;
+}
+
+.action-item-add-btn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: var(--surface, var(--bg-primary));
+  color: var(--text-primary);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.action-item-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .action-items-checklist {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  gap: 0;
+  margin-top: 0.25rem;
 }
 
 .action-item-checkbox-label {
   display: flex;
-  align-items: flex-start;
-  gap: 12px; /* Отступ между чекбоксом и текстом */
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
-  padding: 0.75rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 18px;
-  transition: background-color 0.2s, border-color 0.2s;
+  padding: 0.15rem 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  transition: none;
   position: relative;
+  flex: 1;
+  min-width: 0;
 }
 
 .action-item-checkbox-label:hover {
-  background: var(--bg-hover);
-  border-color: var(--accent-color);
+  background: none;
+  border-color: transparent;
 }
 
 .action-item-checkbox {
@@ -795,44 +888,33 @@
   cursor: pointer;
 }
 
-/* Кастомный чекбокс через псевдоэлемент label */
 .action-item-checkbox-label::before {
   content: '';
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  min-height: 24px;
-  border-radius: 8px; /* Квадрат с максимально скруглёнными углами */
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  border-radius: 50%;
   background: var(--surface);
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  transition: all 0.2s ease;
+  border: 1.5px solid rgba(0, 0, 0, 0.28);
+  transition: all 0.15s ease;
   flex-shrink: 0;
-  margin-top: 2px; /* Небольшой отступ сверху для выравнивания */
+  margin-top: 0;
 }
 
-/* Галочка при выборе */
 .action-item-checkbox:checked ~ .action-item-checkbox-text::before,
 .action-item-checkbox-label:has(.action-item-checkbox:checked)::before {
   content: '✓';
-  color: var(--accent); /* Оранжевая галочка */
-  font-size: 16px;
-  font-weight: 900;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
   line-height: 1;
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: var(--accent);
   background: var(--surface);
-  border-radius: 8px; /* Квадрат с максимально скруглёнными углами */
-}
-
-/* Текст - убираем padding-left, так как отступ теперь через gap в label */
-.action-item-checkbox-text {
-  flex: 1;
-  display: block;
-  line-height: 1.5;
-  padding: 0;
-  margin: 0;
+  border-radius: 50%;
 }
 
 .action-item-checkbox:disabled {
@@ -847,12 +929,12 @@
 .action-item-checkbox-text {
   flex: 1;
   color: var(--text-primary);
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 0.9375rem;
+  line-height: 1.3;
   word-break: break-word;
   position: relative;
-  padding-left: 0;
-  margin-left: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .action-item-checkbox-text.completed {
@@ -862,25 +944,24 @@
 }
 
 .action-items-all-completed {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background: rgba(100, 255, 100, 0.1);
-  border: 1px solid rgba(100, 255, 100, 0.3);
-  border-radius: 18px;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  text-align: center;
+  margin-top: 0.5rem;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-align: left;
   font-weight: 500;
 }
 
 [data-theme='dark'] .action-items-all-completed {
-  background: rgba(100, 255, 100, 0.15);
-  border-color: rgba(100, 255, 100, 0.4);
+  background: none;
+  border-color: transparent;
 }
 
-
-
-
+[data-theme='dark'] .action-item-row {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 @keyframes fadeInOut {

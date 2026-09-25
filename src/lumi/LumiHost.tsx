@@ -5,6 +5,7 @@ export type LumiHostApi = {
   showAllWishes: () => void;
   goWheel: () => void;
   toggleListAndWheel: () => void;
+  openDesire: (desireId: string) => void;
 };
 
 export type LumiSettingsPage =
@@ -21,6 +22,9 @@ type LumiHostContextValue = {
   setApi: (api: LumiHostApi | null) => void;
   settingsOpenNonce: number;
   pendingSettingsPage: LumiSettingsPage | null;
+  pendingDesireId: string | null;
+  requestOpenDesire: (desireId: string) => void;
+  consumePendingDesire: () => void;
   requestOpenSettings: () => void;
   requestOpenSettingsPage: (page: LumiSettingsPage) => void;
   consumePendingSettingsPage: () => void;
@@ -33,7 +37,16 @@ export function LumiHostProvider({ children }: { children: ReactNode }) {
   const [api, setApi] = useState<LumiHostApi | null>(null);
   const [settingsOpenNonce, setSettingsOpenNonce] = useState(0);
   const [pendingSettingsPage, setPendingSettingsPage] = useState<LumiSettingsPage | null>(null);
+  const [pendingDesireId, setPendingDesireId] = useState<string | null>(null);
   const returnToSettingsHubRef = useRef(false);
+
+  const requestOpenDesire = useCallback((desireId: string) => {
+    setPendingDesireId(desireId);
+  }, []);
+
+  const consumePendingDesire = useCallback(() => {
+    setPendingDesireId(null);
+  }, []);
 
   const requestOpenSettings = useCallback(() => {
     setSettingsOpenNonce((n) => n + 1);
@@ -60,6 +73,9 @@ export function LumiHostProvider({ children }: { children: ReactNode }) {
       setApi,
       settingsOpenNonce,
       pendingSettingsPage,
+      pendingDesireId,
+      requestOpenDesire,
+      consumePendingDesire,
       requestOpenSettings,
       requestOpenSettingsPage,
       consumePendingSettingsPage,
@@ -69,6 +85,9 @@ export function LumiHostProvider({ children }: { children: ReactNode }) {
       api,
       settingsOpenNonce,
       pendingSettingsPage,
+      pendingDesireId,
+      requestOpenDesire,
+      consumePendingDesire,
       requestOpenSettings,
       requestOpenSettingsPage,
       consumePendingSettingsPage,

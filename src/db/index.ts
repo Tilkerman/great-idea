@@ -12,6 +12,10 @@ export class TiLiDB extends Dexie {
       tasks: 'id, startAt, endAt, category, status',
       settings: 'id',
     });
+    this.version(2).stores({
+      tasks: 'id, startAt, endAt, category, status, lumiActionItemId',
+      settings: 'id',
+    });
   }
 }
 

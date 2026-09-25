@@ -20,6 +20,10 @@ export interface Task {
   order: number;
   createdAt: string;
   updatedAt: string;
+  /** Шаг Lumi, если дело создано через «Запланировать в TiLi». */
+  lumiDesireId?: string | null;
+  lumiActionItemId?: string | null;
+  lumiDesireTitle?: string | null;
 }
 
 /** Содержимое задачи для копирования между слотами (без даты/времени). */

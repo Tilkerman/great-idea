@@ -6,6 +6,12 @@ import { formatDate, getTodayDateString } from '../../utils/date';
 import './DesireDetail.css';
 import { useI18n } from '../../i18n';
 import Header from '../Header/Header';
+import { useApp } from '../../../context/AppContext';
+import {
+  afterStepToggled,
+  createLumiStepDraft,
+  repairDesireLinks,
+} from '../../../utils/wishTaskBridge';
 
 interface DesireDetailProps {
   desireId: string;
@@ -17,6 +23,9 @@ interface DesireDetailProps {
 
 export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailProps) {
   const { t, locale } = useI18n();
+  const {
+    tasks, setScreen, setEditingTask, setSheetOpen, setFocusDate, setZoom, refreshTasks,
+  } = useApp();
   const [desire, setDesire] = useState<Desire | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [detailsExpanded, setDetailsExpanded] = useState(false);
@@ -38,6 +47,7 @@ export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailP
   
   // Состояние для шагов (action items)
   const [actionItems, setActionItems] = useState<ActionItem[]>([]);
+  const [newStepText, setNewStepText] = useState('');
 
   // IMPORTANT: хуки должны вызываться всегда, поэтому вычисления для details делаем до ранних return'ов
   const detailsText = (desire?.details || '').trim();
@@ -77,7 +87,9 @@ export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailP
       setDesire(loadedDesire);
       
       // Загружаем шаги
-      const items = await actionItemService.getActionItemsByDesire(desireId);
+      const items = await repairDesireLinks(
+        await actionItemService.getActionItemsByDesire(desireId),
+      );
       setActionItems(items);
 
       // Загружаем сегодняшние контакты
@@ -189,6 +201,7 @@ export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailP
 
     try {
       await desireService.deleteDesire(desire.id);
+      await refreshTasks();
       onBack();
     } catch (error) {
       console.error('Ошибка при удалении желания:', error);
@@ -226,6 +239,8 @@ export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailP
     setIsSaving(true);
     try {
       await actionItemService.toggleActionItem(id);
+      await afterStepToggled(id);
+      await refreshTasks();
       await loadDesire(); // Перезагружаем данные
       
       // Восстанавливаем позицию скролла после перезагрузки
@@ -238,6 +253,45 @@ export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailP
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleAddStep = async () => {
+    if (!desire) return;
+    const text = newStepText.trim();
+    if (!text) return;
+    setIsSaving(true);
+    try {
+      await actionItemService.createActionItem(desire.id, text);
+      setNewStepText('');
+      await loadDesire();
+    } catch (error) {
+      console.error('Ошибка при создании шага:', error);
+      alert(t('detail.error.toggleStep'));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const openTaskInTili = (taskId: string) => {
+    const task = tasks.find((row) => row.id === taskId);
+    if (!task) {
+      void loadDesire();
+      return;
+    }
+    if (task.startAt) {
+      setFocusDate(new Date(task.startAt));
+      setZoom('week');
+    }
+    setEditingTask(task);
+    setSheetOpen(true);
+    setScreen('calendar');
+  };
+
+  const planStepInTili = (item: ActionItem) => {
+    if (!desire) return;
+    setEditingTask(createLumiStepDraft(item, desire.title));
+    setSheetOpen(true);
+    setScreen('calendar');
   };
 
   if (isLoading) {
@@ -382,30 +436,102 @@ export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailP
         </div>
 
         {/* Блок шагов действий (action items) */}
-        {actionItems.length > 0 && (
-          <div className="desire-detail-section">
-            <h2 className="desire-detail-section-title">{t('detail.actionItems.title')}</h2>
-            <div className="action-items-checklist">
-              {actionItems.map((item) => (
-                <label key={item.id} className="action-item-checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={item.isCompleted}
-                    onChange={(e) => handleToggleActionItem(item.id, e)}
-                    disabled={isSaving}
-                    className="action-item-checkbox"
-                  />
-                  <span className={`action-item-checkbox-text ${item.isCompleted ? 'completed' : ''}`}>
-                    {item.text}
-                  </span>
-                </label>
-              ))}
-            </div>
-            {actionItems.every((item) => item.isCompleted) && actionItems.length > 0 && (
-              <p className="action-items-all-completed">{t('detail.actionItems.allCompleted')}</p>
-            )}
+        <div className="desire-detail-section">
+          <h2 className="desire-detail-section-title">{t('detail.actionItems.title')}</h2>
+          {actionItems.length > 0 && (
+            <p className="action-items-progress">
+              {t('detail.actionItems.progress', {
+                done: actionItems.filter((item) => item.isCompleted).length,
+                total: actionItems.length,
+              })}
+            </p>
+          )}
+          <div className="action-items-checklist">
+            {actionItems.map((item) => {
+              const nextId = actionItems.find((row) => !row.isCompleted)?.id;
+              const isNext = item.id === nextId;
+              const linkedTask = item.linkedTaskId
+                ? tasks.find((row) => row.id === item.linkedTaskId)
+                : undefined;
+              const when = linkedTask?.startAt
+                ? new Date(linkedTask.startAt).toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US', {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : null;
+              return (
+                <div
+                  key={item.id}
+                  className={`action-item-row ${isNext ? 'action-item-row--next' : ''}`}
+                >
+                  <label className="action-item-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={item.isCompleted}
+                      onChange={(e) => handleToggleActionItem(item.id, e)}
+                      disabled={isSaving}
+                      className="action-item-checkbox"
+                    />
+                    <span className={`action-item-checkbox-text ${item.isCompleted ? 'completed' : ''}`}>
+                      {item.text}
+                    </span>
+                  </label>
+                  {item.linkedTaskId && linkedTask ? (
+                      <button
+                        type="button"
+                        className="action-item-bridge"
+                        onClick={() => openTaskInTili(item.linkedTaskId!)}
+                      >
+                        {when
+                          ? t('detail.actionItems.scheduled', { when })
+                          : t('detail.actionItems.open')}
+                      </button>
+                    ) : !item.isCompleted ? (
+                      <button
+                        type="button"
+                        className="action-item-bridge"
+                        onClick={() => planStepInTili(item)}
+                      >
+                        {t('detail.actionItems.plan')}
+                      </button>
+                    ) : null}
+                </div>
+              );
+            })}
           </div>
-        )}
+          <div className="action-item-add">
+            <input
+              type="text"
+              className="action-item-add-input"
+              value={newStepText}
+              onChange={(e) => setNewStepText(e.target.value)}
+              placeholder={t('detail.actionItems.placeholder')}
+              disabled={isSaving}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  void handleAddStep();
+                }
+              }}
+            />
+            <button
+              type="button"
+              className="action-item-add-btn"
+              disabled={isSaving || !newStepText.trim()}
+              onClick={() => { void handleAddStep(); }}
+              title={t('detail.actionItems.submit')}
+              aria-label={t('detail.actionItems.submit')}
+            >
+              +
+            </button>
+          </div>
+          {actionItems.every((item) => item.isCompleted) && actionItems.length > 0 && (
+            <p className="action-items-all-completed">{t('detail.actionItems.allCompleted')}</p>
+          )}
+        </div>
 
 
         {/* Эмоциональное описание */}

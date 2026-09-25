@@ -333,6 +333,15 @@
   overflow: hidden;
 }
 
+.task-card__lumi {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  opacity: 0.72;
+}
+
 .task-card__complete {
   flex-shrink: 0;
   width: 22px;

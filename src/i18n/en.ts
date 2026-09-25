@@ -73,6 +73,8 @@ export const en: typeof ru = {
     sheetCollapse: 'Collapse',
     sheetEdit: 'Edit',
     sheetSet: 'Set',
+    sheetFromLumi: '✦ {title}',
+    sheetOpenLumi: 'Open in Lumi',
     sheetCopy: 'Copy',
     sheetPaste: 'Paste',
     sheetTitlePh: 'Task title',

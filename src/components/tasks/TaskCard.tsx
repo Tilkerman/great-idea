@@ -304,6 +304,11 @@ export function TaskCard({
             {showDesc && task.description && (
               <p className="task-card__desc">{task.description}</p>
             )}
+            {task.lumiDesireId && (
+              <span className="task-card__lumi">
+                ✦ {task.lumiDesireTitle?.trim() || 'Lumi'}
+              </span>
+            )}
           </div>
           {onDelete && (
             <button

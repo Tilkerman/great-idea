@@ -74,6 +74,14 @@ class CalendarOfDesiresDB extends Dexie {
         feedbacks: 'id, createdAt',
         actionItems: 'id, desireId, order, [desireId+order], createdAt',
       });
+
+    this.version(8).stores({
+      desires: 'id, isActive, isCompleted, createdAt, area',
+      contacts: 'id, desireId, date, type, [desireId+date], [desireId+date+type], createdAt',
+      lifeAreas: 'id',
+      feedbacks: 'id, createdAt',
+      actionItems: 'id, desireId, order, linkedTaskId, [desireId+order], createdAt',
+    });
   }
 }
 
@@ -143,7 +151,8 @@ export const desireService = {
   },
 
   async deleteDesire(id: string): Promise<void> {
-    // Удаляем желание и все связанные контакты и шаги
+    const { unlinkTasksForDesire } = await import('../../utils/wishTaskBridge');
+    await unlinkTasksForDesire(id);
     await db.desires.delete(id);
     await db.contacts.where('desireId').equals(id).delete();
     await actionItemService.deleteActionItemsByDesire(id);
@@ -543,6 +552,26 @@ export const actionItemService = {
     }
   },
 
+  async getActionItem(id: string): Promise<ActionItem | undefined> {
+    try {
+      await db.open();
+      return db.actionItems.get(id);
+    } catch (error) {
+      console.error('Ошибка при получении шага:', error);
+      return undefined;
+    }
+  },
+
+  async getByLinkedTaskId(taskId: string): Promise<ActionItem | undefined> {
+    try {
+      await db.open();
+      return db.actionItems.where('linkedTaskId').equals(taskId).first();
+    } catch (error) {
+      console.error('Ошибка при поиске шага по задаче:', error);
+      return undefined;
+    }
+  },
+
   // Создать новый шаг
   async createActionItem(desireId: string, text: string, order?: number): Promise<string> {
     try {
@@ -562,6 +591,7 @@ export const actionItemService = {
         order,
         createdAt: new Date().toISOString(),
         completedAt: null,
+        linkedTaskId: null,
       };
 
       await db.actionItems.add(newItem);
@@ -609,6 +639,10 @@ export const actionItemService = {
       if (!item) return;
       
       const desireId = item.desireId;
+      if (item.linkedTaskId) {
+        const { clearLumiFieldsOnTask } = await import('../../utils/wishTaskUnlink');
+        await clearLumiFieldsOnTask(item.linkedTaskId);
+      }
       await db.actionItems.delete(id);
       
       // Пересчитываем порядок оставшихся шагов

@@ -14,6 +14,8 @@ import {
 } from '../../utils/hourSlot';
 import { enablePushFromGesture } from '../../utils/enablePush';
 import { notificationsBlockedReason } from '../../utils/notifications';
+import { useLumiHost } from '../../lumi/LumiHost';
+import { taskHasLumiLink } from '../../utils/wishTaskBridge';
 import './TaskSheet.css';
 
 function parseLocalDate(value: string): Date {
@@ -36,9 +38,10 @@ export function TaskSheet() {
   const {
     sheetOpen, setSheetOpen, editingTask, setEditingTask,
     tasks, placeTask, requestDelete, settings, updateSettings,
-    taskClipboard, copyTaskToClipboard,
+    taskClipboard, copyTaskToClipboard, setScreen,
   } = useApp();
   const { t, dateTag } = useI18n();
+  const { requestOpenDesire } = useLumiHost();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -354,6 +357,25 @@ export function TaskSheet() {
           <input type="checkbox" checked={important} onChange={(e) => setImportant(e.target.checked)} />
           {t('sheetImportant')}
         </label>
+
+        {editingTask && taskHasLumiLink(editingTask) && (
+          <button
+            type="button"
+            className="task-sheet__lumi"
+            onClick={() => {
+              const desireId = editingTask.lumiDesireId;
+              close();
+              if (!desireId) return;
+              requestOpenDesire(desireId);
+              setScreen('lumi');
+            }}
+          >
+            <span className="task-sheet__lumi-mark">
+              {t('sheetFromLumi', { title: editingTask.lumiDesireTitle?.trim() || 'Lumi' })}
+            </span>
+            <span className="task-sheet__link">{t('sheetOpenLumi')}</span>
+          </button>
+        )}
 
         <div className="task-sheet__actions">
           <button

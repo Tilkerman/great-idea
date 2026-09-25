@@ -68,6 +68,8 @@ export interface ActionItem {
   order: number; // порядок отображения
   createdAt: string; // ISO timestamp
   completedAt: string | null; // ISO timestamp - когда было отмечено как выполненное
+  /** Дело TiLi, если шаг запланирован в календаре. */
+  linkedTaskId?: string | null;
 }
 
 

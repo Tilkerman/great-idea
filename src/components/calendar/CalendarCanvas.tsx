@@ -24,6 +24,7 @@ export function CalendarCanvas() {
   const lastHoursTop = useRef(0);
   const lastHoursDy = useRef(0);
   const chromeSlimRef = useRef(false);
+  const [chromeSlim, setChromeSlim] = useState(false);
   const [enterKind, setEnterKind] = useState<'rubber-in' | 'rubber-out' | 'fade' | 'none'>('none');
   const [stageKey, setStageKey] = useState(0);
   const [showDevZoomBar, setShowDevZoomBar] = useState(false);
@@ -71,25 +72,21 @@ export function CalendarCanvas() {
     chromeSlimRef.current = false;
     lastHoursTop.current = 0;
     lastHoursDy.current = 0;
+    setChromeSlim(false);
     ref.current?.classList.remove('calendar-canvas--chrome-slim');
   }, [zoom, ref]);
 
   const applyChromeSlim = useCallback((slim: boolean) => {
     if (chromeSlimRef.current === slim) return;
     chromeSlimRef.current = slim;
+    setChromeSlim(slim);
     ref.current?.classList.toggle('calendar-canvas--chrome-slim', slim);
   }, [ref]);
 
   const onHoursScroll = useCallback((scrollTop: number) => {
     if (pinching) return;
-    lastHoursDy.current = scrollTop - lastHoursTop.current;
     lastHoursTop.current = scrollTop;
-    if (scrollTop <= 16) {
-      applyChromeSlim(false);
-      return;
-    }
-    if (lastHoursDy.current > 10) applyChromeSlim(true);
-    else if (lastHoursDy.current < -10) applyChromeSlim(false);
+    applyChromeSlim(scrollTop > 20);
   }, [pinching, applyChromeSlim]);
 
   return (
@@ -170,6 +167,7 @@ export function CalendarCanvas() {
               onHoursScroll={onHoursScroll}
               pinching={pinching}
               weekPinchLive={weekPinchLive}
+              chromeSlim={chromeSlim}
             />
           )}
         </div>
