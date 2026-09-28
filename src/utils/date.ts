@@ -76,7 +76,18 @@ export function formatDateRange(start: Date, end: Date, monthsGen: readonly stri
   return `${start.getDate()} ${monthsGen[start.getMonth()]} – ${end.getDate()} ${monthsGen[end.getMonth()]} ${end.getFullYear()}`;
 }
 
-/** Заголовок шапки в режиме «неделя»: «21–27 сентября 2026». */
+/** Короткое название месяца для шапки (сен. / Oct). */
+function monthCompact(monthsGen: readonly string[], month: number, localeTag: string) {
+  const short = monthsGen[month] ?? '';
+  if (localeTag.startsWith('ru')) return `${short}.`;
+  return short;
+}
+
+function monthLong(d: Date, localeTag: string) {
+  return d.toLocaleDateString(localeTag, { month: 'long' });
+}
+
+/** Заголовок шапки в режиме «неделя». При смене месяца — короткие месяцы (28 сен. – 4 окт. 2026). */
 export function formatWeekHeaderTitle(
   focusDate: Date,
   weekStartsOn: 0 | 1,
@@ -87,20 +98,24 @@ export function formatWeekHeaderTitle(
   const start = days[0];
   const end = days[6];
 
-  if (typeof Intl !== 'undefined' && 'DateTimeFormat' in Intl) {
-    const fmt = new Intl.DateTimeFormat(localeTag, {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }) as Intl.DateTimeFormat & { formatRange?: (a: Date, b: Date) => string };
-    if (typeof fmt.formatRange === 'function') {
-      let title = fmt.formatRange(start, end);
-      if (localeTag.startsWith('ru')) title = title.replace(/\s*г\.\s*$/, '');
-      return title;
-    }
+  if (isSameDay(start, end)) {
+    return `${start.getDate()} ${monthLong(start, localeTag)} ${start.getFullYear()}`;
   }
 
-  return formatDateRange(start, end, monthsGen);
+  const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+  if (sameMonth) {
+    return `${start.getDate()}–${end.getDate()} ${monthLong(end, localeTag)} ${end.getFullYear()}`;
+  }
+
+  const crossYear = start.getFullYear() !== end.getFullYear();
+  const mStart = monthCompact(monthsGen, start.getMonth(), localeTag);
+  const mEnd = monthCompact(monthsGen, end.getMonth(), localeTag);
+
+  if (crossYear) {
+    return `${start.getDate()} ${mStart} ${start.getFullYear()} – ${end.getDate()} ${mEnd} ${end.getFullYear()}`;
+  }
+
+  return `${start.getDate()} ${mStart} – ${end.getDate()} ${mEnd} ${end.getFullYear()}`;
 }
 
 export function getHoursRange(startHour: number, endHour: number) {

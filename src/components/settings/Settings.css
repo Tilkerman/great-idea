@@ -208,6 +208,47 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+.support-banner {
+  margin: 0;
+  padding: 14px 16px;
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+  background: var(--surface-2);
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.support-banner--ok {
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  border-bottom-color: var(--accent);
+}
+
+.support-banner--warn {
+  background: color-mix(in srgb, #e8a317 18%, var(--surface));
+  border-bottom-color: #c99200;
+}
+
+.support-banner__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.support-banner__body {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.support-how {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 .support-steps {
   margin: 0;
   padding-left: 20px;
