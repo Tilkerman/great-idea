@@ -3,484 +3,236 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#7BC67E" />
-  <meta name="description" content="TiLi — календарь часов на телефоне. Дела, желания Lumi, без облачной синхронизации." />
+  <meta name="theme-color" content="#4a8f5c" />
+  <meta name="description" content="TiLi — календарь часов. Lumi — желания. Планируй день по часам в браузере." />
   <title>TiLi — календарь твоего времени</title>
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
-  <style>
-    :root {
-      --green: #7bc67e;
-      --green-dim: #5a9f5c;
-      --bg: #0c0f0c;
-      --bg-card: #141a14;
-      --text: #eef2ee;
-      --muted: #9aab9a;
-      --border: rgba(123, 198, 126, 0.18);
-      --radius: 16px;
-      --max: 720px;
-      --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    }
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.55;
-      -webkit-font-smoothing: antialiased;
-    }
-    a { color: var(--green); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem 3rem; }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1rem 1.25rem;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(12, 15, 12, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: var(--text);
-      text-decoration: none;
-    }
-    .brand img { width: 36px; height: 36px; border-radius: 10px; }
-    .lang {
-      display: flex;
-      gap: 0.25rem;
-      background: var(--bg-card);
-      padding: 3px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-    }
-    .lang button {
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      font: inherit;
-      font-size: 0.8rem;
-      font-weight: 600;
-      padding: 0.35rem 0.65rem;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    .lang button[aria-pressed="true"] {
-      background: var(--green);
-      color: #0a120a;
-    }
-    .hero {
-      padding: 2.5rem 0 2rem;
-      text-align: center;
-    }
-    .hero img.hero-logo {
-      width: min(280px, 72vw);
-      height: auto;
-      margin-bottom: 1.25rem;
-      border-radius: 24px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-    }
-    .hero h1 {
-      font-size: clamp(1.65rem, 5vw, 2.1rem);
-      line-height: 1.2;
-      margin: 0 0 0.75rem;
-      letter-spacing: -0.02em;
-    }
-    .hero .lead {
-      color: var(--muted);
-      font-size: 1.05rem;
-      max-width: 34rem;
-      margin: 0 auto 1.75rem;
-    }
-    .cta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: center;
-      align-items: center;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.85rem 1.5rem;
-      border-radius: 999px;
-      font-weight: 650;
-      font-size: 1rem;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .btn:active { transform: scale(0.98); }
-    .btn--primary {
-      background: var(--green);
-      color: #0a120a;
-      box-shadow: 0 8px 28px rgba(123, 198, 126, 0.35);
-    }
-    .btn--ghost {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .install-hint {
-      margin-top: 1.25rem;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-    .preview {
-      margin: 2.5rem auto 0;
-      max-width: 320px;
-      aspect-ratio: 9 / 16;
-      border-radius: 28px;
-      border: 3px solid #2a332a;
-      background: linear-gradient(180deg, #1a221a 0%, #0f140f 100%);
-      padding: 12px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    }
-    .preview-inner {
-      height: 100%;
-      border-radius: 18px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      background: #121812;
-    }
-    .preview-bar {
-      height: 44px;
-      background: #1e281e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--green);
-    }
-    .preview-grid {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 36px 1fr 1fr 1fr;
-      gap: 2px;
-      padding: 6px;
-      font-size: 0.55rem;
-    }
-    .preview-time { color: var(--muted); padding: 4px 2px; }
-    .preview-slot {
-      border-radius: 4px;
-      min-height: 18px;
-      background: rgba(255, 255, 255, 0.04);
-    }
-    .preview-slot--work { background: rgba(236, 72, 153, 0.45); }
-    .preview-slot--personal { background: rgba(56, 189, 248, 0.45); }
-    .preview-slot--family { background: rgba(123, 198, 126, 0.55); }
-    section { margin-top: 3rem; }
-    h2 {
-      font-size: 1.25rem;
-      margin: 0 0 1rem;
-      letter-spacing: -0.01em;
-    }
-    .features {
-      display: grid;
-      gap: 0.85rem;
-    }
-    .feature {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.1rem 1.15rem;
-    }
-    .feature strong {
-      display: block;
-      margin-bottom: 0.35rem;
-      color: var(--text);
-    }
-    .feature p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-    .pill {
-      font-size: 0.78rem;
-      padding: 0.35rem 0.65rem;
-      border-radius: 999px;
-      background: rgba(123, 198, 126, 0.12);
-      color: var(--green);
-      border: 1px solid var(--border);
-    }
-    .data-box {
-      background: linear-gradient(135deg, rgba(123, 198, 126, 0.08), transparent);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem 1.15rem;
-    }
-    .data-box p { margin: 0 0 0.75rem; color: var(--muted); font-size: 0.95rem; }
-    .data-box p:last-child { margin-bottom: 0; }
-    footer {
-      margin-top: 3.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-    footer p { margin: 0.35rem 0; }
-    [hidden] { display: none !important; }
-  </style>
+  <link rel="stylesheet" href="./landing.css" />
 </head>
 <body>
-  <header>
-    <a class="brand" href="./landing.html">
-      <img src="./icon-tili-192.png" width="36" height="36" alt="" />
-      <span>TiLi</span>
-    </a>
-    <div class="lang" role="group" aria-label="Language">
-      <button type="button" data-lang="ru" aria-pressed="true">RU</button>
-      <button type="button" data-lang="en" aria-pressed="false">EN</button>
-      <button type="button" data-lang="es" aria-pressed="false">ES</button>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="check" viewBox="0 0 20 20"><path fill="currentColor" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.25 7.25a1 1 0 0 1-1.4 0l-3.25-3.25a1 1 0 1 1 1.4-1.4l2.55 2.55 6.55-6.55a1 1 0 0 1 1.4 0Z"/></symbol>
+    <symbol id="icon-laptop" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M4 6h16v10H4zM2 18h20"/></symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 3 4 7v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4z"/></symbol>
+    <symbol id="icon-phone" viewBox="0 0 24 24"><rect fill="none" stroke="currentColor" stroke-width="1.8" x="7" y="2" width="10" height="20" rx="2"/></symbol>
+  </svg>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="#top">
+        <img src="./logo-tili-header.png" width="40" height="40" alt="" />
+        <span class="brand__text">
+          <span class="brand__name">TiLi</span>
+          <span class="brand__tag" data-i18n="brandTag">календарь твоего времени</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#tili" data-i18n="navTili">TiLi</a>
+        <a href="#lumi" data-i18n="navLumi">Lumi</a>
+        <a href="#philosophy" data-i18n="navPhilosophy">Философия</a>
+        <a href="#for-whom" data-i18n="navFor">Для кого</a>
+        <a href="#faq" data-i18n="navFaq">FAQ</a>
+      </nav>
+      <div class="header-actions">
+        <a class="btn btn--primary" href="./" data-i18n="ctaTry">Попробовать TiLi</a>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+          <button type="button" data-lang="es" aria-pressed="false">ES</button>
+        </div>
+      </div>
     </div>
   </header>
 
-  <main class="wrap">
-    <section class="hero">
-      <img class="hero-logo" src="./logo-app.png" width="280" height="280" alt="TiLi" />
-      <h1 data-i18n="heroTitle">TiLi — календарь твоего времени</h1>
-      <p class="lead" data-i18n="heroLead">Не список «на потом», а сетка часов: каждое дело занимает своё место в дне. На телефоне, без подписки.</p>
-      <div class="cta-row">
-        <a class="btn btn--primary" href="./" data-i18n="ctaOpen">Открыть приложение</a>
-        <a class="btn btn--ghost" href="./privacy.html" data-i18n="ctaPrivacy">Конфиденциальность</a>
-      </div>
-      <p class="install-hint" data-i18n="installHint">iPhone / Android: «Поделиться» → «На экран Домой» — работает как приложение.</p>
-
-      <div class="preview" aria-hidden="true">
-        <div class="preview-inner">
-          <div class="preview-bar">TiLi</div>
-          <div class="preview-grid">
-            <span class="preview-time">9</span><div class="preview-slot preview-slot--work"></div><div></div><div></div>
-            <span class="preview-time">10</span><div></div><div class="preview-slot preview-slot--personal"></div><div></div>
-            <span class="preview-time">11</span><div></div><div></div><div class="preview-slot preview-slot--family"></div>
-            <span class="preview-time">12</span><div class="preview-slot"></div><div></div><div></div>
-            <span class="preview-time">13</span><div></div><div class="preview-slot preview-slot--work"></div><div></div>
-            <span class="preview-time">14</span><div></div><div></div><div></div>
+  <main id="top">
+    <section class="section section--hero">
+      <div class="hero-grid">
+        <div class="hero">
+          <h1><span data-i18n="heroH1a">У тебя есть время.</span> <span class="accent" data-i18n="heroH1b">Используй его по-настоящему.</span></h1>
+          <p class="lead" data-i18n="heroLead">TiLi помогает видеть свой день целиком, планировать дела по часам и находить место для важного.</p>
+          <a class="btn btn--primary btn--lg" href="./" data-i18n="ctaFree">Попробовать TiLi бесплатно</a>
+          <div class="hero-pills">
+            <span><svg width="18" height="18"><use href="#icon-laptop"/></svg> <span data-i18n="pillBrowser">Работает в браузере</span></span>
+            <span><svg width="18" height="18"><use href="#icon-shield"/></svg> <span data-i18n="pillGuest">Без регистрации</span></span>
+            <span><svg width="18" height="18"><use href="#icon-phone"/></svg> <span data-i18n="pillInstall">Можно установить на главный экран</span></span>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <p class="hand-note hand-note--hero" data-i18n="heroNote">видь свой день по часам, а не списком дел</p>
+          <div class="phone" aria-hidden="true">
+            <div class="phone__screen">
+              <div class="phone__status"></div>
+              <div class="phone__appbar">TiLi</div>
+              <div class="phone__hours">
+                <div class="hour-row"><span class="hour-row__label">9</span><div class="hour-row__blocks"><div class="block block--work" style="flex:2"></div><div class="block block--empty"></div></div></div>
+                <div class="hour-row"><span class="hour-row__label">10</span><div class="hour-row__blocks"><div class="block block--personal" style="flex:1.5"></div></div></div>
+                <div class="hour-row"><span class="hour-row__label">11</span><div class="hour-row__blocks"><div class="block block--family"></div><div class="block block--work"></div></div></div>
+                <div class="hour-row"><span class="hour-row__label">12</span><div class="hour-row__blocks"><div class="block block--personal"></div></div></div>
+                <div class="hour-row"><span class="hour-row__label">13</span><div class="hour-row__blocks"><div class="block block--family" style="flex:2"></div></div></div>
+                <div class="hour-row"><span class="hour-row__label">14</span><div class="hour-row__blocks"><div class="block block--work"></div><div class="block block--personal"></div></div></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section>
-      <h2 data-i18n="featuresTitle">Что внутри</h2>
-      <div class="features">
-        <article class="feature">
-          <strong data-i18n="f1t">Часы, а не чеклист</strong>
-          <p data-i18n="f1d">День с 7:00 до 21:00. До пяти дел в час — или одно на весь час.</p>
-        </article>
-        <article class="feature">
-          <strong data-i18n="f2t">Три смысла цветом</strong>
-          <p data-i18n="f2d">Розовый — работа, голубой — личное, зелёный — семья.</p>
-        </article>
-        <article class="feature">
-          <strong data-i18n="f3t">Щипок — другой масштаб</strong>
-          <p data-i18n="f3d">Год, месяц, неделя, день. На неделе колонки плавно сужаются до одного дня.</p>
-        </article>
-        <article class="feature">
-          <strong data-i18n="f4t">Желания Lumi</strong>
-          <p data-i18n="f4d">Отдельная вкладка: колесо сфер жизни, шаги к мечте, связь с делом в календаре.</p>
-        </article>
-        <article class="feature">
-          <strong data-i18n="f5t">Голос у кнопки «+»</strong>
-          <p data-i18n="f5d">Удержите плюс, скажите дело — TiLi подставит дату и категорию. Сохраняете сами.</p>
-        </article>
-        <article class="feature">
-          <strong data-i18n="f6t">Напоминания</strong>
-          <p data-i18n="f6d">Баннеры на телефоне, если включить в настройках и добавить PWA на экран «Домой».</p>
-        </article>
+    <div class="full-bleed bg-cream" id="tili">
+      <section class="section split">
+        <div class="split__text">
+          <p class="section-num">01</p>
+          <h2 data-i18n="tiliTitle">TiLi — календарь твоего времени</h2>
+          <p class="intro" data-i18n="tiliIntro">TiLi показывает день как пространство времени, а не бесконечный список. Ты видишь, что реально поместится в сутки.</p>
+          <ul class="checklist">
+            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check1">Планирование по часам</span></li>
+            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check2">Напоминания вовремя</span></li>
+            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check3">Работа офлайн на устройстве</span></li>
+            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check4">Резервная копия и перенос через JSON</span></li>
+            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check5">Год, месяц, неделя, день — твой масштаб</span></li>
+          </ul>
+        </div>
+        <div class="split__media">
+          <div class="browser" aria-hidden="true">
+            <div class="browser__chrome"><span class="browser__dot"></span><span class="browser__dot"></span><span class="browser__dot"></span><span class="browser__url">tili.app</span></div>
+            <div class="browser__week">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+              <span>9</span><div class="block block--work"></div><div class="block block--personal"></div><div class="block block--family"></div><div class="block block--work"></div><div class="block block--empty"></div>
+              <span>10</span><div class="block block--personal"></div><div class="block block--work"></div><div class="block block--empty"></div><div class="block block--family"></div><div class="block block--personal"></div>
+              <span>11</span><div class="block block--family"></div><div class="block block--family"></div><div class="block block--work"></div><div class="block block--personal"></div><div class="block block--work"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="full-bleed bg-lumi" id="lumi">
+      <section class="section">
+        <p class="section-num">02</p>
+        <h2 data-i18n="lumiTitle">Lumi — календарь твоих желаний</h2>
+        <p class="intro" data-i18n="lumiIntro">Lumi помогает не забывать о том, что важно именно тебе: фиксировать желания, делить их на шаги и двигаться к большим целям спокойно.</p>
+        <div class="lumi-grid">
+          <div class="lumi-icons">
+            <div class="lumi-icon-card"><div class="emoji">💜</div><strong data-i18n="lumiF1t">Желания</strong><span data-i18n="lumiF1d">Записывай мечты и цели</span></div>
+            <div class="lumi-icon-card"><div class="emoji">✨</div><strong data-i18n="lumiF2t">Сферы</strong><span data-i18n="lumiF2d">Колесо баланса жизни</span></div>
+            <div class="lumi-icon-card"><div class="emoji">📋</div><strong data-i18n="lumiF3t">Шаги</strong><span data-i18n="lumiF3d">Дроби на маленькие дела</span></div>
+            <div class="lumi-icon-card"><div class="emoji">📈</div><strong data-i18n="lumiF4t">Прогресс</strong><span data-i18n="lumiF4d">Видь, как движешься</span></div>
+          </div>
+          <div class="lumi-mascot">
+            <div class="phone" style="width:240px">
+              <div class="phone__screen" style="background: linear-gradient(180deg,#ebe4f8,#fff)">
+                <div class="phone__status"></div>
+                <div class="phone__appbar" style="color: var(--lumi-accent)">Lumi</div>
+                <div style="padding:12px;text-align:center;font-size:0.75rem;color:#666" data-i18n="lumiScreen">Мои желания</div>
+                <img src="./icon-lumi-192.png" alt="" width="80" height="80" style="margin:0 auto;border-radius:20px" />
+              </div>
+            </div>
+            <p class="hand-note hand-note--lumi" data-i18n="lumiNote">маленькие шаги к большим изменениям</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="full-bleed bg-beige" id="philosophy">
+      <section class="section">
+        <p class="section-num">03</p>
+        <h2 data-i18n="philTitle">Философия TiLi</h2>
+        <p class="intro" data-i18n="philIntro">Время — главный ресурс. TiLi и Lumi помогают жить в согласии с желаниями, а не только с дедлайнами.</p>
+        <div class="philosophy-flow">
+          <div class="phil-item"><div class="emoji">📝</div><p data-i18n="phil1">Не больше дел, а больше смысла</p></div>
+          <div class="phil-item"><div class="emoji">⏰</div><p data-i18n="phil2">Не заполнить всё время, а оставить место для важного</p></div>
+          <div class="phil-item"><div class="emoji">💚</div><p data-i18n="phil3">Не спешить, а двигаться в своём темпе</p></div>
+          <div class="phil-item"><div class="emoji">☀️</div><p data-i18n="phil4">Жить день, который отражает тебя</p></div>
+        </div>
+      </section>
+    </div>
+
+    <section class="section" id="for-whom">
+      <p class="section-num">04</p>
+      <h2 data-i18n="forTitle">Для кого</h2>
+      <p class="intro" data-i18n="forIntro">Если устали от списков, которые никогда не кончаются, и хотите видеть реальный день на одном экране.</p>
+      <div class="audience-cards">
+        <article class="audience-card"><strong data-i18n="for1t">Занятым</strong><p data-i18n="for1d">Когда важно уложить дела в часы, а не копить «на потом».</p></article>
+        <article class="audience-card"><strong data-i18n="for2t">Мечтателям</strong><p data-i18n="for2d">Когда есть большие желания и нужны маленькие шаги в Lumi.</p></article>
+        <article class="audience-card"><strong data-i18n="for3t">Семье</strong><p data-i18n="for3d">Когда работа, личное и семья должны быть видны разными цветами.</p></article>
       </div>
-      <div class="pill-row">
-        <span class="pill" data-i18n="pillGuest">Гость без регистрации</span>
-        <span class="pill" data-i18n="pillFree">Бесплатно</span>
-        <span class="pill" data-i18n="pillPwa">PWA</span>
-      </div>
     </section>
 
-    <section>
-      <h2 data-i18n="dataTitle">Ваши данные</h2>
-      <div class="data-box">
-        <p data-i18n="data1">Задачи и желания хранятся в браузере на этом устройстве. Мы не ведём облачную синхронизацию между телефонами.</p>
-        <p data-i18n="data2">Резервная копия — выгрузка JSON в настройках. Перенос на новый телефон — через файл, без нашего сервера.</p>
-        <p data-i18n="data3">Регистрация в приложении пока локальная: это не бэкап и не sync.</p>
-      </div>
+    <section class="section faq" id="faq">
+      <p class="section-num">FAQ</p>
+      <h2 data-i18n="faqTitle">Частые вопросы</h2>
+      <details>
+        <summary data-i18n="faq1q">Нужна ли регистрация?</summary>
+        <p data-i18n="faq1a">Нет. Можно сразу пользоваться как гость. Аккаунт локальный и не синхронизирует данные между телефонами.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq2q">Есть ли облако?</summary>
+        <p data-i18n="faq2a">Нет облачного sync. Задачи на устройстве; перенос — через экспорт JSON в настройках.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq3q">Как установить на iPhone?</summary>
+        <p data-i18n="faq3a">Safari → «Поделиться» → «На экран Домой». Так же работают напоминания.</p>
+      </details>
+      <details>
+        <summary data-i18n="faq4q">TiLi и Lumi — одно приложение?</summary>
+        <p data-i18n="faq4a">Да, одна PWA: вкладки календаря и желаний, шаг из Lumi можно связать с делом в TiLi.</p>
+      </details>
     </section>
 
-    <section>
-      <h2 data-i18n="supportTitle">Поддержать разработку</h2>
-      <p style="color: var(--muted); font-size: 0.95rem; margin: 0;" data-i18n="supportText">Добровольный перевод — в приложении: Настройки → Поддержка. На функции это не влияет.</p>
-    </section>
-
-    <section class="hero" style="padding-bottom: 0;">
-      <a class="btn btn--primary" href="./" data-i18n="ctaOpen">Открыть приложение</a>
-    </section>
-
-    <footer>
-      <p>© 2026 TiLi</p>
-      <p><a href="./privacy.html" data-i18n="footerPrivacy">Политика конфиденциальности</a></p>
-      <p><a href="./" data-i18n="footerApp">Перейти в календарь</a></p>
-    </footer>
+    <div class="cta-band">
+      <p data-i18n="ctaBand">Попробуй TiLi и посмотри на своё время иначе</p>
+      <a class="btn btn--primary btn--lg" href="./" data-i18n="ctaFree">Попробовать TiLi бесплатно</a>
+      <p class="aside" data-i18n="ctaAside">Работает в браузере. Регистрация не обязательна.</p>
+    </div>
   </main>
 
-  <script>
-    const STORAGE_KEY = 'tili-landing-lang';
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="brand">
+        <img src="./logo-tili-header.png" width="40" height="40" alt="" />
+        <span class="brand__text">
+          <span class="brand__name">TiLi</span>
+          <span class="brand__tag" data-i18n="brandTag">календарь твоего времени</span>
+        </span>
+      </div>
+      <div class="footer-col">
+        <h3>TiLi</h3>
+        <ul>
+          <li><a href="#tili" data-i18n="navTili">TiLi</a></li>
+          <li><a href="#faq" data-i18n="navFaq">FAQ</a></li>
+          <li><a href="./" data-i18n="ctaTry">Попробовать</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3>Lumi</h3>
+        <ul>
+          <li><a href="#lumi" data-i18n="navLumi">Lumi</a></li>
+          <li><a href="./" data-i18n="footerOpenLumi">Открыть приложение</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3 data-i18n="footerAbout">О проекте</h3>
+        <ul>
+          <li><a href="#philosophy" data-i18n="navPhilosophy">Философия</a></li>
+          <li><a href="#for-whom" data-i18n="navFor">Для кого</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h3 data-i18n="footerSupport">Поддержка</h3>
+        <ul>
+          <li><a href="./privacy.html" data-i18n="footerPrivacy">Конфиденциальность</a></li>
+          <li><a href="./" data-i18n="footerSupportApp">Поддержать автора в приложении</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 TiLi</span>
+      <span>
+        <a href="./privacy.html" data-i18n="footerPrivacy">Конфиденциальность</a>
+      </span>
+    </div>
+  </footer>
 
-    const copy = {
-      ru: {
-        metaDescription: 'TiLi — календарь часов на телефоне. Дела, желания Lumi, без облачной синхронизации.',
-        pageTitle: 'TiLi — календарь твоего времени',
-        heroTitle: 'TiLi — календарь твоего времени',
-        heroLead: 'Не список «на потом», а сетка часов: каждое дело занимает своё место в дне. На телефоне, без подписки.',
-        ctaOpen: 'Открыть приложение',
-        ctaPrivacy: 'Конфиденциальность',
-        installHint: 'iPhone / Android: «Поделиться» → «На экран Домой» — работает как приложение.',
-        featuresTitle: 'Что внутри',
-        f1t: 'Часы, а не чеклист',
-        f1d: 'День с 7:00 до 21:00. До пяти дел в час — или одно на весь час.',
-        f2t: 'Три смысла цветом',
-        f2d: 'Розовый — работа, голубой — личное, зелёный — семья.',
-        f3t: 'Щипок — другой масштаб',
-        f3d: 'Год, месяц, неделя, день. На неделе колонки плавно сужаются до одного дня.',
-        f4t: 'Желания Lumi',
-        f4d: 'Отдельная вкладка: колесо сфер жизни, шаги к мечте, связь с делом в календаре.',
-        f5t: 'Голос у кнопки «+»',
-        f5d: 'Удержите плюс, скажите дело — TiLi подставит дату и категорию. Сохраняете сами.',
-        f6t: 'Напоминания',
-        f6d: 'Баннеры на телефоне, если включить в настройках и добавить PWA на экран «Домой».',
-        pillGuest: 'Гость без регистрации',
-        pillFree: 'Бесплатно',
-        pillPwa: 'PWA',
-        dataTitle: 'Ваши данные',
-        data1: 'Задачи и желания хранятся в браузере на этом устройстве. Мы не ведём облачную синхронизацию между телефонами.',
-        data2: 'Резервная копия — выгрузка JSON в настройках. Перенос на новый телефон — через файл, без нашего сервера.',
-        data3: 'Регистрация в приложении пока локальная: это не бэкап и не sync.',
-        supportTitle: 'Поддержать разработку',
-        supportText: 'Добровольный перевод — в приложении: Настройки → Поддержка. На функции это не влияет.',
-        footerPrivacy: 'Политика конфиденциальности',
-        footerApp: 'Перейти в календарь',
-      },
-      en: {
-        metaDescription: 'TiLi — hour-grid calendar on your phone. Tasks, Lumi wishes, no cloud sync.',
-        pageTitle: 'TiLi — a calendar of your time',
-        heroTitle: 'TiLi — a calendar of your time',
-        heroLead: 'Not a endless to-do list — an hour grid so every task has a real place in your day. On your phone, no subscription.',
-        ctaOpen: 'Open the app',
-        ctaPrivacy: 'Privacy',
-        installHint: 'iPhone / Android: Share → Add to Home Screen — works like an app.',
-        featuresTitle: 'What you get',
-        f1t: 'Hours, not a checklist',
-        f1d: 'Day from 7:00 to 21:00. Up to five tasks per hour — or one for the full hour.',
-        f2t: 'Three colors, three meanings',
-        f2d: 'Pink — work, sky blue — personal, green — family.',
-        f3t: 'Pinch to change scale',
-        f3d: 'Year, month, week, day. On the week view, columns smoothly zoom down to a single day.',
-        f4t: 'Lumi wishes',
-        f4d: 'Separate tab: life wheel, steps toward a dream, link to a task on the calendar.',
-        f5t: 'Voice on the + button',
-        f5d: 'Hold +, say your task — TiLi suggests date and category. You tap Save.',
-        f6t: 'Reminders',
-        f6d: 'Phone banners when you enable them in settings and install the PWA on your home screen.',
-        pillGuest: 'Guest mode',
-        pillFree: 'Free',
-        pillPwa: 'PWA',
-        dataTitle: 'Your data',
-        data1: 'Tasks and wishes stay in the browser on this device. We do not sync calendars across phones in the cloud.',
-        data2: 'Backup — export JSON in settings. Move to a new phone via a file, no sync server.',
-        data3: 'Sign-in in the app is local only — not backup and not sync.',
-        supportTitle: 'Support development',
-        supportText: 'Voluntary tip — in the app: Settings → Support. It does not unlock features.',
-        footerPrivacy: 'Privacy policy',
-        footerApp: 'Go to calendar',
-      },
-      es: {
-        metaDescription: 'TiLi — calendario por horas en el móvil. Tareas, deseos Lumi, sin sync en la nube.',
-        pageTitle: 'TiLi — el calendario de tu tiempo',
-        heroTitle: 'TiLi — el calendario de tu tiempo',
-        heroLead: 'No es una lista infinita: es una cuadrícula de horas para que cada tarea tenga su lugar en el día. En el móvil, sin suscripción.',
-        ctaOpen: 'Abrir la app',
-        ctaPrivacy: 'Privacidad',
-        installHint: 'iPhone / Android: Compartir → Añadir a pantalla de inicio — funciona como app.',
-        featuresTitle: 'Qué incluye',
-        f1t: 'Horas, no checklist',
-        f1d: 'Día de 7:00 a 21:00. Hasta cinco tareas por hora — o una para toda la hora.',
-        f2t: 'Tres colores',
-        f2d: 'Rosa — trabajo, azul — personal, verde — familia.',
-        f3t: 'Pellizco para escala',
-        f3d: 'Año, mes, semana, día. En la semana las columnas se acercan hasta un solo día.',
-        f4t: 'Deseos Lumi',
-        f4d: 'Pestaña aparte: rueda de áreas, pasos hacia un sueño, enlace con una tarea del calendario.',
-        f5t: 'Voz en el botón +',
-        f5d: 'Mantén +, di la tarea — TiLi sugiere fecha y categoría. Tú guardas.',
-        f6t: 'Recordatorios',
-        f6d: 'Avisos en el móvil si los activas en ajustes e instalas la PWA en la pantalla de inicio.',
-        pillGuest: 'Invitado sin registro',
-        pillFree: 'Gratis',
-        pillPwa: 'PWA',
-        dataTitle: 'Tus datos',
-        data1: 'Tareas y deseos se guardan en el navegador de este dispositivo. No sincronizamos el calendario entre móviles en la nube.',
-        data2: 'Copia de seguridad — exportar JSON en ajustes. Cambio de móvil con un archivo, sin servidor de sync.',
-        data3: 'La cuenta en la app es local: no es copia de seguridad ni sync.',
-        supportTitle: 'Apoyar el desarrollo',
-        supportText: 'Aporte voluntario — en la app: Ajustes → Apoyo. No desbloquea funciones.',
-        footerPrivacy: 'Política de privacidad',
-        footerApp: 'Ir al calendario',
-      },
-    };
-
-    function applyLang(lang) {
-      const strings = copy[lang] || copy.ru;
-      document.documentElement.lang = lang;
-      document.querySelector('meta[name="description"]').setAttribute('content', strings.metaDescription);
-      document.title = strings.pageTitle;
-      document.querySelectorAll('[data-i18n]').forEach((el) => {
-        const key = el.getAttribute('data-i18n');
-        if (strings[key]) el.textContent = strings[key];
-      });
-      document.querySelectorAll('.lang button').forEach((btn) => {
-        const on = btn.getAttribute('data-lang') === lang;
-        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
-      try {
-        localStorage.setItem(STORAGE_KEY, lang);
-      } catch (_) {}
-    }
-
-    function detectLang() {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved && copy[saved]) return saved;
-      } catch (_) {}
-      const nav = (navigator.language || 'ru').slice(0, 2).toLowerCase();
-      if (copy[nav]) return nav;
-      return 'ru';
-    }
-
-    document.querySelectorAll('.lang button').forEach((btn) => {
-      btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
-    });
-
-    applyLang(detectLang());
-  </script>
+  <script src="./landing-i18n.js"></script>
 </body>
 </html>
