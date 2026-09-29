@@ -1,4 +1,5 @@
 import type { Task, TaskCategory, UserSettings } from '../types';
+import { toLocalDateString } from './date';
 import { createDraftTask, createInboxDraft, getTasksInHour } from './hourSlot';
 import { pushDeviceId } from './webPush';
 import {
@@ -66,6 +67,12 @@ export async function requestVoiceTaskParse(
       };
       return mergeVoiceDrafts(remote, local);
     }
+    if (data.fallback && !data.ok) {
+      return mergeVoiceDrafts(
+        { title: String(data.fallback.title || ''), date: null, hour: null, category: local.category },
+        local,
+      );
+    }
   } catch {
     /* use local */
   }
@@ -84,12 +91,21 @@ export function buildTaskDraftFromVoice(
   base.title = (parsed.title || cleaned || transcript).trim().slice(0, 120);
   base.category = parsed.category;
 
-  if (parsed.date && parsed.hour != null && /^\d{4}-\d{2}-\d{2}$/.test(parsed.date)) {
-    const hour = Math.min(settings.dayEndHour, Math.max(settings.dayStartHour, parsed.hour));
-    const existing = getTasksInHour(tasks, parsed.date, hour);
-    const [y, m, d] = parsed.date.split('-').map(Number);
+  let dateStr = parsed.date;
+  let hour = parsed.hour;
+  if (dateStr && hour == null) {
+    hour = Math.min(settings.dayEndHour, Math.max(settings.dayStartHour, 10));
+  }
+  if (!dateStr && hour != null) {
+    dateStr = toLocalDateString(new Date());
+  }
+
+  if (dateStr && hour != null && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    const clampedHour = Math.min(settings.dayEndHour, Math.max(settings.dayStartHour, hour));
+    const existing = getTasksInHour(tasks, dateStr, clampedHour);
+    const [y, m, d] = dateStr.split('-').map(Number);
     const day = new Date(y, (m ?? 1) - 1, d ?? 1);
-    const slotDraft = createDraftTask(day, hour, existing);
+    const slotDraft = createDraftTask(day, clampedHour, existing);
     return {
       ...slotDraft,
       id: base.id,

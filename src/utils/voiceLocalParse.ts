@@ -53,20 +53,28 @@ function nextCalendarDayForJsDow(from: Date, targetJsDow: number): Date {
   return d;
 }
 
+function hasRuToken(text: string, token: string): boolean {
+  const lower = text.toLowerCase();
+  if (token.length <= 3) {
+    return new RegExp(`(?:^|[\\s,.:;!?])${token}(?:[\\s,.:;!?]|$)`, 'i').test(lower);
+  }
+  return lower.includes(token);
+}
+
 function extractWeekday(text: string): Date | null {
   const lower = text.toLowerCase();
   for (const key of Object.keys(RU_DOW).sort((a, b) => b.length - a.length)) {
-    if (key.length <= 2) continue;
+    if (key.length <= 2) {
+      if (hasRuToken(text, key)) {
+        return nextCalendarDayForJsDow(new Date(), RU_DOW[key]);
+      }
+      continue;
+    }
     if (lower.includes(key)) {
       const js = jsDayFromName(key);
       if (js != null) return nextCalendarDayForJsDow(new Date(), js);
     }
   }
-  if (/\bчт\b/.test(lower) || lower.includes('четверг')) {
-    return nextCalendarDayForJsDow(new Date(), 4);
-  }
-  if (/\bср\b/.test(lower)) return nextCalendarDayForJsDow(new Date(), 3);
-  if (/\bпт\b/.test(lower)) return nextCalendarDayForJsDow(new Date(), 5);
   return null;
 }
 
@@ -76,15 +84,21 @@ function extractHour(text: string, dayStart: number, dayEnd: number): number | n
     /(?:^|\s)(?:на|в)\s*(\d{1,2})(?::00)?(?:\s|$|час)/,
     /(?:^|\s)(\d{1,2})\s*(?:часов?|ч\.?)(?:\s|$)/,
     /(?:^|\s)(?:на|в)\s*(\d{1,2})(?:\s|$)/,
+    /(?:^|\s)(\d{1,2})(?:\s|$)/,
   ];
+  const candidates: number[] = [];
   for (const re of patterns) {
-    const m = lower.match(re);
-    if (m) {
+    const reGlobal = new RegExp(re.source, `${re.flags}g`);
+    let m: RegExpExecArray | null;
+    while ((m = reGlobal.exec(lower)) !== null) {
       const h = Number(m[1]);
-      if (h >= 0 && h <= 23) return Math.min(dayEnd, Math.max(dayStart, h));
+      if (h >= 0 && h <= 23) candidates.push(h);
     }
   }
-  return null;
+  if (candidates.length === 0) return null;
+  const pool = candidates.filter((h) => h >= dayStart && h <= dayEnd);
+  const pick = (pool.length ? pool : candidates)[(pool.length ? pool : candidates).length - 1];
+  return Math.min(dayEnd, Math.max(dayStart, pick));
 }
 
 function guessTitle(text: string): string {

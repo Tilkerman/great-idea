@@ -105,7 +105,7 @@ module.exports.handler = async function (event) {
   }
 
   const apiKey = process.env.GROQ_API_KEY?.trim();
-  const model = process.env.GROQ_MODEL?.trim() || 'llama-3.1-8b-instant';
+  const model = process.env.GROQ_MODEL?.trim() || 'openai/gpt-oss-20b';
   if (!apiKey) {
     return reply(503, { ok: false, error: 'no-groq-key' });
   }
@@ -129,7 +129,12 @@ module.exports.handler = async function (event) {
   );
 
   if (groq.error) {
-    return reply(502, { ok: false, error: groq.error, fallback: { title: text.slice(0, 120) } });
+    return reply(502, {
+      ok: false,
+      error: groq.error,
+      detail: groq.detail,
+      fallback: { title: text.slice(0, 120) },
+    });
   }
 
   const p = groq.parsed || {};
