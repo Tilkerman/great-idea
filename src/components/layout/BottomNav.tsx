@@ -32,6 +32,7 @@ export function BottomNav() {
 
   const [listening, setListening] = useState(false);
   const [holdVisual, setHoldVisual] = useState(false);
+  const [addPressed, setAddPressed] = useState(false);
   const [consentOpen, setConsentOpen] = useState(false);
   const [toast, setToast] = useState('');
 
@@ -127,9 +128,10 @@ export function BottomNav() {
   };
 
   const onAddPointerDown = (e: ReactPointerEvent) => {
+    setAddPressed(true);
+    e.currentTarget.setPointerCapture(e.pointerId);
     if (isLumiPlus) return;
     e.preventDefault();
-    e.currentTarget.setPointerCapture(e.pointerId);
     pointerDownAt.current = Date.now();
     voiceModeRef.current = false;
     clearHoldTimer();
@@ -140,6 +142,7 @@ export function BottomNav() {
   };
 
   const onAddPointerUp = (e: ReactPointerEvent) => {
+    setAddPressed(false);
     if (isLumiPlus) return;
     clearHoldTimer();
     const wasVoice = voiceModeRef.current;
@@ -165,6 +168,7 @@ export function BottomNav() {
   };
 
   const onAddPointerCancel = () => {
+    setAddPressed(false);
     clearHoldTimer();
     stopSpeech();
     voiceModeRef.current = false;
@@ -225,7 +229,10 @@ export function BottomNav() {
           onPointerUp={onAddPointerUp}
           onPointerCancel={onAddPointerCancel}
         >
-          <span className={`bottom-nav__plus${holdVisual || listening ? ' bottom-nav__plus--mic' : ''}`} aria-hidden>
+          <span
+            className={`bottom-nav__plus${holdVisual || listening ? ' bottom-nav__plus--mic' : ''}${addPressed ? ' bottom-nav__plus--pressed' : ''}`}
+            aria-hidden
+          >
             {holdVisual || listening ? (
               <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
                 <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-1.08A7 7 0 0 0 19 11h-2z" />

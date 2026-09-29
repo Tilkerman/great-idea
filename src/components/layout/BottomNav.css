@@ -62,6 +62,21 @@
   background: color-mix(in srgb, var(--accent) 88%, #fff);
 }
 
+.bottom-nav__plus--pressed {
+  background: var(--cat-work) !important;
+  color: var(--cat-work-text, #fff) !important;
+  animation: none;
+}
+
+.bottom-nav__item--add-voice .bottom-nav__plus--pressed {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat-work) 42%, transparent);
+}
+
+.bottom-nav__item--add:active .bottom-nav__plus {
+  background: var(--cat-work);
+  color: var(--cat-work-text, #fff);
+}
+
 .bottom-nav__item--add-voice .bottom-nav__plus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
 }
