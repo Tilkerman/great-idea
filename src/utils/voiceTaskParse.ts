@@ -54,6 +54,7 @@ export async function requestVoiceTaskParse(
     const data = (await res.json().catch(() => ({}))) as {
       ok?: boolean;
       draft?: VoiceTaskDraft;
+      fallback?: { title?: string };
     };
 
     if (data.ok && data.draft) {
