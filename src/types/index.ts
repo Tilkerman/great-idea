@@ -88,6 +88,8 @@ export interface UserSettings {
   notificationsEnabled: boolean;
   /** User opted in to anonymous product analytics (also requires consent prompt). */
   analyticsEnabled: boolean;
+  /** Voice note → LLM parse (text sent to our cloud proxy). TiLi only. */
+  voiceAiEnabled: boolean;
 }
 
 export interface UserSession {

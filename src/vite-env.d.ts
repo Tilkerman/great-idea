@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_PUSH_API_URL?: string;
   readonly VITE_POSTHOG_KEY?: string;
   readonly VITE_POSTHOG_HOST?: string;
+  readonly VITE_VOICE_PARSE_URL?: string;
 }
 
 interface ImportMeta {

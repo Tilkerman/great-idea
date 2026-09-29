@@ -69,6 +69,7 @@ export const DEFAULT_SETTINGS = {
   reminderBeforeMin: 15,
   notificationsEnabled: false,
   analyticsEnabled: false,
+  voiceAiEnabled: false,
 };
 
 export const ZOOM_LABELS: Record<string, string> = {

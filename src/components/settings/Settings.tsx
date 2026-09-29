@@ -477,6 +477,15 @@ export function SettingsData() {
         <label className="task-sheet__check settings-analytics">
           <input
             type="checkbox"
+            checked={settings.voiceAiEnabled}
+            onChange={(e) => void updateSettings({ voiceAiEnabled: e.target.checked })}
+          />
+          {t('voiceSettingsLabel')}
+        </label>
+        <p className="settings-note">{t('voiceSettingsHint')}</p>
+        <label className="task-sheet__check settings-analytics">
+          <input
+            type="checkbox"
             checked={settings.analyticsEnabled}
             onChange={(e) => onAnalyticsToggle(e.target.checked)}
           />
