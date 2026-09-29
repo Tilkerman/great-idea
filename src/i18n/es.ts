@@ -200,7 +200,7 @@ export const es: typeof ru = {
     exportJson: 'Exportar JSON',
     exportNote: 'Esta es tu copia de seguridad. La cuenta no se guarda en la nube — solo este teléfono.',
     analyticsSettingsLabel: 'Estadísticas anónimas',
-    analyticsSettingsHint: 'Desactivado por defecto. Actívalo para mejorar TiLi — no enviamos textos de tareas ni deseos.',
+    analyticsSettingsHint: 'Activado por defecto: aperturas y acciones, sin textos de tareas. Puedes desactivarlo aquí.',
     analyticsPrivacyLink: 'Política de privacidad',
     voiceSettingsLabel: 'Notas de voz con IA',
     voiceSettingsHint: 'Mantenga el botón +, hable — TiLi rellena la tarjeta. El texto va a nuestro servidor (solo TiLi, no Lumi). Usted pulsa Guardar.',

@@ -68,7 +68,7 @@ export const DEFAULT_SETTINGS = {
   importantReminderHours: 2,
   reminderBeforeMin: 15,
   notificationsEnabled: false,
-  analyticsEnabled: false,
+  analyticsEnabled: true,
   voiceAiEnabled: false,
 };
 

@@ -37,7 +37,7 @@ import {
 import { SEED_TASKS } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 import { afterTaskDeleted, afterTaskWritten } from '../utils/wishTaskBridge';
-import { resolveLaunchLocale, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
+import { resolveLaunchLocale, setAnalyticsConsent, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
 
 const ONBOARDING_KEY = 'tili-onboarding-done';
 const SESSION_KEY = 'tili-session';
@@ -152,6 +152,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     (async () => {
       await seedIfEmpty(SEED_TASKS);
       let s = await getSettings();
+      const migrated = localStorage.getItem('tili-analytics-on-by-default');
+      if (migrated !== '1') {
+        s = { ...s, analyticsEnabled: true };
+        setAnalyticsConsent(true);
+        await saveSettings(s);
+        localStorage.setItem('tili-analytics-on-by-default', '1');
+      }
       const resolved = resolveLaunchLocale(s.locale);
       if (resolved !== s.locale) {
         s = { ...s, locale: resolved };

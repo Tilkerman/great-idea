@@ -200,7 +200,7 @@ export const en: typeof ru = {
     exportJson: 'Export JSON',
     exportNote: 'This is your backup. The account does not save to the cloud — only this phone.',
     analyticsSettingsLabel: 'Anonymous statistics',
-    analyticsSettingsHint: 'Off by default. Turn on to help improve TiLi — no task or wish text is sent.',
+    analyticsSettingsHint: 'On by default: app opens and actions, no task text. You can turn it off here.',
     analyticsPrivacyLink: 'Privacy policy',
     voiceSettingsLabel: 'Voice notes with AI',
     voiceSettingsHint: 'Hold the + button, speak — TiLi fills the task card. Text is sent to our server for parsing (TiLi only, not Lumi). You tap Save yourself.',
