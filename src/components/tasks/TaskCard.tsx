@@ -54,7 +54,7 @@ export function TaskCard({
   const canSwipeComplete = Boolean(swipeComplete && onComplete && !completed);
   const canSwipeRestore = Boolean(swipeComplete && onRestore && completed);
   const canSwipe = canSwipeComplete || canSwipeRestore;
-  const showDesc = showDescProp && showTitle && (slot ? density === 'single' || density === 'double' : !compact);
+  const showDesc = showDescProp && showTitle && !slot && !compact;
   const showMark = showBadge || completed;
 
   const cardRef = useRef<HTMLDivElement>(null);

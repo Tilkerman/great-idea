@@ -102,6 +102,22 @@ VITE_PUSH_API_URL=https://functions.yandexcloud.net/d4eps3rpvttu70fnqs21
 
 ---
 
+## 3a. Yandex Cloud (голос → Groq)
+
+**Роль:** разбор текста диктовки в дату, час, заголовок, категорию. Голос в текст — Safari на телефоне; Groq-ключ только в функции.
+
+| | |
+|---|---|
+| HTTP API (в PWA) | `VITE_VOICE_PARSE_URL` → `https://functions.yandexcloud.net/d4e0ljde6hqc9emkrbq5` |
+| Код | `cloud/yandex/tili-voice-parse/index.js` |
+| CORS | Origin `https://tilkerman.github.io` |
+
+**Переменные только в Cloud Function:** `GROQ_API_KEY`, `GROQ_MODEL` (`llama-3.1-8b-instant`).
+
+**Клиент:** `src/utils/voiceTaskParse.ts`, удержание «+» — `BottomNav.tsx`.
+
+---
+
 ## 4. CountAPI (опционально)
 
 **Роль:** счётчик нажатий на подсказку установки PWA.

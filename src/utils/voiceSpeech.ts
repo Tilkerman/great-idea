@@ -32,11 +32,11 @@ export function createSpeechSession(lang: string): {
 
   const rec = new Ctor();
   rec.lang = lang;
-  rec.interimResults = true;
+  rec.interimResults = false;
   rec.continuous = true;
   rec.maxAlternatives = 1;
 
-  let finalText = '';
+  const parts: string[] = [];
   let resolveDone: (v: string) => void;
   let rejectDone: (e: Error) => void;
 
@@ -46,14 +46,11 @@ export function createSpeechSession(lang: string): {
   });
 
   rec.onresult = (event: SpeechRecognitionEvent) => {
-    let chunk = '';
     for (let i = event.resultIndex; i < event.results.length; i += 1) {
-      chunk += event.results[i][0]?.transcript ?? '';
-    }
-    if (event.results[event.results.length - 1]?.isFinal) {
-      finalText = (finalText + ' ' + chunk).trim();
-    } else {
-      finalText = (finalText + ' ' + chunk).trim();
+      const piece = event.results[i][0]?.transcript?.trim();
+      if (piece && event.results[i].isFinal) {
+        parts.push(piece);
+      }
     }
   };
 
@@ -63,7 +60,7 @@ export function createSpeechSession(lang: string): {
   };
 
   rec.onend = () => {
-    resolveDone(finalText.trim());
+    resolveDone(parts.join(' ').replace(/\s+/g, ' ').trim());
   };
 
   return {
@@ -78,7 +75,7 @@ export function createSpeechSession(lang: string): {
       try {
         rec.stop();
       } catch {
-        resolveDone(finalText.trim());
+        resolveDone(parts.join(' ').replace(/\s+/g, ' ').trim());
       }
     },
     done,

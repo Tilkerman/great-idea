@@ -1,6 +1,11 @@
 import type { Task, TaskCategory, UserSettings } from '../types';
 import { createDraftTask, createInboxDraft, getTasksInHour } from './hourSlot';
 import { pushDeviceId } from './webPush';
+import {
+  cleanTranscript,
+  localVoiceDraftFromText,
+  mergeVoiceDrafts,
+} from './voiceLocalParse';
 
 export interface VoiceTaskDraft {
   title: string;
@@ -21,52 +26,51 @@ export async function requestVoiceTaskParse(
   text: string,
   settings: UserSettings,
 ): Promise<VoiceTaskDraft> {
+  const cleaned = cleanTranscript(text);
+  const local = localVoiceDraftFromText(cleaned || text, settings);
   const url = parseApiUrl();
   const today = new Date();
   const todayISO = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
-  if (!url) {
-    return { title: text.slice(0, 120), date: null, hour: null, category: 'work' };
-  }
+  if (!url) return local;
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      text,
-      locale: settings.locale,
-      timezone: tz,
-      todayISO,
-      dayStart: settings.dayStartHour,
-      dayEnd: settings.dayEndHour,
-      deviceId: pushDeviceId(),
-    }),
-  });
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: cleaned || text,
+        locale: settings.locale,
+        timezone: tz,
+        todayISO,
+        dayStart: settings.dayStartHour,
+        dayEnd: settings.dayEndHour,
+        deviceId: pushDeviceId(),
+      }),
+    });
 
-  const data = (await res.json().catch(() => ({}))) as {
-    ok?: boolean;
-    draft?: VoiceTaskDraft;
-    fallback?: { title?: string };
-  };
-
-  if (data.ok && data.draft) {
-    return {
-      title: String(data.draft.title || text).slice(0, 120),
-      date: data.draft.date,
-      hour: data.draft.hour,
-      category: data.draft.category === 'personal' || data.draft.category === 'family'
-        ? data.draft.category
-        : 'work',
+    const data = (await res.json().catch(() => ({}))) as {
+      ok?: boolean;
+      draft?: VoiceTaskDraft;
     };
+
+    if (data.ok && data.draft) {
+      const remote: VoiceTaskDraft = {
+        title: String(data.draft.title || local.title).slice(0, 120),
+        date: data.draft.date,
+        hour: data.draft.hour,
+        category: data.draft.category === 'personal' || data.draft.category === 'family'
+          ? data.draft.category
+          : local.category,
+      };
+      return mergeVoiceDrafts(remote, local);
+    }
+  } catch {
+    /* use local */
   }
 
-  return {
-    title: String(data.fallback?.title || text).slice(0, 120),
-    date: null,
-    hour: null,
-    category: 'work',
-  };
+  return local;
 }
 
 export function buildTaskDraftFromVoice(
@@ -75,13 +79,10 @@ export function buildTaskDraftFromVoice(
   tasks: Task[],
   settings: UserSettings,
 ): Task {
+  const cleaned = cleanTranscript(transcript);
   const base = createInboxDraft();
-  base.title = (parsed.title || transcript).trim().slice(0, 120) || transcript.slice(0, 120);
+  base.title = (parsed.title || cleaned || transcript).trim().slice(0, 120);
   base.category = parsed.category;
-  const note = transcript.trim();
-  if (note && note !== base.title) {
-    base.description = note.slice(0, 500);
-  }
 
   if (parsed.date && parsed.hour != null && /^\d{4}-\d{2}-\d{2}$/.test(parsed.date)) {
     const hour = Math.min(settings.dayEndHour, Math.max(settings.dayStartHour, parsed.hour));
@@ -94,7 +95,6 @@ export function buildTaskDraftFromVoice(
       id: base.id,
       title: base.title,
       category: base.category,
-      description: base.description,
       createdAt: base.createdAt,
     };
   }

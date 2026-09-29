@@ -8,6 +8,9 @@
   border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 1100;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .bottom-nav__item {
@@ -28,6 +31,13 @@
 .bottom-nav__item--add {
   justify-content: center;
   padding: 4px;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.bottom-nav__item--add-voice {
+  touch-action: none;
 }
 
 .bottom-nav__plus {
@@ -104,4 +114,12 @@
 
 .bottom-nav__label {
   font-weight: 500;
+}
+
+/* Пока держим «+» для микрофона — не даём Safari выделять текст календаря под пальцем */
+body.bottom-nav-voice-active,
+body.bottom-nav-voice-active * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
 }

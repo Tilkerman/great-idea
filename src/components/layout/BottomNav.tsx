@@ -1,4 +1,6 @@
-import { useCallback, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import {
+  useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent,
+} from 'react';
 import { useApp } from '../../context/AppContext';
 import { createInboxDraft } from '../../utils/hourSlot';
 import { useI18n } from '../../i18n/useI18n';
@@ -9,6 +11,7 @@ import {
   requestVoiceTaskParse,
   voiceParseConfigured,
 } from '../../utils/voiceTaskParse';
+import { cleanTranscript, localVoiceDraftFromText } from '../../utils/voiceLocalParse';
 import {
   createSpeechSession,
   speechLangForLocale,
@@ -39,6 +42,12 @@ export function BottomNav() {
   const toastTimer = useRef<number | null>(null);
 
   const isLumiPlus = screen === 'lumi' || mainTab === 'lumi';
+
+  useEffect(() => {
+    const active = holdVisual || listening;
+    document.body.classList.toggle('bottom-nav-voice-active', active);
+    return () => document.body.classList.remove('bottom-nav-voice-active');
+  }, [holdVisual, listening]);
 
   const showToast = (text: string) => {
     setToast(text);
@@ -71,24 +80,22 @@ export function BottomNav() {
   };
 
   const finishVoice = useCallback(async (transcript: string) => {
-    const text = transcript.trim();
+    const text = cleanTranscript(transcript);
     if (!text) {
       showToast(t('voiceEmpty'));
       return;
     }
-    if (!settings.voiceAiEnabled) {
-      setEditingTask({ ...createInboxDraft(), title: text.slice(0, 120), description: text });
-      setSheetOpen(true);
-      return;
-    }
     showToast(t('voiceProcessing'));
     try {
-      const parsed = await requestVoiceTaskParse(text, settings);
+      const parsed = settings.voiceAiEnabled
+        ? await requestVoiceTaskParse(text, settings)
+        : localVoiceDraftFromText(text, settings);
       const draft = buildTaskDraftFromVoice(parsed, text, tasks, settings);
       setEditingTask(draft);
       setSheetOpen(true);
     } catch {
-      setEditingTask({ ...createInboxDraft(), title: text.slice(0, 120), description: text });
+      const parsed = localVoiceDraftFromText(text, settings);
+      setEditingTask(buildTaskDraftFromVoice(parsed, text, tasks, settings));
       setSheetOpen(true);
       showToast(t('voiceParseFallback'));
     }
@@ -120,6 +127,7 @@ export function BottomNav() {
 
   const onAddPointerDown = (e: ReactPointerEvent) => {
     if (isLumiPlus) return;
+    e.preventDefault();
     e.currentTarget.setPointerCapture(e.pointerId);
     pointerDownAt.current = Date.now();
     voiceModeRef.current = false;
