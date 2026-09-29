@@ -53,6 +53,73 @@ const RU_DOW: Record<string, number> = {
   воскресенье: 0, вс: 0,
 };
 
+const RU_MONTHS: { stem: string; month: number }[] = [
+  { stem: 'январ', month: 1 },
+  { stem: 'феврал', month: 2 },
+  { stem: 'март', month: 3 },
+  { stem: 'апрел', month: 4 },
+  { stem: 'ма', month: 5 },
+  { stem: 'июн', month: 6 },
+  { stem: 'июл', month: 7 },
+  { stem: 'август', month: 8 },
+  { stem: 'сентябр', month: 9 },
+  { stem: 'октябр', month: 10 },
+  { stem: 'ноябр', month: 11 },
+  { stem: 'декабр', month: 12 },
+];
+
+function calendarDateWithYear(ref: Date, month: number, day: number, yearExplicit?: number): Date {
+  let year = yearExplicit ?? ref.getFullYear();
+  if (yearExplicit == null) {
+    const candidate = new Date(year, month - 1, day, 12, 0, 0, 0);
+    const today = new Date(ref);
+    today.setHours(12, 0, 0, 0);
+    if (candidate < today) year += 1;
+  }
+  return new Date(year, month - 1, day, 12, 0, 0, 0);
+}
+
+/** «1 ноября», «01.11», «1.11.2026» */
+function extractCalendarDate(text: string, ref = new Date()): Date | null {
+  const lower = text.toLowerCase();
+
+  for (const { stem, month } of [...RU_MONTHS].sort((a, b) => b.stem.length - a.stem.length)) {
+    const re = new RegExp(
+      `(\\d{1,2})(?:-?(?:го|ое|е|й|я))?\\s*${stem}[a-zа-я]*`,
+      'i',
+    );
+    const m = lower.match(re);
+    if (m) {
+      const day = Number(m[1]);
+      if (day >= 1 && day <= 31) return calendarDateWithYear(ref, month, day);
+    }
+  }
+
+  const num = lower.match(/(?:^|[\s,])(\d{1,2})[./](\d{1,2})(?:[./](\d{2,4}))?(?:[\s,]|$)/);
+  if (num) {
+    const day = Number(num[1]);
+    const month = Number(num[2]);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      let year: number | undefined;
+      if (num[3]) {
+        year = Number(num[3]);
+        if (year < 100) year += 2000;
+      }
+      return calendarDateWithYear(ref, month, day, year);
+    }
+  }
+
+  return null;
+}
+
+function digitIsDayOfMonth(text: string, match: RegExpExecArray): boolean {
+  const after = text.slice(match.index + match[0].length);
+  for (const { stem } of RU_MONTHS) {
+    if (new RegExp(`^\\s*${stem}`, 'i').test(after)) return true;
+  }
+  return false;
+}
+
 function jsDayFromName(name: string): number | null {
   const key = name.toLowerCase().replace(/\./g, '').trim();
   for (const [k, v] of Object.entries(RU_DOW)) {
@@ -107,17 +174,18 @@ function extractWeekday(text: string): Date | null {
 
 function extractHour(text: string, dayStart: number, dayEnd: number): number | null {
   const lower = text.toLowerCase();
-  const patterns = [
-    /(?:^|\s)(?:на|в)\s*(\d{1,2})(?::00)?(?:\s|$|час)/,
-    /(?:^|\s)(\d{1,2})\s*(?:часов?|ч\.?)(?:\s|$)/,
-    /(?:^|\s)(?:на|в)\s*(\d{1,2})(?:\s|$)/,
-    /(?:^|\s)(\d{1,2})(?:\s|$)/,
+  const patterns: { re: RegExp; weak: boolean }[] = [
+    { re: /(?:^|\s)(?:на|в)\s*(\d{1,2})(?::00)?(?:\s|$|[,.]|час)/, weak: false },
+    { re: /(?:^|\s)(\d{1,2})\s*(?:часов?|ч\.?)(?:\s|$|[,.])/, weak: false },
+    { re: /(?:^|\s)(?:на|в)\s*(\d{1,2})(?:\s|$|[,.])/, weak: false },
+    { re: /(?:^|\s)(\d{1,2})(?:\s|$|[,.])/, weak: true },
   ];
   const candidates: number[] = [];
-  for (const re of patterns) {
+  for (const { re, weak } of patterns) {
     const reGlobal = new RegExp(re.source, `${re.flags}g`);
     let m: RegExpExecArray | null;
     while ((m = reGlobal.exec(lower)) !== null) {
+      if (weak && digitIsDayOfMonth(lower, m)) continue;
       const h = Number(m[1]);
       if (h >= 0 && h <= 23) candidates.push(h);
     }
@@ -139,7 +207,7 @@ function extractHour(text: string, dayStart: number, dayEnd: number): number | n
 function guessTitle(text: string): string {
   const call = text.match(/позвонить\s+[\p{L}\s]{2,40}/iu);
   if (call) {
-    const s = call[0].trim();
+    const s = call[0].trim().replace(/\s+(?:в|на)$/iu, '');
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
   const stripped = text
@@ -163,7 +231,11 @@ function guessCategory(text: string): TaskCategory {
 export function localVoiceDraftFromText(text: string, settings: UserSettings): VoiceTaskDraft {
   const raw = text.replace(/\s+/g, ' ').trim();
   const normalized = cleanTranscript(raw) || raw;
-  const day = extractWeekday(normalized) ?? extractWeekday(raw);
+  const ref = new Date();
+  const calendar =
+    extractCalendarDate(normalized, ref) ?? extractCalendarDate(raw, ref);
+  const weekday = extractWeekday(normalized) ?? extractWeekday(raw);
+  const day = calendar ?? weekday;
   const hour =
     extractHour(normalized, settings.dayStartHour, settings.dayEndHour)
     ?? extractHour(raw, settings.dayStartHour, settings.dayEndHour);
