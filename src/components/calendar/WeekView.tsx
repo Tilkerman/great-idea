@@ -77,6 +77,22 @@ export function WeekView({
   const [pendingPaste, setPendingPaste] = useState<PendingPaste | null>(null);
   const [headerCompact, setHeaderCompact] = useState(false);
   const toastTimer = useRef<number | null>(null);
+  const undoSwipeIdsRef = useRef(new Set<string>());
+  const [undoSwipeTick, setUndoSwipeTick] = useState(0);
+
+  const markUndoSwipeVisible = (taskId: string) => {
+    undoSwipeIdsRef.current.add(taskId);
+    setUndoSwipeTick((n) => n + 1);
+    window.setTimeout(() => {
+      if (!undoSwipeIdsRef.current.delete(taskId)) return;
+      setUndoSwipeTick((n) => n + 1);
+    }, 15000);
+  };
+
+  const taskVisibleInGrid = (t: Task) =>
+    t.status !== 'completed'
+    || settings.showCompleted
+    || undoSwipeIdsRef.current.has(t.id);
 
   const { colWidth, rowHeight } = getWeekZoomMetrics(weekZoom, viewportWidth);
   const metricsHold = useRef({ colWidth, rowHeight });
@@ -103,7 +119,7 @@ export function WeekView({
   const tasksBySlot = useMemo(() => {
     const map = new Map<string, Task[]>();
     for (const t of tasks) {
-      if (!settings.showCompleted && t.status === 'completed') continue;
+      if (!taskVisibleInGrid(t)) continue;
       const d = new Date(t.startAt);
       const key = `${toLocalDateString(d)}-${d.getHours()}`;
       if (!map.has(key)) map.set(key, []);
@@ -111,7 +127,7 @@ export function WeekView({
     }
     for (const list of map.values()) list.sort((a, b) => a.order - b.order);
     return map;
-  }, [tasks, settings.showCompleted]);
+  }, [tasks, settings.showCompleted, undoSwipeTick]);
 
   const openDraft = (draft: Task) => {
     if (pick) return;
@@ -122,7 +138,14 @@ export function WeekView({
 
   const completeTask = (task: Task) => {
     if (pick || task.status === 'completed') return;
+    markUndoSwipeVisible(task.id);
     void upsertTask({ ...task, status: 'completed' });
+  };
+
+  const restoreTask = (task: Task) => {
+    if (pick || task.status !== 'completed') return;
+    undoSwipeIdsRef.current.delete(task.id);
+    void upsertTask({ ...task, status: 'active' });
   };
 
   const showToast = (text: string) => {
@@ -544,6 +567,7 @@ export function WeekView({
                         }}
                         onTaskDelete={(task) => requestDelete(task)}
                         onTaskComplete={completeTask}
+                        onTaskRestore={restoreTask}
                         swipeComplete={swipeComplete}
                         showDelete={showSlotDelete && !pick}
                         showBadge={showSlotBadge}
@@ -776,11 +800,23 @@ export function DayView() {
   const drag = useRef<{ id: number; x: number; y: number; locked?: 'x' | 'y' } | null>(null);
   const offsetRef = useRef(0);
   const [offsetX, setOffsetX] = useState(0);
+  const undoSwipeIdsRef = useRef(new Set<string>());
+  const [undoSwipeTick, setUndoSwipeTick] = useState(0);
+
+  const markUndoSwipeVisible = (taskId: string) => {
+    undoSwipeIdsRef.current.add(taskId);
+    setUndoSwipeTick((n) => n + 1);
+    window.setTimeout(() => {
+      if (!undoSwipeIdsRef.current.delete(taskId)) return;
+      setUndoSwipeTick((n) => n + 1);
+    }, 15000);
+  };
 
   const tasksByHour = useMemo(() => {
     const map = new Map<number, Task[]>();
     for (const t of tasks) {
-      if (!settings.showCompleted && t.status === 'completed') continue;
+      const showCompleted = settings.showCompleted || undoSwipeIdsRef.current.has(t.id);
+      if (!showCompleted && t.status === 'completed') continue;
       const d = new Date(t.startAt);
       if (toLocalDateString(d) !== dateStr) continue;
       const h = d.getHours();
@@ -789,7 +825,7 @@ export function DayView() {
     }
     for (const list of map.values()) list.sort((a, b) => a.order - b.order);
     return map;
-  }, [tasks, dateStr, settings.showCompleted]);
+  }, [tasks, dateStr, settings.showCompleted, undoSwipeTick]);
 
   const onPointerDown = (e: ReactPointerEvent) => {
     drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
@@ -860,7 +896,13 @@ export function DayView() {
                 onTaskDelete={(task) => requestDelete(task)}
                 onTaskComplete={(task) => {
                   if (task.status === 'completed') return;
+                  markUndoSwipeVisible(task.id);
                   void upsertTask({ ...task, status: 'completed' });
+                }}
+                onTaskRestore={(task) => {
+                  if (task.status !== 'completed') return;
+                  undoSwipeIdsRef.current.delete(task.id);
+                  void upsertTask({ ...task, status: 'active' });
                 }}
                 swipeComplete
                 onAdd={(draft) => {

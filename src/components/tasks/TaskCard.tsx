@@ -24,11 +24,13 @@ interface TaskCardProps {
   density?: 'single' | 'double' | 'triple' | 'quad';
   onClick?: () => void;
   onComplete?: () => void;
+  /** Свайп влево возвращает завершённое дело в активные. */
+  onRestore?: () => void;
   onDelete?: () => void;
   showBadge?: boolean;
   showTitle?: boolean;
   showDesc?: boolean;
-  /** Свайп вправо завершает дело (не удаляет). */
+  /** Свайп вправо — завершить; влево — вернуть (если уже завершено). */
   swipeComplete?: boolean;
 }
 
@@ -39,6 +41,7 @@ export function TaskCard({
   density = 'single',
   onClick,
   onComplete,
+  onRestore,
   onDelete,
   showBadge = true,
   showTitle = true,
@@ -48,7 +51,9 @@ export function TaskCard({
   const { t } = useI18n();
   const meta = CATEGORY_META[task.category];
   const completed = task.status === 'completed';
-  const canSwipe = Boolean(swipeComplete && onComplete && !completed);
+  const canSwipeComplete = Boolean(swipeComplete && onComplete && !completed);
+  const canSwipeRestore = Boolean(swipeComplete && onRestore && completed);
+  const canSwipe = canSwipeComplete || canSwipeRestore;
   const showDesc = showDescProp && showTitle && (slot ? density === 'single' || density === 'double' : !compact);
   const showMark = showBadge || completed;
 
@@ -101,11 +106,19 @@ export function TaskCard({
 
   const pullTo = (rawX: number) => {
     const width = cardRef.current?.offsetWidth ?? 0;
-    const next = Math.max(0, Math.min(width, rawX));
+    const next = canSwipeRestore
+      ? Math.max(-width, Math.min(0, rawX))
+      : Math.max(0, Math.min(width, rawX));
     dxRef.current = next;
     setDx(next);
     setSettle('none');
   };
+
+  const swipeArmedRight = (rawX: number, rawY: number) =>
+    rawX > AXIS_X && rawX > Math.abs(rawY);
+
+  const swipeArmedLeft = (rawX: number, rawY: number) =>
+    rawX < -AXIS_X && Math.abs(rawX) > Math.abs(rawY);
 
   useEffect(() => () => {
     clearHold();
@@ -133,6 +146,10 @@ export function TaskCard({
           e.preventDefault();
           armSwipe(start.id);
           pullTo(rawX);
+        } else if (canSwipeRestore && swipeArmedLeft(rawX, rawY)) {
+          e.preventDefault();
+          armSwipe(start.id);
+          pullTo(rawX);
         }
         return;
       }
@@ -141,7 +158,7 @@ export function TaskCard({
     };
     el.addEventListener('touchmove', onTouchMove, { passive: false });
     return () => el.removeEventListener('touchmove', onTouchMove);
-  }, [canSwipe]);
+  }, [canSwipe, canSwipeRestore]);
 
   const onPointerDown = (e: ReactPointerEvent) => {
     const hit = e.target as HTMLElement | null;
@@ -181,7 +198,8 @@ export function TaskCard({
         clearHold();
         return;
       }
-      if (rawX > AXIS_X && rawX > Math.abs(rawY)) armSwipe(e.pointerId);
+      if (swipeArmedRight(rawX, rawY)) armSwipe(e.pointerId);
+      else if (canSwipeRestore && swipeArmedLeft(rawX, rawY)) armSwipe(e.pointerId);
       else return;
     }
     e.preventDefault();
@@ -197,12 +215,17 @@ export function TaskCard({
     const width = cardRef.current?.offsetWidth ?? 0;
     const pulled = dxRef.current;
     const need = swipeCommitPx(width);
-    const finish = Boolean(armedRef.current && pulled >= need && onComplete && !doneRef.current);
+    const finishComplete = Boolean(
+      canSwipeComplete && armedRef.current && pulled >= need && onComplete && !doneRef.current,
+    );
+    const finishRestore = Boolean(
+      canSwipeRestore && armedRef.current && pulled <= -need && onRestore && !doneRef.current,
+    );
     drag.current = null;
     armedRef.current = false;
     clearHold();
-    skipClick.current = skipClick.current || finish || pulled > 8;
-    if (finish) {
+    skipClick.current = skipClick.current || finishComplete || finishRestore || Math.abs(pulled) > 8;
+    if (finishComplete) {
       doneRef.current = true;
       setArmed(false);
       setSettle('out');
@@ -216,7 +239,21 @@ export function TaskCard({
       }, 200);
       return;
     }
-    if (pulled > 0) {
+    if (finishRestore) {
+      doneRef.current = true;
+      setArmed(false);
+      setSettle('out');
+      setDx(-width);
+      finishTimer.current = window.setTimeout(() => {
+        finishTimer.current = null;
+        onRestore?.();
+        dxRef.current = 0;
+        setDx(0);
+        setSettle('none');
+      }, 200);
+      return;
+    }
+    if (pulled !== 0) {
       setArmed(false);
       setSettle('back');
       setDx(0);
@@ -244,7 +281,7 @@ export function TaskCard({
         slot && !onDelete && 'task-card--no-delete',
         canSwipe && 'task-card--swipeable',
         armed && 'task-card--armed',
-        (armed || dx > 0) && settle === 'none' && 'task-card--swiping',
+        (armed || dx !== 0) && settle === 'none' && 'task-card--swiping',
         settle === 'back' && 'task-card--swipe-back',
         settle === 'out' && 'task-card--swipe-out',
       ].filter(Boolean).join(' ')}
@@ -267,14 +304,19 @@ export function TaskCard({
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
     >
-      {canSwipe && (armed || dx > 0) && (
+      {canSwipeComplete && (armed || dx > 0) && (
         <span className="task-card__swipe-reveal" aria-hidden>
           ✓
         </span>
       )}
+      {canSwipeRestore && (armed || dx < 0) && (
+        <span className="task-card__swipe-reveal task-card__swipe-reveal--restore" aria-hidden>
+          ↩
+        </span>
+      )}
       <div
         className="task-card__swipe-inner"
-        style={(armed || dx > 0 || settle !== 'none') ? { transform: `translateX(${dx}px)` } : undefined}
+        style={(armed || dx !== 0 || settle !== 'none') ? { transform: `translateX(${dx}px)` } : undefined}
       >
         <div className="task-card__row">
           {showMark && (

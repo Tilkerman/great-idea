@@ -13,6 +13,7 @@ interface HourSlotProps {
   onTaskClick: (task: Task) => void;
   onTaskDelete?: (task: Task) => void;
   onTaskComplete?: (task: Task) => void;
+  onTaskRestore?: (task: Task) => void;
   showDelete?: boolean;
   swipeComplete?: boolean;
   showBadge?: boolean;
@@ -32,6 +33,7 @@ export function HourSlot({
   showDelete = true,
   swipeComplete = false,
   onTaskComplete,
+  onTaskRestore,
   showBadge = true,
   showTitle = true,
   showDesc = true,
@@ -81,6 +83,7 @@ export function HourSlot({
             onClick={() => onTaskClick(task)}
             onDelete={showDelete && onTaskDelete ? () => onTaskDelete(task) : undefined}
             onComplete={onTaskComplete ? () => onTaskComplete(task) : undefined}
+            onRestore={onTaskRestore ? () => onTaskRestore(task) : undefined}
             swipeComplete={swipeComplete}
             showBadge={showBadge}
             showTitle={showTitle}

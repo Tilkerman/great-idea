@@ -91,14 +91,15 @@
 
 .hour-slot__add-strip {
   flex: 0 0 auto;
-  min-height: 14px;
+  min-height: 18px;
   width: 100%;
-  border: none;
-  padding: 0;
+  padding: 3px 4px;
   margin: 0;
-  border-radius: 3px;
+  margin-top: 1px;
+  border-radius: 4px;
   cursor: pointer;
-  background: color-mix(in srgb, var(--surface-2) 70%, var(--surface));
+  background: color-mix(in srgb, var(--surface-2) 65%, var(--surface));
+  border: 1px dashed color-mix(in srgb, var(--text-primary) 14%, transparent);
   box-shadow: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -108,31 +109,47 @@
 }
 
 .hour-slot__add-strip-plus {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   line-height: 1;
   color: var(--text-primary);
-  opacity: 0.28;
+  opacity: 0.42;
   pointer-events: none;
-  transform: translateY(-0.5px);
 }
 
 .hour-slot--compact .hour-slot__add-strip {
-  min-height: 12px;
+  min-height: 22px;
+  padding: 4px 4px;
+  flex: 0 0 22px;
 }
 
 .hour-slot--compact .hour-slot__add-strip-plus {
-  font-size: 11px;
+  font-size: 16px;
+  opacity: 0.48;
 }
 
 .hour-slot:not(.hour-slot--compact) .hour-slot__add-strip {
-  min-height: 16px;
-  flex: 0 0 18%;
-  max-height: 28px;
+  min-height: 22px;
+  flex: 0 0 22%;
+  max-height: 32px;
 }
 
 .hour-slot__add-strip:hover {
-  filter: brightness(0.97);
+  filter: brightness(0.98);
+  background: color-mix(in srgb, var(--surface-2) 78%, var(--surface));
+}
+
+.hour-slot__add-strip:hover .hour-slot__add-strip-plus {
+  opacity: 0.55;
+}
+
+.hour-slot__add-strip:active {
+  transform: scale(0.98);
+  background: color-mix(in srgb, var(--surface-2) 85%, var(--surface));
+}
+
+.hour-slot__add-strip:active .hour-slot__add-strip-plus {
+  opacity: 0.58;
 }
 
 [data-theme='dark'] .hour-slot--empty {
@@ -140,5 +157,10 @@
 }
 
 [data-theme='dark'] .hour-slot__add-strip {
-  background: color-mix(in srgb, var(--surface-2) 55%, var(--surface));
+  background: color-mix(in srgb, var(--surface-2) 50%, var(--surface));
+  border-color: color-mix(in srgb, var(--text-primary) 18%, transparent);
+}
+
+[data-theme='dark'] .hour-slot__add-strip-plus {
+  opacity: 0.5;
 }

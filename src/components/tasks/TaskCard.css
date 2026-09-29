@@ -57,6 +57,14 @@
   z-index: 0;
 }
 
+.task-card__swipe-reveal--restore {
+  justify-content: flex-end;
+  padding-left: 0;
+  padding-right: 8px;
+  background: var(--surface-3, #6b7280);
+  color: var(--text-on-accent, #fff);
+}
+
 .task-card__swipe-inner {
   position: relative;
   z-index: 1;
