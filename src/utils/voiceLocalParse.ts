@@ -25,6 +25,24 @@ export function cleanTranscript(raw: string): string {
   return t.replace(/\s+/g, ' ').trim();
 }
 
+const EN_DOW: Record<string, number> = {
+  monday: 1, mon: 1,
+  tuesday: 2, tue: 2, tues: 2,
+  wednesday: 3, wed: 3,
+  thursday: 4, thu: 4, thur: 4, thurs: 4,
+  friday: 5, fri: 5,
+  saturday: 6, sat: 6,
+  sunday: 0, sun: 0,
+};
+
+const RU_HOUR_WORDS: Record<string, number> = {
+  семь: 7, восемь: 8, восем: 8, девять: 9, десять: 10,
+  одиннадцать: 11, двенадцать: 12, тринадцать: 13, четырнадцать: 14,
+  пятнадцать: 15, шестнадцать: 16, семнадцать: 17, восемнадцать: 18,
+  девятнадцать: 19, двадцать: 20, 'двадцать один': 21,
+  eleven: 11, twelve: 12, ten: 10,
+};
+
 const RU_DOW: Record<string, number> = {
   понедельник: 1, пн: 1,
   вторник: 2, вт: 2,
@@ -63,6 +81,15 @@ function hasRuToken(text: string, token: string): boolean {
 
 function extractWeekday(text: string): Date | null {
   const lower = text.toLowerCase();
+  for (const key of Object.keys(EN_DOW).sort((a, b) => b.length - a.length)) {
+    if (key.length <= 3) {
+      if (hasRuToken(text, key)) {
+        return nextCalendarDayForJsDow(new Date(), EN_DOW[key]);
+      }
+    } else if (lower.includes(key)) {
+      return nextCalendarDayForJsDow(new Date(), EN_DOW[key]);
+    }
+  }
   for (const key of Object.keys(RU_DOW).sort((a, b) => b.length - a.length)) {
     if (key.length <= 2) {
       if (hasRuToken(text, key)) {
@@ -93,6 +120,14 @@ function extractHour(text: string, dayStart: number, dayEnd: number): number | n
     while ((m = reGlobal.exec(lower)) !== null) {
       const h = Number(m[1]);
       if (h >= 0 && h <= 23) candidates.push(h);
+    }
+  }
+  if (candidates.length === 0) {
+    for (const [word, h] of Object.entries(RU_HOUR_WORDS).sort((a, b) => b[0].length - a[0].length)) {
+      if (lower.includes(word)) {
+        candidates.push(h);
+        break;
+      }
     }
   }
   if (candidates.length === 0) return null;
@@ -140,11 +175,15 @@ export function localVoiceDraftFromText(text: string, settings: UserSettings): V
   };
 }
 
-export function mergeVoiceDrafts(primary: VoiceTaskDraft, fallback: VoiceTaskDraft): VoiceTaskDraft {
+export function mergeVoiceDrafts(local: VoiceTaskDraft, remote: VoiceTaskDraft): VoiceTaskDraft {
+  const remoteTitle = remote.title?.trim() ?? '';
+  const useRemoteTitle = remoteTitle.length >= 3
+    && remoteTitle.length <= 90
+    && !/заметка\s+заметка/i.test(remoteTitle);
   return {
-    title: primary.title || fallback.title,
-    date: primary.date || fallback.date,
-    hour: primary.hour ?? fallback.hour,
-    category: primary.category || fallback.category,
+    title: useRemoteTitle ? remoteTitle : local.title,
+    date: local.date || remote.date,
+    hour: local.hour ?? remote.hour,
+    category: remote.category || local.category,
   };
 }

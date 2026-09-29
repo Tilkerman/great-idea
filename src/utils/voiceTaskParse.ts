@@ -27,8 +27,10 @@ export async function requestVoiceTaskParse(
   text: string,
   settings: UserSettings,
 ): Promise<VoiceTaskDraft> {
-  const cleaned = cleanTranscript(text);
-  const local = localVoiceDraftFromText(cleaned || text, settings);
+  const raw = text.replace(/\s+/g, ' ').trim();
+  const local = localVoiceDraftFromText(raw, settings);
+  const cleaned = cleanTranscript(raw);
+  const apiText = cleaned || raw;
   const url = parseApiUrl();
   const today = new Date();
   const todayISO = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -41,7 +43,7 @@ export async function requestVoiceTaskParse(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        text: cleaned || text,
+        text: apiText,
         locale: settings.locale,
         timezone: tz,
         todayISO,
@@ -66,13 +68,15 @@ export async function requestVoiceTaskParse(
           ? data.draft.category
           : local.category,
       };
-      return mergeVoiceDrafts(remote, local);
+      return mergeVoiceDrafts(local, remote);
     }
     if (data.fallback && !data.ok) {
-      return mergeVoiceDrafts(
-        { title: String(data.fallback.title || ''), date: null, hour: null, category: local.category },
-        local,
-      );
+      return mergeVoiceDrafts(local, {
+        title: String(data.fallback.title || ''),
+        date: null,
+        hour: null,
+        category: local.category,
+      });
     }
   } catch {
     /* use local */
@@ -87,13 +91,21 @@ export function buildTaskDraftFromVoice(
   tasks: Task[],
   settings: UserSettings,
 ): Task {
-  const cleaned = cleanTranscript(transcript);
+  const raw = transcript.replace(/\s+/g, ' ').trim();
+  const local = localVoiceDraftFromText(raw, settings);
+  const merged: VoiceTaskDraft = {
+    title: parsed.title || local.title,
+    date: parsed.date || local.date,
+    hour: parsed.hour ?? local.hour,
+    category: parsed.category || local.category,
+  };
+  const cleaned = cleanTranscript(raw);
   const base = createInboxDraft();
-  base.title = (parsed.title || cleaned || transcript).trim().slice(0, 120);
-  base.category = parsed.category;
+  base.title = (merged.title || cleaned || raw).trim().slice(0, 120);
+  base.category = merged.category;
 
-  let dateStr = parsed.date;
-  let hour = parsed.hour;
+  let dateStr = merged.date;
+  let hour = merged.hour;
   if (dateStr && hour == null) {
     hour = Math.min(settings.dayEndHour, Math.max(settings.dayStartHour, 10));
   }

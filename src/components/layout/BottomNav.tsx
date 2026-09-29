@@ -80,7 +80,8 @@ export function BottomNav() {
   };
 
   const finishVoice = useCallback(async (transcript: string) => {
-    const text = cleanTranscript(transcript);
+    const raw = transcript.replace(/\s+/g, ' ').trim();
+    const text = cleanTranscript(raw) || raw;
     if (!text) {
       showToast(t('voiceEmpty'));
       return;
@@ -88,14 +89,14 @@ export function BottomNav() {
     showToast(t('voiceProcessing'));
     try {
       const parsed = settings.voiceAiEnabled
-        ? await requestVoiceTaskParse(text, settings)
-        : localVoiceDraftFromText(text, settings);
-      const draft = buildTaskDraftFromVoice(parsed, text, tasks, settings);
+        ? await requestVoiceTaskParse(raw, settings)
+        : localVoiceDraftFromText(raw, settings);
+      const draft = buildTaskDraftFromVoice(parsed, raw, tasks, settings);
       setEditingTask(draft);
       setSheetOpen(true);
     } catch {
-      const parsed = localVoiceDraftFromText(text, settings);
-      setEditingTask(buildTaskDraftFromVoice(parsed, text, tasks, settings));
+      const parsed = localVoiceDraftFromText(raw, settings);
+      setEditingTask(buildTaskDraftFromVoice(parsed, raw, tasks, settings));
       setSheetOpen(true);
       showToast(t('voiceParseFallback'));
     }

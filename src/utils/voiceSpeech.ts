@@ -37,6 +37,7 @@ export function createSpeechSession(lang: string): {
   rec.maxAlternatives = 1;
 
   const parts: string[] = [];
+  let lastInterim = '';
   let resolveDone: (v: string) => void;
   let rejectDone: (e: Error) => void;
 
@@ -48,8 +49,11 @@ export function createSpeechSession(lang: string): {
   rec.onresult = (event: SpeechRecognitionEvent) => {
     for (let i = event.resultIndex; i < event.results.length; i += 1) {
       const piece = event.results[i][0]?.transcript?.trim();
-      if (piece && event.results[i].isFinal) {
+      if (!piece) continue;
+      if (event.results[i].isFinal) {
         parts.push(piece);
+      } else {
+        lastInterim = piece;
       }
     }
   };
@@ -60,6 +64,9 @@ export function createSpeechSession(lang: string): {
   };
 
   rec.onend = () => {
+    if (parts.length === 0 && lastInterim) {
+      parts.push(lastInterim);
+    }
     resolveDone(parts.join(' ').replace(/\s+/g, ' ').trim());
   };
 
@@ -83,6 +90,10 @@ export function createSpeechSession(lang: string): {
 }
 
 export function speechLangForLocale(locale: string): string {
+  const nav = typeof navigator !== 'undefined' ? navigator.language.toLowerCase() : '';
+  if (nav.startsWith('ru')) return 'ru-RU';
+  if (nav.startsWith('es')) return 'es-ES';
+  if (nav.startsWith('en')) return 'en-US';
   if (locale === 'en') return 'en-US';
   if (locale === 'es') return 'es-ES';
   return 'ru-RU';
