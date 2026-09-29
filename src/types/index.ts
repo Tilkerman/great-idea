@@ -84,8 +84,10 @@ export interface UserSettings {
   locale: Locale;
   importantReminderHours: number;
   reminderBeforeMin: number;
-  /** Local banners on installed PWA; no cloud Web Push yet */
+  /** Local banners; cloud Web Push via Yandex when configured */
   notificationsEnabled: boolean;
+  /** User opted in to anonymous product analytics (also requires consent prompt). */
+  analyticsEnabled: boolean;
 }
 
 export interface UserSession {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
 import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
@@ -7,6 +7,7 @@ import { HourSlot } from '../tasks/HourSlot';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import {
   addDays,
+  formatWeekHeaderTitle,
   getHoursRange,
   getWeekDays,
   hourRangeLabels,
@@ -55,7 +56,7 @@ export function WeekView({
     focusDate, tasks, settings, weekZoom, zoom, setEditingTask, setSheetOpen,
     requestDelete, gridClipboard, setGridClipboard, pasteGridClipboard, upsertTask,
   } = useApp();
-  const { t, taskWord, weekdays, weekdaysShort, locale } = useI18n();
+  const { t, taskWord, weekdays, weekdaysShort, locale, monthsGen, dateTag } = useI18n();
 
   const gridScrollRef = useRef<HTMLDivElement>(null);
   const timeScrollRef = useRef<HTMLDivElement>(null);
@@ -371,6 +372,29 @@ export function WeekView({
   const pickDay = pick === 'copy-day' || pick === 'paste-day';
   const pickHour = pick === 'copy-hour' || pick === 'paste-hour';
 
+  const clipStatusMeta = useMemo(() => {
+    if (!gridClipboard) return '';
+    if (gridClipboard.kind === 'week') {
+      const range = formatWeekHeaderTitle(focusDate, settings.weekStartsOn, dateTag, monthsGen);
+      return `${t('kindWeekCap')} · ${range}`;
+    }
+    const n = gridClipboard.items.length;
+    const kind = clipKindLabel(gridClipboard.kind, locale);
+    return `${kind} · ${n} ${taskWord(n)}`;
+  }, [gridClipboard, focusDate, settings.weekStartsOn, dateTag, monthsGen, t, locale, taskWord]);
+
+  const onPasteFromMenu = () => {
+    if (!gridClipboard) return;
+    if (gridClipboard.kind === 'week') {
+      requestPaste(
+        { kind: 'week' },
+        countTasksInWeek(tasks, focusDate, settings.weekStartsOn),
+      );
+      return;
+    }
+    startPick(gridClipboard.kind === 'day' ? 'paste-day' : 'paste-hour');
+  };
+
   const style = {
     '--week-col-width': `${layoutCol}px`,
     '--week-row-height': `${layoutRow}px`,
@@ -558,61 +582,82 @@ export function WeekView({
         <>
           <button type="button" className="week-view__clip-backdrop" aria-label={t('close')} onClick={() => setMenuOpen(false)} />
           <div className="week-view__clip-menu" role="menu">
-            <p className="week-view__clip-status">
-              {gridClipboard
-                ? t('clipCopied', {
-                  kind: clipKindLabel(gridClipboard.kind, locale),
-                  n: gridClipboard.items.length,
-                  word: taskWord(gridClipboard.items.length),
-                })
-                : t('clipHint')}
-            </p>
             {gridClipboard && (
-              <>
+              <div className="week-view__clip-banner">
+                <span className="week-view__clip-banner-check" aria-hidden>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <div className="week-view__clip-banner-text">
+                  <span className="week-view__clip-banner-title">{t('clipCopiedTitle')}</span>
+                  <span className="week-view__clip-banner-meta">{clipStatusMeta}</span>
+                </div>
                 <button
                   type="button"
-                  role="menuitem"
-                  className="week-view__clip-item week-view__clip-item--paste"
-                  onClick={() => {
-                    if (gridClipboard.kind === 'week') {
-                      requestPaste(
-                        { kind: 'week' },
-                        countTasksInWeek(tasks, focusDate, settings.weekStartsOn),
-                      );
-                      return;
-                    }
-                    startPick(gridClipboard.kind === 'day' ? 'paste-day' : 'paste-hour');
-                  }}
+                  className="week-view__clip-clear"
+                  onClick={() => setGridClipboard(null)}
                 >
-                  <span className="week-view__clip-item-title">
-                    {gridClipboard.kind === 'week' && t('pasteWeekHere')}
-                    {gridClipboard.kind === 'day' && t('pasteDay')}
-                    {gridClipboard.kind === 'hour' && t('pasteHour')}
-                  </span>
-                  <span className="week-view__clip-item-hint">
-                    {gridClipboard.kind === 'week' && t('pasteWeekHint')}
-                    {gridClipboard.kind === 'day' && t('pasteDayHint')}
-                    {gridClipboard.kind === 'hour' && t('pasteHourHint')}
-                  </span>
+                  {t('clipClear')}
                 </button>
-                <p className="week-view__clip-heading week-view__clip-heading--sub">{t('orCopyOther')}</p>
-              </>
+              </div>
             )}
-            {!gridClipboard && (
-              <p className="week-view__clip-heading">{t('copyHeading')}</p>
+
+            <p className="week-view__clip-heading">{t('copyHeading')}</p>
+            <ClipMenuRow
+              icon={<ClipIconWeek />}
+              title={t('copyThisWeek')}
+              hint={t('copyThisWeekHint')}
+              onClick={copyWeek}
+            />
+            <ClipMenuRow
+              icon={<ClipIconDay />}
+              title={t('copyOneDay')}
+              hint={t('copyOneDayHint')}
+              onClick={() => startPick('copy-day')}
+            />
+            <ClipMenuRow
+              icon={<ClipIconHour />}
+              title={t('copyOneHour')}
+              hint={t('copyOneHourHint')}
+              onClick={() => startPick('copy-hour')}
+            />
+
+            <p className="week-view__clip-heading week-view__clip-heading--paste">
+              {gridClipboard ? t('pasteHeadingInto') : t('pasteHeading')}
+            </p>
+            {gridClipboard ? (
+              <ClipMenuRow
+                icon={<ClipIconPaste />}
+                title={
+                  gridClipboard.kind === 'week'
+                    ? t('pasteWeekHere')
+                    : gridClipboard.kind === 'day'
+                      ? t('pastePickDay')
+                      : t('pastePickHour')
+                }
+                hint={
+                  gridClipboard.kind === 'week'
+                    ? t('pasteWeekHint')
+                    : gridClipboard.kind === 'day'
+                      ? t('pastePickDayHint')
+                      : t('pastePickHourHint')
+                }
+                tone="paste"
+                onClick={onPasteFromMenu}
+              />
+            ) : (
+              <ClipMenuRow
+                icon={<ClipIconPasteMuted />}
+                title={t('pastePrevCopied')}
+                hint={t('pastePrevCopiedHint')}
+                disabled
+              />
             )}
-            <button type="button" role="menuitem" className="week-view__clip-item" onClick={copyWeek}>
-              <span className="week-view__clip-item-title">{t('copyThisWeek')}</span>
-              <span className="week-view__clip-item-hint">{t('copyThisWeekHint')}</span>
-            </button>
-            <button type="button" role="menuitem" className="week-view__clip-item" onClick={() => startPick('copy-day')}>
-              <span className="week-view__clip-item-title">{t('copyOneDay')}</span>
-              <span className="week-view__clip-item-hint">{t('copyOneDayHint')}</span>
-            </button>
-            <button type="button" role="menuitem" className="week-view__clip-item" onClick={() => startPick('copy-hour')}>
-              <span className="week-view__clip-item-title">{t('copyOneHour')}</span>
-              <span className="week-view__clip-item-hint">{t('copyOneHourHint')}</span>
-            </button>
+
+            <p className="week-view__clip-footer">
+              {gridClipboard ? t('clipFlowHintReady') : t('clipFlowHintEmpty')}
+            </p>
           </div>
         </>
       )}
@@ -629,6 +674,93 @@ export function WeekView({
         />
       )}
     </div>
+  );
+}
+
+function ClipMenuRow({
+  icon,
+  title,
+  hint,
+  onClick,
+  disabled,
+  tone = 'default',
+}: {
+  icon: ReactNode;
+  title: string;
+  hint: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  tone?: 'default' | 'paste';
+}) {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      className={[
+        'week-view__clip-row',
+        tone === 'paste' && 'week-view__clip-row--paste',
+        disabled && 'week-view__clip-row--disabled',
+      ].filter(Boolean).join(' ')}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      <span className="week-view__clip-row-icon">{icon}</span>
+      <span className="week-view__clip-row-text">
+        <span className="week-view__clip-row-title">{title}</span>
+        <span className="week-view__clip-row-hint">{hint}</span>
+      </span>
+      <span className="week-view__clip-row-chev" aria-hidden>›</span>
+    </button>
+  );
+}
+
+function ClipIconWeek() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className="week-view__clip-svg week-view__clip-svg--week">
+      <rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M4 9h16" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9 5V3M15 5V3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M8 13h2M14 13h2M8 17h2M14 17h2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ClipIconDay() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className="week-view__clip-svg week-view__clip-svg--day">
+      <rect x="5" y="6" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M5 10h14" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="9" cy="14" r="1" fill="currentColor" />
+      <circle cx="12" cy="14" r="1" fill="currentColor" />
+      <circle cx="15" cy="14" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
+function ClipIconHour() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className="week-view__clip-svg week-view__clip-svg--hour">
+      <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M12 8v4l3 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ClipIconPaste() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className="week-view__clip-svg week-view__clip-svg--paste">
+      <rect x="8" y="4" width="10" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M6 8h10a2 2 0 0 1 2 2v10H8a2 2 0 0 1-2-2V8z" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
+function ClipIconPasteMuted() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden className="week-view__clip-svg week-view__clip-svg--paste-muted">
+      <rect x="8" y="4" width="10" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M6 8h10a2 2 0 0 1 2 2v10H8a2 2 0 0 1-2-2V8z" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
   );
 }
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
+import { trackSignupLocal } from '../../utils/productAnalytics';
 import type { AuthStart } from '../../types';
 import {
   createAccount,
@@ -33,7 +34,7 @@ function stepFromStart(start: AuthStart): Step {
 }
 
 export function AuthScreen() {
-  const { session, setSession, setScreen, authStart, authBackScreen } = useApp();
+  const { session, setSession, setScreen, authStart, authBackScreen, settings } = useApp();
   const { t } = useI18n();
   const [step, setStep] = useState<Step>(() => stepFromStart(authStart));
   const [name, setName] = useState(session.name ?? '');
@@ -97,6 +98,7 @@ export function AuthScreen() {
       setSession(sessionFromAccount(account));
       setPassword('');
       setPassword2('');
+      trackSignupLocal(settings.analyticsEnabled);
       setStep('register-done');
     } catch (e) {
       setError(e instanceof Error && e.message === 'exists'

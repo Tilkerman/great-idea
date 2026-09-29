@@ -11,6 +11,7 @@ import {
   trackInstallButtonClick,
   TILI_PUBLIC_URL,
 } from '../../utils/pwaInstall';
+import { trackInstallHintClick } from '../../utils/productAnalytics';
 import './Settings.css';
 
 function InstallGuide({ ios }: { ios: boolean }) {
@@ -39,7 +40,7 @@ function InstallGuide({ ios }: { ios: boolean }) {
 }
 
 export function SettingsInstall() {
-  const { setScreen } = useApp();
+  const { setScreen, settings } = useApp();
   const { t, locale } = useI18n();
   const isInstalled = useMemo(() => isStandaloneApp(), []);
   const isIos = useMemo(() => isAppleMobile(), []);
@@ -69,6 +70,7 @@ export function SettingsInstall() {
 
   const onInstall = async () => {
     trackInstallButtonClick();
+    trackInstallHintClick(settings.analyticsEnabled, isIos ? 'ios' : 'android');
     setFeedback(null);
 
     if (installPrompt) {

@@ -10,6 +10,7 @@ import {
   updateAccountProfile,
   verifyPassword,
 } from '../../utils/authLocal';
+import { setAnalyticsConsent, trackAppOpenOnce } from '../../utils/productAnalytics';
 import './Settings.css';
 
 type HubItem = { id: string; label: string; sub: string };
@@ -34,16 +35,46 @@ function SettingsList({ items, onPick }: { items: HubItem[]; onPick: (id: string
   );
 }
 
+
+function SettingsSection({
+  title,
+  items,
+  onPick,
+  defaultOpen = false,
+}: {
+  title: string;
+  items: HubItem[];
+  onPick: (id: string) => void;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <section className="settings-section">
+      <button
+        type="button"
+        className="settings-section__toggle"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="settings-section__heading">{title}</span>
+        <span className={`settings-section__chev${open ? ' is-open' : ''}`} aria-hidden>›</span>
+      </button>
+      {open && <SettingsList items={items} onPick={onPick} />}
+    </section>
+  );
+}
+
 export function SettingsHub() {
   const { setScreen, mainTab, openAuth, session } = useApp();
   const { requestOpenSettingsPage } = useLumiHost();
   const { t } = useI18n();
 
-  const tiliItems: HubItem[] = [
-    { id: 'settings-calendar', label: t('settingsCalendar'), sub: t('settingsCalendarSub') },
-    { id: 'settings-stats', label: t('settingsStats'), sub: t('settingsStatsSub') },
-    { id: 'settings-notifications', label: t('settingsNotif'), sub: t('settingsNotifSub') },
-    { id: 'settings-about', label: t('settingsAbout'), sub: t('settingsAboutSub') },
+  const commonItems: HubItem[] = [
+    { id: 'settings-appearance', label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
+    { id: 'settings-install', label: t('settingsInstall'), sub: t('settingsInstallSub') },
+    { id: 'settings-data', label: t('settingsData'), sub: t('settingsDataSub') },
+    { id: 'settings-support', label: t('supportTitle'), sub: t('supportSub') },
   ];
 
   const lumiItems: HubItem[] = [
@@ -52,17 +83,15 @@ export function SettingsHub() {
     { id: 'lumi-statistics', label: t('settingsLumiStats'), sub: t('settingsLumiStatsSub') },
     { id: 'lumi-completed', label: t('settingsLumiDone'), sub: t('settingsLumiDoneSub') },
     { id: 'lumi-feedback', label: t('settingsLumiFeedback'), sub: t('settingsLumiFeedbackSub') },
-    { id: 'lumi-about', label: t('settingsLumiAbout'), sub: t('settingsLumiAboutSub') },
+    { id: 'lumi-about', label: t('settingsLumiAboutPage'), sub: t('settingsLumiAboutSub') },
   ];
 
-  const commonItems: HubItem[] = [
-    { id: 'settings-appearance', label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
-    { id: 'settings-install', label: t('settingsInstall'), sub: t('settingsInstallSub') },
-    { id: 'settings-support', label: t('supportTitle'), sub: t('supportSub') },
+  const tiliItems: HubItem[] = [
+    { id: 'settings-calendar', label: t('settingsCalendar'), sub: t('settingsCalendarSub') },
+    { id: 'settings-stats', label: t('settingsStats'), sub: t('settingsStatsSub') },
+    { id: 'settings-notifications', label: t('settingsNotif'), sub: t('settingsNotifSub') },
+    { id: 'settings-about', label: t('settingsAboutPage'), sub: t('settingsAboutSub') },
   ];
-
-  const contextItems = mainTab === 'lumi' ? lumiItems : tiliItems;
-  const contextTitle = mainTab === 'lumi' ? t('settingsSectionLumi') : t('settingsSectionTili');
 
   const onPick = (id: string) => {
     if (id.startsWith('lumi-')) {
@@ -77,10 +106,22 @@ export function SettingsHub() {
   return (
     <div className="settings-page">
       <SettingsTopBar title={t('settings')} onBack={() => setScreen(mainTab)} />
-      <h2 className="settings-list-heading">{contextTitle}</h2>
-      <SettingsList items={contextItems} onPick={onPick} />
-      <h2 className="settings-list-heading">{t('settingsSectionCommon')}</h2>
-      <SettingsList items={commonItems} onPick={onPick} />
+      <SettingsSection
+        title={t('settingsSectionCommon')}
+        items={commonItems}
+        onPick={onPick}
+        defaultOpen
+      />
+      <SettingsSection
+        title={t('settingsSectionTili')}
+        items={tiliItems}
+        onPick={onPick}
+      />
+      <SettingsSection
+        title={t('settingsSectionLumi')}
+        items={lumiItems}
+        onPick={onPick}
+      />
       {session.isGuest && (
         <button type="button" className="btn btn--primary settings-auth-cta" onClick={() => openAuth('choice', 'settings')}>
           {t('authCta')}
@@ -401,8 +442,15 @@ export function SettingsAppearance() {
 }
 
 export function SettingsData() {
-  const { setScreen } = useApp();
+  const { setScreen, settings, updateSettings } = useApp();
   const { t } = useI18n();
+
+  const onAnalyticsToggle = (enabled: boolean) => {
+    setAnalyticsConsent(enabled);
+    void updateSettings({ analyticsEnabled: enabled }).then(() => {
+      if (enabled) trackAppOpenOnce(true, settings.locale);
+    });
+  };
 
   const clearData = async () => {
     if (!confirm(t('clearConfirm'))) return;
@@ -426,6 +474,23 @@ export function SettingsData() {
     <div className="settings-page">
       <SettingsTopBar title={t('settingsData')} onBack={() => setScreen('settings')} />
       <div className="settings-form">
+        <label className="task-sheet__check settings-analytics">
+          <input
+            type="checkbox"
+            checked={settings.analyticsEnabled}
+            onChange={(e) => onAnalyticsToggle(e.target.checked)}
+          />
+          {t('analyticsSettingsLabel')}
+        </label>
+        <p className="settings-note">{t('analyticsSettingsHint')}</p>
+        <a
+          className="settings-note settings-link"
+          href={`${import.meta.env.BASE_URL}privacy.html`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t('analyticsPrivacyLink')}
+        </a>
         <button type="button" className="btn btn--danger settings-full" onClick={clearData}>
           {t('clearAll')}
         </button>

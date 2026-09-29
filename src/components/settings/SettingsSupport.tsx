@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
 import { SUPPORT_TG_WALLET_ADDRESS, TELEGRAM_WALLET_URL } from '../../constants/support';
+import { trackSupportAuthorClick } from '../../utils/productAnalytics';
 import {
   copyToClipboardSync,
   isMobilePhone,
@@ -12,7 +13,7 @@ import './Settings.css';
 const TELEGRAM_OPEN_DELAY_MS = 2800;
 
 export function SettingsSupport() {
-  const { setScreen } = useApp();
+  const { setScreen, settings } = useApp();
   const { t } = useI18n();
   const [banner, setBanner] = useState<'idle' | 'ok' | 'fail'>('idle');
   const address = SUPPORT_TG_WALLET_ADDRESS.trim();
@@ -23,12 +24,14 @@ export function SettingsSupport() {
     if (!hasAddress) return;
     const ok = copyToClipboardSync(address);
     setBanner(ok ? 'ok' : 'fail');
+    trackSupportAuthorClick(settings.analyticsEnabled, 'copy');
   };
 
   const onSend = () => {
     if (!hasAddress) return;
     const copied = copyToClipboardSync(address);
     setBanner(copied ? 'ok' : 'fail');
+    trackSupportAuthorClick(settings.analyticsEnabled, 'open_wallet');
 
     if (!mobile) return;
 

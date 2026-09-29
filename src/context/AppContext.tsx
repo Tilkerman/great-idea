@@ -37,6 +37,7 @@ import {
 import { SEED_TASKS } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 import { afterTaskDeleted, afterTaskWritten } from '../utils/wishTaskBridge';
+import { resolveLaunchLocale, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
 
 const ONBOARDING_KEY = 'tili-onboarding-done';
 const SESSION_KEY = 'tili-session';
@@ -150,7 +151,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       await seedIfEmpty(SEED_TASKS);
-      const s = await getSettings();
+      let s = await getSettings();
+      const resolved = resolveLaunchLocale(s.locale);
+      if (resolved !== s.locale) {
+        s = { ...s, locale: resolved };
+        await saveSettings(s);
+      }
       setSettingsState(s);
       await refreshTasks();
       const onboardingDone = localStorage.getItem(ONBOARDING_KEY) === '1';
@@ -239,8 +245,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await saveTasks(rebalanceHourTasks(day, hour, merged));
     await afterTaskWritten(task);
     await refreshTasks();
+    trackCalendarTask(settings.analyticsEnabled, {
+      isNew: !existing,
+      completed: task.status === 'completed',
+      category: task.category,
+    });
     return 'ok';
-  }, [refreshTasks]);
+  }, [refreshTasks, settings.analyticsEnabled]);
 
   const deleteTaskInHour = useCallback(async (task: Task) => {
     const day = new Date(task.startAt);
@@ -288,8 +299,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const completeOnboarding = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, '1');
+    trackOnboardingComplete(settings.analyticsEnabled, settings.locale);
     setScreen('calendar');
-  }, [setScreen]);
+  }, [setScreen, settings.analyticsEnabled, settings.locale]);
 
   const openAuth = useCallback((start: AuthStart, back: AppScreen = 'calendar') => {
     localStorage.setItem(ONBOARDING_KEY, '1');

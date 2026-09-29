@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { LumiHostProvider } from './lumi/LumiHost';
 import { Onboarding } from './components/onboarding/Onboarding';
@@ -24,6 +25,7 @@ import { useTaskReminders } from './hooks/useTaskReminders';
 import { useOpenTaskFromNotification } from './hooks/useOpenTaskFromNotification';
 import { useI18n } from './i18n/useI18n';
 import { LumiEmbed } from './lumi/LumiEmbed';
+import { persistUtmFromUrl, trackAppOpenOnce } from './utils/productAnalytics';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
@@ -73,9 +75,17 @@ function SettingsScreens({ screen }: { screen: string }) {
 }
 
 function AppRouter() {
-  const { ready, screen, mainTab } = useApp();
+  const { ready, screen, mainTab, settings } = useApp();
   useTaskReminders();
   useOpenTaskFromNotification();
+
+  useEffect(() => {
+    if (!ready) return;
+    persistUtmFromUrl();
+    if (settings.analyticsEnabled) {
+      trackAppOpenOnce(true, settings.locale);
+    }
+  }, [ready, settings.analyticsEnabled, settings.locale]);
 
   const { t } = useI18n();
   if (!ready) {

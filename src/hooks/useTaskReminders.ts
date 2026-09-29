@@ -8,12 +8,13 @@ import { reminderFireAtMs, alreadyCloudDueNow, markCloudDueNowSent, reminderStil
 const MAX_DELAY_MS = 12 * 60 * 60 * 1000;
 
 export function useTaskReminders() {
-  const { ready, tasks, settings, updateSettings } = useApp();
+  const { ready, tasks, settings } = useApp();
   const fired = useRef(new Set<string>());
 
   useEffect(() => {
     if (!ready) return;
     if (notificationPermission() !== 'granted') return;
+    if (!settings.notificationsEnabled) return;
 
     let cancelled = false;
     const timers: number[] = [];
@@ -45,9 +46,6 @@ export function useTaskReminders() {
     };
 
     const boot = async () => {
-      if (!settings.notificationsEnabled) {
-        await updateSettings({ notificationsEnabled: true });
-      }
       if (cloudPushConfigured()) {
         await subscribeTiliPush();
         if (cancelled) return;
@@ -63,5 +61,5 @@ export function useTaskReminders() {
       cancelled = true;
       for (const id of timers) window.clearTimeout(id);
     };
-  }, [ready, tasks, settings.notificationsEnabled, settings.locale, updateSettings]);
+  }, [ready, tasks, settings.notificationsEnabled, settings.locale]);
 }

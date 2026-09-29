@@ -132,6 +132,7 @@ export const desireService = {
       };
 
       await db.desires.add(newDesire);
+      void import('../../utils/productAnalytics').then(({ trackLumiProductEvent }) => trackLumiProductEvent('wish_created'));
       return newDesire.id;
     } catch (error) {
       console.error('Ошибка при создании желания:', error);
@@ -595,6 +596,7 @@ export const actionItemService = {
       };
 
       await db.actionItems.add(newItem);
+      void import('../../utils/productAnalytics').then(({ trackLumiProductEvent }) => trackLumiProductEvent('wish_step_created'));
       return newItem.id;
     } catch (error) {
       console.error('Ошибка при создании шага:', error);

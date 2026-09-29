@@ -12,8 +12,11 @@ import {
   isUnscheduledTask,
   MAX_TASKS_PER_HOUR,
 } from '../../utils/hourSlot';
-import { enablePushFromGesture } from '../../utils/enablePush';
-import { notificationsBlockedReason } from '../../utils/notifications';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
+import {
+  markFirstReminderHintSeen,
+  shouldShowFirstReminderHint,
+} from '../../utils/reminderNoticeHint';
 import { useLumiHost } from '../../lumi/LumiHost';
 import { taskHasLumiLink } from '../../utils/wishTaskBridge';
 import './TaskSheet.css';
@@ -37,7 +40,7 @@ function formatSheetWhen(
 export function TaskSheet() {
   const {
     sheetOpen, setSheetOpen, editingTask, setEditingTask,
-    tasks, placeTask, requestDelete, settings, updateSettings,
+    tasks, placeTask, requestDelete, settings,
     taskClipboard, copyTaskToClipboard, setScreen,
   } = useApp();
   const { t, dateTag } = useI18n();
@@ -52,6 +55,7 @@ export function TaskSheet() {
   const [slotHour, setSlotHour] = useState<number | null>(null);
   const [whenOpen, setWhenOpen] = useState(false);
   const [error, setError] = useState('');
+  const [reminderHintOpen, setReminderHintOpen] = useState(false);
   const [copyHint, setCopyHint] = useState('');
   const descRef = useRef<HTMLTextAreaElement>(null);
 
@@ -203,7 +207,9 @@ export function TaskSheet() {
     ? formatSheetWhen(slotDate, slotHour, dateTag)
     : t('sheetWhenMissing');
 
-  return createPortal(
+  return (
+    <>
+      {createPortal(
     <div className="sheet-overlay" onClick={close}>
       <div className="task-sheet" onClick={(e) => e.stopPropagation()}>
         <div className="task-sheet__header">
@@ -329,19 +335,10 @@ export function TaskSheet() {
                 const next = v === '' ? null : Number(v);
                 setReminderOffset(next);
                 if (next === null) return;
-                void enablePushFromGesture().then((result) => {
-                  if (result === 'granted') {
-                    void updateSettings({ notificationsEnabled: true });
-                    return;
-                  }
-                  if (result === 'blocked') {
-                    setError(notificationsBlockedReason(settings.locale) ?? t('sheetNotifyBlocked'));
-                    return;
-                  }
-                  if (result === 'denied') {
-                    setError(t('sheetNotifyDenied'));
-                  }
-                });
+                if (shouldShowFirstReminderHint(settings, next)) {
+                  markFirstReminderHintSeen();
+                  setReminderHintOpen(true);
+                }
               }}
             >
               {REMINDER_OFFSET_OPTIONS.map((opt) => (
@@ -401,5 +398,23 @@ export function TaskSheet() {
       </div>
     </div>,
     document.body,
+      )}
+      {reminderHintOpen &&
+        createPortal(
+          <ConfirmDialog
+            title={t('firstReminderHintTitle')}
+            message={t('firstReminderHintBody')}
+            confirmLabel={t('firstReminderHintOpenSettings')}
+            cancelLabel={t('firstReminderHintOk')}
+            confirmTone="primary"
+            onCancel={() => setReminderHintOpen(false)}
+            onConfirm={() => {
+              setReminderHintOpen(false);
+              setScreen('settings-notifications');
+            }}
+          />,
+          document.body,
+        )}
+    </>
   );
 }

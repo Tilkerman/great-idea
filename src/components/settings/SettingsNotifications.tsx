@@ -9,6 +9,7 @@ import {
 } from '../../utils/notifications';
 import { isAppleMobile, isStandaloneApp, TILI_PUBLIC_URL } from '../../utils/pwaInstall';
 import { enablePushFromGesture } from '../../utils/enablePush';
+import { trackPushEnabledOnce } from '../../utils/productAnalytics';
 import './Settings.css';
 
 export function SettingsNotifications() {
@@ -35,6 +36,7 @@ export function SettingsNotifications() {
       setPerm(notificationPermission());
       if (result === 'granted') {
         updateSettings({ notificationsEnabled: true });
+        trackPushEnabledOnce(settings.analyticsEnabled);
         setFeedback(t('notifGranted'));
       } else if (result === 'denied') {
         updateSettings({ notificationsEnabled: false });

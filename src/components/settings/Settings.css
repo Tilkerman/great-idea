@@ -33,10 +33,56 @@
   color: var(--text-secondary);
 }
 
+.settings-section {
+  margin-top: 8px;
+}
+
+.settings-section__heading {
+  margin: 0;
+  padding: 14px 16px 6px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.settings-section__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 6px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.settings-section__toggle .settings-section__heading {
+  padding: 0;
+  flex: 1;
+}
+
+.settings-section__chev {
+  flex-shrink: 0;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text-secondary);
+  transform: rotate(0deg);
+  transition: transform 0.18s ease;
+}
+
+.settings-section__chev.is-open {
+  transform: rotate(90deg);
+}
+
 .settings-list {
   list-style: none;
   margin: 0;
-  padding: 8px 0;
+  padding: 4px 0 8px;
 }
 
 .settings-list__item {
@@ -45,7 +91,7 @@
   grid-template-columns: 1fr auto;
   grid-template-rows: auto auto;
   gap: 2px 8px;
-  padding: 14px 16px;
+  padding: 11px 16px 11px 20px;
   border: none;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -56,13 +102,14 @@
 
 .settings-list__label {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .settings-list__sub {
   grid-column: 1;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-secondary);
+  line-height: 1.35;
 }
 
 .settings-list__chev {
@@ -71,6 +118,17 @@
   align-self: center;
   color: var(--text-secondary);
   font-size: 20px;
+}
+
+.settings-note.settings-link {
+  display: inline-block;
+  margin-top: -8px;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.settings-note.settings-link:hover {
+  text-decoration: underline;
 }
 
 .settings-form {
