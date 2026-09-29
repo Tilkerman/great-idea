@@ -58,7 +58,7 @@ const RU_MONTHS: { stem: string; month: number }[] = [
   { stem: 'феврал', month: 2 },
   { stem: 'март', month: 3 },
   { stem: 'апрел', month: 4 },
-  { stem: 'ма', month: 5 },
+  { stem: 'ма[йя]', month: 5 },
   { stem: 'июн', month: 6 },
   { stem: 'июл', month: 7 },
   { stem: 'август', month: 8 },
@@ -67,6 +67,88 @@ const RU_MONTHS: { stem: string; month: number }[] = [
   { stem: 'ноябр', month: 11 },
   { stem: 'декабр', month: 12 },
 ];
+
+const EN_MONTHS: { stem: string; month: number }[] = [
+  { stem: 'january', month: 1 },
+  { stem: 'jan', month: 1 },
+  { stem: 'february', month: 2 },
+  { stem: 'feb', month: 2 },
+  { stem: 'march', month: 3 },
+  { stem: 'mar', month: 3 },
+  { stem: 'april', month: 4 },
+  { stem: 'apr', month: 4 },
+  { stem: 'may', month: 5 },
+  { stem: 'june', month: 6 },
+  { stem: 'july', month: 7 },
+  { stem: 'jul', month: 7 },
+  { stem: 'august', month: 8 },
+  { stem: 'aug', month: 8 },
+  { stem: 'september', month: 9 },
+  { stem: 'sep', month: 9 },
+  { stem: 'october', month: 10 },
+  { stem: 'oct', month: 10 },
+  { stem: 'november', month: 11 },
+  { stem: 'nov', month: 11 },
+  { stem: 'december', month: 12 },
+  { stem: 'dec', month: 12 },
+];
+
+/** Родительный / разговорный: «пятого января», «третье декабря» */
+const RU_ORDINAL_DAY: { re: string; day: number }[] = [
+  { re: 'двадцать\\s+перв', day: 21 },
+  { re: 'двадцать\\s+втор', day: 22 },
+  { re: 'двадцать\\s+трет', day: 23 },
+  { re: 'двадцать\\s+четверт', day: 24 },
+  { re: 'двадцать\\s+пят', day: 25 },
+  { re: 'двадцать\\s+шест', day: 26 },
+  { re: 'двадцать\\s+седьм', day: 27 },
+  { re: 'двадцать\\s+восьм', day: 28 },
+  { re: 'двадцать\\s+девят', day: 29 },
+  { re: 'тридцат', day: 30 },
+  { re: 'тридцать\\s+перв', day: 31 },
+  { re: 'одиннадцат', day: 11 },
+  { re: 'двенадцат', day: 12 },
+  { re: 'тринадцат', day: 13 },
+  { re: 'четырнадцат', day: 14 },
+  { re: 'пятнадцат', day: 15 },
+  { re: 'шестнадцат', day: 16 },
+  { re: 'семнадцат', day: 17 },
+  { re: 'восемнадцат', day: 18 },
+  { re: 'девятнадцат', day: 19 },
+  { re: 'двадцат', day: 20 },
+  { re: 'десят', day: 10 },
+  { re: 'девят', day: 9 },
+  { re: 'восьм', day: 8 },
+  { re: 'седьм', day: 7 },
+  { re: 'шест', day: 6 },
+  { re: 'пят', day: 5 },
+  { re: 'четверт', day: 4 },
+  { re: 'трет', day: 3 },
+  { re: 'втор', day: 2 },
+  { re: 'перв', day: 1 },
+];
+
+function allMonthStems(): { stem: string; month: number }[] {
+  return [...RU_MONTHS, ...EN_MONTHS].sort((a, b) => b.stem.length - a.stem.length);
+}
+
+function dayBeforeMonthFragment(before: string): number | null {
+  const chunk = before.slice(-28).trim();
+  const num = chunk.match(/(\d{1,2})\s*$/);
+  if (num) {
+    const day = Number(num[1]);
+    if (day >= 1 && day <= 31) return day;
+  }
+  for (const { re, day } of RU_ORDINAL_DAY) {
+    if (new RegExp(`${re}[a-zа-я]*\\s*$`, 'i').test(chunk)) return day;
+  }
+  return null;
+}
+
+function monthStemAt(lower: string, from: number): boolean {
+  const tail = lower.slice(from);
+  return allMonthStems().some(({ stem }) => new RegExp(`^\\s*${stem}[a-zа-я]*`, 'i').test(tail));
+}
 
 function calendarDateWithYear(ref: Date, month: number, day: number, yearExplicit?: number): Date {
   let year = yearExplicit ?? ref.getFullYear();
@@ -79,19 +161,39 @@ function calendarDateWithYear(ref: Date, month: number, day: number, yearExplici
   return new Date(year, month - 1, day, 12, 0, 0, 0);
 }
 
-/** «1 ноября», «01.11», «1.11.2026» */
+/** «1 ноября», «3 декабря», «пятого января», «01.11» */
 function extractCalendarDate(text: string, ref = new Date()): Date | null {
   const lower = text.toLowerCase();
 
-  for (const { stem, month } of [...RU_MONTHS].sort((a, b) => b.stem.length - a.stem.length)) {
+  for (const { stem, month } of allMonthStems()) {
+    const stemRe = new RegExp(stem, 'gi');
+    let found: RegExpExecArray | null;
+    while ((found = stemRe.exec(lower)) !== null) {
+      const before = lower.slice(0, found.index);
+      const day = dayBeforeMonthFragment(before);
+      if (day != null) return calendarDateWithYear(ref, month, day);
+      const after = lower.slice(found.index + found[0].length);
+      const afterNum = after.match(/^\s*(\d{1,2})(?:\s|$|[,.])/);
+      if (afterNum) {
+        const dayAfter = Number(afterNum[1]);
+        if (dayAfter >= 1 && dayAfter <= 31) return calendarDateWithYear(ref, month, dayAfter);
+      }
+    }
+  }
+
+  for (const { stem, month } of allMonthStems()) {
     const re = new RegExp(
-      `(\\d{1,2})(?:-?(?:го|ое|е|й|я))?\\s*${stem}[a-zа-я]*`,
+      `(\\d{1,2})(?:-?(?:го|ое|е|й|я|ье|ье))?\\s*${stem}[a-zа-я]*`,
       'i',
     );
     const m = lower.match(re);
     if (m) {
       const day = Number(m[1]);
       if (day >= 1 && day <= 31) return calendarDateWithYear(ref, month, day);
+    }
+    for (const { re: ord, day: ordDay } of RU_ORDINAL_DAY) {
+      const ordRe = new RegExp(`(?:^|[\\s,])${ord}[a-zа-я]*\\s*${stem}[a-zа-я]*`, 'i');
+      if (ordRe.test(lower)) return calendarDateWithYear(ref, month, ordDay);
     }
   }
 
@@ -113,9 +215,11 @@ function extractCalendarDate(text: string, ref = new Date()): Date | null {
 }
 
 function digitIsDayOfMonth(text: string, match: RegExpExecArray): boolean {
-  const after = text.slice(match.index + match[0].length);
-  for (const { stem } of RU_MONTHS) {
-    if (new RegExp(`^\\s*${stem}`, 'i').test(after)) return true;
+  const afterIndex = match.index + match[0].length;
+  if (monthStemAt(text, afterIndex)) return true;
+  const before = text.slice(Math.max(0, match.index - 18), match.index);
+  for (const { stem } of allMonthStems()) {
+    if (new RegExp(`${stem}[a-zа-я]*\\s*$`, 'i').test(before)) return true;
   }
   return false;
 }
