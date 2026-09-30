@@ -1,244 +1,355 @@
 (function () {
-  const STORAGE_KEY = 'tili-landing-lang';
+  const STORAGE_LANG = 'tili-landing-lang';
+  const UTM_KEY = 'tili-attribution-utm';
+  const BASE = './';
+  const CANONICAL = 'https://tilkerman.github.io/great-idea/landing.html';
 
   const copy = {
     ru: {
-      metaDescription: 'TiLi — календарь часов. Lumi — желания. Планируй день по часам в браузере.',
       pageTitle: 'TiLi — календарь твоего времени',
+      metaDescription: 'TiLi — календарь твоего времени. Lumi — желания. День как сетка часов, не список дел.',
+      skipMain: 'К содержанию',
       brandTag: 'календарь твоего времени',
       navTili: 'TiLi',
       navLumi: 'Lumi',
       navPhilosophy: 'Философия',
-      navFor: 'Для кого',
-      navFaq: 'FAQ',
-      ctaTry: 'Попробовать TiLi',
-      heroH1a: 'У тебя есть время.',
-      heroH1b: 'Используй его по-настоящему.',
-      heroLead: 'TiLi помогает видеть свой день целиком, планировать дела по часам и находить место для важного.',
-      ctaFree: 'Попробовать TiLi бесплатно',
-      pillBrowser: 'Работает в браузере',
-      pillGuest: 'Без регистрации',
-      pillInstall: 'Можно установить на главный экран',
-      heroNote: 'видь свой день по часам, а не списком дел',
-      tiliTitle: 'TiLi — календарь твоего времени',
-      tiliIntro: 'TiLi показывает день как пространство времени, а не бесконечный список. Ты видишь, что реально поместится в сутки.',
-      check1: 'Планирование по часам',
-      check2: 'Напоминания вовремя',
-      check3: 'Работа офлайн на устройстве',
-      check4: 'Резервная копия и перенос через JSON',
-      check5: 'Год, месяц, неделя, день — твой масштаб',
-      lumiTitle: 'Lumi — календарь твоих желаний',
-      lumiIntro: 'Lumi помогает не забывать о том, что важно именно тебе: фиксировать желания, делить их на шаги и двигаться к большим целям спокойно.',
-      lumiF1t: 'Желания',
-      lumiF1d: 'Записывай мечты и цели',
-      lumiF2t: 'Сферы',
-      lumiF2d: 'Колесо баланса жизни',
-      lumiF3t: 'Шаги',
-      lumiF3d: 'Дроби на маленькие дела',
-      lumiF4t: 'Прогресс',
-      lumiF4d: 'Видь, как движешься',
-      lumiScreen: 'Мои желания',
-      lumiNote: 'маленькие шаги к большим изменениям',
-      philTitle: 'Философия TiLi',
-      philIntro: 'Время — главный ресурс. TiLi и Lumi помогают жить в согласии с желаниями, а не только с дедлайнами.',
-      phil1: 'Не больше дел, а больше смысла',
-      phil2: 'Не заполнить всё время, а оставить место для важного',
-      phil3: 'Не спешить, а двигаться в своём темпе',
-      phil4: 'Жить день, который отражает тебя',
-      forTitle: 'Для кого',
-      forIntro: 'Если устали от списков, которые никогда не кончаются, и хотите видеть реальный день на одном экране.',
-      for1t: 'Занятым',
-      for1d: 'Когда важно уложить дела в часы, а не копить «на потом».',
-      for2t: 'Мечтателям',
-      for2d: 'Когда есть большие желания и нужны маленькие шаги в Lumi.',
-      for3t: 'Семье',
-      for3d: 'Когда работа, личное и семья должны быть видны разными цветами.',
-      faqTitle: 'Частые вопросы',
-      faq1q: 'Нужна ли регистрация?',
-      faq1a: 'Нет. Можно сразу пользоваться как гость. Аккаунт локальный и не синхронизирует данные между телефонами.',
-      faq2q: 'Есть ли облако?',
-      faq2a: 'Нет облачного sync. Задачи на устройстве; перенос — через экспорт JSON в настройках.',
-      faq3q: 'Как установить на iPhone?',
-      faq3a: 'Safari → «Поделиться» → «На экран Домой». Так же работают напоминания.',
-      faq4q: 'TiLi и Lumi — одно приложение?',
-      faq4a: 'Да, одна PWA: вкладки календаря и желаний, шаг из Lumi можно связать с делом в TiLi.',
-      ctaBand: 'Попробуй TiLi и посмотри на своё время иначе',
-      ctaAside: 'Работает в браузере. Регистрация не обязательна.',
-      footerAbout: 'О проекте',
-      footerSupport: 'Поддержка',
-      footerOpenLumi: 'Открыть приложение',
-      footerPrivacy: 'Конфиденциальность',
-      footerSupportApp: 'Поддержать автора в приложении',
+      ctaTry: 'Попробовать',
+      ctaTryFree: 'Попробовать TiLi',
+      ctaLumi: 'Узнать про Lumi ↓',
+      heroL1: 'У тебя есть время.',
+      heroL2: 'Используй его по-настоящему.',
+      heroLead: 'TiLi помогает увидеть свой день не как бесконечный список дел, а как пространство времени. Lumi помогает не забывать о том, чего ты действительно хочешь.',
+      trust1: 'Работает в браузере',
+      trust2: 'Без сложной регистрации',
+      trust3: 'Можно на экран «Домой»',
+      trust4: 'Данные на вашем устройстве',
+      phDay: '[ REAL SCREENSHOT: TiLi Day View ]',
+      phWeek: '[ REAL SCREENSHOT: TiLi Week View ]',
+      phMonth: '[ REAL SCREENSHOT: TiLi Month/Year ]',
+      phLumi: '[ REAL SCREENSHOT: Lumi ]',
+      capDay: 'Реальный экран приложения',
+      capLive: 'Живое приложение — так же откроется по кнопке',
+      capWeek: 'Неделя',
+      capMonth: 'Масштаб',
+      capLumi: 'Реальный экран Lumi',
+      tiliH: 'TiLi — календарь твоего времени',
+      tiliSub: 'TiLi показывает не просто то, что тебе нужно сделать. Он показывает, когда в твоём дне это действительно произойдёт.',
+      tiliP1: 'Обычный список задач говорит: «У тебя 8 дел». TiLi показывает другое: «Вот как выглядит твой сегодняшний день».',
+      tiliP2: 'Каждое дело получает своё место во времени. День — часовая сетка: занятые часы, свободное пространство, куда уходит день.',
+      m1t: 'Время', m1d: 'Каждая задача — конкретное место в течение дня.',
+      m2t: 'Свободное время', m2d: 'Пустое пространство — тоже часть дня.',
+      m3t: 'Несколько уровней', m3d: 'Год → месяц → неделя → день.',
+      m4t: 'Быстрое планирование', m4d: 'Создать задачу из нужного часа.',
+      m5t: 'Напоминания', m5d: 'Баннер в нужный момент (PWA + настройки).',
+      m6t: 'Категории', m6d: 'Работа, личное, семья — структура дня.',
+      tiliQuote: 'Не список дел.\nСетка твоего времени.',
+      lumiH: 'Lumi — календарь твоих желаний',
+      lumiSub: 'У каждого есть планы на завтра. Но есть и то, чего хочется от жизни гораздо сильнее. Lumi — пространство для таких желаний.',
+      lumiP1: 'Lumi не превращает желание в обычную задачу. Желание может содержать образ, чувства, причины, мысли, маленькие шаги и связь с действиями в календаре.',
+      lumiP2: 'Это место, к которому можно возвращаться — сформулировать, почувствовать, понять, разбить на шаги, сделать.',
+      book1: 'Lumi вдохновлён идеями книги David Cameron Gikandi A Happy Pocket Full of Money.',
+      book2: 'В книге — про формулировку желаний, чувства, намерение и действия. Lumi развивает это в своём формате: желание становится пространством, к которому можно возвращаться и приближать к реальности шаг за шагом.',
+      lumiQuote: 'Желание — это не задача на 15:00.',
+      lumiQuoteSub: 'Иногда ему нужно место, образ, чувство и маленький первый шаг.',
+      philH: 'Время и желания — рядом,\nно каждое на своём месте.',
+      philTime: 'Время',
+      philWish: 'Желания',
+      philTogether: 'Вместе',
+      philT1: 'Что я делаю?', philT2: 'Когда я это делаю?', philT3: 'Сколько времени у меня есть?',
+      philL1: 'Чего я хочу?', philL2: 'Почему это важно?', philL3: 'Что я чувствую?', philL4: 'Какой маленький шаг могу сделать?',
+      philChain: 'Желание → шаг → время → действие',
+      bridgeH: 'Как Lumi и TiLi связаны',
+      step1: 'У меня есть желание.', step2: 'Я записываю его в Lumi.', step3: 'Разбиваю на маленький шаг.',
+      step4: 'Если шаг требует времени — отправляю его в TiLi.', step5: 'TiLi показывает, когда я это сделаю.',
+      bridgeP: 'Lumi хранит то, чего ты хочешь. TiLi помогает найти для этого место в реальном времени.',
+      flowWish: 'Желание', flowStep: 'Маленький шаг', flowTime: 'Реальное время', flowDo: 'Действие',
+      ctaEyebrow: 'У тебя уже есть время.',
+      ctaH: 'Вопрос только в том,\nна что ты его потратишь.',
+      ctaFine: 'Работает в браузере. Без сложной регистрации.',
+      footProd: 'Продукт', footAbout: 'О проекте', footDocs: 'Документы', footPrivacy: 'Конфиденциальность',
+      footData: 'Без облачного sync задач. Резерв — JSON в настройках.',
     },
     en: {
-      metaDescription: 'TiLi — hour-grid calendar. Lumi — wishes. Plan your day in the browser.',
-      pageTitle: 'TiLi — a calendar of your time',
-      brandTag: 'calendar of your time',
-      navTili: 'TiLi',
-      navLumi: 'Lumi',
-      navPhilosophy: 'Philosophy',
-      navFor: 'Who it\'s for',
-      navFaq: 'FAQ',
-      ctaTry: 'Try TiLi',
-      heroH1a: 'You have time.',
-      heroH1b: 'Use it for real.',
-      heroLead: 'TiLi helps you see your whole day, plan tasks by the hour, and make room for what matters.',
-      ctaFree: 'Try TiLi for free',
-      pillBrowser: 'Works in the browser',
-      pillGuest: 'No sign-up required',
-      pillInstall: 'Add to home screen',
-      heroNote: 'see your day by hours, not as a to-do list',
-      tiliTitle: 'TiLi — a calendar of your time',
-      tiliIntro: 'TiLi shows your day as space in time, not an endless list. You see what actually fits in a day.',
-      check1: 'Plan by the hour',
-      check2: 'Reminders on time',
-      check3: 'Works offline on your device',
-      check4: 'Backup and transfer via JSON',
-      check5: 'Year, month, week, day — your zoom level',
-      lumiTitle: 'Lumi — a calendar of your wishes',
-      lumiIntro: 'Lumi helps you remember what matters to you: capture wishes, break them into steps, and move toward big goals calmly.',
-      lumiF1t: 'Wishes',
-      lumiF1d: 'Record dreams and goals',
-      lumiF2t: 'Life areas',
-      lumiF2d: 'Balance wheel',
-      lumiF3t: 'Steps',
-      lumiF3d: 'Split into small tasks',
-      lumiF4t: 'Progress',
-      lumiF4d: 'See how you move',
-      lumiScreen: 'My wishes',
-      lumiNote: 'small steps, big changes',
-      philTitle: 'TiLi philosophy',
-      philIntro: 'Time is your main resource. TiLi and Lumi help you live with your wishes, not only deadlines.',
-      phil1: 'Not more tasks, but more meaning',
-      phil2: 'Not filling every minute, but room for what matters',
-      phil3: 'Not rushing, but your own pace',
-      phil4: 'Live a day that reflects you',
-      forTitle: 'Who it\'s for',
-      forIntro: 'If endless lists tired you out and you want one screen that shows a real day.',
-      for1t: 'Busy people',
-      for1d: 'When tasks need to fit hours, not pile up for “later”.',
-      for2t: 'Dreamers',
-      for2d: 'When big wishes need small steps in Lumi.',
-      for3t: 'Families',
-      for3d: 'When work, personal life, and family need different colors.',
-      faqTitle: 'FAQ',
-      faq1q: 'Do I need an account?',
-      faq1a: 'No. Start as a guest. Accounts are local and do not sync across phones.',
-      faq2q: 'Is there a cloud?',
-      faq2a: 'No cloud sync. Tasks stay on device; move data via JSON export in settings.',
-      faq3q: 'How to install on iPhone?',
-      faq3a: 'Safari → Share → Add to Home Screen. Reminders work the same way.',
-      faq4q: 'Are TiLi and Lumi one app?',
-      faq4a: 'Yes — one PWA with calendar and wishes tabs; link a Lumi step to a TiLi task.',
-      ctaBand: 'Try TiLi and see your time differently',
-      ctaAside: 'Works in the browser. Sign-up optional.',
-      footerAbout: 'About',
-      footerSupport: 'Support',
-      footerOpenLumi: 'Open the app',
-      footerPrivacy: 'Privacy',
-      footerSupportApp: 'Support the author in the app',
+      pageTitle: 'TiLi — a calendar for your time',
+      metaDescription: 'TiLi shows your day as hours, not an endless list. Lumi holds your wishes. One calm PWA.',
+      skipMain: 'Skip to content',
+      brandTag: 'calendar for your time',
+      navTili: 'TiLi', navLumi: 'Lumi', navPhilosophy: 'Philosophy',
+      ctaTry: 'Try it', ctaTryFree: 'Try TiLi', ctaLumi: 'About Lumi ↓',
+      heroL1: 'You have time.', heroL2: 'Use it for real.',
+      heroLead: 'TiLi helps you see your day as space in time, not an endless to-do list. Lumi helps you remember what you truly want from life.',
+      trust1: 'Works in the browser', trust2: 'No heavy sign-up', trust3: 'Add to home screen', trust4: 'Data stays on your device',
+      phDay: '[ REAL SCREENSHOT: TiLi Day View ]', phWeek: '[ REAL SCREENSHOT: TiLi Week View ]',
+      phMonth: '[ REAL SCREENSHOT: TiLi Month/Year ]', phLumi: '[ REAL SCREENSHOT: Lumi ]',
+      capDay: 'Real app screen', capLive: 'Live app — same as the Try button', capWeek: 'Week', capMonth: 'Zoom levels', capLumi: 'Real Lumi screen',
+      tiliH: 'TiLi — a calendar for your time',
+      tiliSub: 'TiLi shows not only what you need to do, but when it will actually happen in your day.',
+      tiliP1: 'A usual list says: “You have 8 tasks.” TiLi says: “This is what your day looks like.”',
+      tiliP2: 'Every task gets a place in time. The day is an hour grid — busy hours, open space, where your time goes.',
+      m1t: 'Time', m1d: 'Each task has a concrete slot in the day.',
+      m2t: 'Open time', m2d: 'Empty space is part of the day too.',
+      m3t: 'Many zoom levels', m3d: 'Year → month → week → day.',
+      m4t: 'Quick planning', m4d: 'Create a task from the hour you need.',
+      m5t: 'Reminders', m5d: 'A banner at the right moment (PWA + settings).',
+      m6t: 'Categories', m6d: 'Work, personal, family — structure of the day.',
+      tiliQuote: 'Not a to-do list.\nA grid of your time.',
+      lumiH: 'Lumi — a calendar of your wishes',
+      lumiSub: 'Everyone has plans for tomorrow. And things you want from life much more. Lumi is space for those wishes.',
+      lumiP1: 'Lumi does not turn a wish into a plain task. A wish can hold image, feelings, reasons, thoughts, small steps, and links to calendar actions.',
+      lumiP2: 'A place you return to — formulate, feel, understand, break into steps, act.',
+      book1: 'Lumi is inspired by ideas from David Cameron Gikandi’s A Happy Pocket Full of Money.',
+      book2: 'The book explores how we phrase wishes, feel them, and turn intention into action. Lumi grows that in its own format — a space you revisit and move toward reality step by step.',
+      lumiQuote: 'A wish is not a task at 3 p.m.',
+      lumiQuoteSub: 'Sometimes it needs space, image, feeling, and one small first step.',
+      philH: 'Time and wishes — side by side,\neach in its place.',
+      philTime: 'Time', philWish: 'Wishes', philTogether: 'Together',
+      philT1: 'What am I doing?', philT2: 'When am I doing it?', philT3: 'How much time do I have?',
+      philL1: 'What do I want?', philL2: 'Why does it matter?', philL3: 'What do I feel?', philL4: 'What small step can I take?',
+      philChain: 'Wish → step → time → action',
+      bridgeH: 'How Lumi and TiLi connect',
+      step1: 'I have a wish.', step2: 'I write it in Lumi.', step3: 'I break it into a small step.',
+      step4: 'If the step needs a time — I send it to TiLi.', step5: 'TiLi shows when I will do it.',
+      bridgeP: 'Lumi holds what you want. TiLi finds a place for it in real time.',
+      flowWish: 'Wish', flowStep: 'Small step', flowTime: 'Real time', flowDo: 'Action',
+      ctaEyebrow: 'You already have time.',
+      ctaH: 'The question is\nwhat you will spend it on.',
+      ctaFine: 'Works in the browser. No heavy sign-up.',
+      footProd: 'Product', footAbout: 'About', footDocs: 'Legal', footPrivacy: 'Privacy',
+      footData: 'No cloud task sync. Backup via JSON in settings.',
     },
     es: {
-      metaDescription: 'TiLi — calendario por horas. Lumi — deseos. Planifica el día en el navegador.',
-      pageTitle: 'TiLi — el calendario de tu tiempo',
+      pageTitle: 'TiLi — calendario de tu tiempo',
+      metaDescription: 'TiLi muestra el día por horas, no como lista infinita. Lumi guarda tus deseos. Una PWA tranquila.',
+      skipMain: 'Ir al contenido',
       brandTag: 'calendario de tu tiempo',
-      navTili: 'TiLi',
-      navLumi: 'Lumi',
-      navPhilosophy: 'Filosofía',
-      navFor: 'Para quién',
-      navFaq: 'FAQ',
-      ctaTry: 'Probar TiLi',
-      heroH1a: 'Tienes tiempo.',
-      heroH1b: 'Úsalo de verdad.',
-      heroLead: 'TiLi te ayuda a ver el día entero, planificar por horas y dejar espacio a lo importante.',
-      ctaFree: 'Probar TiLi gratis',
-      pillBrowser: 'Funciona en el navegador',
-      pillGuest: 'Sin registro',
-      pillInstall: 'Instalar en la pantalla de inicio',
-      heroNote: 'mira tu día por horas, no como lista',
-      tiliTitle: 'TiLi — el calendario de tu tiempo',
-      tiliIntro: 'TiLi muestra el día como espacio en el tiempo, no una lista infinita. Ves lo que cabe en un día.',
-      check1: 'Planificación por horas',
-      check2: 'Recordatorios a tiempo',
-      check3: 'Offline en tu dispositivo',
-      check4: 'Copia de seguridad y traslado en JSON',
-      check5: 'Año, mes, semana, día — tu escala',
-      lumiTitle: 'Lumi — calendario de tus deseos',
-      lumiIntro: 'Lumi ayuda a no olvidar lo que importa: anotar deseos, dividirlos en pasos y avanzar con calma.',
-      lumiF1t: 'Deseos',
-      lumiF1d: 'Anota sueños y metas',
-      lumiF2t: 'Áreas',
-      lumiF2d: 'Rueda de equilibrio',
-      lumiF3t: 'Pasos',
-      lumiF3d: 'Divide en tareas pequeñas',
-      lumiF4t: 'Progreso',
-      lumiF4d: 'Ve cómo avanzas',
-      lumiScreen: 'Mis deseos',
-      lumiNote: 'pasos pequeños, grandes cambios',
-      philTitle: 'Filosofía TiLi',
-      philIntro: 'El tiempo es tu recurso principal. TiLi y Lumi ayudan a vivir con tus deseos, no solo plazos.',
-      phil1: 'No más tareas, sino más sentido',
-      phil2: 'No llenar todo el tiempo, sino espacio para lo importante',
-      phil3: 'Sin prisa, a tu ritmo',
-      phil4: 'Un día que te refleje',
-      forTitle: 'Para quién',
-      forIntro: 'Si las listas infinitas cansaron y quieres ver un día real en una pantalla.',
-      for1t: 'Ocupados',
-      for1d: 'Cuando hay que encajar tareas en horas, no acumular «para después».',
-      for2t: 'Soñadores',
-      for2d: 'Cuando hay grandes deseos y hacen falta pasos en Lumi.',
-      for3t: 'Familia',
-      for3d: 'Cuando trabajo, personal y familia se ven con colores distintos.',
-      faqTitle: 'Preguntas frecuentes',
-      faq1q: '¿Hace falta registrarse?',
-      faq1a: 'No. Empieza como invitado. La cuenta es local y no sincroniza entre móviles.',
-      faq2q: '¿Hay nube?',
-      faq2a: 'No hay sync en la nube. Las tareas están en el dispositivo; traslado vía JSON en ajustes.',
-      faq3q: '¿Cómo instalar en iPhone?',
-      faq3a: 'Safari → Compartir → Añadir a pantalla de inicio. Los avisos funcionan igual.',
-      faq4q: '¿TiLi y Lumi son una app?',
-      faq4a: 'Sí, una PWA con pestañas de calendario y deseos; enlaza un paso Lumi con una tarea TiLi.',
-      ctaBand: 'Prueba TiLi y mira tu tiempo distinto',
-      ctaAside: 'En el navegador. Registro opcional.',
-      footerAbout: 'Sobre el proyecto',
-      footerSupport: 'Apoyo',
-      footerOpenLumi: 'Abrir la app',
-      footerPrivacy: 'Privacidad',
-      footerSupportApp: 'Apoyar al autor en la app',
+      navTili: 'TiLi', navLumi: 'Lumi', navPhilosophy: 'Filosofía',
+      ctaTry: 'Probar', ctaTryFree: 'Probar TiLi', ctaLumi: 'Sobre Lumi ↓',
+      heroL1: 'Tienes tiempo.', heroL2: 'Úsalo de verdad.',
+      heroLead: 'TiLi ayuda a ver el día como espacio en el tiempo, no una lista infinita. Lumi ayuda a no olvidar lo que de verdad quieres.',
+      trust1: 'En el navegador', trust2: 'Sin registro pesado', trust3: 'Añadir a inicio', trust4: 'Datos en tu dispositivo',
+      phDay: '[ CAPTURA REAL: TiLi día ]', phWeek: '[ CAPTURA REAL: TiLi semana ]',
+      phMonth: '[ CAPTURA REAL: TiLi mes/año ]', phLumi: '[ CAPTURA REAL: Lumi ]',
+      capDay: 'Pantalla real', capLive: 'App en vivo — igual que al pulsar Probar', capWeek: 'Semana', capMonth: 'Escala', capLumi: 'Pantalla Lumi',
+      tiliH: 'TiLi — calendario de tu tiempo',
+      tiliSub: 'TiLi no solo muestra qué hacer, sino cuándo ocurrirá en tu día.',
+      tiliP1: 'Una lista dice: «Tienes 8 tareas». TiLi dice: «Así se ve tu día».',
+      tiliP2: 'Cada cosa tiene su lugar en el tiempo. El día es una cuadrícula de horas.',
+      m1t: 'Tiempo', m1d: 'Cada tarea tiene un hueco concreto.',
+      m2t: 'Tiempo libre', m2d: 'El espacio vacío también cuenta.',
+      m3t: 'Varias escalas', m3d: 'Año → mes → semana → día.',
+      m4t: 'Plan rápido', m4d: 'Crear desde la hora que necesitas.',
+      m5t: 'Recordatorios', m5d: 'Aviso a tiempo (PWA + ajustes).',
+      m6t: 'Categorías', m6d: 'Trabajo, personal, familia.',
+      tiliQuote: 'No es una lista.\nEs la cuadrícula de tu tiempo.',
+      lumiH: 'Lumi — calendario de tus deseos',
+      lumiSub: 'Hay planes para mañana. Y lo que quieres de la vida con más fuerza. Lumi es espacio para eso.',
+      lumiP1: 'Lumi no convierte un deseo en tarea simple. Puede tener imagen, sentimientos, pasos y enlace al calendario.',
+      lumiP2: 'Un lugar al que volver — formular, sentir, dividir en pasos, actuar.',
+      book1: 'Lumi se inspira en A Happy Pocket Full of Money de David Cameron Gikandi.',
+      book2: 'El libro habla de formular deseos, sentirlos y pasar a la acción. Lumi lo desarrolla a su manera.',
+      lumiQuote: 'Un deseo no es una tarea a las 15:00.',
+      lumiQuoteSub: 'A veces necesita espacio, imagen, sentimiento y un primer paso pequeño.',
+      philH: 'Tiempo y deseos — juntos,\ncada uno en su lugar.',
+      philTime: 'Tiempo', philWish: 'Deseos', philTogether: 'Juntos',
+      philT1: '¿Qué hago?', philT2: '¿Cuándo?', philT3: '¿Cuánto tiempo tengo?',
+      philL1: '¿Qué quiero?', philL2: '¿Por qué importa?', philL3: '¿Qué siento?', philL4: '¿Qué paso pequeño puedo dar?',
+      philChain: 'Deseo → paso → tiempo → acción',
+      bridgeH: 'Cómo se conectan Lumi y TiLi',
+      step1: 'Tengo un deseo.', step2: 'Lo escribo en Lumi.', step3: 'Lo divido en un paso pequeño.',
+      step4: 'Si el paso necesita hora — lo envío a TiLi.', step5: 'TiLi muestra cuándo lo haré.',
+      bridgeP: 'Lumi guarda lo que quieres. TiLi encuentra lugar en el tiempo real.',
+      flowWish: 'Deseo', flowStep: 'Paso pequeño', flowTime: 'Tiempo real', flowDo: 'Acción',
+      ctaEyebrow: 'Ya tienes tiempo.',
+      ctaH: 'La pregunta es\nen qué lo gastarás.',
+      ctaFine: 'En el navegador. Sin registro pesado.',
+      footProd: 'Producto', footAbout: 'Proyecto', footDocs: 'Documentos', footPrivacy: 'Privacidad',
+      footData: 'Sin sync en la nube. Copia JSON en ajustes.',
     },
   };
 
+  function persistUtm() {
+    try {
+      const p = new URLSearchParams(window.location.search);
+      const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'];
+      const bag = {};
+      let any = false;
+      keys.forEach((k) => {
+        const v = p.get(k)?.trim();
+        if (v) { bag[k] = v; any = true; }
+      });
+      if (any) localStorage.setItem(UTM_KEY, JSON.stringify(bag));
+    } catch (_) {}
+  }
+
+  function appUrl(lang) {
+    const params = new URLSearchParams();
+    params.set('lang', lang);
+    try {
+      const utm = JSON.parse(localStorage.getItem(UTM_KEY) || '{}');
+      Object.entries(utm).forEach(([k, v]) => { if (v) params.set(k, v); });
+    } catch (_) {}
+    const q = params.toString();
+    return BASE + (q ? '?' + q : '');
+  }
+
+  let currentLang = 'ru';
+
   function applyLang(lang) {
     const strings = copy[lang] || copy.ru;
+    currentLang = lang;
     document.documentElement.lang = lang;
+    document.title = strings.pageTitle;
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute('content', strings.metaDescription);
-    document.title = strings.pageTitle;
+    const ogT = document.getElementById('og-title');
+    const ogD = document.getElementById('og-desc');
+    if (ogT) ogT.setAttribute('content', strings.pageTitle);
+    if (ogD) ogD.setAttribute('content', strings.metaDescription);
+
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       const key = el.getAttribute('data-i18n');
-      if (strings[key]) el.textContent = strings[key];
+      if (!strings[key]) return;
+      const val = strings[key];
+      if (val.indexOf('\n') >= 0 && el.tagName !== 'INPUT') {
+        el.innerHTML = val.replace(/\n/g, '<br>');
+      } else {
+        el.textContent = val;
+      }
     });
+
     document.querySelectorAll('.lang button').forEach((btn) => {
       btn.setAttribute('aria-pressed', btn.getAttribute('data-lang') === lang ? 'true' : 'false');
     });
+
+    document.querySelectorAll('.js-app-open').forEach((a) => {
+      a.setAttribute('href', appUrl(lang));
+    });
+
+    const live = document.getElementById('hero-live-app');
+    if (live) {
+      live.src = `https://tilkerman.github.io/great-idea/?lang=${lang}`;
+    }
+
+    try { localStorage.setItem(STORAGE_LANG, lang); } catch (_) {}
     try {
-      localStorage.setItem(STORAGE_KEY, lang);
+      const u = new URL(window.location.href);
+      u.searchParams.set('lang', lang);
+      window.history.replaceState({}, '', u.pathname + u.search);
     } catch (_) {}
   }
 
   function detectLang() {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const q = new URLSearchParams(window.location.search).get('lang');
+      if (q && copy[q]) return q;
+    } catch (_) {}
+    try {
+      const saved = localStorage.getItem(STORAGE_LANG);
       if (saved && copy[saved]) return saved;
     } catch (_) {}
     const nav = (navigator.language || 'ru').slice(0, 2).toLowerCase();
-    if (copy[nav]) return nav;
-    return 'ru';
+    return copy[nav] ? nav : 'ru';
   }
 
+  function initShots() {
+    document.querySelectorAll('[data-shot-wrap]').forEach((wrap) => {
+      const img = wrap.querySelector('.shot__img');
+      if (!img) return;
+      function check() {
+        if (!img.complete || img.naturalWidth === 0) wrap.classList.add('is-missing');
+        else wrap.classList.remove('is-missing');
+      }
+      img.addEventListener('error', () => wrap.classList.add('is-missing'));
+      img.addEventListener('load', check);
+      check();
+    });
+    const hero = document.getElementById('hero-shot');
+    if (hero) {
+      const img = hero.querySelector('.shot__img');
+      const live = hero.querySelector('.shot__live');
+      if (img && live) {
+        const useImg = () => {
+          if (img.naturalWidth > 0) {
+            img.hidden = false;
+            live.hidden = true;
+          }
+        };
+        img.addEventListener('load', useImg);
+        if (img.complete) useImg();
+      }
+    }
+  }
+
+  function initReveal() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) e.target.classList.add('is-visible');
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach((el) => obs.observe(el));
+  }
+
+  const sectionSent = {};
+  function initSectionAnalytics() {
+    const map = { tili: 'tili_section_view', lumi: 'lumi_section_view', philosophy: 'philosophy_section_view' };
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const id = e.target.getAttribute('data-analytics-section');
+        const ev = map[id];
+        if (!ev || sectionSent[id]) return;
+        sectionSent[id] = true;
+        window.TiliLandingAnalytics?.capture(ev, { locale: currentLang });
+      });
+    }, { threshold: 0.35 });
+    document.querySelectorAll('[data-analytics-section]').forEach((el) => obs.observe(el));
+  }
+
+  function initCta() {
+    document.querySelectorAll('.js-app-open').forEach((el) => {
+      el.addEventListener('click', () => {
+        window.TiliLandingAnalytics?.capture('pwa_open', { locale: currentLang, from: el.classList.contains('js-hero-cta') ? 'hero' : 'other' });
+      });
+    });
+    const hero = document.querySelector('.js-hero-cta');
+    if (hero) {
+      hero.addEventListener('click', () => {
+        window.TiliLandingAnalytics?.capture('hero_cta_click', { locale: currentLang });
+      });
+    }
+  }
+
+  function initMenu() {
+    const toggle = document.getElementById('menu-toggle');
+    const nav = document.getElementById('nav-mobile');
+    if (!toggle || !nav) return;
+    toggle.addEventListener('click', () => {
+      const open = nav.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => {
+        nav.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  persistUtm();
+  applyLang(detectLang());
+  initShots();
+  initReveal();
+  initSectionAnalytics();
+  initCta();
+  initMenu();
+
   document.querySelectorAll('.lang button').forEach((btn) => {
-    btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      applyLang(lang);
+      window.TiliLandingAnalytics?.capture('language_changed', { locale: lang });
+    });
   });
 
-  applyLang(detectLang());
+  window.TiliLandingAnalytics?.capture('landing_open', { locale: currentLang });
 })();
