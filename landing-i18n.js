@@ -2,7 +2,7 @@
   const STORAGE_LANG = 'tili-landing-lang';
   const UTM_KEY = 'tili-attribution-utm';
   const BASE = './';
-  const CANONICAL = 'https://tilkerman.github.io/great-idea/landing.html';
+  const CANONICAL = 'https://tili.su/landing.html';
 
   const copy = {
     ru: {
