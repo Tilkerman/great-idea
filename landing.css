@@ -506,3 +506,92 @@ a { color: inherit; text-decoration: none; }
 }
 
 [data-i18n-html] { /* set via innerHTML sparingly */ }
+
+/* Editorial landing: screenshots are real product files or explicit placeholders.
+   Nothing in this stylesheet draws a fake TiLi or Lumi interface. */
+.hero {
+  padding-top: clamp(3rem, 8vw, 6rem);
+  padding-bottom: clamp(3.5rem, 8vw, 6.5rem);
+}
+
+.hero__grid {
+  align-items: center;
+}
+
+.hero__lead {
+  max-width: 31rem;
+}
+
+.full-bleed--lumi {
+  background: #f0edf8;
+}
+
+.full-bleed--surface {
+  background: #fff;
+}
+
+.shot {
+  border-radius: 22px;
+  background: #fff;
+}
+
+.shot__ph {
+  min-height: 20rem;
+  color: #6b7280;
+  line-height: 1.5;
+  background: #fff;
+  border: 1px dashed #cbd5e1;
+}
+
+.shot--hero .shot__ph {
+  min-height: 31rem;
+}
+
+.shot__live {
+  display: none;
+}
+
+.quote-block {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: clamp(3rem, 8vw, 6rem) 1rem;
+}
+
+.quote-block p {
+  max-width: 26rem;
+  margin-inline: auto;
+}
+
+.book-block {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(107, 91, 149, 0.16);
+}
+
+.philosophy-grid {
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.phil-card {
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+}
+
+.cta-final {
+  background: var(--tili);
+}
+
+.cta-final .btn--primary {
+  background: #fff;
+  color: var(--tili-hover);
+}
+
+.cta-final .btn--primary:hover {
+  background: #f7f8fa;
+  color: var(--tili-hover);
+}
