@@ -382,6 +382,11 @@
 }
 
 .week-view__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
   padding-top: calc(
     var(--chrome-stack-h, var(--chrome-overlay-h, 48px))
     + var(--week-day-head-h, 60px)
@@ -853,17 +858,13 @@
   padding-top: 0;
 }
 
-.week-view__body {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
 .week-view__time-col {
+  position: sticky;
+  left: 0;
+  z-index: 6;
   width: 50px;
   flex-shrink: 0;
-  overflow: hidden;
+  align-self: flex-start;
   background: var(--surface);
   touch-action: pan-y;
 }
@@ -890,7 +891,6 @@
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
   color: var(--text-secondary);
-  transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .week-view__time-start,
@@ -898,7 +898,6 @@
   display: block;
   font-size: var(--week-time-size, 12px);
   transform: scaleX(0.82) scaleY(var(--week-time-y, 1.22));
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), font-size 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .week-view__time-start {
@@ -935,11 +934,13 @@
 .week-view__grid-scroll {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
   padding-bottom: var(--bottom-nav-h);
   box-sizing: border-box;
+  background: var(--surface);
 }
 
 .week-view__grid-scroll--snap {

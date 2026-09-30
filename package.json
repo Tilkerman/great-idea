@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/inject-landing-env.js && node scripts/place-landing.mjs",
-    "build:pages": "BASE_PATH=/app/ npm run build",
+    "build:pages": "VITE_APP_BUILD=$(git rev-parse --short HEAD 2>/dev/null || echo local) BASE_PATH=/app/ npm run build",
     "preview": "vite preview",
     "screens:landing": "node scripts/capture-landing-screens.mjs"
   },

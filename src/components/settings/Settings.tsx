@@ -525,6 +525,11 @@ export function SettingsAbout() {
         <div className="settings-about__intro">
           <p className="settings-about__logo">{t('aboutHeadline')}</p>
           <p className="settings-about__tagline">{t('aboutLead')}</p>
+          {import.meta.env.VITE_APP_BUILD && (
+            <p className="settings-about__tagline">
+              {`Сборка ${import.meta.env.VITE_APP_BUILD}`}
+            </p>
+          )}
         </div>
         <p>{t('aboutLead2')}</p>
 

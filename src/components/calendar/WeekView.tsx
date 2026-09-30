@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
+import { WEEK_TIME_COL_WIDTH } from '../../constants/weekLayout';
 import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
 import { applyLiveWeekPinch, type WeekPinchLive } from '../../utils/weekPinchLive';
 import { HourSlot } from '../tasks/HourSlot';
@@ -41,16 +42,12 @@ type PendingPaste =
 
 export function WeekView({
   viewportWidth,
-  onHoursScroll,
   pinching = false,
   weekPinchLive,
-  chromeSlim = false,
 }: {
   viewportWidth: number;
-  onHoursScroll?: (scrollTop: number) => void;
   pinching?: boolean;
   weekPinchLive?: MutableRefObject<WeekPinchLive>;
-  chromeSlim?: boolean;
 }) {
   const {
     focusDate, tasks, settings, weekZoom, zoom, setEditingTask, setSheetOpen,
@@ -59,15 +56,11 @@ export function WeekView({
   const { t, taskWord, weekdays, weekdaysShort, locale, monthsGen, dateTag } = useI18n();
 
   const gridScrollRef = useRef<HTMLDivElement>(null);
-  const timeColRef = useRef<HTMLDivElement>(null);
-  const timeScrollRef = useRef<HTMLDivElement>(null);
   const daysTrackRef = useRef<HTMLDivElement>(null);
   const weekRootRef = useRef<HTMLDivElement>(null);
   const gridInnerRef = useRef<HTMLDivElement>(null);
   const pinchOriginRef = useRef<{ col: number; row: number } | null>(null);
   const horizontalScrollRef = useRef(0);
-  const headerCompactRef = useRef(false);
-  const bodyPaddingTopRef = useRef<number | null>(null);
   const layoutRef = useRef({ viewportWidth, dayCount: 7, hourCount: 15 });
   const now = useNow();
 
@@ -75,7 +68,6 @@ export function WeekView({
   const [pick, setPick] = useState<ClipPick | null>(null);
   const [toast, setToast] = useState('');
   const [pendingPaste, setPendingPaste] = useState<PendingPaste | null>(null);
-  const [headerCompact, setHeaderCompact] = useState(false);
   const toastTimer = useRef<number | null>(null);
   const undoSwipeIdsRef = useRef(new Set<string>());
   const [undoSwipeTick, setUndoSwipeTick] = useState(0);
@@ -161,7 +153,6 @@ export function WeekView({
   useEffect(() => {
     if (zoom !== 'day' || pinching) return;
     const grid = gridScrollRef.current;
-    const time = timeScrollRef.current;
     const daysTrack = daysTrackRef.current;
     if (!grid) return;
     const idx = Math.max(0, days.findIndex((d) => isSameDay(d, focusDate)));
@@ -176,7 +167,6 @@ export function WeekView({
     const apply = () => {
       grid.scrollLeft = left;
       grid.scrollTop = top;
-      if (time) time.style.transform = `translate3d(0,${-top}px,0)`;
       if (daysTrack) daysTrack.style.transform = `translate3d(${-left}px,0,0)`;
     };
     apply();
@@ -204,7 +194,6 @@ export function WeekView({
       pinchOriginRef.current = applyLiveWeekPinch({
         root,
         grid,
-        time: timeScrollRef.current,
         daysTrack: daysTrackRef.current,
         gridInner: gridInnerRef.current,
         viewportWidth: vw,
@@ -225,7 +214,6 @@ export function WeekView({
   useEffect(() => {
     if (zoom !== 'week' || pinching) return;
     const grid = gridScrollRef.current;
-    const time = timeScrollRef.current;
     if (!grid) return;
     const todayInWeek = days.some((d) => isToday(d));
     const pos = nowInHourGrid(new Date(), settings.dayStartHour, settings.dayEndHour);
@@ -236,7 +224,6 @@ export function WeekView({
       const nowY = pos.ratio * hours.length * rowHeight;
       const top = Math.max(0, nowY - grid.clientHeight / 3);
       grid.scrollTop = top;
-      if (time) time.style.transform = `translate3d(0,${-top}px,0)`;
       done = true;
     };
     apply();
@@ -348,95 +335,21 @@ export function WeekView({
     setMenuOpen((v) => !v);
   };
 
-  const updateHeaderCompact = useCallback((scrollTop: number) => {
-    if (pinching) return;
-    const compact = scrollTop > 20;
-    if (headerCompactRef.current === compact) return;
-    headerCompactRef.current = compact;
-    setHeaderCompact(compact);
-    onHoursScroll?.(scrollTop);
-  }, [onHoursScroll, pinching]);
-
-  const syncTimeTransform = useCallback((scrollTop: number) => {
-    const time = timeScrollRef.current;
-    if (time) time.style.transform = `translate3d(0,${-scrollTop}px,0)`;
-  }, []);
-
   const syncScroll = useCallback(() => {
     const grid = gridScrollRef.current;
     const daysTrack = daysTrackRef.current;
     if (!grid) return;
-    syncTimeTransform(grid.scrollTop);
     if (daysTrack && horizontalScrollRef.current !== grid.scrollLeft) {
       horizontalScrollRef.current = grid.scrollLeft;
       daysTrack.style.transform = `translate3d(${-grid.scrollLeft}px,0,0)`;
     }
-    updateHeaderCompact(grid.scrollTop);
-  }, [syncTimeTransform, updateHeaderCompact]);
-
-  useLayoutEffect(() => {
-    const body = weekRootRef.current?.querySelector('.week-view__body') as HTMLElement | null;
-    const grid = gridScrollRef.current;
-    if (!body || !grid) return;
-    const paddingTop = parseFloat(getComputedStyle(body).paddingTop) || 0;
-    const prev = bodyPaddingTopRef.current;
-    bodyPaddingTopRef.current = paddingTop;
-    if (prev == null || pinching) return;
-    const delta = prev - paddingTop;
-    if (Math.abs(delta) < 0.5) return;
-    grid.scrollTop = Math.max(0, grid.scrollTop + delta);
-    syncTimeTransform(grid.scrollTop);
-  }, [headerCompact, chromeSlim, pinching, syncTimeTransform]);
-
-  useEffect(() => {
-    const col = timeColRef.current;
-    const grid = gridScrollRef.current;
-    if (!col || !grid) return;
-    let startY = 0;
-    let startTop = 0;
-    let dragging = false;
-    const onStart = (event: TouchEvent) => {
-      if (event.touches.length !== 1) return;
-      dragging = true;
-      startY = event.touches[0].clientY;
-      startTop = grid.scrollTop;
-    };
-    const onMove = (event: TouchEvent) => {
-      if (event.touches.length !== 1) {
-        dragging = false;
-        return;
-      }
-      if (!dragging) return;
-      grid.scrollTop = startTop - (event.touches[0].clientY - startY);
-      syncScroll();
-      event.preventDefault();
-    };
-    const onEnd = () => {
-      dragging = false;
-    };
-    const onWheel = (event: WheelEvent) => {
-      grid.scrollTop += event.deltaY;
-      syncScroll();
-      event.preventDefault();
-    };
-    col.addEventListener('touchstart', onStart, { passive: true });
-    col.addEventListener('touchmove', onMove, { passive: false });
-    col.addEventListener('touchend', onEnd);
-    col.addEventListener('touchcancel', onEnd);
-    col.addEventListener('wheel', onWheel, { passive: false });
-    return () => {
-      col.removeEventListener('touchstart', onStart);
-      col.removeEventListener('touchmove', onMove);
-      col.removeEventListener('touchend', onEnd);
-      col.removeEventListener('touchcancel', onEnd);
-      col.removeEventListener('wheel', onWheel);
-    };
-  }, [syncScroll]);
+  }, []);
 
   const showFullWeekday = weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
   const layoutCol = pinching ? metricsHold.current.colWidth : colWidth;
   const layoutRow = pinching ? metricsHold.current.rowHeight : rowHeight;
   const gridWidth = layoutCol * days.length;
+  const gridInnerWidth = WEEK_TIME_COL_WIDTH + gridWidth;
   const pickDay = pick === 'copy-day' || pick === 'paste-day';
   const pickHour = pick === 'copy-hour' || pick === 'paste-hour';
 
@@ -474,7 +387,6 @@ export function WeekView({
       className={[
         'week-view',
         titlesOnly && 'week-view--sm-title',
-        (chromeSlim || headerCompact) && 'week-view--slim',
         pickDay && 'week-view--pick-day',
         pickHour && 'week-view--pick-hour',
       ].filter(Boolean).join(' ')}
@@ -528,13 +440,9 @@ export function WeekView({
               const label = (
                 <>
                   <span className="week-view__day-name">
-                    {(chromeSlim || headerCompact)
-                      ? shortName
-                      : (showFullWeekday ? fullName : shortName)}
+                    {showFullWeekday ? fullName : shortName}
                   </span>
-                  {!(chromeSlim || headerCompact) && (
-                    <span className="week-view__day-num">{d.getDate()}</span>
-                  )}
+                  <span className="week-view__day-num">{d.getDate()}</span>
                 </>
               );
               if (pickDay) {
@@ -560,20 +468,6 @@ export function WeekView({
       </div>
 
       <div className="week-view__body">
-        <div className="week-view__time-col" ref={timeColRef}>
-          <div className="week-view__time-track" ref={timeScrollRef}>
-            {hours.map((h) => {
-              const { start, end } = hourRangeLabels(h);
-              return (
-                <div key={h} className="week-view__time-label">
-                  <span className="week-view__time-start">{start}</span>
-                  <span className="week-view__time-dash" aria-hidden>–</span>
-                  <span className="week-view__time-end">{end}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
         <div
           className={`week-view__grid-scroll ${weekZoom > 0.45 && !pinching ? 'week-view__grid-scroll--snap' : ''}`}
           ref={gridScrollRef}
@@ -581,7 +475,19 @@ export function WeekView({
             syncScroll();
           }}
         >
-          <div className="week-view__grid" ref={gridInnerRef} style={{ width: gridWidth }}>
+          <div className="week-view__grid" ref={gridInnerRef} style={{ width: gridInnerWidth }}>
+            <div className="week-view__time-col">
+              {hours.map((h) => {
+                const { start, end } = hourRangeLabels(h);
+                return (
+                  <div key={h} className="week-view__time-label">
+                    <span className="week-view__time-start">{start}</span>
+                    <span className="week-view__time-dash" aria-hidden>–</span>
+                    <span className="week-view__time-end">{end}</span>
+                  </div>
+                );
+              })}
+            </div>
             {days.map((day) => {
               const when = isToday(day) ? 'today' : isPastDay(day) ? 'past' : null;
               return (

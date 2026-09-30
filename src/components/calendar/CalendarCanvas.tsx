@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { YearView } from './YearView';
 import { MonthView } from './MonthView';
@@ -21,10 +21,6 @@ export function CalendarCanvas() {
     typeof window === 'undefined' ? 390 : window.innerWidth,
   );
   const prevZoom = useRef(zoom);
-  const lastHoursTop = useRef(0);
-  const lastHoursDy = useRef(0);
-  const chromeSlimRef = useRef(false);
-  const [chromeSlim, setChromeSlim] = useState(false);
   const [enterKind, setEnterKind] = useState<'rubber-in' | 'rubber-out' | 'fade' | 'none'>('none');
   const [stageKey, setStageKey] = useState(0);
   const [showDevZoomBar, setShowDevZoomBar] = useState(false);
@@ -67,27 +63,6 @@ export function CalendarCanvas() {
       Boolean(import.meta.env.DEV && window.matchMedia('(pointer: fine)').matches),
     );
   }, []);
-
-  useEffect(() => {
-    chromeSlimRef.current = false;
-    lastHoursTop.current = 0;
-    lastHoursDy.current = 0;
-    setChromeSlim(false);
-    ref.current?.classList.remove('calendar-canvas--chrome-slim');
-  }, [zoom, ref]);
-
-  const applyChromeSlim = useCallback((slim: boolean) => {
-    if (chromeSlimRef.current === slim) return;
-    chromeSlimRef.current = slim;
-    setChromeSlim(slim);
-    ref.current?.classList.toggle('calendar-canvas--chrome-slim', slim);
-  }, [ref]);
-
-  const onHoursScroll = useCallback((scrollTop: number) => {
-    if (pinching) return;
-    lastHoursTop.current = scrollTop;
-    applyChromeSlim(scrollTop > 20);
-  }, [pinching, applyChromeSlim]);
 
   return (
     <div
@@ -164,10 +139,8 @@ export function CalendarCanvas() {
           {(zoom === 'week' || zoom === 'day') && (
             <WeekView
               viewportWidth={viewportWidth}
-              onHoursScroll={onHoursScroll}
               pinching={pinching}
               weekPinchLive={weekPinchLive}
-              chromeSlim={chromeSlim}
             />
           )}
         </div>

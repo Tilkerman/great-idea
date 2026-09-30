@@ -65,7 +65,7 @@ body,
 
 body {
   font-family: var(--font);
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
@@ -132,7 +132,7 @@ select {
   min-height: 100dvh;
   max-width: 480px;
   margin: 0 auto;
-  background: var(--bg);
+  background: var(--surface);
 }
 
 .app-shell:not(.app-shell--lumi) {
