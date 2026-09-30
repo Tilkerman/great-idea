@@ -369,17 +369,6 @@ a { color: inherit; text-decoration: none; }
 }
 .shot.is-missing .shot__img { display: none; }
 .shot.is-missing .shot__ph { display: flex; }
-.shot.is-missing .shot__live { display: none; }
-
-/* Живой превью PWA — настоящий интерфейс, не картинка */
-.shot__live {
-  display: block;
-  width: 100%;
-  aspect-ratio: 9 / 19.5;
-  border: none;
-  background: #fff;
-}
-.shot--hero .shot__live { min-height: 520px; }
 
 .cta-final {
   text-align: center;
@@ -545,10 +534,6 @@ a { color: inherit; text-decoration: none; }
 
 .shot--hero .shot__ph {
   min-height: 31rem;
-}
-
-.shot__live {
-  display: none;
 }
 
 .quote-block {
