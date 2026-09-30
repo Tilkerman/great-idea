@@ -59,14 +59,13 @@ export function WeekView({
   const { t, taskWord, weekdays, weekdaysShort, locale, monthsGen, dateTag } = useI18n();
 
   const gridScrollRef = useRef<HTMLDivElement>(null);
+  const timeColRef = useRef<HTMLDivElement>(null);
   const timeScrollRef = useRef<HTMLDivElement>(null);
   const daysTrackRef = useRef<HTMLDivElement>(null);
   const weekRootRef = useRef<HTMLDivElement>(null);
   const gridInnerRef = useRef<HTMLDivElement>(null);
   const pinchOriginRef = useRef<{ col: number; row: number } | null>(null);
   const horizontalScrollRef = useRef(0);
-  const ignoreGridScrollRef = useRef(false);
-  const ignoreTimeScrollRef = useRef(false);
   const headerCompactRef = useRef(false);
   const layoutRef = useRef({ viewportWidth, dayCount: 7, hourCount: 15 });
   const now = useNow();
@@ -176,7 +175,7 @@ export function WeekView({
     const apply = () => {
       grid.scrollLeft = left;
       grid.scrollTop = top;
-      if (time) time.scrollTop = top;
+      if (time) time.style.transform = `translate3d(0,${-top}px,0)`;
       if (daysTrack) daysTrack.style.transform = `translate3d(${-left}px,0,0)`;
     };
     apply();
@@ -236,7 +235,7 @@ export function WeekView({
       const nowY = pos.ratio * hours.length * rowHeight;
       const top = Math.max(0, nowY - grid.clientHeight / 3);
       grid.scrollTop = top;
-      if (time) time.scrollTop = top;
+      if (time) time.style.transform = `translate3d(0,${-top}px,0)`;
       done = true;
     };
     apply();
@@ -357,36 +356,61 @@ export function WeekView({
     onHoursScroll?.(scrollTop);
   }, [onHoursScroll, pinching]);
 
-  const syncScroll = useCallback((source: 'grid' | 'time') => {
+  const syncScroll = useCallback(() => {
     const grid = gridScrollRef.current;
     const time = timeScrollRef.current;
     const daysTrack = daysTrackRef.current;
-    if (!grid || !time) return;
-    if (source === 'grid') {
-      if (ignoreGridScrollRef.current) {
-        ignoreGridScrollRef.current = false;
-        return;
-      }
-      if (Math.abs(time.scrollTop - grid.scrollTop) > 1) {
-        ignoreTimeScrollRef.current = true;
-        time.scrollTop = grid.scrollTop;
-      }
-      if (daysTrack && horizontalScrollRef.current !== grid.scrollLeft) {
-        horizontalScrollRef.current = grid.scrollLeft;
-        daysTrack.style.transform = `translate3d(${-grid.scrollLeft}px,0,0)`;
-      }
-    } else {
-      if (ignoreTimeScrollRef.current) {
-        ignoreTimeScrollRef.current = false;
-        return;
-      }
-      if (Math.abs(grid.scrollTop - time.scrollTop) > 1) {
-        ignoreGridScrollRef.current = true;
-        grid.scrollTop = time.scrollTop;
-      }
+    if (!grid) return;
+    if (time) time.style.transform = `translate3d(0,${-grid.scrollTop}px,0)`;
+    if (daysTrack && horizontalScrollRef.current !== grid.scrollLeft) {
+      horizontalScrollRef.current = grid.scrollLeft;
+      daysTrack.style.transform = `translate3d(${-grid.scrollLeft}px,0,0)`;
     }
-    updateHeaderCompact(source === 'grid' ? grid.scrollTop : time.scrollTop);
+    updateHeaderCompact(grid.scrollTop);
   }, [updateHeaderCompact]);
+
+  useEffect(() => {
+    const col = timeColRef.current;
+    const grid = gridScrollRef.current;
+    if (!col || !grid) return;
+    let startY = 0;
+    let startTop = 0;
+    let dragging = false;
+    const onStart = (event: TouchEvent) => {
+      if (event.touches.length !== 1) return;
+      dragging = true;
+      startY = event.touches[0].clientY;
+      startTop = grid.scrollTop;
+    };
+    const onMove = (event: TouchEvent) => {
+      if (event.touches.length !== 1) {
+        dragging = false;
+        return;
+      }
+      if (!dragging) return;
+      grid.scrollTop = startTop - (event.touches[0].clientY - startY);
+      event.preventDefault();
+    };
+    const onEnd = () => {
+      dragging = false;
+    };
+    const onWheel = (event: WheelEvent) => {
+      grid.scrollTop += event.deltaY;
+      event.preventDefault();
+    };
+    col.addEventListener('touchstart', onStart, { passive: true });
+    col.addEventListener('touchmove', onMove, { passive: false });
+    col.addEventListener('touchend', onEnd);
+    col.addEventListener('touchcancel', onEnd);
+    col.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      col.removeEventListener('touchstart', onStart);
+      col.removeEventListener('touchmove', onMove);
+      col.removeEventListener('touchend', onEnd);
+      col.removeEventListener('touchcancel', onEnd);
+      col.removeEventListener('wheel', onWheel);
+    };
+  }, []);
 
   const showFullWeekday = weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
   const layoutCol = pinching ? metricsHold.current.colWidth : colWidth;
@@ -515,31 +539,25 @@ export function WeekView({
       </div>
 
       <div className="week-view__body">
-        <div
-          className="week-view__time-col"
-          ref={timeScrollRef}
-          onScroll={(event) => {
-            updateHeaderCompact(event.currentTarget.scrollTop);
-            syncScroll('time');
-          }}
-        >
-          {hours.map((h) => {
-            const { start, end } = hourRangeLabels(h);
-            return (
-              <div key={h} className="week-view__time-label">
-                <span className="week-view__time-start">{start}</span>
-                <span className="week-view__time-dash" aria-hidden>–</span>
-                <span className="week-view__time-end">{end}</span>
-              </div>
-            );
-          })}
+        <div className="week-view__time-col" ref={timeColRef}>
+          <div className="week-view__time-track" ref={timeScrollRef}>
+            {hours.map((h) => {
+              const { start, end } = hourRangeLabels(h);
+              return (
+                <div key={h} className="week-view__time-label">
+                  <span className="week-view__time-start">{start}</span>
+                  <span className="week-view__time-dash" aria-hidden>–</span>
+                  <span className="week-view__time-end">{end}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
         <div
           className={`week-view__grid-scroll ${weekZoom > 0.45 && !pinching ? 'week-view__grid-scroll--snap' : ''}`}
           ref={gridScrollRef}
-          onScroll={(event) => {
-            updateHeaderCompact(event.currentTarget.scrollTop);
-            syncScroll('grid');
+          onScroll={() => {
+            syncScroll();
           }}
         >
           <div className="week-view__grid" ref={gridInnerRef} style={{ width: gridWidth }}>

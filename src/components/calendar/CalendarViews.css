@@ -351,6 +351,7 @@
   position: relative;
   overflow: hidden;
   padding-top: 0;
+  background: var(--surface);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   --week-title-scale: 1;
@@ -861,11 +862,9 @@
 .week-view__time-col {
   width: 50px;
   flex-shrink: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: none;
+  overflow: hidden;
   background: var(--surface);
-  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .week-view__time-col::-webkit-scrollbar {

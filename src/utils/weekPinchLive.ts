@@ -46,7 +46,9 @@ export function applyLiveWeekPinch(args: {
   const maxTop = Math.max(0, rowHeight * args.hourCount - args.grid.clientHeight);
   args.grid.scrollLeft = keepPinchByOrigin(origin.col, colWidth, viewX, maxLeft);
   args.grid.scrollTop = keepPinchByOrigin(origin.row, rowHeight, viewY, maxTop);
-  if (args.time) args.time.scrollTop = args.grid.scrollTop;
+  if (args.time) {
+    args.time.style.transform = `translate3d(0,${-args.grid.scrollTop}px,0)`;
+  }
   if (args.daysTrack) {
     args.daysTrack.style.transform = `translate3d(${-args.grid.scrollLeft}px,0,0)`;
   }
