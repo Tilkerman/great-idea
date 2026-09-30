@@ -277,26 +277,28 @@ export default function LifeWheel({
           </div>
         </div>
 
-        <div className="life-wheel-cards-title">{t('wheel.cardsTitle')}</div>
+        <div className="life-wheel-cards-scroll">
+          <div className="life-wheel-cards-title">{t('wheel.cardsTitle')}</div>
 
-        <div className="life-wheel-grid">
-          {AREAS.map((area) => (
-            <button
-              key={area}
-              type="button"
-              className="life-area-tile"
-              onClick={() => {
-                const count = counts[area] ?? 0;
-                if (count > 0) return onShowAllDesires(area);
-                return onCreateWishInArea(area);
-              }}
-            >
-              <div className="life-area-label">{t(`areas.${area}` as never)}</div>
-              <div className="life-area-rect" style={{ background: AREA_TILE_COLORS[area] }}>
-                <div className="life-area-count">{counts[area] ?? 0}</div>
-              </div>
-            </button>
-          ))}
+          <div className="life-wheel-grid">
+            {AREAS.map((area) => (
+              <button
+                key={area}
+                type="button"
+                className="life-area-tile"
+                onClick={() => {
+                  const count = counts[area] ?? 0;
+                  if (count > 0) return onShowAllDesires(area);
+                  return onCreateWishInArea(area);
+                }}
+              >
+                <div className="life-area-label">{t(`areas.${area}` as never)}</div>
+                <div className="life-area-rect" style={{ background: AREA_TILE_COLORS[area] }}>
+                  <div className="life-area-count">{counts[area] ?? 0}</div>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

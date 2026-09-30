@@ -51,7 +51,7 @@
 
 .bottom-nav__item--add {
   flex: 0 0 72px;
-  gap: 7px;
+  gap: 4px;
   padding: 0;
   -webkit-user-select: none;
   user-select: none;
@@ -59,6 +59,7 @@
 }
 
 .bottom-nav__plus-mark {
+  display: none;
   width: 26px;
   height: 4px;
   border-radius: 999px;
