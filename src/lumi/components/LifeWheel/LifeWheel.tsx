@@ -152,6 +152,7 @@ export default function LifeWheel({
         </div>
 
         <div className="life-wheel-wrapper">
+          <div className="life-wheel-stage">
           <svg
             className="life-wheel-svg"
             viewBox={`0 0 ${viewSize} ${viewSize}`}
@@ -215,16 +216,6 @@ export default function LifeWheel({
             {/* центральная мандала */}
             <g className="life-wheel-center">
               <circle cx={cx} cy={cy} r={18} className="life-wheel-center-bg" />
-              <image
-                href={mandalaPng}
-                xlinkHref={mandalaPng}
-                x={cx - 13}
-                y={cy - 13}
-                width={26}
-                height={26}
-                opacity={0.95}
-                preserveAspectRatio="xMidYMid meet"
-              />
             </g>
 
             {/* labels around wheel (one per sector) */}
@@ -282,6 +273,8 @@ export default function LifeWheel({
               );
             })}
           </svg>
+          <img className="life-wheel-mandala" src={mandalaPng} alt="" />
+          </div>
         </div>
 
         <div className="life-wheel-cards-title">{t('wheel.cardsTitle')}</div>

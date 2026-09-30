@@ -188,6 +188,26 @@
   min-height: 0;
 }
 
+.life-wheel-stage {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.life-wheel-mandala {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8.5%;
+  height: auto;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  pointer-events: none;
+}
+
 .life-wheel-svg {
   touch-action: pan-y;
   display: block;

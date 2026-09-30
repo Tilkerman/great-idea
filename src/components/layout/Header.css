@@ -10,9 +10,7 @@
   position: sticky;
   top: 0;
   z-index: 50;
-  min-height: 52px;
-  max-height: calc(52px + env(safe-area-inset-top));
-  overflow: hidden;
+  min-height: calc(48px + env(safe-area-inset-top));
 }
 
 .app-header__brand {
