@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 REPO="Tilkerman/great-idea"
-BASE="/great-idea/"
+BASE="/app/"
 
 echo "→ Сборка..."
 BASE_PATH="$BASE" npm run build
@@ -26,7 +26,7 @@ if gh auth status >/dev/null 2>&1; then
     -f "source[branch]=gh-pages" \
     -f "source[path]=/"
   echo ""
-  echo "✅ Готово: https://tilkerman.github.io/great-idea/"
+  echo "✅ Готово: https://tili.su/"
 else
   echo ""
   echo "⚠️  gh не авторизован — включи Pages вручную:"

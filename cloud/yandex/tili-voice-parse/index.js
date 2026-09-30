@@ -1,9 +1,15 @@
-const ORIGIN = 'https://tilkerman.github.io';
+const ALLOWED_ORIGINS = new Set([
+  'https://tili.su',
+  'https://www.tili.su',
+  'https://tilkerman.github.io',
+]);
+let allowOrigin = 'https://tili.su';
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 function corsHeaders() {
   return {
-    'Access-Control-Allow-Origin': ORIGIN,
+    'Access-Control-Allow-Origin': allowOrigin,
+    Vary: 'Origin',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json',
@@ -96,7 +102,14 @@ async function callGroq(apiKey, model, userPrompt) {
   }
 }
 
+function applyOrigin(event) {
+  const headers = event?.headers || {};
+  const origin = headers.origin || headers.Origin || '';
+  allowOrigin = ALLOWED_ORIGINS.has(origin) ? origin : 'https://tili.su';
+}
+
 module.exports.handler = async function (event) {
+  applyOrigin(event);
   const method = event.httpMethod || 'POST';
   if (method === 'OPTIONS') return reply(204, '');
 

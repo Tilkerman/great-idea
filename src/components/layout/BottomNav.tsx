@@ -27,31 +27,37 @@ function NavIcon({ name }: { name: NavIconName }) {
   if (name === 'calendar') {
     return (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="3.5" y="5.5" width="17" height="15" rx="2.5" />
-        <path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01" />
+        <rect x="4" y="5" width="16" height="15" rx="3" />
+        <path d="M8 3.2v3.2M16 3.2v3.2" />
+        <circle cx="8.2" cy="11.2" r="0.9" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="11.2" r="0.9" fill="currentColor" stroke="none" />
+        <circle cx="15.8" cy="11.2" r="0.9" fill="currentColor" stroke="none" />
+        <circle cx="8.2" cy="15.2" r="0.9" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="15.2" r="0.9" fill="currentColor" stroke="none" />
+        <circle cx="15.8" cy="15.2" r="0.9" fill="currentColor" stroke="none" />
       </svg>
     );
   }
   if (name === 'growth') {
     return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 3.5 14 9l5.5 2-5.5 2-2 5.5-2-5.5-5.5-2L10 9l2-5.5Z" />
-        <path d="m18.5 3 .65 1.85L21 5.5l-1.85.65L18.5 8l-.65-1.85L16 5.5l1.85-.65L18.5 3Z" />
+      <svg className="nav-spark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M9.2 4.8 10.7 10.1 16 11.6 10.7 13.1 9.2 18.4 7.7 13.1 2.4 11.6 7.7 10.1 9.2 4.8Z" />
+        <path d="M18.4 2.2 19.15 4.15 21.1 4.9 19.15 5.65 18.4 7.6 17.65 5.65 15.7 4.9 17.65 4.15 18.4 2.2Z" />
       </svg>
     );
   }
   if (name === 'settings') {
     return (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 3.5v2.1M12 18.4v2.1M20.5 12h-2.1M5.6 12H3.5M18 6l-1.5 1.5M7.5 16.5 6 18M18 18l-1.5-1.5M7.5 7.5 6 6" />
-        <circle cx="12" cy="12" r="4.1" />
+        <path d="M10.5 3h3l.35 2.05c.5.15.95.4 1.35.7l1.9-1 2.15 2.15-1 1.9c.3.4.55.85.7 1.35L21 10.5v3l-2.05.35c-.15.5-.4.95-.7 1.35l1 1.9-2.15 2.15-1.9-1c-.4.3-.85.55-1.35.7L13.5 21h-3l-.35-2.05c-.5-.15-.95-.4-1.35-.7l-1.9 1-2.15-2.15 1-1.9c-.3-.4-.55-.85-.7-1.35L3 13.5v-3l2.05-.35c.15-.5.4-.95.7-1.35l-1-1.9L6.9 4.75l1.9 1c.4-.3.85-.55 1.35-.7L10.5 3Z" />
+        <circle cx="12" cy="12" r="2.5" />
       </svg>
     );
   }
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="8" r="3.6" />
-      <path d="M4.5 20c.8-4 3.5-6 7.5-6s6.7 2 7.5 6" />
+      <circle cx="12" cy="8" r="3.15" />
+      <path d="M5.4 19.2c.9-3.5 3.3-5.2 6.6-5.2s5.7 1.7 6.6 5.2" />
     </svg>
   );
 }
@@ -272,11 +278,12 @@ export function BottomNav() {
                 <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-1.08A7 7 0 0 0 19 11h-2z" />
               </svg>
             ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-                <path d="M12 5v14M5 12h14" />
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                <path d="M12 5.5v13M5.5 12h13" />
               </svg>
             )}
           </span>
+          <span className="bottom-nav__plus-mark" aria-hidden />
         </button>
         {tabs.slice(2).map((tab) => (
           <button

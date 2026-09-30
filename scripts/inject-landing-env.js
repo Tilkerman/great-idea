@@ -7,7 +7,9 @@ import path from 'path';
 
 const root = process.cwd();
 const envPath = path.join(root, '.env.production');
-const target = path.join(root, 'dist', 'landing-analytics.js');
+const appTarget = path.join(root, 'dist', 'app', 'landing-analytics.js');
+const rootTarget = path.join(root, 'dist', 'landing-analytics.js');
+const target = fs.existsSync(appTarget) ? appTarget : rootTarget;
 
 function readEnv() {
   if (!fs.existsSync(envPath)) return {};

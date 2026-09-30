@@ -1,7 +1,12 @@
 const webpush = require('web-push');
 const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
 
-const ORIGIN = 'https://tilkerman.github.io';
+const ALLOWED_ORIGINS = new Set([
+  'https://tili.su',
+  'https://www.tili.su',
+  'https://tilkerman.github.io',
+]);
+let allowOrigin = 'https://tili.su';
 const BUCKET = process.env.S3_BUCKET || 'tili-push-box';
 const FILE = 'devices.json';
 
@@ -16,7 +21,8 @@ const s3 = new S3Client({
 
 function corsHeaders() {
   return {
-    'Access-Control-Allow-Origin': ORIGIN,
+    'Access-Control-Allow-Origin': allowOrigin,
+    Vary: 'Origin',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json',
@@ -139,7 +145,14 @@ async function sendDue(devices) {
   return { sent };
 }
 
+function applyOrigin(event) {
+  const headers = event?.headers || {};
+  const origin = headers.origin || headers.Origin || '';
+  allowOrigin = ALLOWED_ORIGINS.has(origin) ? origin : 'https://tili.su';
+}
+
 module.exports.handler = async function (event) {
+  applyOrigin(event);
   const devices = await loadDevices();
 
   if (Array.isArray(event.messages)) {

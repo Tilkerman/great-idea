@@ -1,7 +1,7 @@
 import { tLocale } from '../i18n/catalog';
 import type { Locale } from '../types';
 
-export const TILI_PUBLIC_URL = 'https://tilkerman.github.io/great-idea/';
+export const TILI_PUBLIC_URL = 'https://tili.su/app/';
 
 export interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;

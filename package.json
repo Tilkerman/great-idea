@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "build:pages": "BASE_PATH=/great-idea/ tsc -b && BASE_PATH=/great-idea/ vite build && node scripts/inject-landing-env.js",
+    "build": "tsc -b && vite build && node scripts/inject-landing-env.js && node scripts/place-landing.mjs",
+    "build:pages": "BASE_PATH=/app/ npm run build",
     "preview": "vite preview",
     "screens:landing": "node scripts/capture-landing-screens.mjs"
   },

@@ -1,6 +1,6 @@
 # Landing TiLi / Lumi
 
-**URL (prod):** https://tilkerman.github.io/great-idea/landing.html
+**URL (prod):** https://tili.su/
 
 ## Файлы
 

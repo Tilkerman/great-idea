@@ -19,9 +19,9 @@ alwaysApply: true
 
 GitHub: `Tilkerman/great-idea` (ветка `main`). Репозиторий **должен быть Public** — иначе GitHub Pages отдаёт 404 на бесплатном аккаунте.
 
-Деплой: ветка `gh-pages`, корень `/`, сайт `https://tilkerman.github.io/great-idea/` (`BASE_PATH=/great-idea/`).
+Деплой: ветка `gh-pages`. `https://tili.su/` — лендинг. Приложение — `https://tili.su/app/` (`BASE_PATH=/app/`, файл `public/CNAME` = `tili.su`).
 
-**Стандартный адрес для телефона и шаринга:** https://tilkerman.github.io/great-idea/ — после заметных правок: commit → `git push origin main` → rsync → build из nested copy → `npx gh-pages -d dist`.
+**Стандартный адрес приложения для телефона и шаринга:** https://tili.su/app/ — после заметных правок: commit → `git push origin main` → rsync → build из nested copy → `npx gh-pages -d dist`.
 
 **Сборка:** Vite ломается (`ERR_INVALID_MODULE_SPECIFIER`), если `npm run build` запускать из папки с `\` в имени. Сборку и `gh-pages -d dist` делать из копии `/Users/macbookair/Работа/список/календарь` после `rsync` исходников (без `node_modules`, `dist`). Код править только в workspace с `\`.
 

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://tilkerman.github.io/great-idea/sitemap.xml
+Sitemap: https://tili.su/sitemap.xml

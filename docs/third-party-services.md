@@ -29,7 +29,7 @@
 
 | | |
 |---|---|
-| Прод URL | https://tilkerman.github.io/great-idea/ |
+| Прод URL | https://tili.su/ (приложение: https://tili.su/app/) |
 | Репозиторий | https://github.com/Tilkerman/great-idea |
 | Ветки | `main` — исходники; `gh-pages` — собранный `dist` |
 | Сборка | Из папки без `\` в пути (см. `.cursor/rules/project-location.mdc`): `npm run build`, `npx gh-pages -d dist` |
@@ -110,9 +110,9 @@ VITE_PUSH_API_URL=https://functions.yandexcloud.net/d4eps3rpvttu70fnqs21
 |---|---|
 | HTTP API (в PWA) | `VITE_VOICE_PARSE_URL` → `https://functions.yandexcloud.net/d4e0ljde6hqc9emkrbq5` |
 | Код | `cloud/yandex/tili-voice-parse/index.js` |
-| CORS | Origin `https://tilkerman.github.io` |
+| CORS | `https://tili.su`, `https://www.tili.su`, `https://tilkerman.github.io` |
 
-**Переменные только в Cloud Function:** `GROQ_API_KEY`, `GROQ_MODEL` (`llama-3.1-8b-instant`).
+**Переменные только в Cloud Function:** `GROQ_API_KEY`, `GROQ_MODEL`.
 
 **Клиент:** `src/utils/voiceTaskParse.ts`, удержание «+» — `BottomNav.tsx`.
 

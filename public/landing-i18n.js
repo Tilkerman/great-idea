@@ -1,8 +1,13 @@
 (function () {
   const STORAGE_LANG = 'tili-landing-lang';
   const UTM_KEY = 'tili-attribution-utm';
-  const BASE = './';
-  const CANONICAL = 'https://tilkerman.github.io/great-idea/landing.html';
+  const CANONICAL = 'https://tili.su/';
+  function appBase() {
+    const host = (location.hostname || '').toLowerCase();
+    if (host === 'tili.su' || host === 'www.tili.su') return '/app/';
+    return '/';
+  }
+  const BASE = appBase();
 
   const copy = {
     ru: {

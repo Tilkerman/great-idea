@@ -3,11 +3,12 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ command }) => {
-  const base =
-    process.env.BASE_PATH ?? (command === 'build' ? '/great-idea/' : '/');
+  const base = process.env.BASE_PATH ?? (command === 'build' ? '/app/' : '/');
+  const appAtSubpath = base === '/app/';
 
   return {
-  base,
+    base,
+    ...(appAtSubpath ? { build: { outDir: 'dist/app', emptyOutDir: true } } : {}),
   plugins: [
     react(),
     VitePWA({

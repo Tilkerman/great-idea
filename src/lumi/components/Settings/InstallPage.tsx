@@ -17,7 +17,7 @@ export default function InstallPage({ onBack, onDataCleared }: InstallPageProps)
 
   const handleShare = async () => {
     // Используем ссылку на GitHub Pages вместо локальной
-    const url = 'https://tilkerman.github.io/great-idea/';
+    const url = 'https://tili.su/app/';
     const title = t('header.appName');
     const text = t('settings.share.text');
 
