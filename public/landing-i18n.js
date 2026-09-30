@@ -28,7 +28,6 @@
       phMonth: '[ REAL SCREENSHOT: TiLi Month/Year ]',
       phLumi: '[ REAL SCREENSHOT: Lumi ]',
       capDay: 'Реальный экран приложения',
-      capLive: 'Живое приложение — так же откроется по кнопке',
       capWeek: 'Неделя',
       capMonth: 'Масштаб',
       capLumi: 'Реальный экран Lumi',
@@ -81,7 +80,7 @@
       trust1: 'Works in the browser', trust2: 'No heavy sign-up', trust3: 'Add to home screen', trust4: 'Data stays on your device',
       phDay: '[ REAL SCREENSHOT: TiLi Day View ]', phWeek: '[ REAL SCREENSHOT: TiLi Week View ]',
       phMonth: '[ REAL SCREENSHOT: TiLi Month/Year ]', phLumi: '[ REAL SCREENSHOT: Lumi ]',
-      capDay: 'Real app screen', capLive: 'Live app — same as the Try button', capWeek: 'Week', capMonth: 'Zoom levels', capLumi: 'Real Lumi screen',
+      capDay: 'Real app screen', capWeek: 'Week', capMonth: 'Zoom levels', capLumi: 'Real Lumi screen',
       tiliH: 'TiLi — a calendar for your time',
       tiliSub: 'TiLi shows not only what you need to do, but when it will actually happen in your day.',
       tiliP1: 'A usual list says: “You have 8 tasks.” TiLi says: “This is what your day looks like.”',
@@ -129,7 +128,7 @@
       trust1: 'En el navegador', trust2: 'Sin registro pesado', trust3: 'Añadir a inicio', trust4: 'Datos en tu dispositivo',
       phDay: '[ CAPTURA REAL: TiLi día ]', phWeek: '[ CAPTURA REAL: TiLi semana ]',
       phMonth: '[ CAPTURA REAL: TiLi mes/año ]', phLumi: '[ CAPTURA REAL: Lumi ]',
-      capDay: 'Pantalla real', capLive: 'App en vivo — igual que al pulsar Probar', capWeek: 'Semana', capMonth: 'Escala', capLumi: 'Pantalla Lumi',
+      capDay: 'Pantalla real', capWeek: 'Semana', capMonth: 'Escala', capLumi: 'Pantalla Lumi',
       tiliH: 'TiLi — calendario de tu tiempo',
       tiliSub: 'TiLi no solo muestra qué hacer, sino cuándo ocurrirá en tu día.',
       tiliP1: 'Una lista dice: «Tienes 8 tareas». TiLi dice: «Así se ve tu día».',
@@ -225,11 +224,6 @@
       a.setAttribute('href', appUrl(lang));
     });
 
-    const live = document.getElementById('hero-live-app');
-    if (live) {
-      live.src = `https://tilkerman.github.io/great-idea/?lang=${lang}`;
-    }
-
     try { localStorage.setItem(STORAGE_LANG, lang); } catch (_) {}
     try {
       const u = new URL(window.location.href);
@@ -252,7 +246,7 @@
   }
 
   function initShots() {
-    document.querySelectorAll('[data-shot-wrap]').forEach((wrap) => {
+    document.querySelectorAll('[data-shot-wrap], [data-real-screen]').forEach((wrap) => {
       const img = wrap.querySelector('.shot__img');
       if (!img) return;
       function check() {
@@ -263,21 +257,6 @@
       img.addEventListener('load', check);
       check();
     });
-    const hero = document.getElementById('hero-shot');
-    if (hero) {
-      const img = hero.querySelector('.shot__img');
-      const live = hero.querySelector('.shot__live');
-      if (img && live) {
-        const useImg = () => {
-          if (img.naturalWidth > 0) {
-            img.hidden = false;
-            live.hidden = true;
-          }
-        };
-        img.addEventListener('load', useImg);
-        if (img.complete) useImg();
-      }
-    }
   }
 
   function initReveal() {
