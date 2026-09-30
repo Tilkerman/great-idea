@@ -45,6 +45,10 @@ export function Header() {
           alt="TiLi Calendar"
           width={189}
           height={93}
+          onError={(event) => {
+            event.currentTarget.onerror = null;
+            event.currentTarget.src = `${import.meta.env.BASE_URL}icon-tili-192.png`;
+          }}
         />
       </div>
       <div className="app-header__nav">

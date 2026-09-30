@@ -216,6 +216,7 @@ export default function LifeWheel({
               <circle cx={cx} cy={cy} r={18} className="life-wheel-center-bg" />
               <image
                 href={mandalaPng}
+                xlinkHref={mandalaPng}
                 x={cx - 13}
                 y={cy - 13}
                 width={26}
