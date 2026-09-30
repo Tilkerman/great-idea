@@ -21,6 +21,40 @@ import './BottomNav.css';
 
 const TAB_IDS = ['calendar', 'growth', 'settings', 'profile'] as const;
 const HOLD_MS = 420;
+type NavIconName = (typeof TAB_IDS)[number];
+
+function NavIcon({ name }: { name: NavIconName }) {
+  if (name === 'calendar') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="3.5" y="5.5" width="17" height="15" rx="2.5" />
+        <path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01" />
+      </svg>
+    );
+  }
+  if (name === 'growth') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 3.5 14 9l5.5 2-5.5 2-2 5.5-2-5.5-5.5-2L10 9l2-5.5Z" />
+        <path d="m18.5 3 .65 1.85L21 5.5l-1.85.65L18.5 8l-.65-1.85L16 5.5l1.85-.65L18.5 3Z" />
+      </svg>
+    );
+  }
+  if (name === 'settings') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 3.5v2.1M12 18.4v2.1M20.5 12h-2.1M5.6 12H3.5M18 6l-1.5 1.5M7.5 16.5 6 18M18 18l-1.5-1.5M7.5 7.5 6 6" />
+        <circle cx="12" cy="12" r="4.1" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.6" />
+      <path d="M4.5 20c.8-4 3.5-6 7.5-6s6.7 2 7.5 6" />
+    </svg>
+  );
+}
 
 export function BottomNav() {
   const {
@@ -182,10 +216,10 @@ export function BottomNav() {
   };
 
   const tabs = [
-    { id: 'calendar' as const, label: t('navCalendar'), icon: '📅' },
-    { id: 'growth' as const, label: t('navGrowth'), icon: '✨' },
-    { id: 'settings' as const, label: t('navSettings'), icon: '⚙️' },
-    { id: 'profile' as const, label: t('navProfile'), icon: '👤' },
+    { id: 'calendar' as const, label: t('navCalendar') },
+    { id: 'growth' as const, label: t('navGrowth') },
+    { id: 'settings' as const, label: t('navSettings') },
+    { id: 'profile' as const, label: t('navProfile') },
   ];
 
   const onTab = (id: (typeof TAB_IDS)[number]) => {
@@ -213,10 +247,10 @@ export function BottomNav() {
           <button
             key={tab.id}
             type="button"
-            className={`bottom-nav__item ${(tab.id === 'calendar' && screen === 'calendar') || (tab.id === 'growth' && screen === 'lumi') ? 'bottom-nav__item--active' : ''}`}
+            className={`bottom-nav__item bottom-nav__item--${tab.id} ${(tab.id === 'calendar' && screen === 'calendar') || (tab.id === 'growth' && screen === 'lumi') ? 'bottom-nav__item--active' : ''}`}
             onClick={() => onTab(tab.id)}
           >
-            <span className="bottom-nav__icon">{tab.icon}</span>
+            <span className="bottom-nav__icon"><NavIcon name={tab.id} /></span>
             <span className="bottom-nav__label">{tab.label}</span>
           </button>
         ))}
@@ -248,10 +282,10 @@ export function BottomNav() {
           <button
             key={tab.id}
             type="button"
-            className={`bottom-nav__item ${tab.id === 'settings' && settingsOn ? 'bottom-nav__item--active' : ''} ${tab.id === 'profile' && profileOn ? 'bottom-nav__item--active' : ''}`}
+            className={`bottom-nav__item bottom-nav__item--${tab.id} ${tab.id === 'settings' && settingsOn ? 'bottom-nav__item--active' : ''} ${tab.id === 'profile' && profileOn ? 'bottom-nav__item--active' : ''}`}
             onClick={() => onTab(tab.id)}
           >
-            <span className="bottom-nav__icon">{tab.icon}</span>
+            <span className="bottom-nav__icon"><NavIcon name={tab.id} /></span>
             <span className="bottom-nav__label">{tab.label}</span>
           </button>
         ))}

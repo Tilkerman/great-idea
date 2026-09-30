@@ -23,7 +23,7 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: #20242a;
   font-size: 10px;
   touch-action: manipulation;
 }
@@ -124,11 +124,40 @@
 }
 
 .bottom-nav__icon {
-  font-size: 18px;
+  display: grid;
+  width: 23px;
+  height: 23px;
+  place-items: center;
+  color: currentColor;
+}
+
+.bottom-nav__icon svg {
+  width: 21px;
+  height: 21px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bottom-nav__item--calendar.bottom-nav__item--active,
+.bottom-nav__item--settings.bottom-nav__item--active,
+.bottom-nav__item--profile.bottom-nav__item--active {
+  color: var(--accent);
+}
+
+.bottom-nav__item--growth.bottom-nav__item--active {
+  color: #8b6eb4;
 }
 
 .bottom-nav__label {
   font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.bottom-nav__item--active .bottom-nav__label {
+  color: currentColor;
+  font-weight: 650;
 }
 
 /* Пока держим «+» для микрофона — не даём Safari выделять текст календаря под пальцем */
