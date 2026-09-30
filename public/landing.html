@@ -3,233 +3,257 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#4a8f5c" />
-  <meta name="description" content="TiLi — календарь часов. Lumi — желания. Планируй день по часам в браузере." />
+  <meta name="theme-color" content="#5f9f72" />
+  <meta name="description" content="TiLi — календарь твоего времени. Lumi — календарь желаний. День как сетка часов, не бесконечный список." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://tilkerman.github.io/great-idea/landing.html" />
+  <link rel="alternate" hreflang="ru" href="https://tilkerman.github.io/great-idea/landing.html?lang=ru" />
+  <link rel="alternate" hreflang="en" href="https://tilkerman.github.io/great-idea/landing.html?lang=en" />
+  <link rel="alternate" hreflang="es" href="https://tilkerman.github.io/great-idea/landing.html?lang=es" />
+  <link rel="alternate" hreflang="x-default" href="https://tilkerman.github.io/great-idea/landing.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://tilkerman.github.io/great-idea/landing.html" />
+  <meta property="og:title" content="TiLi — календарь твоего времени" id="og-title" />
+  <meta property="og:description" content="" id="og-desc" />
+  <meta property="og:image" content="https://tilkerman.github.io/great-idea/icon-tili-512.png" />
+  <meta name="twitter:card" content="summary" />
   <title>TiLi — календарь твоего времени</title>
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
   <link rel="stylesheet" href="./landing.css" />
+  <script src="./landing-analytics.js" defer></script>
 </head>
 <body>
-  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-    <symbol id="check" viewBox="0 0 20 20"><path fill="currentColor" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.25 7.25a1 1 0 0 1-1.4 0l-3.25-3.25a1 1 0 1 1 1.4-1.4l2.55 2.55 6.55-6.55a1 1 0 0 1 1.4 0Z"/></symbol>
-    <symbol id="icon-laptop" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M4 6h16v10H4zM2 18h20"/></symbol>
-    <symbol id="icon-shield" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 3 4 7v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4z"/></symbol>
-    <symbol id="icon-phone" viewBox="0 0 24 24"><rect fill="none" stroke="currentColor" stroke-width="1.8" x="7" y="2" width="10" height="20" rx="2"/></symbol>
-  </svg>
+  <a class="skip-link" href="#main" data-i18n="skipMain">К содержанию</a>
 
   <header class="site-header">
     <div class="site-header__inner">
       <a class="brand" href="#top">
-        <img src="./logo-tili-header.png" width="40" height="40" alt="" />
-        <span class="brand__text">
+        <img src="./logo-tili-header.png" width="36" height="36" alt="" />
+        <span>
           <span class="brand__name">TiLi</span>
           <span class="brand__tag" data-i18n="brandTag">календарь твоего времени</span>
         </span>
       </a>
-      <nav class="nav" aria-label="Main">
+      <nav class="nav-main" aria-label="Main">
         <a href="#tili" data-i18n="navTili">TiLi</a>
         <a href="#lumi" data-i18n="navLumi">Lumi</a>
         <a href="#philosophy" data-i18n="navPhilosophy">Философия</a>
-        <a href="#for-whom" data-i18n="navFor">Для кого</a>
-        <a href="#faq" data-i18n="navFaq">FAQ</a>
       </nav>
-      <div class="header-actions">
-        <a class="btn btn--primary" href="./" data-i18n="ctaTry">Попробовать TiLi</a>
+      <div class="header-end">
         <div class="lang" role="group" aria-label="Language">
           <button type="button" data-lang="ru" aria-pressed="true">RU</button>
           <button type="button" data-lang="en" aria-pressed="false">EN</button>
           <button type="button" data-lang="es" aria-pressed="false">ES</button>
         </div>
+        <a class="btn btn--primary js-app-open" href="./" data-i18n="ctaTry">Попробовать</a>
+        <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="nav-mobile" id="menu-toggle">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
+    <nav class="nav-mobile" id="nav-mobile" aria-label="Mobile">
+      <a href="#tili" data-i18n="navTili">TiLi</a>
+      <a href="#lumi" data-i18n="navLumi">Lumi</a>
+      <a href="#philosophy" data-i18n="navPhilosophy">Философия</a>
+      <a class="js-app-open" href="./" data-i18n="ctaTry">Попробовать</a>
+    </nav>
   </header>
 
-  <main id="top">
-    <section class="section section--hero">
-      <div class="hero-grid">
-        <div class="hero">
-          <h1><span data-i18n="heroH1a">У тебя есть время.</span> <span class="accent" data-i18n="heroH1b">Используй его по-настоящему.</span></h1>
-          <p class="lead" data-i18n="heroLead">TiLi помогает видеть свой день целиком, планировать дела по часам и находить место для важного.</p>
-          <a class="btn btn--primary btn--lg" href="./" data-i18n="ctaFree">Попробовать TiLi бесплатно</a>
-          <div class="hero-pills">
-            <span><svg width="18" height="18"><use href="#icon-laptop"/></svg> <span data-i18n="pillBrowser">Работает в браузере</span></span>
-            <span><svg width="18" height="18"><use href="#icon-shield"/></svg> <span data-i18n="pillGuest">Без регистрации</span></span>
-            <span><svg width="18" height="18"><use href="#icon-phone"/></svg> <span data-i18n="pillInstall">Можно установить на главный экран</span></span>
+  <main id="main">
+    <section class="section hero reveal" id="top">
+      <div class="hero__grid">
+        <div>
+          <h1>
+            <span data-i18n="heroL1">У тебя есть время.</span>
+            <span class="line2" data-i18n="heroL2">Используй его по-настоящему.</span>
+          </h1>
+          <p class="hero__lead" data-i18n="heroLead">TiLi помогает увидеть свой день не как бесконечный список дел, а как пространство времени. Lumi помогает не забывать о том, чего ты действительно хочешь.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg js-app-open js-hero-cta" href="./" data-i18n="ctaTryFree">Попробовать TiLi</a>
+            <a class="btn btn--ghost" href="#lumi" data-i18n="ctaLumi">Узнать про Lumi ↓</a>
+          </div>
+          <div class="hero__trust">
+            <span data-i18n="trust1">Работает в браузере</span>
+            <span data-i18n="trust2">Без сложной регистрации</span>
+            <span data-i18n="trust3">Можно на экран «Домой»</span>
+            <span data-i18n="trust4">Данные на вашем устройстве</span>
           </div>
         </div>
-        <div class="hero-visual">
-          <p class="hand-note hand-note--hero" data-i18n="heroNote">видь свой день по часам, а не списком дел</p>
-          <div class="phone" aria-hidden="true">
-            <div class="phone__screen">
-              <div class="phone__status"></div>
-              <div class="phone__appbar">TiLi</div>
-              <div class="phone__hours">
-                <div class="hour-row"><span class="hour-row__label">9</span><div class="hour-row__blocks"><div class="block block--work" style="flex:2"></div><div class="block block--empty"></div></div></div>
-                <div class="hour-row"><span class="hour-row__label">10</span><div class="hour-row__blocks"><div class="block block--personal" style="flex:1.5"></div></div></div>
-                <div class="hour-row"><span class="hour-row__label">11</span><div class="hour-row__blocks"><div class="block block--family"></div><div class="block block--work"></div></div></div>
-                <div class="hour-row"><span class="hour-row__label">12</span><div class="hour-row__blocks"><div class="block block--personal"></div></div></div>
-                <div class="hour-row"><span class="hour-row__label">13</span><div class="hour-row__blocks"><div class="block block--family" style="flex:2"></div></div></div>
-                <div class="hour-row"><span class="hour-row__label">14</span><div class="hour-row__blocks"><div class="block block--work"></div><div class="block block--personal"></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <figure class="shot shot--hero" id="hero-shot">
+          <img class="shot__img" src="./screens/tili-day.png" alt="" width="390" height="844" loading="eager" hidden />
+          <iframe
+            class="shot__live"
+            id="hero-live-app"
+            title="TiLi"
+            src="https://tilkerman.github.io/great-idea/?lang=ru"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+          <div class="shot__ph" data-i18n="phDay">[ REAL SCREENSHOT: TiLi Day View ]</div>
+          <figcaption data-i18n="capLive">Живое приложение — так же откроется по кнопке</figcaption>
+        </figure>
       </div>
     </section>
 
-    <div class="full-bleed bg-cream" id="tili">
-      <section class="section split">
-        <div class="split__text">
-          <p class="section-num">01</p>
-          <h2 data-i18n="tiliTitle">TiLi — календарь твоего времени</h2>
-          <p class="intro" data-i18n="tiliIntro">TiLi показывает день как пространство времени, а не бесконечный список. Ты видишь, что реально поместится в сутки.</p>
-          <ul class="checklist">
-            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check1">Планирование по часам</span></li>
-            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check2">Напоминания вовремя</span></li>
-            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check3">Работа офлайн на устройстве</span></li>
-            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check4">Резервная копия и перенос через JSON</span></li>
-            <li><svg width="20" height="20"><use href="#check"/></svg><span data-i18n="check5">Год, месяц, неделя, день — твой масштаб</span></li>
+    <section class="section reveal" id="tili" data-analytics-section="tili">
+      <p class="section-label">01</p>
+      <h2 data-i18n="tiliH">TiLi — календарь твоего времени</h2>
+      <p class="lead-text" data-i18n="tiliSub">TiLi показывает не просто то, что тебе нужно сделать. Он показывает, когда в твоём дне это действительно произойдёт.</p>
+      <div class="split">
+        <div>
+          <p data-i18n="tiliP1">Обычный список задач говорит: «У тебя 8 дел». TiLi показывает другое: «Вот как выглядит твой сегодняшний день».</p>
+          <p data-i18n="tiliP2">Каждое дело получает своё место во времени. День — часовая сетка: занятые часы, свободное пространство, куда уходит день.</p>
+          <ul class="meaning-list">
+            <li><strong data-i18n="m1t">Время</strong><span data-i18n="m1d">Каждая задача — конкретное место в течение дня.</span></li>
+            <li><strong data-i18n="m2t">Свободное время</strong><span data-i18n="m2d">Пустое пространство — тоже часть дня.</span></li>
+            <li><strong data-i18n="m3t">Несколько уровней</strong><span data-i18n="m3d">Год → месяц → неделя → день.</span></li>
+            <li><strong data-i18n="m4t">Быстрое планирование</strong><span data-i18n="m4d">Создать задачу из нужного часа.</span></li>
+            <li><strong data-i18n="m5t">Напоминания</strong><span data-i18n="m5d">Баннер в нужный момент (PWA + настройки).</span></li>
+            <li><strong data-i18n="m6t">Категории</strong><span data-i18n="m6d">Работа, личное, семья — структура дня.</span></li>
           </ul>
         </div>
-        <div class="split__media">
-          <div class="browser" aria-hidden="true">
-            <div class="browser__chrome"><span class="browser__dot"></span><span class="browser__dot"></span><span class="browser__dot"></span><span class="browser__url">tili.app</span></div>
-            <div class="browser__week">
-              <span></span><span></span><span></span><span></span><span></span><span></span>
-              <span>9</span><div class="block block--work"></div><div class="block block--personal"></div><div class="block block--family"></div><div class="block block--work"></div><div class="block block--empty"></div>
-              <span>10</span><div class="block block--personal"></div><div class="block block--work"></div><div class="block block--empty"></div><div class="block block--family"></div><div class="block block--personal"></div>
-              <span>11</span><div class="block block--family"></div><div class="block block--family"></div><div class="block block--work"></div><div class="block block--personal"></div><div class="block block--work"></div>
-            </div>
-          </div>
+        <div class="shots-row">
+          <figure class="shot" data-shot-wrap>
+            <img class="shot__img" src="./screens/tili-day.png" alt="" loading="lazy" />
+            <div class="shot__ph" data-i18n="phDay">[ REAL SCREENSHOT: TiLi Day View ]</div>
+            <figcaption data-i18n="capDay">День</figcaption>
+          </figure>
+          <figure class="shot" data-shot-wrap>
+            <img class="shot__img" src="./screens/tili-week.png" alt="" loading="lazy" />
+            <div class="shot__ph" data-i18n="phWeek">[ REAL SCREENSHOT: TiLi Week View ]</div>
+            <figcaption data-i18n="capWeek">Неделя</figcaption>
+          </figure>
+          <figure class="shot" data-shot-wrap>
+            <img class="shot__img" src="./screens/tili-month.png" alt="" loading="lazy" />
+            <div class="shot__ph" data-i18n="phMonth">[ REAL SCREENSHOT: TiLi Month/Year ]</div>
+            <figcaption data-i18n="capMonth">Масштаб</figcaption>
+          </figure>
         </div>
-      </section>
-    </div>
-
-    <div class="full-bleed bg-lumi" id="lumi">
-      <section class="section">
-        <p class="section-num">02</p>
-        <h2 data-i18n="lumiTitle">Lumi — календарь твоих желаний</h2>
-        <p class="intro" data-i18n="lumiIntro">Lumi помогает не забывать о том, что важно именно тебе: фиксировать желания, делить их на шаги и двигаться к большим целям спокойно.</p>
-        <div class="lumi-grid">
-          <div class="lumi-icons">
-            <div class="lumi-icon-card"><div class="emoji">💜</div><strong data-i18n="lumiF1t">Желания</strong><span data-i18n="lumiF1d">Записывай мечты и цели</span></div>
-            <div class="lumi-icon-card"><div class="emoji">✨</div><strong data-i18n="lumiF2t">Сферы</strong><span data-i18n="lumiF2d">Колесо баланса жизни</span></div>
-            <div class="lumi-icon-card"><div class="emoji">📋</div><strong data-i18n="lumiF3t">Шаги</strong><span data-i18n="lumiF3d">Дроби на маленькие дела</span></div>
-            <div class="lumi-icon-card"><div class="emoji">📈</div><strong data-i18n="lumiF4t">Прогресс</strong><span data-i18n="lumiF4d">Видь, как движешься</span></div>
-          </div>
-          <div class="lumi-mascot">
-            <div class="phone" style="width:240px">
-              <div class="phone__screen" style="background: linear-gradient(180deg,#ebe4f8,#fff)">
-                <div class="phone__status"></div>
-                <div class="phone__appbar" style="color: var(--lumi-accent)">Lumi</div>
-                <div style="padding:12px;text-align:center;font-size:0.75rem;color:#666" data-i18n="lumiScreen">Мои желания</div>
-                <img src="./icon-lumi-192.png" alt="" width="80" height="80" style="margin:0 auto;border-radius:20px" />
-              </div>
-            </div>
-            <p class="hand-note hand-note--lumi" data-i18n="lumiNote">маленькие шаги к большим изменениям</p>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <div class="full-bleed bg-beige" id="philosophy">
-      <section class="section">
-        <p class="section-num">03</p>
-        <h2 data-i18n="philTitle">Философия TiLi</h2>
-        <p class="intro" data-i18n="philIntro">Время — главный ресурс. TiLi и Lumi помогают жить в согласии с желаниями, а не только с дедлайнами.</p>
-        <div class="philosophy-flow">
-          <div class="phil-item"><div class="emoji">📝</div><p data-i18n="phil1">Не больше дел, а больше смысла</p></div>
-          <div class="phil-item"><div class="emoji">⏰</div><p data-i18n="phil2">Не заполнить всё время, а оставить место для важного</p></div>
-          <div class="phil-item"><div class="emoji">💚</div><p data-i18n="phil3">Не спешить, а двигаться в своём темпе</p></div>
-          <div class="phil-item"><div class="emoji">☀️</div><p data-i18n="phil4">Жить день, который отражает тебя</p></div>
-        </div>
-      </section>
-    </div>
-
-    <section class="section" id="for-whom">
-      <p class="section-num">04</p>
-      <h2 data-i18n="forTitle">Для кого</h2>
-      <p class="intro" data-i18n="forIntro">Если устали от списков, которые никогда не кончаются, и хотите видеть реальный день на одном экране.</p>
-      <div class="audience-cards">
-        <article class="audience-card"><strong data-i18n="for1t">Занятым</strong><p data-i18n="for1d">Когда важно уложить дела в часы, а не копить «на потом».</p></article>
-        <article class="audience-card"><strong data-i18n="for2t">Мечтателям</strong><p data-i18n="for2d">Когда есть большие желания и нужны маленькие шаги в Lumi.</p></article>
-        <article class="audience-card"><strong data-i18n="for3t">Семье</strong><p data-i18n="for3d">Когда работа, личное и семья должны быть видны разными цветами.</p></article>
+      </div>
+      <div class="quote-block reveal">
+        <p data-i18n="tiliQuote">Не список дел.<br>Сетка твоего времени.</p>
       </div>
     </section>
 
-    <section class="section faq" id="faq">
-      <p class="section-num">FAQ</p>
-      <h2 data-i18n="faqTitle">Частые вопросы</h2>
-      <details>
-        <summary data-i18n="faq1q">Нужна ли регистрация?</summary>
-        <p data-i18n="faq1a">Нет. Можно сразу пользоваться как гость. Аккаунт локальный и не синхронизирует данные между телефонами.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq2q">Есть ли облако?</summary>
-        <p data-i18n="faq2a">Нет облачного sync. Задачи на устройстве; перенос — через экспорт JSON в настройках.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq3q">Как установить на iPhone?</summary>
-        <p data-i18n="faq3a">Safari → «Поделиться» → «На экран Домой». Так же работают напоминания.</p>
-      </details>
-      <details>
-        <summary data-i18n="faq4q">TiLi и Lumi — одно приложение?</summary>
-        <p data-i18n="faq4a">Да, одна PWA: вкладки календаря и желаний, шаг из Lumi можно связать с делом в TiLi.</p>
-      </details>
+    <div class="full-bleed full-bleed--lumi">
+      <section class="section reveal" id="lumi" data-analytics-section="lumi">
+        <p class="section-label">02</p>
+        <h2 data-i18n="lumiH">Lumi — календарь твоих желаний</h2>
+        <p class="lead-text" data-i18n="lumiSub">У каждого есть планы на завтра. Но есть и то, чего хочется от жизни гораздо сильнее. Lumi — пространство для таких желаний.</p>
+        <div class="split">
+          <div>
+            <p data-i18n="lumiP1">Lumi не превращает желание в обычную задачу. Желание может содержать образ, чувства, причины, мысли, маленькие шаги и связь с действиями в календаре.</p>
+            <p data-i18n="lumiP2">Это место, к которому можно возвращаться — сформулировать, почувствовать, понять, разбить на шаги, сделать.</p>
+            <div class="book-block">
+              <p data-i18n="book1">Lumi вдохновлён идеями книги David Cameron Gikandi <em>A Happy Pocket Full of Money</em>.</p>
+              <p data-i18n="book2">В книге — про формулировку желаний, чувства, намерение и действия. Lumi развивает это в своём формате: желание становится пространством, к которому можно возвращаться и приближать к реальности шаг за шагом.</p>
+            </div>
+          </div>
+          <figure class="shot" data-shot-wrap>
+            <img class="shot__img" src="./screens/lumi-wish.png" alt="" loading="lazy" />
+            <div class="shot__ph" data-i18n="phLumi">[ REAL SCREENSHOT: Lumi ]</div>
+            <figcaption data-i18n="capLumi">Реальный экран Lumi</figcaption>
+          </figure>
+        </div>
+        <div class="quote-block">
+          <p data-i18n="lumiQuote">Желание — это не задача на 15:00.</p>
+          <p class="sub" data-i18n="lumiQuoteSub">Иногда ему нужно место, образ, чувство и маленький первый шаг.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="section reveal" id="philosophy" data-analytics-section="philosophy">
+      <p class="section-label">03</p>
+      <h2 data-i18n="philH">Время и желания — рядом,<br>но каждое на своём месте.</h2>
+      <div class="philosophy-grid">
+        <div class="phil-card">
+          <h3>TiLi</h3>
+          <p class="dim" data-i18n="philTime">Время</p>
+          <ul>
+            <li data-i18n="philT1">Что я делаю?</li>
+            <li data-i18n="philT2">Когда я это делаю?</li>
+            <li data-i18n="philT3">Сколько времени у меня есть?</li>
+          </ul>
+        </div>
+        <div class="phil-card">
+          <h3>Lumi</h3>
+          <p class="dim" data-i18n="philWish">Желания</p>
+          <ul>
+            <li data-i18n="philL1">Чего я хочу?</li>
+            <li data-i18n="philL2">Почему это важно?</li>
+            <li data-i18n="philL3">Что я чувствую?</li>
+            <li data-i18n="philL4">Какой маленький шаг могу сделать?</li>
+          </ul>
+        </div>
+        <div class="phil-card">
+          <h3 data-i18n="philTogether">Вместе</h3>
+          <p data-i18n="philChain">Желание → шаг → время → действие</p>
+        </div>
+      </div>
     </section>
 
-    <div class="cta-band">
-      <p data-i18n="ctaBand">Попробуй TiLi и посмотри на своё время иначе</p>
-      <a class="btn btn--primary btn--lg" href="./" data-i18n="ctaFree">Попробовать TiLi бесплатно</a>
-      <p class="aside" data-i18n="ctaAside">Работает в браузере. Регистрация не обязательна.</p>
+    <section class="section section--tight reveal" id="bridge">
+      <h2 data-i18n="bridgeH">Как Lumi и TiLi связаны</h2>
+      <ol class="steps-story">
+        <li data-i18n="step1">У меня есть желание.</li>
+        <li data-i18n="step2">Я записываю его в Lumi.</li>
+        <li data-i18n="step3">Разбиваю на маленький шаг.</li>
+        <li data-i18n="step4">Если шаг требует времени — отправляю его в TiLi.</li>
+        <li data-i18n="step5">TiLi показывает, когда я это сделаю.</li>
+      </ol>
+      <p data-i18n="bridgeP">Lumi хранит то, чего ты хочешь. TiLi помогает найти для этого место в реальном времени.</p>
+      <div class="flow-minimal" aria-hidden="true">
+        <div>LUMI</div>
+        <div class="dim" data-i18n="flowWish">Желание</div>
+        <div>↓</div>
+        <div class="dim" data-i18n="flowStep">Маленький шаг</div>
+        <div>↓</div>
+        <div>TiLi</div>
+        <div class="dim" data-i18n="flowTime">Реальное время</div>
+        <div>↓</div>
+        <div class="dim" data-i18n="flowDo">Действие</div>
+      </div>
+    </section>
+
+    <div class="cta-final reveal">
+      <p class="eyebrow" data-i18n="ctaEyebrow">У тебя уже есть время.</p>
+      <h2 data-i18n="ctaH">Вопрос только в том,<br>на что ты его потратишь.</h2>
+      <a class="btn btn--primary btn--lg js-app-open" href="./" data-i18n="ctaTryFree">Попробовать TiLi</a>
+      <p class="fine" data-i18n="ctaFine">Работает в браузере. Без сложной регистрации.</p>
     </div>
   </main>
 
   <footer class="site-footer">
-    <div class="footer-grid">
+    <div class="footer-inner">
       <div class="brand">
-        <img src="./logo-tili-header.png" width="40" height="40" alt="" />
-        <span class="brand__text">
-          <span class="brand__name">TiLi</span>
-          <span class="brand__tag" data-i18n="brandTag">календарь твоего времени</span>
-        </span>
+        <img src="./logo-tili-header.png" width="36" height="36" alt="" />
+        <span class="brand__name">TiLi + Lumi</span>
       </div>
       <div class="footer-col">
-        <h3>TiLi</h3>
+        <h4 data-i18n="footProd">Продукт</h4>
         <ul>
           <li><a href="#tili" data-i18n="navTili">TiLi</a></li>
-          <li><a href="#faq" data-i18n="navFaq">FAQ</a></li>
-          <li><a href="./" data-i18n="ctaTry">Попробовать</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h3>Lumi</h3>
-        <ul>
           <li><a href="#lumi" data-i18n="navLumi">Lumi</a></li>
-          <li><a href="./" data-i18n="footerOpenLumi">Открыть приложение</a></li>
+          <li><a class="js-app-open" href="./" data-i18n="ctaTry">Попробовать</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h3 data-i18n="footerAbout">О проекте</h3>
+        <h4 data-i18n="footAbout">О проекте</h4>
         <ul>
           <li><a href="#philosophy" data-i18n="navPhilosophy">Философия</a></li>
-          <li><a href="#for-whom" data-i18n="navFor">Для кого</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h3 data-i18n="footerSupport">Поддержка</h3>
+        <h4 data-i18n="footDocs">Документы</h4>
         <ul>
-          <li><a href="./privacy.html" data-i18n="footerPrivacy">Конфиденциальность</a></li>
-          <li><a href="./" data-i18n="footerSupportApp">Поддержать автора в приложении</a></li>
+          <li><a href="./privacy.html" data-i18n="footPrivacy">Конфиденциальность</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
       <span>© 2026 TiLi</span>
-      <span>
-        <a href="./privacy.html" data-i18n="footerPrivacy">Конфиденциальность</a>
-      </span>
+      <span data-i18n="footData">Без облачного sync задач. Резерв — JSON в настройках.</span>
     </div>
   </footer>
 

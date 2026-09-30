@@ -1,22 +1,37 @@
-# Лендинг TiLi
+# Landing TiLi / Lumi
 
-Статичная страница: **`public/landing.html`** → после сборки  
-`https://tilkerman.github.io/great-idea/landing.html`
+**URL (prod):** https://tilkerman.github.io/great-idea/landing.html
 
-Языки: RU / EN / ES (переключатель, выбор в `localStorage`: `tili-landing-lang`).
+## Файлы
 
-Кнопка «Открыть приложение» ведёт на `./` (корень PWA).
+| Файл | Назначение |
+|------|------------|
+| `public/landing.html` | Разметка по ТЗ |
+| `public/landing.css` | Стиль #F7F8FA, акцент #5F9F72 |
+| `public/landing-i18n.js` | RU / EN / ES, UTM, `?lang=` → приложение |
+| `public/landing-analytics.js` | PostHog: landing_open, hero_cta_click, section views, pwa_open |
+| `public/screens/*.png` | **Только реальные** скрины (см. README в папке) |
 
-## Свой домен
+## Скриншоты
 
-1. Купить домен, в DNS — **A/CNAME** на GitHub Pages (или хостинг статики).
-2. В репозитории **Settings → Pages → Custom domain**.
-3. Когда лендинг станет главной страницей сайта:
-   - вариант A: `index.html` лендинга в корне, приложение на `/app/` (нужно сменить `base` в Vite);
-   - вариант B: корень = лендинг (`landing.html` → переименовать/копировать в `index.html` отдельного деплоя), приложение на поддомене `app.example.com`.
+Не рисуем UI в CSS. Пока PNG нет — показывается placeholder `[ REAL SCREENSHOT … ]`.
 
-Пока домена нет — шарить ссылку на лендинг или сразу на PWA.
+Снять с локального dev:
 
-## Правки
+```bash
+node scripts/capture-landing-screens.mjs
+```
 
-Тексты — в объекте `copy` внизу `landing.html`. Скриншоты: заменить блок `.preview` на `<img src="./screens/...">` в `public/`.
+## Аналитика
+
+При `npm run build:pages` скрипт `scripts/inject-landing-env.js` подставляет `VITE_POSTHOG_KEY` из `.env.production` в `dist/landing-analytics.js`.
+
+События landing не содержат текстов задач/желаний.
+
+## Язык приложения
+
+Кнопки «Попробовать» ведут на `./?lang=ru|en|es` + сохранённые UTM.
+
+## Деплой
+
+rsync → `npm run build:pages` → `npx gh-pages -d dist` (из nested copy без `\`).
