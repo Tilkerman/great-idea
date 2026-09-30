@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
 import { getWeekZoomMetrics, WEEK_ZOOM_ADD_MIN, WEEK_ZOOM_BADGE_MIN, WEEK_ZOOM_DELETE_MIN, WEEK_ZOOM_DESC_MIN, WEEK_ZOOM_TITLE_MIN, WEEK_ZOOM_TITLE_ONLY_MAX, WEEK_ZOOM_WEEKDAY_FULL_MIN, weekZoomAtLeast, weekZoomPercent } from '../../constants/weekZoom';
@@ -67,6 +67,7 @@ export function WeekView({
   const pinchOriginRef = useRef<{ col: number; row: number } | null>(null);
   const horizontalScrollRef = useRef(0);
   const headerCompactRef = useRef(false);
+  const bodyPaddingTopRef = useRef<number | null>(null);
   const layoutRef = useRef({ viewportWidth, dayCount: 7, hourCount: 15 });
   const now = useNow();
 
@@ -356,18 +357,36 @@ export function WeekView({
     onHoursScroll?.(scrollTop);
   }, [onHoursScroll, pinching]);
 
+  const syncTimeTransform = useCallback((scrollTop: number) => {
+    const time = timeScrollRef.current;
+    if (time) time.style.transform = `translate3d(0,${-scrollTop}px,0)`;
+  }, []);
+
   const syncScroll = useCallback(() => {
     const grid = gridScrollRef.current;
-    const time = timeScrollRef.current;
     const daysTrack = daysTrackRef.current;
     if (!grid) return;
-    if (time) time.style.transform = `translate3d(0,${-grid.scrollTop}px,0)`;
+    syncTimeTransform(grid.scrollTop);
     if (daysTrack && horizontalScrollRef.current !== grid.scrollLeft) {
       horizontalScrollRef.current = grid.scrollLeft;
       daysTrack.style.transform = `translate3d(${-grid.scrollLeft}px,0,0)`;
     }
     updateHeaderCompact(grid.scrollTop);
-  }, [updateHeaderCompact]);
+  }, [syncTimeTransform, updateHeaderCompact]);
+
+  useLayoutEffect(() => {
+    const body = weekRootRef.current?.querySelector('.week-view__body') as HTMLElement | null;
+    const grid = gridScrollRef.current;
+    if (!body || !grid) return;
+    const paddingTop = parseFloat(getComputedStyle(body).paddingTop) || 0;
+    const prev = bodyPaddingTopRef.current;
+    bodyPaddingTopRef.current = paddingTop;
+    if (prev == null || pinching) return;
+    const delta = prev - paddingTop;
+    if (Math.abs(delta) < 0.5) return;
+    grid.scrollTop = Math.max(0, grid.scrollTop + delta);
+    syncTimeTransform(grid.scrollTop);
+  }, [headerCompact, chromeSlim, pinching, syncTimeTransform]);
 
   useEffect(() => {
     const col = timeColRef.current;
@@ -389,6 +408,7 @@ export function WeekView({
       }
       if (!dragging) return;
       grid.scrollTop = startTop - (event.touches[0].clientY - startY);
+      syncScroll();
       event.preventDefault();
     };
     const onEnd = () => {
@@ -396,6 +416,7 @@ export function WeekView({
     };
     const onWheel = (event: WheelEvent) => {
       grid.scrollTop += event.deltaY;
+      syncScroll();
       event.preventDefault();
     };
     col.addEventListener('touchstart', onStart, { passive: true });
@@ -410,7 +431,7 @@ export function WeekView({
       col.removeEventListener('touchcancel', onEnd);
       col.removeEventListener('wheel', onWheel);
     };
-  }, []);
+  }, [syncScroll]);
 
   const showFullWeekday = weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
   const layoutCol = pinching ? metricsHold.current.colWidth : colWidth;

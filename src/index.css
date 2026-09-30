@@ -159,7 +159,8 @@ select {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding-bottom: calc(var(--bottom-nav-h) - 2px);
+  padding-bottom: 0;
+  background: var(--surface);
 }
 
 .app-shell--lumi,
@@ -168,7 +169,7 @@ select {
 }
 
 .app-shell--lumi .app-shell__main {
-  padding-bottom: calc(var(--bottom-nav-h) - 2px);
+  padding-bottom: var(--bottom-nav-h);
 }
 
 .btn {
