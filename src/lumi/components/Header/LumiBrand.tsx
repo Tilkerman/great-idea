@@ -1,11 +1,12 @@
 import LumiWordmark from './LumiWordmark';
+import mandalaPng from '../../assets/Мандала.png';
 
 export function LumiBrand({ title }: { title: string }) {
   return (
     <>
       <img
         className="header-logo-mark"
-        src={`${import.meta.env.BASE_URL}icon-lumi-192.png`}
+        src={mandalaPng}
         alt=""
         width={32}
         height={32}

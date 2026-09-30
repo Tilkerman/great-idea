@@ -155,6 +155,7 @@ export default function LifeWheel({
           <svg
             className="life-wheel-svg"
             viewBox={`0 0 ${viewSize} ${viewSize}`}
+            xmlnsXlink="http://www.w3.org/1999/xlink"
             onPointerDown={(e) => handlePointer(e.clientX, e.clientY, e.currentTarget)}
           >
             <defs>

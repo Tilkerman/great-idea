@@ -1,6 +1,8 @@
 import { useApp } from '../../context/AppContext';
 import { addDays, addMonths, formatWeekHeaderTitle } from '../../utils/date';
 import { useI18n } from '../../i18n/useI18n';
+import tiliHeaderLogo from '../../assets/logo-tili-header.png';
+import tiliIcon from '../../assets/icon-tili-192.png';
 import './Header.css';
 
 export function Header() {
@@ -41,13 +43,13 @@ export function Header() {
       <div className="app-header__brand">
         <img
           className="app-header__logo"
-          src={`${import.meta.env.BASE_URL}logo-tili-header.png`}
+          src={tiliHeaderLogo}
           alt="TiLi Calendar"
           width={189}
           height={93}
           onError={(event) => {
             event.currentTarget.onerror = null;
-            event.currentTarget.src = `${import.meta.env.BASE_URL}icon-tili-192.png`;
+            event.currentTarget.src = tiliIcon;
           }}
         />
       </div>
