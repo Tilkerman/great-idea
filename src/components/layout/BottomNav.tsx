@@ -284,7 +284,7 @@ export function BottomNav() {
               </svg>
             )}
           </span>
-          <span className="bottom-nav__plus-mark" aria-hidden />
+          {screen !== 'lumi' && <span className="bottom-nav__plus-mark" aria-hidden />}
         </button>
         {tabs.slice(2).map((tab) => (
           <button

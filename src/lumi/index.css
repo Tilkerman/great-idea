@@ -19,7 +19,7 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  background: var(--bg);
+  background: var(--surface);
   color: var(--text-primary);
   font-family: var(--font);
   font-size: 16px;

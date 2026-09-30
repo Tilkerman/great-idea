@@ -165,11 +165,12 @@ select {
 
 .app-shell--lumi,
 .app-shell--lumi .app-shell__main {
-  background: var(--bg);
+  background: var(--surface);
 }
 
 .app-shell--lumi .app-shell__main {
-  padding-bottom: var(--bottom-nav-h);
+  padding-bottom: 0;
+  background: var(--surface);
 }
 
 .btn {
