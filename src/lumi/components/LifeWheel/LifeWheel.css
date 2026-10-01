@@ -139,7 +139,14 @@
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   padding: 0.1rem 0.9rem 0;
+}
+
+.life-wheel-content::after {
+  content: '';
+  display: block;
+  flex: 0 0 calc(var(--bottom-nav-h) + 8px);
 }
 
 .life-wheel-title {
@@ -279,7 +286,7 @@
 }
 
 .life-wheel-cards-title {
-  margin-top: auto;
+  margin-top: 0.15rem;
   margin-bottom: 0.3rem;
   flex-shrink: 0;
   text-align: center;
