@@ -60,7 +60,9 @@ html,
 body,
 #root {
   height: 100%;
+  min-height: 100%;
   margin: 0;
+  overflow: hidden;
 }
 
 body {
@@ -129,10 +131,12 @@ select {
 .app-shell {
   display: flex;
   flex-direction: column;
+  height: 100dvh;
   min-height: 100dvh;
   max-width: 480px;
   margin: 0 auto;
   background: var(--surface);
+  overflow: hidden;
 }
 
 .app-shell:not(.app-shell--lumi) {
