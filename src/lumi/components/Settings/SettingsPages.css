@@ -6,7 +6,7 @@
   -webkit-overflow-scrolling: touch;
   background: var(--bg-primary);
   color: var(--text-primary);
-  padding: 1rem 1.5rem 1.5rem;
+  padding: 1rem 1.5rem calc(var(--bottom-nav-h) + 8px);
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
