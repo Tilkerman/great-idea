@@ -11,7 +11,7 @@
   box-sizing: border-box;
   min-height: var(--bottom-nav-h);
   height: auto;
-  padding: 4px 8px env(safe-area-inset-bottom, 0px);
+  padding: 4px 8px calc(4px + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
   border: none;
   border-radius: 0;
