@@ -21,6 +21,13 @@
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./tili-home-icon-v4.png" />
   <link rel="stylesheet" href="./landing.css" />
+  <style>
+    /* Не зависит от кэша landing.css: на телефоне CTA только в бургере */
+    .site-header .header-cta { display: none !important; }
+    @media (min-width: 900px) {
+      .site-header .header-cta { display: inline-flex !important; }
+    }
+  </style>
   <script src="./landing-analytics.js" defer></script>
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">

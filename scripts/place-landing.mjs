@@ -4,10 +4,28 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 
 const root = process.cwd();
 const dist = path.join(root, 'dist');
 const appDir = path.join(dist, 'app');
+
+function landingBuildId() {
+  if (process.env.VITE_APP_BUILD) return process.env.VITE_APP_BUILD;
+  try {
+    return execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
+  } catch {
+    return String(Date.now());
+  }
+}
+
+function cacheBustLandingHtml(html, buildId) {
+  const q = (file) => `"./${file}?v=${buildId}"`;
+  return html
+    .replace(/"\.\/landing\.css"/g, q('landing.css'))
+    .replace(/"\.\/landing-analytics\.js"/g, q('landing-analytics.js'))
+    .replace(/"\.\/landing-i18n\.js"/g, q('landing-i18n.js'));
+}
 
 if (!fs.existsSync(path.join(appDir, 'index.html'))) {
   console.warn('place-landing: no dist/app/index.html, skip');
@@ -42,6 +60,14 @@ if (fs.existsSync(screensFrom)) {
 }
 
 fs.copyFileSync(path.join(dist, 'landing.html'), path.join(dist, 'index.html'));
+const buildId = landingBuildId();
+for (const name of ['index.html', 'landing.html']) {
+  const file = path.join(dist, name);
+  if (!fs.existsSync(file)) continue;
+  const html = cacheBustLandingHtml(fs.readFileSync(file, 'utf8'), buildId);
+  fs.writeFileSync(file, html);
+}
+console.log(`place-landing: cache bust v=${buildId}`);
 fs.writeFileSync(path.join(dist, '.nojekyll'), '');
 
 // Drop the previous root service worker so an already-installed visit
