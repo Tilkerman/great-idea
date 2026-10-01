@@ -90,6 +90,12 @@ function AppRouter() {
     }
   }, [screen]);
 
+  useLayoutEffect(() => {
+    const onboarding = ready && screen === 'onboarding';
+    document.documentElement.classList.toggle('is-onboarding', onboarding);
+    return () => document.documentElement.classList.remove('is-onboarding');
+  }, [ready, screen]);
+
   useEffect(() => {
     if (!ready) return;
     persistUtmFromUrl();
@@ -100,18 +106,34 @@ function AppRouter() {
 
   const { t } = useI18n();
   if (!ready) {
-    return <div className="app-loading">{t('loading')}</div>;
+    return (
+      <div className="app-viewport app-viewport--center">
+        <div className="app-loading">{t('loading')}</div>
+      </div>
+    );
   }
 
-  if (screen === 'onboarding') return <Onboarding />;
-  if (screen === 'auth') return <AuthScreen />;
+  if (screen === 'onboarding') {
+    return (
+      <div className="app-viewport app-viewport--onboarding">
+        <Onboarding />
+      </div>
+    );
+  }
+  if (screen === 'auth') {
+    return (
+      <div className="app-viewport app-viewport--scroll">
+        <AuthScreen />
+      </div>
+    );
+  }
 
   const inSettings = screen.startsWith('settings');
   const showCalendar = screen === 'calendar' || (inSettings && mainTab === 'calendar');
   const showLumi = screen === 'lumi' || (inSettings && mainTab === 'lumi');
 
   return (
-    <>
+    <div className="app-viewport">
       {showCalendar && (
         <div className={`app-shell${screen === 'calendar' ? '' : ' app-shell--off'}`}>
           <Header />
@@ -132,7 +154,7 @@ function AppRouter() {
       )}
       <BottomNav />
       <TaskSheet />
-    </>
+    </div>
   );
 }
 

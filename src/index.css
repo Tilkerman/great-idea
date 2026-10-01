@@ -22,9 +22,20 @@
   --cat-family-soft: #d6e4d6;
   --cat-family-text: #2f432f;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  /* Browser tab: dynamic viewport. Installed iOS PWA: 100vh — 100dvh/svh omit the home indicator. */
   --app-height: 100dvh;
   --bottom-nav-bar-h: 56px;
   --bottom-nav-h: calc(var(--bottom-nav-bar-h) + env(safe-area-inset-bottom, 0px));
+}
+
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  :root {
+    --app-height: 100vh;
+  }
+}
+
+html.is-standalone {
+  --app-height: 100vh;
 }
 
 [data-theme='dark'] {
@@ -59,16 +70,15 @@
 }
 
 html {
-  height: 100%;
-  min-height: 100dvh;
+  height: var(--app-height);
   margin: 0;
   overflow: hidden;
   background: var(--surface);
+  box-shadow: 0 160px 0 0 var(--surface);
 }
 
 body {
-  min-height: 100dvh;
-  height: var(--app-height, 100dvh);
+  height: var(--app-height);
   margin: 0;
   overflow: hidden;
   font-family: var(--font);
@@ -80,8 +90,9 @@ body {
 }
 
 #root {
-  min-height: var(--app-height, 100dvh);
-  height: var(--app-height, 100dvh);
+  display: flex;
+  flex-direction: column;
+  height: var(--app-height);
   margin: 0 auto;
   overflow: hidden;
   position: relative;
@@ -89,6 +100,41 @@ body {
   max-width: 480px;
   background: var(--surface);
   overscroll-behavior: none;
+}
+
+html.is-onboarding,
+html.is-onboarding body,
+html.is-onboarding #root {
+  background: #0a0a0a;
+}
+
+html.is-onboarding {
+  box-shadow: 0 160px 0 0 #0a0a0a;
+}
+
+/* Full-screen column: main scrolls, bottom nav is the last row (not fixed). */
+.app-viewport {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.app-viewport--center {
+  align-items: center;
+  justify-content: center;
+}
+
+.app-viewport--onboarding {
+  background: linear-gradient(160deg, #0a0a0a 0%, #1a2a1a 100%);
+}
+
+.app-viewport--scroll {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 button,
@@ -141,8 +187,8 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: var(--app-height, 100dvh);
-  height: var(--app-height, 100dvh);
+  min-height: var(--app-height);
+  height: var(--app-height);
   color: var(--text-secondary);
   font-size: 15px;
 }
@@ -150,14 +196,11 @@ select {
 .app-shell {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  background: var(--surface);
-  height: var(--app-height, 100dvh);
-  max-height: var(--app-height, 100dvh);
   min-height: 0;
   overflow: hidden;
+  background: var(--surface);
 }
 
 .app-shell--off {
@@ -172,7 +215,7 @@ select {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  max-height: var(--app-height, 100dvh);
+  height: var(--app-height);
 }
 
 .app-shell__main {

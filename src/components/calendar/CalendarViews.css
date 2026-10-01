@@ -938,7 +938,7 @@
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x pan-y;
-  padding-bottom: var(--bottom-nav-h);
+  padding-bottom: 8px;
   box-sizing: border-box;
   background: var(--surface);
 }

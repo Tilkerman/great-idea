@@ -1,25 +1,21 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
+import { isStandaloneApp } from '../utils/pwaInstall';
 
-/** Full layout viewport height (includes home-indicator zone with viewport-fit=cover). */
+/**
+ * Mark installed PWA so CSS can use 100vh.
+ * Do not set --app-height from innerHeight / visualViewport / 100dvh:
+ * on iOS standalone + viewport-fit=cover those values omit the home-indicator
+ * band and leave a white gap under the UI.
+ */
 export function useAppViewportHeight() {
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const root = document.documentElement;
     const apply = () => {
-      const height = window.innerHeight;
-      document.documentElement.style.setProperty('--app-height', `${height}px`);
-      if (window.scrollY !== 0) {
-        window.scrollTo(0, 0);
-      }
+      root.classList.toggle('is-standalone', isStandaloneApp());
     };
-
     apply();
-    window.addEventListener('resize', apply);
-    window.addEventListener('orientationchange', apply);
-    window.visualViewport?.addEventListener('resize', apply);
-
-    return () => {
-      window.removeEventListener('resize', apply);
-      window.removeEventListener('orientationchange', apply);
-      window.visualViewport?.removeEventListener('resize', apply);
-    };
+    const mq = window.matchMedia('(display-mode: standalone)');
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
   }, []);
 }
