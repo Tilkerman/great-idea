@@ -21,11 +21,11 @@ export default defineConfig(({ command }) => {
           .replace('href="favicon.png"', 'href="/app/favicon.png"')
           .replace(
             'href="apple-touch-icon.png" sizes="180x180"',
-            'href="/app/apple-touch-icon.png" sizes="180x180"',
+            'href="/app/tili-home-icon-v3.png" sizes="180x180"',
           )
           .replace(
             '</head>',
-            `    <link rel="apple-touch-icon-precomposed" href="/app/apple-touch-icon.png" sizes="180x180" />\n    <link rel="apple-touch-icon" href="/app/pwa-192.png" sizes="192x192" />\n    <link rel="apple-touch-icon" href="/app/pwa-512.png" sizes="512x512" />\n  </head>`,
+            `    <link rel="apple-touch-icon-precomposed" href="/app/tili-home-icon-v3.png" sizes="180x180" />\n    <link rel="apple-touch-icon" href="/app/tili-pwa-192-v3.png" sizes="192x192" />\n    <link rel="apple-touch-icon" href="/app/tili-pwa-512-v3.png" sizes="512x512" />\n  </head>`,
           );
       },
     },
@@ -44,6 +44,9 @@ export default defineConfig(({ command }) => {
         'apple-touch-icon.png',
         'pwa-192.png',
         'pwa-512.png',
+        'tili-home-icon-v3.png',
+        'tili-pwa-192-v3.png',
+        'tili-pwa-512-v3.png',
       ],
       manifest: {
         name: 'TiLi Calendar',
@@ -58,19 +61,19 @@ export default defineConfig(({ command }) => {
         scope: manifestStart,
         icons: [
           {
-            src: manifestIcon('pwa-192.png'),
+            src: manifestIcon('tili-pwa-192-v3.png'),
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: manifestIcon('pwa-512.png'),
+            src: manifestIcon('tili-pwa-512-v3.png'),
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: manifestIcon('pwa-512.png'),
+            src: manifestIcon('tili-pwa-512-v3.png'),
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
