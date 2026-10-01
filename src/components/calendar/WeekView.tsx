@@ -14,7 +14,6 @@ import {
   hourRangeLabels,
   isLockedCreateDay,
   isPastDay,
-  isSameDay,
   isToday,
   toLocalDateString,
 } from '../../utils/date';
@@ -103,6 +102,12 @@ export function WeekView({
     () => getWeekDays(focusDate, settings.weekStartsOn),
     [focusDate, settings.weekStartsOn],
   );
+  // День — самостоятельная колонка. Не прокручиваем недельную ленту под
+  // липкой шкалой времени: иначе начало карточки оказывается под шкалой.
+  const displayDays = useMemo(
+    () => (zoom === 'day' ? [focusDate] : days),
+    [zoom, focusDate, days],
+  );
   const hours = useMemo(
     () => getHoursRange(settings.dayStartHour, settings.dayEndHour),
     [settings.dayStartHour, settings.dayEndHour],
@@ -155,7 +160,6 @@ export function WeekView({
     const grid = gridScrollRef.current;
     const daysTrack = daysTrackRef.current;
     if (!grid) return;
-    const idx = Math.max(0, days.findIndex((d) => isSameDay(d, focusDate)));
     const firstHour = settings.dayStartHour;
     const pos = nowInHourGrid(new Date(), firstHour, settings.dayEndHour);
     const viewH = grid.clientHeight;
@@ -163,11 +167,10 @@ export function WeekView({
     const top = pos && isToday(focusDate)
       ? Math.max(0, nowY - viewH / 3)
       : 0;
-    const left = idx * colWidth;
     const apply = () => {
-      grid.scrollLeft = left;
+      grid.scrollLeft = 0;
       grid.scrollTop = top;
-      if (daysTrack) daysTrack.style.transform = `translate3d(${-left}px,0,0)`;
+      if (daysTrack) daysTrack.style.transform = 'translate3d(0,0,0)';
     };
     apply();
     const frame = requestAnimationFrame(apply);
@@ -175,7 +178,6 @@ export function WeekView({
   }, [
     zoom,
     focusDate,
-    days,
     hours.length,
     colWidth,
     rowHeight,
@@ -184,7 +186,7 @@ export function WeekView({
     pinching,
   ]);
 
-  layoutRef.current = { viewportWidth, dayCount: days.length, hourCount: hours.length };
+  layoutRef.current = { viewportWidth, dayCount: displayDays.length, hourCount: hours.length };
   if (weekPinchLive) {
     weekPinchLive.current.apply = (level, focus) => {
       const root = weekRootRef.current;
@@ -348,7 +350,7 @@ export function WeekView({
   const showFullWeekday = weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
   const layoutCol = pinching ? metricsHold.current.colWidth : colWidth;
   const layoutRow = pinching ? metricsHold.current.rowHeight : rowHeight;
-  const gridWidth = layoutCol * days.length;
+  const gridWidth = layoutCol * displayDays.length;
   const gridInnerWidth = WEEK_TIME_COL_WIDTH + gridWidth;
   const pickDay = pick === 'copy-day' || pick === 'paste-day';
   const pickHour = pick === 'copy-hour' || pick === 'paste-hour';
@@ -426,7 +428,7 @@ export function WeekView({
             ref={daysTrackRef}
             style={{ width: gridWidth }}
           >
-            {days.map((d) => {
+            {displayDays.map((d) => {
               const wi = (d.getDay() + 6) % 7;
               const raw = weekdays[wi] ?? '';
               const fullName = raw.charAt(0) + raw.slice(1).toLowerCase();
@@ -488,7 +490,7 @@ export function WeekView({
                 );
               })}
             </div>
-            {days.map((day) => {
+            {displayDays.map((day) => {
               const when = isToday(day) ? 'today' : isPastDay(day) ? 'past' : null;
               return (
               <div
