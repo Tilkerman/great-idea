@@ -27,7 +27,7 @@ export default function AboutPage({ onBack }: AboutPageProps) {
             <p>{t('settings.about.noGrid')}</p>
             <p>{t('settings.about.notTask')}</p>
             <p>{t('settings.about.image')}</p>
-            <p>{t('settings.about.inspiration')}</p>
+            <p className="settings-about__inspiration">{t('settings.about.inspiration')}</p>
 
             <h2 className="settings-about__h">{t('settings.about.howTitle')}</h2>
             <h3 className="settings-about__h2">{t('settings.about.how1Title')}</h3>

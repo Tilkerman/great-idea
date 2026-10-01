@@ -94,6 +94,10 @@
   margin: 0;
 }
 
+.settings-about--lumi .settings-about__inspiration {
+  font-weight: 700;
+}
+
 .settings-about--lumi .settings-about__h {
   margin: 12px 0 0;
   font-size: 19px;
