@@ -187,6 +187,14 @@ export default function TutorialPage({ onBack, onCreateDesire }: TutorialPagePro
             </div>
           </div>
 
+          <div className="settings-section" style={{ marginTop: '2rem' }}>
+            <h2 className="settings-section-title">{t('settings.about.bridgeTitle')}</h2>
+            <div className="settings-page-text">
+              <p>{t('settings.about.bridgeLead')}</p>
+              <p>{t('settings.about.bridgeNote')}</p>
+            </div>
+          </div>
+
           {/* Шаг 2: Колесо жизни */}
           <div className="settings-section" style={{ marginTop: '2rem' }}>
             <h2 className="settings-section-title">{t('tutorial.step2.title')}</h2>

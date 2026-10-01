@@ -667,57 +667,33 @@ export function SettingsAbout() {
         </div>
         <p>{t('aboutLead2')}</p>
 
-        <h2 className="settings-about__h">{t('aboutHowTitle')}</h2>
-        <h3 className="settings-about__h2">{t('aboutHow1Title')}</h3>
-        <p>{t('aboutHow1a')}</p>
-        <p>{t('aboutHow1Not')}</p>
-        <p className="settings-about__quote">{t('aboutHow1Bad')}</p>
-        <p>{t('aboutHow1But')}</p>
-        <p className="settings-about__quote">{t('aboutHow1Good')}</p>
-        <p>{t('aboutHow1b')}</p>
+        <h2 className="settings-about__h">{t('aboutWhatTitle')}</h2>
+        <h3 className="settings-about__h2">{t('aboutFeatureTimeTitle')}</h3>
+        <p>{t('aboutFeatureTime')}</p>
+        <h3 className="settings-about__h2">{t('aboutFeatureFreeTitle')}</h3>
+        <p>{t('aboutFeatureFree')}</p>
+        <h3 className="settings-about__h2">{t('aboutFeatureLevelsTitle')}</h3>
+        <p>{t('aboutFeatureLevels')}</p>
+        <h3 className="settings-about__h2">{t('aboutFeatureFastTitle')}</h3>
+        <p>{t('aboutFeatureFast')}</p>
+        <h3 className="settings-about__h2">{t('aboutFeatureReminderTitle')}</h3>
+        <p>{t('aboutFeatureReminder')}</p>
+        <h3 className="settings-about__h2">{t('aboutFeatureCategoriesTitle')}</h3>
+        <p>{t('aboutFeatureCategories')}</p>
 
-        <h3 className="settings-about__h2">{t('aboutHow2Title')}</h3>
-        <p>{t('aboutHow2a')}</p>
-        <p>{t('aboutHow2b')}</p>
-
-        <h3 className="settings-about__h2">{t('aboutHow3Title')}</h3>
-        <p>{t('aboutHow3a')}</p>
-        <ul className="settings-about__list">
-          <li>{t('aboutHow3Work')}</li>
-          <li>{t('aboutHow3Personal')}</li>
-          <li>{t('aboutHow3Family')}</li>
-        </ul>
-        <p>{t('aboutHow3b')}</p>
-
-        <h3 className="settings-about__h2">{t('aboutHow4Title')}</h3>
-        <p>{t('aboutHow4a')}</p>
-        <ul className="settings-about__list">
-          <li>{t('aboutHow4Name')}</li>
-          <li>{t('aboutHow4Desc')}</li>
-          <li>{t('aboutHow4Cat')}</li>
-          <li>{t('aboutHow4Imp')}</li>
-          <li>{t('aboutHow4Rem')}</li>
-        </ul>
-        <p>{t('aboutHow4b')}</p>
-
-        <h2 className="settings-about__h">{t('aboutRemindTitle')}</h2>
-        <p>{t('aboutRemindLead')}</p>
-        <ul className="settings-about__list">
-          <li>{t('aboutRemind0')}</li>
-          <li>{t('aboutRemind5')}</li>
-          <li>{t('aboutRemind15')}</li>
-          <li>{t('aboutRemind30')}</li>
-          <li>{t('aboutRemind60')}</li>
-          <li>{t('aboutRemindDay')}</li>
-        </ul>
-        <p>{t('aboutRemindYou')}</p>
-
-        <h2 className="settings-about__h">{t('aboutUseTitle')}</h2>
-        <p>{t('aboutUseLead')}</p>
-        <p className="settings-about__levels">{t('aboutUseLevels')}</p>
-        <p>{t('aboutUsePinch')}</p>
-        <p>{t('aboutUseIn')}</p>
-        <p>{t('aboutUseOut')}</p>
+        <h2 className="settings-about__h">{t('aboutGuideTitle')}</h2>
+        <h3 className="settings-about__h2">{t('aboutGuide1Title')}</h3>
+        <p>{t('aboutGuide1')}</p>
+        <h3 className="settings-about__h2">{t('aboutGuide2Title')}</h3>
+        <p>{t('aboutGuide2')}</p>
+        <h3 className="settings-about__h2">{t('aboutGuide3Title')}</h3>
+        <p>{t('aboutGuide3')}</p>
+        <h3 className="settings-about__h2">{t('aboutGuide4Title')}</h3>
+        <p>{t('aboutGuide4')}</p>
+        <h3 className="settings-about__h2">{t('aboutGuide5Title')}</h3>
+        <p>{t('aboutGuide5')}</p>
+        <h3 className="settings-about__h2">{t('aboutGuide6Title')}</h3>
+        <p>{t('aboutGuide6')}</p>
 
         <h2 className="settings-about__h">{t('aboutMainTitle')}</h2>
         <p>{t('aboutMain')}</p>

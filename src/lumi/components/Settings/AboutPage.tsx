@@ -27,6 +27,7 @@ export default function AboutPage({ onBack }: AboutPageProps) {
             <p>{t('settings.about.noGrid')}</p>
             <p>{t('settings.about.notTask')}</p>
             <p>{t('settings.about.image')}</p>
+            <p>{t('settings.about.inspiration')}</p>
 
             <h2 className="settings-about__h">{t('settings.about.howTitle')}</h2>
             <h3 className="settings-about__h2">{t('settings.about.how1Title')}</h3>
@@ -63,6 +64,10 @@ export default function AboutPage({ onBack }: AboutPageProps) {
               <li>{t('settings.about.step5')}</li>
             </ul>
             <p>{t('settings.about.how3c')}</p>
+
+            <h3 className="settings-about__h2">{t('settings.about.bridgeTitle')}</h3>
+            <p>{t('settings.about.bridgeLead')}</p>
+            <p className="settings-about__quote">{t('settings.about.bridgeNote')}</p>
 
             <h3 className="settings-about__h2">{t('settings.about.how4Title')}</h3>
             <p>{t('settings.about.how4a')}</p>
