@@ -221,9 +221,11 @@
       }
     });
 
-    document.querySelectorAll('.lang button').forEach((btn) => {
+    document.querySelectorAll('.lang--desktop button').forEach((btn) => {
       btn.setAttribute('aria-pressed', btn.getAttribute('data-lang') === lang ? 'true' : 'false');
     });
+    const langSelect = document.querySelector('.lang-select');
+    if (langSelect) langSelect.value = lang;
 
     document.querySelectorAll('.js-app-open').forEach((a) => {
       a.setAttribute('href', appUrl(lang));
@@ -327,13 +329,23 @@
   initCta();
   initMenu();
 
-  document.querySelectorAll('.lang button').forEach((btn) => {
+  document.querySelectorAll('.lang--desktop button').forEach((btn) => {
     btn.addEventListener('click', () => {
       const lang = btn.getAttribute('data-lang');
       applyLang(lang);
       window.TiliLandingAnalytics?.capture('language_changed', { locale: lang });
     });
   });
+
+  const langSelect = document.querySelector('.lang-select');
+  if (langSelect) {
+    langSelect.addEventListener('change', () => {
+      const lang = langSelect.value;
+      if (!copy[lang]) return;
+      applyLang(lang);
+      window.TiliLandingAnalytics?.capture('language_changed', { locale: lang });
+    });
+  }
 
   window.TiliLandingAnalytics?.capture('landing_open', { locale: currentLang });
 })();
