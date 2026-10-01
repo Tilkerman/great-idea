@@ -1,29 +1,25 @@
 import { useEffect } from 'react';
 
-/** Keeps --app-height in sync with the visible viewport (iOS Safari / standalone PWA). */
+/** Full layout viewport height (includes home-indicator zone with viewport-fit=cover). */
 export function useAppViewportHeight() {
   useEffect(() => {
     const apply = () => {
-      const vv = window.visualViewport;
-      const height = vv ? vv.height : window.innerHeight;
-      document.documentElement.style.setProperty('--app-height', `${Math.round(height)}px`);
+      const height = window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${height}px`);
       if (window.scrollY !== 0) {
         window.scrollTo(0, 0);
       }
     };
 
     apply();
-    const vv = window.visualViewport;
-    vv?.addEventListener('resize', apply);
-    vv?.addEventListener('scroll', apply);
     window.addEventListener('resize', apply);
     window.addEventListener('orientationchange', apply);
+    window.visualViewport?.addEventListener('resize', apply);
 
     return () => {
-      vv?.removeEventListener('resize', apply);
-      vv?.removeEventListener('scroll', apply);
       window.removeEventListener('resize', apply);
       window.removeEventListener('orientationchange', apply);
+      window.visualViewport?.removeEventListener('resize', apply);
     };
   }, []);
 }
