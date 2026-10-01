@@ -321,6 +321,7 @@ export const en: typeof ru = {
     installIos3: 'Tap Share (square with an arrow).',
     installIos4: 'Choose Add to Home Screen.',
     installIos5: 'Tap Add — the TiLi icon will appear on the home screen.',
+    installRefreshNote: 'If the icon is still an old “T” or Settings lacks “New phone”: remove TiLi from the home screen, open https://tili.su/app/ in Safari, and add again.',
     installAnd1: 'Open Chrome on Android.',
     installAnd3: 'Tap the menu (⋮) at the top right.',
     installAnd4: 'Choose Install app or Add to home screen.',

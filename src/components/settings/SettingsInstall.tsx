@@ -190,6 +190,7 @@ export function SettingsInstall() {
             <p className="settings-install__text">
               {t('installTapHint')}
             </p>
+            <p className="settings-note">{t('installRefreshNote')}</p>
           </>
         )}
       </div>

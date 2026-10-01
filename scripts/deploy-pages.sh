@@ -7,7 +7,7 @@ REPO="Tilkerman/great-idea"
 BASE="/app/"
 
 echo "→ Сборка..."
-BASE_PATH="$BASE" npm run build
+npm run build:pages
 
 echo "→ Деплой на gh-pages..."
 touch dist/.nojekyll

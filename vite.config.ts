@@ -5,12 +5,30 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig(({ command }) => {
   const base = process.env.BASE_PATH ?? (command === 'build' ? '/app/' : '/');
   const appAtSubpath = base === '/app/';
+  const manifestIcon = (file: string) => (appAtSubpath ? `/app/${file}` : file);
+  const manifestStart = appAtSubpath ? '/app/' : './';
 
   return {
-    base,
-    ...(appAtSubpath ? { build: { outDir: 'dist/app', emptyOutDir: true } } : {}),
+  base,
+  ...(appAtSubpath ? { build: { outDir: 'dist/app', emptyOutDir: true } } : {}),
   plugins: [
     react(),
+    {
+      name: 'tili-html-icons',
+      transformIndexHtml(html) {
+        if (!appAtSubpath) return html;
+        return html
+          .replace('href="favicon.png"', 'href="/app/favicon.png"')
+          .replace(
+            'href="apple-touch-icon.png" sizes="180x180"',
+            'href="/app/apple-touch-icon.png" sizes="180x180"',
+          )
+          .replace(
+            '</head>',
+            `    <link rel="apple-touch-icon-precomposed" href="/app/apple-touch-icon.png" sizes="180x180" />\n    <link rel="apple-touch-icon" href="/app/pwa-192.png" sizes="192x192" />\n    <link rel="apple-touch-icon" href="/app/pwa-512.png" sizes="512x512" />\n  </head>`,
+          );
+      },
+    },
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: false,
@@ -35,23 +53,24 @@ export default defineConfig(({ command }) => {
         background_color: '#0a0a0a',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: './',
-        scope: './',
+        id: manifestStart,
+        start_url: manifestStart,
+        scope: manifestStart,
         icons: [
           {
-            src: 'pwa-192.png',
+            src: manifestIcon('pwa-192.png'),
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: 'pwa-512.png',
+            src: manifestIcon('pwa-512.png'),
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: 'pwa-512.png',
+            src: manifestIcon('pwa-512.png'),
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',

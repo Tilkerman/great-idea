@@ -321,6 +321,7 @@ export const es: typeof ru = {
     installIos3: 'Toca Compartir (cuadrado con flecha).',
     installIos4: 'Elige Agregar a pantalla de inicio.',
     installIos5: 'Toca Agregar — el ícono de TiLi aparecerá en la pantalla de inicio.',
+    installRefreshNote: 'Si el icono sigue siendo una «T» antigua o no ves «Teléfono nuevo» en ajustes: quita TiLi de inicio, abre https://tili.su/app/ en Safari y añade de nuevo.',
     installAnd1: 'Abre Chrome en Android.',
     installAnd3: 'Toca el menú (⋮) arriba a la derecha.',
     installAnd4: 'Elige Instalar app o Agregar a pantalla de inicio.',

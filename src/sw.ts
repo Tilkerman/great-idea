@@ -10,6 +10,12 @@ cleanupOutdatedCaches();
 void self.skipWaiting();
 clientsClaim();
 
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    void self.skipWaiting();
+  }
+});
+
 type PushPayload = {
   title?: string;
   body?: string;
