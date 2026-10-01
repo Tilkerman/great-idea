@@ -27,6 +27,7 @@ import { useOpenTaskFromNotification } from './hooks/useOpenTaskFromNotification
 import { useI18n } from './i18n/useI18n';
 import { LumiEmbed } from './lumi/LumiEmbed';
 import { persistUtmFromUrl, trackAppOpenOnce } from './utils/productAnalytics';
+import { useAppViewportHeight } from './hooks/useAppViewportHeight';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
@@ -136,6 +137,7 @@ function AppRouter() {
 }
 
 export default function App() {
+  useAppViewportHeight();
   return (
     <AppProvider>
       <LumiHostProvider>

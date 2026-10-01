@@ -1,5 +1,6 @@
 .settings-page {
-  min-height: 100dvh;
+  min-height: var(--app-height, 100dvh);
+  height: var(--app-height, 100dvh);
   background: var(--bg);
   padding-bottom: calc(var(--bottom-nav-h) - 2px);
 }

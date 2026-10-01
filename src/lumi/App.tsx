@@ -295,8 +295,9 @@ function App() {
 
   if (isLoading) {
     return (
-      <div style={{ 
-        minHeight: '100vh', 
+      <div style={{
+        minHeight: 'var(--app-height, 100dvh)',
+        height: 'var(--app-height, 100dvh)',
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
@@ -595,8 +596,9 @@ function App() {
   // Fallback - если что-то пошло не так
   return (
     <>
-      <div style={{ 
-        minHeight: '100vh', 
+      <div style={{
+        minHeight: 'var(--app-height, 100dvh)',
+        height: 'var(--app-height, 100dvh)',
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
