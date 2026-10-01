@@ -26,6 +26,8 @@ node scripts/capture-landing-screens.mjs
 
 При `npm run build:pages` скрипт `scripts/inject-landing-env.js` подставляет `VITE_POSTHOG_KEY` из `.env.production` в `dist/landing-analytics.js`.
 
+Яндекс Метрика (счётчик `113253680`) вставлена в `public/landing.html`.
+
 События landing не содержат текстов задач/желаний.
 
 ## Язык приложения
