@@ -64,6 +64,7 @@ export type AppScreen =
   | 'settings-calendar'
   | 'settings-appearance'
   | 'settings-data'
+  | 'settings-transfer'
   | 'settings-stats'
   | 'settings-install'
   | 'settings-notifications'

@@ -38,6 +38,15 @@ function writeAccounts(accounts: LocalAccount[]) {
   localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
 }
 
+/** Для полного резервного копирования TiLi. */
+export function readAllAccounts(): LocalAccount[] {
+  return readAccounts();
+}
+
+export function replaceAllAccounts(accounts: LocalAccount[]) {
+  writeAccounts(accounts);
+}
+
 export function findAccount(email: string): LocalAccount | undefined {
   const key = normalizeEmail(email);
   return readAccounts().find((a) => a.email === key);

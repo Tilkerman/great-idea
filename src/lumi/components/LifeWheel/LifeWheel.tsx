@@ -156,7 +156,6 @@ export default function LifeWheel({
           <svg
             className="life-wheel-svg"
             viewBox={`0 0 ${viewSize} ${viewSize}`}
-            xmlnsXlink="http://www.w3.org/1999/xlink"
             onPointerDown={(e) => handlePointer(e.clientX, e.clientY, e.currentTarget)}
           >
             <defs>
@@ -216,6 +215,15 @@ export default function LifeWheel({
             {/* центральная мандала */}
             <g className="life-wheel-center">
               <circle cx={cx} cy={cy} r={18} className="life-wheel-center-bg" />
+              <image
+                href={mandalaPng}
+                x={cx - 13}
+                y={cy - 13}
+                width={26}
+                height={26}
+                opacity={0.95}
+                preserveAspectRatio="xMidYMid meet"
+              />
             </g>
 
             {/* labels around wheel (one per sector) */}
@@ -273,32 +281,29 @@ export default function LifeWheel({
               );
             })}
           </svg>
-          <img className="life-wheel-mandala" src={mandalaPng} alt="" />
           </div>
         </div>
 
-        <div className="life-wheel-cards-scroll">
-          <div className="life-wheel-cards-title">{t('wheel.cardsTitle')}</div>
+        <div className="life-wheel-cards-title">{t('wheel.cardsTitle')}</div>
 
-          <div className="life-wheel-grid">
-            {AREAS.map((area) => (
-              <button
-                key={area}
-                type="button"
-                className="life-area-tile"
-                onClick={() => {
-                  const count = counts[area] ?? 0;
-                  if (count > 0) return onShowAllDesires(area);
-                  return onCreateWishInArea(area);
-                }}
-              >
-                <div className="life-area-label">{t(`areas.${area}` as never)}</div>
-                <div className="life-area-rect" style={{ background: AREA_TILE_COLORS[area] }}>
-                  <div className="life-area-count">{counts[area] ?? 0}</div>
-                </div>
-              </button>
-            ))}
-          </div>
+        <div className="life-wheel-grid">
+          {AREAS.map((area) => (
+            <button
+              key={area}
+              type="button"
+              className="life-area-tile"
+              onClick={() => {
+                const count = counts[area] ?? 0;
+                if (count > 0) return onShowAllDesires(area);
+                return onCreateWishInArea(area);
+              }}
+            >
+              <div className="life-area-label">{t(`areas.${area}` as never)}</div>
+              <div className="life-area-rect" style={{ background: AREA_TILE_COLORS[area] }}>
+                <div className="life-area-count">{counts[area] ?? 0}</div>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
     </div>

@@ -138,6 +138,62 @@
   gap: 16px;
 }
 
+.settings-transfer__lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.settings-transfer__step {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.settings-transfer__step-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.settings-transfer__btn {
+  margin-top: 4px;
+  min-height: 48px;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.settings-transfer__file {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.settings-transfer__hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.settings-transfer__status {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.settings-transfer__status--err {
+  background: color-mix(in srgb, var(--danger) 14%, var(--surface));
+}
+
 .settings-field {
   display: flex;
   flex-direction: column;

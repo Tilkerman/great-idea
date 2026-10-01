@@ -136,15 +136,10 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  padding: 0.1rem 0.9rem calc(var(--bottom-nav-h) + 8px);
-}
-
-.life-wheel-cards-scroll {
-  flex: 1 1 0;
-  min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding: 0.1rem 0.9rem 0;
 }
 
 .life-wheel-title {
@@ -189,30 +184,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  margin: 0;
   flex: 0 0 auto;
-  padding: 0.15rem 0 0.35rem;
+  width: 100%;
+  padding: 0.1rem 0 0.25rem;
+  overflow: visible;
 }
 
 .life-wheel-stage {
   position: relative;
-  width: min(100%, 400px);
+  width: min(100%, 440px);
   max-width: 100%;
   aspect-ratio: 1 / 1;
-  height: auto;
   margin: 0 auto;
-}
-
-.life-wheel-mandala {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 8.5%;
-  height: auto;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  object-fit: contain;
-  pointer-events: none;
+  flex-shrink: 0;
 }
 
 .life-wheel-svg {
@@ -294,7 +279,7 @@
 }
 
 .life-wheel-cards-title {
-  margin-top: 0.15rem;
+  margin-top: auto;
   margin-bottom: 0.3rem;
   flex-shrink: 0;
   text-align: center;
@@ -318,7 +303,8 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin-top: 0;
-  margin-bottom: 4px;
+  margin-bottom: 0;
+  padding-bottom: 8px;
   align-items: start;
   flex-shrink: 0;
 }
@@ -358,6 +344,19 @@
   font-weight: 900;
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
+}
+
+.life-wheel-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: var(--bg-primary); /* non-transparent */
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  /* уменьшаем нижний бар: меньше padding и высота кнопок */
+  padding: 0.45rem 0.9rem calc(0.4rem + env(safe-area-inset-bottom));
 }
 
 /* Тёмная тема: возвращаем контраст для хедера/элементов управления */
@@ -425,8 +424,22 @@
 
 @media (max-width: 480px) {
   .life-wheel-content {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+  }
+
+  .life-wheel-title {
+    margin-top: 0.2rem;
+  }
+
+  .life-wheel-wrapper {
+    width: calc(100% + 1rem);
+    margin-inline: -0.5rem;
+  }
+
+  .life-wheel-stage {
+    width: min(calc(100% + 1rem), 110%);
+    max-width: calc(100% + 1rem);
   }
 
   .life-wheel-grid {

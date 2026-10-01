@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState, type ChangeEvent } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useI18n } from '../../i18n/useI18n';
@@ -11,6 +11,13 @@ import {
   verifyPassword,
 } from '../../utils/authLocal';
 import { setAnalyticsConsent, trackAppOpenOnce } from '../../utils/productAnalytics';
+import {
+  buildFullBackup,
+  downloadBackupJson,
+  importFullBackup,
+  normalizeBackup,
+} from '../../utils/fullBackup';
+import { saveLastBackupDate } from '../../lumi/utils/backupReminder';
 import './Settings.css';
 
 type HubItem = { id: string; label: string; sub: string };
@@ -71,6 +78,7 @@ export function SettingsHub() {
   const { t } = useI18n();
 
   const commonItems: HubItem[] = [
+    { id: 'settings-transfer', label: t('settingsTransfer'), sub: t('settingsTransferSub') },
     { id: 'settings-appearance', label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
     { id: 'settings-install', label: t('settingsInstall'), sub: t('settingsInstallSub') },
     { id: 'settings-data', label: t('settingsData'), sub: t('settingsDataSub') },
@@ -437,6 +445,132 @@ export function SettingsAppearance() {
           </span>
         </label>
       </div>
+    </div>
+  );
+}
+
+export function SettingsTransfer() {
+  const { setScreen } = useApp();
+  const { t } = useI18n();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [exportBusy, setExportBusy] = useState(false);
+  const [importBusy, setImportBusy] = useState(false);
+  const [importConfirmOpen, setImportConfirmOpen] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [status, setStatus] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
+
+  const onExport = async () => {
+    setStatus(null);
+    setExportBusy(true);
+    try {
+      const payload = await buildFullBackup();
+      downloadBackupJson(payload);
+      saveLastBackupDate();
+      setStatus({ kind: 'ok', text: t('transferExportDone') });
+    } catch {
+      setStatus({ kind: 'err', text: t('transferExportFail') });
+    } finally {
+      setExportBusy(false);
+    }
+  };
+
+  const onFileChosen = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (fileRef.current) fileRef.current.value = '';
+    if (!file) return;
+    setPendingFile(file);
+    setImportConfirmOpen(true);
+  };
+
+  const runImport = async () => {
+    if (!pendingFile) return;
+    setImportConfirmOpen(false);
+    setStatus(null);
+    setImportBusy(true);
+    try {
+      const text = await pendingFile.text();
+      const raw = JSON.parse(text) as unknown;
+      const payload = normalizeBackup(raw);
+      await importFullBackup(payload);
+      setStatus({ kind: 'ok', text: t('transferImportDone') });
+      window.setTimeout(() => window.location.reload(), 800);
+    } catch {
+      setStatus({ kind: 'err', text: t('transferImportFail') });
+    } finally {
+      setImportBusy(false);
+      setPendingFile(null);
+    }
+  };
+
+  return (
+    <div className="settings-page">
+      <SettingsTopBar title={t('settingsTransfer')} onBack={() => setScreen('settings')} />
+      <div className="settings-form settings-transfer">
+        <p className="settings-transfer__lead">{t('transferLead')}</p>
+
+        <section className="settings-transfer__step">
+          <h2 className="settings-transfer__step-title">{t('transferStep1Title')}</h2>
+          <p className="settings-note">{t('transferStep1Body')}</p>
+          <button
+            type="button"
+            className="btn btn--primary settings-full settings-transfer__btn"
+            disabled={exportBusy}
+            onClick={() => void onExport()}
+          >
+            {exportBusy ? t('transferSaving') : t('transferExportBtn')}
+          </button>
+        </section>
+
+        <section className="settings-transfer__step">
+          <h2 className="settings-transfer__step-title">{t('transferStep2Title')}</h2>
+          <p className="settings-note">{t('transferStep2Body')}</p>
+        </section>
+
+        <section className="settings-transfer__step">
+          <h2 className="settings-transfer__step-title">{t('transferStep3Title')}</h2>
+          <p className="settings-note">{t('transferStep3Body')}</p>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".json,application/json"
+            className="settings-transfer__file"
+            onChange={onFileChosen}
+          />
+          <button
+            type="button"
+            className="btn btn--primary settings-full settings-transfer__btn"
+            disabled={importBusy}
+            onClick={() => fileRef.current?.click()}
+          >
+            {importBusy ? t('transferSaving') : t('transferImportBtn')}
+          </button>
+        </section>
+
+        <p className="settings-note settings-transfer__hint">{t('transferHint')}</p>
+
+        {status && (
+          <p
+            className={`settings-transfer__status${status.kind === 'err' ? ' settings-transfer__status--err' : ''}`}
+            role="status"
+          >
+            {status.text}
+          </p>
+        )}
+      </div>
+
+      {importConfirmOpen && (
+        <ConfirmDialog
+          title={t('transferImportConfirmTitle')}
+          message={t('transferImportConfirmBody')}
+          confirmLabel={t('transferImportConfirmBtn')}
+          cancelLabel={t('cancel')}
+          onCancel={() => {
+            setImportConfirmOpen(false);
+            setPendingFile(null);
+          }}
+          onConfirm={() => { void runImport(); }}
+        />
+      )}
     </div>
   );
 }
