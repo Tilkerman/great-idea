@@ -196,6 +196,8 @@
     return BASE + (q ? '?' + q : '');
   }
 
+  const LANG_FLAGS = { ru: '🇷🇺', en: '🇬🇧', es: '🇪🇸' };
+
   let currentLang = 'ru';
 
   function applyLang(lang) {
@@ -221,11 +223,10 @@
       }
     });
 
-    document.querySelectorAll('.lang--desktop button').forEach((btn) => {
-      btn.setAttribute('aria-pressed', btn.getAttribute('data-lang') === lang ? 'true' : 'false');
-    });
-    const langSelect = document.querySelector('.lang-select');
+    const langSelect = document.getElementById('lang-select');
     if (langSelect) langSelect.value = lang;
+    const langFlag = document.getElementById('lang-flag');
+    if (langFlag) langFlag.textContent = LANG_FLAGS[lang] || LANG_FLAGS.ru;
 
     document.querySelectorAll('.js-app-open').forEach((a) => {
       a.setAttribute('href', appUrl(lang));
@@ -329,15 +330,7 @@
   initCta();
   initMenu();
 
-  document.querySelectorAll('.lang--desktop button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const lang = btn.getAttribute('data-lang');
-      applyLang(lang);
-      window.TiliLandingAnalytics?.capture('language_changed', { locale: lang });
-    });
-  });
-
-  const langSelect = document.querySelector('.lang-select');
+  const langSelect = document.getElementById('lang-select');
   if (langSelect) {
     langSelect.addEventListener('change', () => {
       const lang = langSelect.value;
