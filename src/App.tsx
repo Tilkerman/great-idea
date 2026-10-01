@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { LumiHostProvider } from './lumi/LumiHost';
 import { Onboarding } from './components/onboarding/Onboarding';
@@ -79,8 +79,15 @@ function SettingsScreens({ screen }: { screen: string }) {
 
 function AppRouter() {
   const { ready, screen, mainTab, settings } = useApp();
+  const settingsOverlayRef = useRef<HTMLDivElement>(null);
   useTaskReminders();
   useOpenTaskFromNotification();
+
+  useLayoutEffect(() => {
+    if (screen.startsWith('settings')) {
+      settingsOverlayRef.current?.scrollTo({ top: 0, left: 0 });
+    }
+  }, [screen]);
 
   useEffect(() => {
     if (!ready) return;
@@ -118,7 +125,7 @@ function AppRouter() {
         </main>
       </div>
       {inSettings && (
-        <div className="settings-overlay">
+        <div ref={settingsOverlayRef} className="settings-overlay">
           <SettingsScreens screen={screen} />
         </div>
       )}
