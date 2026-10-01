@@ -20,12 +20,8 @@ export default defineConfig(({ command }) => {
         return html
           .replace('href="favicon.png"', 'href="/app/favicon.png"')
           .replace(
-            'href="apple-touch-icon.png" sizes="180x180"',
-            'href="/app/tili-home-icon-v3.png" sizes="180x180"',
-          )
-          .replace(
-            '</head>',
-            `    <link rel="apple-touch-icon-precomposed" href="/app/tili-home-icon-v3.png" sizes="180x180" />\n    <link rel="apple-touch-icon" href="/app/tili-pwa-192-v3.png" sizes="192x192" />\n    <link rel="apple-touch-icon" href="/app/tili-pwa-512-v3.png" sizes="512x512" />\n  </head>`,
+            'href="tili-home-icon-v4.png" sizes="180x180"',
+            'href="/app/tili-home-icon-v4.png" sizes="180x180"',
           );
       },
     },
@@ -44,9 +40,9 @@ export default defineConfig(({ command }) => {
         'apple-touch-icon.png',
         'pwa-192.png',
         'pwa-512.png',
-        'tili-home-icon-v3.png',
-        'tili-pwa-192-v3.png',
-        'tili-pwa-512-v3.png',
+        'tili-home-icon-v4.png',
+        'tili-pwa-192-v4.png',
+        'tili-pwa-512-v4.png',
       ],
       manifest: {
         name: 'TiLi Calendar',
@@ -61,19 +57,19 @@ export default defineConfig(({ command }) => {
         scope: manifestStart,
         icons: [
           {
-            src: manifestIcon('tili-pwa-192-v3.png'),
+            src: manifestIcon('tili-pwa-192-v4.png'),
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: manifestIcon('tili-pwa-512-v3.png'),
+            src: manifestIcon('tili-pwa-512-v4.png'),
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: manifestIcon('tili-pwa-512-v3.png'),
+            src: manifestIcon('tili-pwa-512-v4.png'),
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
