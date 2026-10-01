@@ -59,6 +59,22 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   gap: 1rem;
 }
+@media (max-width: 899px) {
+  .site-header__inner {
+    gap: 0.45rem;
+    padding: 0.5rem 0;
+  }
+  .header-end {
+    gap: 0.35rem;
+  }
+  .header-end .btn {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.82rem;
+  }
+  .menu-toggle {
+    padding: 6px;
+  }
+}
 .brand {
   display: flex;
   align-items: center;
@@ -98,12 +114,18 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
+}
+.header-end .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .lang {
   display: flex;
+  flex-direction: column;
   padding: 2px;
-  border-radius: 999px;
+  border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface);
 }
@@ -111,16 +133,29 @@ a { color: inherit; text-decoration: none; }
   border: none;
   background: transparent;
   font: inherit;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  padding: 0.35rem 0.5rem;
-  border-radius: 999px;
+  padding: 0.18rem 0.42rem;
+  border-radius: 8px;
   cursor: pointer;
   color: var(--muted);
+  line-height: 1.15;
+  min-width: 2rem;
 }
 .lang button[aria-pressed="true"] {
   background: var(--bg);
   color: var(--text);
+}
+@media (min-width: 900px) {
+  .lang {
+    flex-direction: row;
+    border-radius: 999px;
+  }
+  .lang button {
+    font-size: 0.72rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 999px;
+  }
 }
 
 .btn {
