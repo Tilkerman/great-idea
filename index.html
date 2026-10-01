@@ -43,7 +43,10 @@
     <div class="site-header__inner">
       <a class="brand" href="#top">
         <img src="./logo-tili-lumi.png" width="160" height="72" alt="" />
-        <span class="brand__name">TiLi + Lumi</span>
+        <span class="brand__lockup" aria-label="TiLi + Lumi">
+          <span class="brand__line brand__line--tili">TiLi +</span>
+          <span class="brand__line brand__line--lumi">Lumi</span>
+        </span>
       </a>
       <nav class="nav-main" aria-label="Main">
         <a href="#tili" data-i18n="navTili">TiLi</a>
@@ -51,10 +54,20 @@
         <a href="#philosophy" data-i18n="navPhilosophy">Философия</a>
       </nav>
       <div class="header-end">
-        <div class="lang" role="group" aria-label="Language">
-          <button type="button" data-lang="ru" aria-pressed="true">RU</button>
-          <button type="button" data-lang="en" aria-pressed="false">EN</button>
-          <button type="button" data-lang="es" aria-pressed="false">ES</button>
+        <div class="lang-wrap">
+          <div class="lang lang--desktop" role="group" aria-label="Language">
+            <button type="button" data-lang="ru" aria-pressed="true">RU</button>
+            <button type="button" data-lang="en" aria-pressed="false">EN</button>
+            <button type="button" data-lang="es" aria-pressed="false">ES</button>
+          </div>
+          <label class="lang-select-wrap">
+            <span class="visually-hidden">Language</span>
+            <select class="lang-select" aria-label="Language">
+              <option value="ru">RU</option>
+              <option value="en">EN</option>
+              <option value="es">ES</option>
+            </select>
+          </label>
         </div>
         <a class="btn btn--primary js-app-open" href="./" data-i18n="ctaTry">Попробовать</a>
         <button type="button" class="menu-toggle" aria-expanded="false" aria-controls="nav-mobile" id="menu-toggle">
