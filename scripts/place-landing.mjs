@@ -19,6 +19,8 @@ const files = [
   'landing.css',
   'landing-i18n.js',
   'landing-analytics.js',
+  'logo-tili-lumi.png',
+  'logo-tili-header.png',
   'favicon.png',
   'apple-touch-icon.png',
   'icon-tili-512.png',
