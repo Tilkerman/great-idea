@@ -1,19 +1,10 @@
-.bottom-nav__plug {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: calc(var(--bottom-nav-h) + 28px);
-  background: var(--surface);
-  z-index: 1098;
-  pointer-events: none;
-}
-
 .bottom-nav {
   position: fixed;
-  left: 0;
-  right: 0;
+  left: 50%;
   bottom: 0;
+  width: 100%;
+  max-width: 480px;
+  transform: translateX(-50%);
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -23,7 +14,7 @@
   padding: 10px 8px calc(8px + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
   border: none;
-  border-radius: 22px 22px 0 0;
+  border-radius: 0;
   box-shadow: none;
   z-index: 1100;
   -webkit-user-select: none;

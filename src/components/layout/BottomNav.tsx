@@ -248,7 +248,6 @@ export function BottomNav() {
         </div>
       )}
       {toast && <div className="bottom-nav-toast">{toast}</div>}
-      <div className="bottom-nav__plug" aria-hidden />
       <nav className="bottom-nav">
         {tabs.slice(0, 2).map((tab) => (
           <button

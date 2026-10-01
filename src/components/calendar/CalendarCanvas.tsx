@@ -4,7 +4,6 @@ import { YearView } from './YearView';
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { usePinchZoom } from '../../hooks/usePinchZoom';
-import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomHint, weekZoomPercent } from '../../constants/weekZoom';
 import { emptyWeekPinchLive, type WeekPinchLive } from '../../utils/weekPinchLive';
 import { useI18n } from '../../i18n/useI18n';
 import type { ZoomLevel } from '../../types';
@@ -13,8 +12,8 @@ import './CalendarViews.css';
 const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
 
 export function CalendarCanvas() {
-  const { zoom, setZoom, setFocusDate, weekZoom, weekZoomIn, weekZoomOut } = useApp();
-  const { t, locale } = useI18n();
+  const { zoom, setZoom, setFocusDate } = useApp();
+  const { t } = useI18n();
   const weekPinchLive = useRef<WeekPinchLive>(emptyWeekPinchLive());
   const { ref, liveScale, pinching } = usePinchZoom(weekPinchLive);
   const [viewportWidth, setViewportWidth] = useState(
@@ -23,7 +22,6 @@ export function CalendarCanvas() {
   const prevZoom = useRef(zoom);
   const [enterKind, setEnterKind] = useState<'rubber-in' | 'rubber-out' | 'fade' | 'none'>('none');
   const [stageKey, setStageKey] = useState(0);
-  const [showDevZoomBar, setShowDevZoomBar] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -58,18 +56,11 @@ export function CalendarCanvas() {
     }
   }, [zoom]);
 
-  useEffect(() => {
-    setShowDevZoomBar(
-      Boolean(import.meta.env.DEV && window.matchMedia('(pointer: fine)').matches),
-    );
-  }, []);
-
   return (
     <div
       className={[
         'calendar-canvas',
         pinching && 'is-pinching',
-        showDevZoomBar && 'calendar-canvas--dev-zoom',
       ].filter(Boolean).join(' ')}
       ref={ref}
     >
@@ -93,38 +84,6 @@ export function CalendarCanvas() {
           </button>
         ))}
       </div>
-      {showDevZoomBar && (
-      <div className="zoom-bar">
-        <p className="zoom-hint">
-          {zoom === 'year' ? t('pinchYear')
-            : zoom === 'month' ? t('pinchMonth')
-              : weekZoomHint(weekZoom, viewportWidth, locale)}
-        </p>
-        {(zoom === 'week' || zoom === 'day') && (
-          <div className="week-zoom-controls">
-            <button
-              type="button"
-              className="week-zoom-btn"
-              disabled={weekZoom <= WEEK_ZOOM_MIN}
-              onClick={weekZoomOut}
-              aria-label={t('zoomOut')}
-            >
-              −
-            </button>
-            <span className="week-zoom-level">{weekZoomPercent(weekZoom)}%</span>
-            <button
-              type="button"
-              className="week-zoom-btn"
-              disabled={weekZoom >= WEEK_ZOOM_MAX}
-              onClick={weekZoomIn}
-              aria-label={t('zoomIn')}
-            >
-              +
-            </button>
-          </div>
-        )}
-      </div>
-      )}
       <div className={`calendar-canvas__body ${zoom === 'week' || zoom === 'day' ? 'calendar-canvas__body--flush' : ''}`}>
         <div
           key={stageKey}
