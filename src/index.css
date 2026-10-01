@@ -22,7 +22,7 @@
   --cat-family-soft: #d6e4d6;
   --cat-family-text: #2f432f;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  --bottom-nav-h: calc(81px + env(safe-area-inset-bottom, 0px));
+  --bottom-nav-h: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
 [data-theme='dark'] {
