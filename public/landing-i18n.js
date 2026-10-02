@@ -37,21 +37,25 @@
       phWeek: '[ REAL SCREENSHOT: TiLi Week View ]',
       phMonth: '[ REAL SCREENSHOT: TiLi Month/Year ]',
       phLumi: '[ REAL SCREENSHOT: Lumi ]',
-      capDay: 'Реальный экран приложения',
+      capDay: 'Сегодня, час за часом',
       capHeroTili: 'TiLi',
       capHeroLumi: 'Lumi',
-      capWeek: 'Неделя',
-      capMonth: 'Масштаб',
+      capWeek: 'Неделя целиком',
+      capMonth: 'Месяц',
+      altMonth: 'Вид месяца в TiLi',
+      altWeek: 'Вид недели в TiLi',
+      altDay: 'Текущий день с индикатором времени в TiLi',
+      shotsAria: 'Месяц, неделя целиком, сегодня',
       capLumi: 'Реальный экран Lumi',
       tiliH: 'TiLi — календарь твоего времени',
-      tiliSub: 'TiLi показывает не просто то, что тебе нужно сделать. Он показывает, когда в твоём дне это действительно произойдёт.',
+      tiliSub: 'TiLi показывает не то, что тебе нужно сделать. Он показывает, когда в твоём дне это действительно произойдёт.',
       tiliP1: 'Обычный список задач говорит: «У тебя 8 дел». TiLi показывает другое: «Вот как выглядит твой сегодняшний день».',
       tiliP2: 'Каждое дело получает своё место во времени. День — часовая сетка: занятые часы, свободное пространство, куда уходит день.',
-      m1t: 'Время', m1d: 'Каждая задача — конкретное место в течение дня.',
-      m2t: 'Свободное время', m2d: 'Пустое пространство — тоже часть дня.',
+      m1t: 'Время', m1d: 'Каждая задача встаёт на своё место в течение дня — не абстрактный пункт списка, а конкретный час.',
+      m2t: 'Свободное время', m2d: 'Пустое пространство в сетке — тоже часть дня.',
       m3t: 'Несколько уровней', m3d: 'Год → месяц → неделя → день.',
       m4t: 'Быстрое планирование', m4d: 'Создать задачу из нужного часа.',
-      m5t: 'Напоминания', m5d: 'Баннер в нужный момент (PWA + настройки).',
+      m5t: 'Напоминания вовремя', m5d: 'Напоминание придёт, даже если приложение закрыто. Включи уведомления один раз в настройках — и больше не думай об этом.',
       m6t: 'Категории', m6d: 'Работа, личное, семья — структура дня.',
       tiliQuote: 'Не список дел.\nСетка твоего времени.',
       lumiH: 'Lumi — календарь твоих желаний',
@@ -104,17 +108,21 @@
       trust1: 'Works in the browser', trust2: 'No heavy sign-up', trust3: 'Add to home screen', trust4: 'Data stays on your device',
       phDay: '[ REAL SCREENSHOT: TiLi Day View ]', phWeek: '[ REAL SCREENSHOT: TiLi Week View ]',
       phMonth: '[ REAL SCREENSHOT: TiLi Month/Year ]', phLumi: '[ REAL SCREENSHOT: Lumi ]',
-      capDay: 'Real app screen', capHeroTili: 'TiLi', capHeroLumi: 'Lumi',
-      capWeek: 'Week', capMonth: 'Zoom levels', capLumi: 'Real Lumi screen',
+      capDay: 'Today, hour by hour', capHeroTili: 'TiLi', capHeroLumi: 'Lumi',
+      capWeek: 'Full week', capMonth: 'Month', capLumi: 'Real Lumi screen',
+      altMonth: 'Month view in TiLi',
+      altWeek: 'Week view in TiLi',
+      altDay: 'Current day with the time indicator in TiLi',
+      shotsAria: 'Month, full week, today',
       tiliH: 'TiLi — a calendar for your time',
-      tiliSub: 'TiLi shows not only what you need to do, but when it will actually happen in your day.',
+      tiliSub: 'TiLi doesn’t show what you need to do. It shows when in your day it will actually happen.',
       tiliP1: 'A usual list says: “You have 8 tasks.” TiLi says: “This is what your day looks like.”',
       tiliP2: 'Every task gets a place in time. The day is an hour grid — busy hours, open space, where your time goes.',
-      m1t: 'Time', m1d: 'Each task has a concrete slot in the day.',
-      m2t: 'Open time', m2d: 'Empty space is part of the day too.',
+      m1t: 'Time', m1d: 'Each task takes its place in the day — not an abstract list item, but a specific hour.',
+      m2t: 'Open time', m2d: 'Empty space in the grid is part of the day too.',
       m3t: 'Many zoom levels', m3d: 'Year → month → week → day.',
       m4t: 'Quick planning', m4d: 'Create a task from the hour you need.',
-      m5t: 'Reminders', m5d: 'A banner at the right moment (PWA + settings).',
+      m5t: 'Reminders on time', m5d: 'A reminder arrives even if the app is closed. Turn notifications on once in settings — and don’t think about it again.',
       m6t: 'Categories', m6d: 'Work, personal, family — structure of the day.',
       tiliQuote: 'Not a to-do list.\nA grid of your time.',
       lumiH: 'Lumi — a calendar of your wishes',
@@ -165,17 +173,21 @@
       trust1: 'En el navegador', trust2: 'Sin registro pesado', trust3: 'Añadir a inicio', trust4: 'Datos en tu dispositivo',
       phDay: '[ CAPTURA REAL: TiLi día ]', phWeek: '[ CAPTURA REAL: TiLi semana ]',
       phMonth: '[ CAPTURA REAL: TiLi mes/año ]', phLumi: '[ CAPTURA REAL: Lumi ]',
-      capDay: 'Pantalla real', capHeroTili: 'TiLi', capHeroLumi: 'Lumi',
-      capWeek: 'Semana', capMonth: 'Escala', capLumi: 'Pantalla Lumi',
+      capDay: 'Hoy, hora a hora', capHeroTili: 'TiLi', capHeroLumi: 'Lumi',
+      capWeek: 'Semana completa', capMonth: 'Mes', capLumi: 'Pantalla Lumi',
+      altMonth: 'Vista de mes en TiLi',
+      altWeek: 'Vista de semana en TiLi',
+      altDay: 'Día actual con el indicador de hora en TiLi',
+      shotsAria: 'Mes, semana completa, hoy',
       tiliH: 'TiLi — calendario de tu tiempo',
-      tiliSub: 'TiLi no solo muestra qué hacer, sino cuándo ocurrirá en tu día.',
+      tiliSub: 'TiLi no muestra lo que tienes que hacer. Muestra cuándo ocurrirá de verdad en tu día.',
       tiliP1: 'Una lista dice: «Tienes 8 tareas». TiLi dice: «Así se ve tu día».',
       tiliP2: 'Cada cosa tiene su lugar en el tiempo. El día es una cuadrícula de horas.',
-      m1t: 'Tiempo', m1d: 'Cada tarea tiene un hueco concreto.',
-      m2t: 'Tiempo libre', m2d: 'El espacio vacío también cuenta.',
+      m1t: 'Tiempo', m1d: 'Cada tarea ocupa su lugar en el día: no un punto abstracto de la lista, sino una hora concreta.',
+      m2t: 'Tiempo libre', m2d: 'El espacio vacío de la cuadrícula también es parte del día.',
       m3t: 'Varias escalas', m3d: 'Año → mes → semana → día.',
       m4t: 'Plan rápido', m4d: 'Crear desde la hora que necesitas.',
-      m5t: 'Recordatorios', m5d: 'Aviso a tiempo (PWA + ajustes).',
+      m5t: 'Recordatorios a tiempo', m5d: 'El recordatorio llega aunque la app esté cerrada. Activa las notificaciones una vez en ajustes y no vuelvas a pensarlo.',
       m6t: 'Categorías', m6d: 'Trabajo, personal, familia.',
       tiliQuote: 'No es una lista.\nEs la cuadrícula de tu tiempo.',
       lumiH: 'Lumi — calendario de tus deseos',
@@ -249,16 +261,16 @@
       lumiHero: './screens/en/lumi-hero.png',
     },
     ru: {
-      day: './screens/en/tili-day.png',
-      week: './screens/en/tili-week.png',
-      month: './screens/en/tili-month.png',
+      day: './screens/ru/tili-day.png',
+      week: './screens/ru/tili-week.png',
+      month: './screens/ru/tili-month.png',
       lumi: './screens/en/lumi-wish.png',
       lumiHero: './screens/en/lumi-hero.png',
     },
     es: {
-      day: './screens/en/tili-day.png',
-      week: './screens/en/tili-week.png',
-      month: './screens/en/tili-month.png',
+      day: './screens/es/tili-day.png',
+      week: './screens/es/tili-week.png',
+      month: './screens/es/tili-month.png',
       lumi: './screens/en/lumi-wish.png',
       lumiHero: './screens/en/lumi-hero.png',
     },
@@ -271,7 +283,12 @@
     document.querySelectorAll('.shot__img[data-shot]').forEach((img) => {
       const key = img.getAttribute('data-shot');
       const src = key && set[key];
-      if (!src || img.getAttribute('src') === src) return;
+      if (!src) return;
+      const webp = src.replace(/\.png(\?.*)?$/, '.webp$1');
+      const picture = img.parentElement && img.parentElement.tagName === 'PICTURE' ? img.parentElement : null;
+      const source = picture ? picture.querySelector('source') : null;
+      if (source) source.setAttribute('srcset', webp);
+      if (img.getAttribute('src') === src) return;
       img.setAttribute('src', src);
       const wrap = img.closest('[data-shot-wrap], [data-real-screen]');
       if (wrap) wrap.classList.add('is-missing');
@@ -305,6 +322,15 @@
       } else {
         el.textContent = val;
       }
+    });
+
+    document.querySelectorAll('[data-i18n-alt]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-alt');
+      if (strings[key]) el.setAttribute('alt', strings[key]);
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-aria');
+      if (strings[key]) el.setAttribute('aria-label', strings[key]);
     });
 
     const langSelect = document.getElementById('lang-select');
@@ -412,9 +438,28 @@
     });
   }
 
+  function initTiliCarousel() {
+    const scroller = document.querySelector('#tili .shots-showcase--aside');
+    const dots = document.querySelector('#tili .shots-dots');
+    if (!scroller || !dots) return;
+    const figures = scroller.querySelectorAll('.shot--showcase');
+    const marks = dots.querySelectorAll('span');
+    const update = () => {
+      const card = figures[0];
+      const w = card ? card.getBoundingClientRect().width : 1;
+      const gap = 12;
+      const i = Math.max(0, Math.min(marks.length - 1, Math.round(scroller.scrollLeft / (w + gap))));
+      marks.forEach((d, n) => d.classList.toggle('is-on', n === i));
+    };
+    scroller.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  }
+
   persistUtm();
   applyLang(detectLang());
   initShots();
+  initTiliCarousel();
   initReveal();
   initSectionAnalytics();
   initCta();
