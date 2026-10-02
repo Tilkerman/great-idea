@@ -9,8 +9,8 @@
   padding: 24px;
   padding-top: calc(48px + env(safe-area-inset-top));
   padding-bottom: calc(16px + env(safe-area-inset-bottom));
-  background: linear-gradient(160deg, #0a0a0a 0%, #1a2a1a 100%);
-  color: #fff;
+  background: #fff;
+  color: var(--text-primary);
 }
 
 .onboarding__emoji {
@@ -43,7 +43,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(31, 41, 55, 0.18);
 }
 
 .onboarding__dot--active {
@@ -60,7 +60,7 @@
 
 .onboarding__skip {
   margin-right: auto;
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: var(--text-secondary) !important;
   background: transparent !important;
 }
 

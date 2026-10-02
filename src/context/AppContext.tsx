@@ -136,7 +136,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [focusDate, setFocusDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [settings, setSettingsState] = useState<UserSettings>({ ...DEFAULT_SETTINGS });
+  const [settings, setSettingsState] = useState<UserSettings>(() => {
+    const base: UserSettings = { ...DEFAULT_SETTINGS };
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('theme') === 'light') {
+      base.theme = 'light';
+    }
+    return base;
+  });
   const [session, setSession] = useState<UserSession>({ isGuest: true });
   const [authStart, setAuthStart] = useState<AuthStart>('choice');
   const [authBackScreen, setAuthBackScreen] = useState<AppScreen>('calendar');
@@ -173,6 +179,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (resolved !== s.locale) {
         s = { ...s, locale: resolved };
         await saveSettings(s);
+      }
+      const launch = new URLSearchParams(window.location.search);
+      if (launch.get('theme') === 'light') {
+        if (s.theme !== 'light') {
+          s = { ...s, theme: 'light' };
+          await saveSettings(s);
+        }
+        launch.delete('theme');
+        const q = launch.toString();
+        window.history.replaceState(null, '', `${window.location.pathname}${q ? `?${q}` : ''}${window.location.hash}`);
       }
       setSettingsState(s);
       await refreshTasks();
@@ -381,13 +397,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement;
-    const theme = settings.theme;
+    const fromOpen = new URLSearchParams(window.location.search).get('theme') === 'light';
+    const theme = fromOpen ? 'light' : settings.theme;
     if (theme === 'dark') root.dataset.theme = 'dark';
     else if (theme === 'light') root.dataset.theme = 'light';
     else {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       root.dataset.theme = prefersDark ? 'dark' : 'light';
     }
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', root.dataset.theme === 'dark' ? '#0f1117' : '#ffffff');
     root.lang = settings.locale;
   }, [settings.theme, settings.locale]);
 

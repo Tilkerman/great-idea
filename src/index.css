@@ -105,11 +105,11 @@ body {
 html.is-onboarding,
 html.is-onboarding body,
 html.is-onboarding #root {
-  background: #0a0a0a;
+  background: #fff;
 }
 
 html.is-onboarding {
-  box-shadow: 0 160px 0 0 #0a0a0a;
+  box-shadow: 0 160px 0 0 #fff;
 }
 
 /* Full-screen column: scroll areas above, bottom nav pinned to foot of #root frame. */
@@ -141,7 +141,7 @@ html.is-onboarding {
 }
 
 .app-viewport--onboarding {
-  background: linear-gradient(160deg, #0a0a0a 0%, #1a2a1a 100%);
+  background: #fff;
 }
 
 .app-viewport--scroll {
