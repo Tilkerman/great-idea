@@ -21,6 +21,9 @@
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./tili-home-icon-v4.png" />
   <link rel="stylesheet" href="./landing.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&display=swap" rel="stylesheet" />
   <style>
     /* Не зависит от кэша landing.css: на телефоне CTA только в бургере */
     .site-header .header-cta { display: none !important; }
@@ -239,7 +242,10 @@
               <p class="lumi-book__text" data-i18n="bookBody">Идея автора: записать желание — первый шаг к его исполнению. Lumi помогает хранить образ, чувства и маленькие шаги в одном месте.</p>
               <a class="btn lumi-book__cta" href="https://www.google.com/search?q=David+Cameron+Gikandi+A+Happy+Pocket+Full+of+Money" target="_blank" rel="noopener noreferrer" data-i18n="bookCta">Узнать больше о книге</a>
             </div>
-            <img class="lumi-book__illustration" src="./landing/lumi-mascot.png" alt="" width="212" height="354" loading="lazy" decoding="async" />
+            <div class="lumi-book__mascot">
+              <p class="lumi-book__steps-quote" data-i18n="lumiStepsQuote">маленькие шаги<br />к большим<br />изменениям</p>
+              <img class="lumi-book__illustration" src="./landing/lumi-mascot.png" alt="" width="212" height="246" loading="lazy" decoding="async" />
+            </div>
           </aside>
         </div>
       </section>
