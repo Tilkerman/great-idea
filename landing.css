@@ -436,9 +436,11 @@ a { color: inherit; text-decoration: none; }
   .shot--hero { margin: 0 0 0 auto; max-width: 340px; }
 }
 .shot__img {
+  display: block;
   width: 100%;
-  aspect-ratio: 9 / 19.5;
-  object-fit: cover;
+  height: auto;
+  /* Реальные PNG ~595×1024; cover + 9/19.5 обрезали бока (hero «криво»). */
+  object-fit: contain;
   object-position: top center;
 }
 .shot__ph {
