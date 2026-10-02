@@ -631,15 +631,55 @@ a { color: inherit; text-decoration: none; }
 /* Lumi 02 — три колонки по макету: текст + фичи | телефон | книга */
 .lumi-showcase {
   padding-top: clamp(2rem, 5vw, 3rem);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.15rem;
 }
 .section.lumi-showcase {
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.15rem;
 }
 .lumi-showcase__grid {
   display: grid;
-  gap: clamp(1.75rem, 4vw, 2.5rem);
+  gap: clamp(1.25rem, 3vw, 1.75rem);
+  align-items: start;
+}
+.lumi-showcase__center {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: min(100%, 22rem);
+  margin: 0 auto;
+}
+.lumi-showcase__accent {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  width: 100%;
+  max-width: 19.5rem;
+  margin: -0.35rem 0 0 0.85rem;
+  align-self: flex-end;
+}
+.lumi-accent__quote-block {
+  position: relative;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 0 0 0.35rem 0.15rem;
+}
+.lumi-accent__arrow {
+  position: absolute;
+  left: -0.15rem;
+  bottom: 0.1rem;
+  width: 2.35rem;
+  height: 1.85rem;
+  color: #9b87c4;
+  pointer-events: none;
+}
+.lumi-showcase__intro {
+  align-self: start;
+}
+.lumi-showcase__book {
+  align-self: start;
 }
 .lumi-showcase__intro h2 {
   font-size: clamp(1.65rem, 3.2vw, 2.35rem);
@@ -756,10 +796,8 @@ a { color: inherit; text-decoration: none; }
 .lumi-showcase__book {
   position: relative;
   min-width: 0;
-  padding: clamp(0.75rem, 2vw, 1rem) 0 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  padding: 0;
+  display: block;
 }
 .lumi-book__sparkles {
   position: absolute;
@@ -797,32 +835,27 @@ a { color: inherit; text-decoration: none; }
   font-weight: 600;
   color: #8a79ad;
 }
-.lumi-book__mascot {
-  width: min(100%, 14.75rem);
-  margin: 0.35rem 0 0;
-  text-align: right;
-}
 .lumi-book__steps-quote {
-  margin: 0 0 0.4rem;
-  padding: 0 0.15rem 0 0;
+  margin: 0;
+  padding: 0;
   font-family: "Caveat", "Segoe Script", "Bradley Hand", cursive;
-  font-size: clamp(1.15rem, 2.6vw, 1.45rem);
-  line-height: 1.12;
+  font-size: clamp(1.1rem, 2.4vw, 1.38rem);
+  line-height: 1.1;
   font-weight: 600;
   color: #7a6899;
   letter-spacing: 0.01em;
+  text-align: right;
 }
 .lumi-book__illustration {
   display: block;
-  width: 100%;
+  flex: 0 0 auto;
+  width: clamp(6.5rem, 28vw, 8.75rem);
   height: auto;
   margin: 0;
   border-radius: 0;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
-  transform: scale(1.08);
-  transform-origin: right bottom;
 }
 .lumi-book__text {
   margin: 0 0 1.25rem;
@@ -851,30 +884,46 @@ a { color: inherit; text-decoration: none; }
 }
 @media (min-width: 1024px) {
   .lumi-showcase__grid {
-    grid-template-columns: minmax(0, 1.08fr) minmax(200px, 260px) minmax(0, 0.92fr);
-    gap: clamp(1.25rem, 3vw, 2rem);
+    grid-template-columns: minmax(0, 1.08fr) minmax(240px, 320px) minmax(0, 0.92fr);
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+    align-items: start;
+  }
+  .lumi-showcase__center {
+    max-width: none;
+    margin: 0;
+    align-self: end;
   }
   .lumi-showcase__phone {
     max-width: 268px;
   }
+  .lumi-showcase__accent {
+    max-width: 21rem;
+    margin: -0.25rem -0.35rem 0 1.25rem;
+  }
+  .lumi-book__illustration {
+    width: 9.25rem;
+  }
   .lumi-book__copy {
     margin-left: auto;
     padding-right: 0.5rem;
-  }
-  .lumi-book__mascot {
-    width: min(100%, 15.25rem);
+    max-width: 19rem;
   }
 }
 @media (max-width: 1023px) {
   .lumi-showcase__grid {
     grid-template-areas:
       "intro"
-      "phone"
+      "center"
       "book";
+    align-items: stretch;
   }
-  .lumi-showcase__intro { grid-area: intro; }
-  .lumi-showcase__phone { grid-area: phone; }
-  .lumi-showcase__book { grid-area: book; }
+  .lumi-showcase__intro { grid-area: intro; align-self: auto; }
+  .lumi-showcase__center { grid-area: center; align-self: auto; }
+  .lumi-showcase__book { grid-area: book; align-self: auto; }
+  .lumi-showcase__accent {
+    margin: 0.25rem auto 0;
+    align-self: center;
+  }
   .lumi-book__copy { max-width: none; }
 }
 
@@ -1058,9 +1107,8 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(165deg, #faf8fd 0%, #ebe4f8 42%, #f3effa 100%);
   padding-bottom: 0;
 }
-.full-bleed--lumi + #philosophy.section,
 .full-bleed--lumi ~ #philosophy.section {
-  padding-top: clamp(1.75rem, 4vw, 2.5rem);
+  padding-top: clamp(1.35rem, 3vw, 2rem);
 }
 
 .full-bleed--surface {
