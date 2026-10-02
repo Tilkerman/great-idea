@@ -945,6 +945,8 @@
 
 .week-view__grid-scroll--snap {
   scroll-snap-type: x mandatory;
+  /* Колонка дня прилипает к правому краю полоски часов, а не под неё. */
+  scroll-padding-left: 50px;
 }
 
 .week-view__grid-scroll--snap .week-view__col {
