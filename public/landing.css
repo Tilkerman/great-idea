@@ -643,27 +643,31 @@ a { color: inherit; text-decoration: none; }
 }
 .lumi-showcase__accent {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: flex-end;
   justify-content: flex-end;
-  gap: 0.15rem;
+  gap: 0.15rem 0.45rem;
   width: 100%;
   max-width: none;
-  margin: 0.5rem 0 0 auto;
+  margin: 0.15rem 0 0 auto;
+  transform: translateY(-15%);
 }
 .lumi-book__steps-quote {
-  margin: 0 0 0.35rem 0;
-  padding: 0 0.25rem 0 0;
-  transform: translate(-0.85rem, -0.65rem);
+  margin: 0 0 2.65rem 0;
+  padding: 0;
+  transform: translate(-0.55rem, 0);
   font-family: "Caveat", "Segoe Script", "Bradley Hand", cursive;
   font-size: clamp(1.1rem, 2.4vw, 1.38rem);
   line-height: 1.1;
   font-weight: 600;
   color: #7a6899;
   letter-spacing: 0.01em;
-  text-align: right;
+  text-align: left;
   flex: 0 1 auto;
   min-width: 0;
+  max-width: 6.5rem;
+  align-self: flex-end;
 }
 .lumi-showcase__intro {
   align-self: start;
@@ -880,12 +884,13 @@ a { color: inherit; text-decoration: none; }
     align-self: end;
   }
   .lumi-showcase__accent {
-    margin-top: 0.65rem;
-    gap: 0.2rem;
+    margin-top: 0.2rem;
+    gap: 0.2rem 0.55rem;
   }
   .lumi-book__steps-quote {
-    margin-bottom: 0.45rem;
-    transform: translate(-1rem, -0.85rem);
+    margin-bottom: 2.85rem;
+    max-width: 7rem;
+    transform: translate(-0.75rem, 0);
   }
   .lumi-book__illustration {
     width: 16.5rem;
@@ -908,7 +913,12 @@ a { color: inherit; text-decoration: none; }
   .lumi-showcase__phone { grid-area: phone; align-self: auto; }
   .lumi-showcase__book { grid-area: book; align-self: auto; align-items: flex-end; }
   .lumi-showcase__accent {
-    margin: 0.75rem 0 0 auto;
+    margin: 0.35rem 0 0 auto;
+    transform: translateY(-12%);
+  }
+  .lumi-book__steps-quote {
+    margin-bottom: 2.35rem;
+    max-width: 6.25rem;
   }
   .lumi-book__copy { max-width: none; }
 }
