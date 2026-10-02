@@ -275,25 +275,25 @@ a { color: inherit; text-decoration: none; }
 }
 .section.hero {
   width: min(1200px, 100%);
-  padding: 4.5rem 1.25rem 4.75rem;
+  padding: 3.25rem 1.25rem 3.25rem;
 }
 @media (max-width: 359px) {
   .section.hero { padding-left: 1rem; padding-right: 1rem; }
 }
 @media (min-width: 768px) {
-  .section.hero { padding: 5.5rem 2rem 6.5rem; }
+  .section.hero { padding: 4rem 2rem 4.25rem; }
 }
 /* Блок 1 (hero #top) → блок 2 (#tili «01»): отдельная полоса, не padding секций */
 .landing-block-gap {
   width: var(--content);
   max-width: 100%;
   margin: 0 auto;
-  height: clamp(5rem, 14vw, 9rem);
+  height: clamp(3rem, 8vw, 5rem);
   flex-shrink: 0;
   pointer-events: none;
 }
 #tili.section {
-  padding-top: 2.5rem;
+  padding-top: 1.75rem;
 }
 .section--tight { padding: 2.5rem 0; }
 .full-bleed { width: 100%; }
