@@ -198,7 +198,47 @@
 
   const LANG_FLAGS = { ru: '🇷🇺', en: '🇬🇧', es: '🇪🇸' };
 
+  /** Реальные скрины приложения: EN — только английский UI; RU/ES — те же EN (по решению продукта). */
+  const SCREENSHOTS = {
+    en: {
+      day: './screens/en/tili-day.png',
+      week: './screens/en/tili-week.png',
+      month: './screens/en/tili-month.png',
+      lumi: './screens/en/lumi-wish.png',
+    },
+    ru: {
+      day: './screens/en/tili-day.png',
+      week: './screens/en/tili-week.png',
+      month: './screens/en/tili-month.png',
+      lumi: './screens/en/lumi-wish.png',
+    },
+    es: {
+      day: './screens/en/tili-day.png',
+      week: './screens/en/tili-week.png',
+      month: './screens/en/tili-month.png',
+      lumi: './screens/en/lumi-wish.png',
+    },
+  };
+
   let currentLang = 'ru';
+
+  function applyScreenshots(lang) {
+    const set = SCREENSHOTS[lang] || SCREENSHOTS.en;
+    document.querySelectorAll('.shot__img[data-shot]').forEach((img) => {
+      const key = img.getAttribute('data-shot');
+      const src = key && set[key];
+      if (!src || img.getAttribute('src') === src) return;
+      img.setAttribute('src', src);
+      const wrap = img.closest('[data-shot-wrap], [data-real-screen]');
+      if (wrap) wrap.classList.add('is-missing');
+      img.addEventListener('load', () => {
+        if (wrap && img.naturalWidth > 0) wrap.classList.remove('is-missing');
+      }, { once: true });
+      img.addEventListener('error', () => {
+        if (wrap) wrap.classList.add('is-missing');
+      }, { once: true });
+    });
+  }
 
   function applyLang(lang) {
     const strings = copy[lang] || copy.ru;
@@ -238,6 +278,8 @@
       u.searchParams.set('lang', lang);
       window.history.replaceState({}, '', u.pathname + u.search);
     } catch (_) {}
+
+    applyScreenshots(lang);
   }
 
   function detectLang() {
