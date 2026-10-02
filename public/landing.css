@@ -907,6 +907,7 @@ a { color: inherit; text-decoration: none; }
     margin-top: auto;
     margin-bottom: 0;
     gap: 0.25rem 0.85rem;
+    transform: translateX(-1.35rem);
   }
   .lumi-accent__quote-block {
     transform: translateY(-0.65rem);
@@ -917,7 +918,7 @@ a { color: inherit; text-decoration: none; }
     font-size: 1.28rem;
   }
   .lumi-book__illustration {
-    width: 9rem;
+    width: 11.7rem;
     max-width: 100%;
     transform: none;
   }
