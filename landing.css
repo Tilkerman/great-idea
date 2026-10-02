@@ -414,6 +414,18 @@ a { color: inherit; text-decoration: none; }
 .split--tili {
   align-items: start;
 }
+@media (min-width: 900px) {
+  .split--tili {
+    overflow: hidden;
+  }
+  .split--tili > .tili-copy {
+    min-width: 0;
+  }
+  .split--tili > .shots-showcase--aside {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
 .tili-copy {
   max-width: 36rem;
 }
@@ -454,25 +466,27 @@ a { color: inherit; text-decoration: none; }
     align-items: flex-start;
     justify-content: flex-end;
     width: 100%;
-    overflow: visible;
+    max-width: 100%;
+    overflow-x: clip;
+    overflow-y: visible;
     margin: 0;
-    padding: 0.25rem 0 1rem;
+    padding: 0.25rem 0 1rem 1.25rem;
     position: sticky;
     top: 5.25rem;
     align-self: stretch;
     min-height: min(36rem, 72vh);
+    box-sizing: border-box;
   }
   .shots-showcase--aside .shot--showcase {
-    flex: 0 0 clamp(188px, 42%, 278px);
-    width: clamp(188px, 42%, 278px);
-    max-width: none;
+    flex: 0 0 clamp(178px, 36%, 252px);
+    width: clamp(178px, 36%, 252px);
+    max-width: calc((100% + 2.5rem) / 3);
     margin: 0;
     position: relative;
     box-shadow: 0 16px 44px rgba(31, 41, 55, 0.16);
   }
-  /* Чуть сильнее касание, чем «совсем чутка», но не лепка */
   .shots-showcase--aside .shot--showcase:not(:first-child) {
-    margin-left: clamp(-2.75rem, -13%, -1.65rem);
+    margin-left: clamp(-2.5rem, -12%, -1.5rem);
   }
   .shots-showcase--aside .shot--showcase:nth-child(1) {
     margin-top: 0;
