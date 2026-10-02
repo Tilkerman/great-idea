@@ -20,7 +20,7 @@
   <title>TiLi — календарь твоего времени</title>
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./tili-home-icon-v4.png" />
-  <link rel="stylesheet" href="./landing.css?v=f570649" />
+  <link rel="stylesheet" href="./landing.css?v=f668ed7" />
   <style>
     /* Не зависит от кэша landing.css: на телефоне CTA только в бургере */
     .site-header .header-cta { display: none !important; }
@@ -28,7 +28,7 @@
       .site-header .header-cta { display: inline-flex !important; }
     }
   </style>
-  <script src="./landing-analytics.js?v=f570649" defer></script>
+  <script src="./landing-analytics.js?v=f668ed7" defer></script>
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -175,28 +175,72 @@
     </section>
 
     <div class="full-bleed full-bleed--lumi">
-      <section class="section reveal" id="lumi" data-analytics-section="lumi">
-        <p class="section-label">02</p>
-        <h2 data-i18n="lumiH">Lumi — календарь твоих желаний</h2>
-        <p class="lead-text" data-i18n="lumiSub">У каждого есть планы на завтра. Но есть и то, чего хочется от жизни гораздо сильнее. Lumi — пространство для таких желаний.</p>
-        <div class="split">
-          <div>
-            <p data-i18n="lumiP1">Lumi не превращает желание в обычную задачу. Желание может содержать образ, чувства, причины, мысли, маленькие шаги и связь с действиями в календаре.</p>
-            <p data-i18n="lumiP2">Это место, к которому можно возвращаться — сформулировать, почувствовать, понять, разбить на шаги, сделать.</p>
-            <div class="book-block">
-              <p data-i18n="book1">Lumi вдохновлён идеями книги David Cameron Gikandi <em>A Happy Pocket Full of Money</em>.</p>
-              <p data-i18n="book2">В книге — про формулировку желаний, чувства, намерение и действия. Lumi развивает это в своём формате: желание становится пространством, к которому можно возвращаться и приближать к реальности шаг за шагом.</p>
-            </div>
+      <section class="section lumi-showcase reveal" id="lumi" data-analytics-section="lumi">
+        <div class="lumi-showcase__grid">
+          <div class="lumi-showcase__intro">
+            <p class="section-label section-label--lumi">02</p>
+            <h2 data-i18n="lumiH">Lumi — календарь твоих желаний</h2>
+            <p class="lumi-showcase__lead" data-i18n="lumiSub">Помогает не забывать о том, что действительно важно. Записывай желания, разбивай их на маленькие шаги и двигайся к мечте шаг за шагом.</p>
+            <ul class="lumi-features" aria-label="Lumi">
+              <li>
+                <span class="lumi-features__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.5-7 10-7 10z"/></svg>
+                </span>
+                <span data-i18n="lumiFe1">Желания и цели</span>
+              </li>
+              <li>
+                <span class="lumi-features__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg>
+                </span>
+                <span data-i18n="lumiFe2">Маленькие шаги</span>
+              </li>
+              <li>
+                <span class="lumi-features__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
+                </span>
+                <span data-i18n="lumiFe3">Чувства и состояния</span>
+              </li>
+              <li>
+                <span class="lumi-features__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M4 19V5M4 19h16M8 15l3-3 3 2 4-5"/></svg>
+                </span>
+                <span data-i18n="lumiFe4">Отслеживание прогресса</span>
+              </li>
+              <li>
+                <span class="lumi-features__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+                </span>
+                <span data-i18n="lumiFe5">Напоминания и поддержка</span>
+              </li>
+              <li>
+                <span class="lumi-features__icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg>
+                </span>
+                <span data-i18n="lumiFe6">Визуализация и вдохновение</span>
+              </li>
+            </ul>
           </div>
-          <figure class="shot shot--lumi" data-shot-wrap>
-            <img class="shot__img" data-shot="lumi" src="./screens/en/lumi-wish.png" alt="" width="595" height="1024" loading="eager" decoding="async" />
+          <figure class="lumi-showcase__phone shot" data-shot-wrap>
+            <div class="lumi-showcase__phone-frame">
+              <img class="shot__img" data-shot="lumi" src="./screens/en/lumi-wish.png" alt="" width="595" height="1024" loading="lazy" decoding="async" />
+            </div>
             <div class="shot__ph" data-i18n="phLumi">[ REAL SCREENSHOT: Lumi ]</div>
-            <figcaption data-i18n="capLumi">Реальный экран Lumi</figcaption>
           </figure>
-        </div>
-        <div class="quote-block">
-          <p data-i18n="lumiQuote">Желание — это не задача на 15:00.</p>
-          <p class="sub" data-i18n="lumiQuoteSub">Иногда ему нужно место, образ, чувство и маленький первый шаг.</p>
+          <aside class="lumi-showcase__book" aria-labelledby="lumi-book-heading">
+            <div class="lumi-book__sparkles" aria-hidden="true">
+              <span>✦</span><span>✦</span><span>+</span>
+            </div>
+            <div class="lumi-book__copy">
+              <p class="lumi-book__kicker" id="lumi-book-heading" data-i18n="bookKicker">Вдохновлено книгой</p>
+              <p class="lumi-book__title" data-i18n="bookName">«КАРМАН ЖЕЛАНИЙ»</p>
+              <p class="lumi-book__author" data-i18n="bookAuthor">David Cameron Gikandi</p>
+              <p class="lumi-book__text" data-i18n="bookBody">Идея автора: записать желание — первый шаг к его исполнению. Lumi помогает хранить образ, чувства и маленькие шаги в одном месте.</p>
+              <a class="btn lumi-book__cta" href="https://www.google.com/search?q=David+Cameron+Gikandi+A+Happy+Pocket+Full+of+Money" target="_blank" rel="noopener noreferrer" data-i18n="bookCta">Узнать больше о книге</a>
+            </div>
+            <div class="lumi-book__deco" aria-hidden="true">
+              <span class="lumi-book__deco-book" data-i18n="bookNameShort">КАРМАН ЖЕЛАНИЙ</span>
+            </div>
+          </aside>
         </div>
       </section>
     </div>
@@ -295,6 +339,6 @@
     </div>
   </footer>
 
-  <script src="./landing-i18n.js?v=f570649"></script>
+  <script src="./landing-i18n.js?v=f668ed7"></script>
 </body>
 </html>
