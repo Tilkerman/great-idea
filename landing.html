@@ -20,7 +20,7 @@
   <title>TiLi — календарь твоего времени</title>
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./tili-home-icon-v4.png" />
-  <link rel="stylesheet" href="./landing.css?v=af088f5" />
+  <link rel="stylesheet" href="./landing.css?v=a82bdbe" />
   <style>
     /* Не зависит от кэша landing.css: на телефоне CTA только в бургере */
     .site-header .header-cta { display: none !important; }
@@ -28,7 +28,7 @@
       .site-header .header-cta { display: inline-flex !important; }
     }
   </style>
-  <script src="./landing-analytics.js?v=af088f5" defer></script>
+  <script src="./landing-analytics.js?v=a82bdbe" defer></script>
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -119,8 +119,8 @@
       <p class="section-label">01</p>
       <h2 data-i18n="tiliH">TiLi — календарь твоего времени</h2>
       <p class="lead-text" data-i18n="tiliSub">TiLi показывает не просто то, что тебе нужно сделать. Он показывает, когда в твоём дне это действительно произойдёт.</p>
-      <div class="split">
-        <div>
+      <div class="tili-body">
+        <div class="tili-copy">
           <p data-i18n="tiliP1">Обычный список задач говорит: «У тебя 8 дел». TiLi показывает другое: «Вот как выглядит твой сегодняшний день».</p>
           <p data-i18n="tiliP2">Каждое дело получает своё место во времени. День — часовая сетка: занятые часы, свободное пространство, куда уходит день.</p>
           <ul class="meaning-list">
@@ -132,18 +132,18 @@
             <li><strong data-i18n="m6t">Категории</strong><span data-i18n="m6d">Работа, личное, семья — структура дня.</span></li>
           </ul>
         </div>
-        <div class="shots-row">
-          <figure class="shot" data-shot-wrap>
+        <div class="shots-showcase">
+          <figure class="shot shot--showcase" data-shot-wrap>
             <img class="shot__img" data-shot="day" src="./screens/en/tili-day.png" alt="" width="595" height="1024" loading="eager" decoding="async" />
             <div class="shot__ph" data-i18n="phDay">[ REAL SCREENSHOT: TiLi Day View ]</div>
             <figcaption data-i18n="capDay">День</figcaption>
           </figure>
-          <figure class="shot" data-shot-wrap>
+          <figure class="shot shot--showcase" data-shot-wrap>
             <img class="shot__img" data-shot="week" src="./screens/en/tili-week.png" alt="" width="595" height="1024" loading="eager" decoding="async" />
             <div class="shot__ph" data-i18n="phWeek">[ REAL SCREENSHOT: TiLi Week View ]</div>
             <figcaption data-i18n="capWeek">Неделя</figcaption>
           </figure>
-          <figure class="shot" data-shot-wrap>
+          <figure class="shot shot--showcase" data-shot-wrap>
             <img class="shot__img" data-shot="month" src="./screens/en/tili-month.png" alt="" width="595" height="1024" loading="eager" decoding="async" />
             <div class="shot__ph" data-i18n="phMonth">[ REAL SCREENSHOT: TiLi Month/Year ]</div>
             <figcaption data-i18n="capMonth">Масштаб</figcaption>
@@ -169,7 +169,7 @@
               <p data-i18n="book2">В книге — про формулировку желаний, чувства, намерение и действия. Lumi развивает это в своём формате: желание становится пространством, к которому можно возвращаться и приближать к реальности шаг за шагом.</p>
             </div>
           </div>
-          <figure class="shot" data-shot-wrap>
+          <figure class="shot shot--lumi" data-shot-wrap>
             <img class="shot__img" data-shot="lumi" src="./screens/en/lumi-wish.png" alt="" width="595" height="1024" loading="eager" decoding="async" />
             <div class="shot__ph" data-i18n="phLumi">[ REAL SCREENSHOT: Lumi ]</div>
             <figcaption data-i18n="capLumi">Реальный экран Lumi</figcaption>
@@ -276,6 +276,6 @@
     </div>
   </footer>
 
-  <script src="./landing-i18n.js?v=af088f5"></script>
+  <script src="./landing-i18n.js?v=a82bdbe"></script>
 </body>
 </html>
