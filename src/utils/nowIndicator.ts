@@ -9,14 +9,16 @@ export function nowInHourGrid(now: Date, dayStartHour: number, dayEndHour: numbe
   const startMin = dayStartHour * 60;
   const endMin = gridEndExclusiveHour(dayEndHour) * 60;
   const nowMin = now.getHours() * 60 + now.getMinutes();
-  if (nowMin < startMin || nowMin >= endMin) return null;
   const total = endMin - startMin;
+  if (total <= 0) return null;
+  // До первого часа и после последнего черта остаётся на краю сетки, а не пропадает.
+  const clampedMin = Math.min(Math.max(nowMin, startMin), endMin);
   return {
     nowMin,
     startMin,
     endMin,
     total,
-    ratio: (nowMin - startMin) / total,
+    ratio: (clampedMin - startMin) / total,
     label: formatTime(now),
   };
 }

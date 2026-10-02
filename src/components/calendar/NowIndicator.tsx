@@ -13,11 +13,12 @@ export function NowIndicator({
 }) {
   const pos = nowInHourGrid(now, dayStartHour, dayEndHour);
   if (!pos) return null;
+  const top = pos.ratio >= 1 ? 'calc(100% - 1px)' : `${pos.ratio * 100}%`;
 
   return (
     <div
       className="now-indicator"
-      style={{ top: `${pos.ratio * 100}%` }}
+      style={{ top }}
       aria-hidden
     >
       <span className="now-indicator__dot" />
