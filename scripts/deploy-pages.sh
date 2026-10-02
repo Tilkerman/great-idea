@@ -5,8 +5,13 @@ cd "$(dirname "$0")/.."
 
 REPO="Tilkerman/great-idea"
 BASE="/app/"
+# В nested-копии .git часто отстаёт; версия лендинга — из основного workspace.
+WORKSPACE_ROOT="/Users/macbookair/Работа/список\\календарь"
+if git -C "$WORKSPACE_ROOT" rev-parse --short HEAD >/dev/null 2>&1; then
+  export VITE_APP_BUILD="$(git -C "$WORKSPACE_ROOT" rev-parse --short HEAD)"
+fi
 
-echo "→ Сборка..."
+echo "→ Сборка (landing v=${VITE_APP_BUILD:-local})..."
 npm run build:pages
 
 echo "→ Деплой на gh-pages..."
