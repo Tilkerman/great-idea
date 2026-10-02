@@ -949,7 +949,7 @@ a { color: inherit; text-decoration: none; }
   }
   .lumi-accent__quote-block {
     align-self: flex-start;
-    transform: translateY(0.85rem);
+    transform: translate(-0.65rem, 1.1rem);
     max-width: 10rem;
     flex: 1 1 0;
   }
