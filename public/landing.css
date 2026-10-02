@@ -417,13 +417,20 @@ a { color: inherit; text-decoration: none; }
 @media (min-width: 900px) {
   .split--tili {
     overflow: hidden;
+    gap: clamp(2rem, 5vw, 3.75rem);
   }
   .split--tili > .tili-copy {
     min-width: 0;
+    position: relative;
+    z-index: 2;
+    padding-right: 0.5rem;
+    /* Тень телефонов не «грязнит» текст — фон колонки перекрывает blur слева */
+    background: var(--bg);
   }
   .split--tili > .shots-showcase--aside {
     min-width: 0;
     max-width: 100%;
+    z-index: 1;
   }
 }
 .tili-copy {
@@ -431,9 +438,8 @@ a { color: inherit; text-decoration: none; }
 }
 @media (min-width: 900px) {
   .split--tili {
-    /* Текст слева, витрина справа на всю высоту блока */
+    /* Текст слева, витрина справа */
     grid-template-columns: minmax(0, 0.88fr) minmax(340px, 1.12fr);
-    gap: clamp(1.25rem, 3vw, 2.5rem);
   }
 }
 @media (min-width: 1100px) {
@@ -467,14 +473,13 @@ a { color: inherit; text-decoration: none; }
     justify-content: flex-end;
     width: 100%;
     max-width: 100%;
-    overflow-x: clip;
-    overflow-y: visible;
+    overflow: clip;
     margin: 0;
-    padding: 0.25rem 0 1rem 1.25rem;
+    padding: 0.25rem 0 0.5rem 0.75rem;
     position: sticky;
     top: 5.25rem;
-    align-self: stretch;
-    min-height: min(36rem, 72vh);
+    align-self: start;
+    min-height: 0;
     box-sizing: border-box;
   }
   .shots-showcase--aside .shot--showcase {
@@ -483,7 +488,9 @@ a { color: inherit; text-decoration: none; }
     max-width: calc((100% + 2.5rem) / 3);
     margin: 0;
     position: relative;
-    box-shadow: 0 16px 44px rgba(31, 41, 55, 0.16);
+    /* Тень вправо-вниз, без размытия на текст слева */
+    box-shadow: 6px 10px 28px -6px rgba(31, 41, 55, 0.14),
+      2px 4px 12px -2px rgba(31, 41, 55, 0.08);
   }
   .shots-showcase--aside .shot--showcase:not(:first-child) {
     margin-left: clamp(-2.5rem, -12%, -1.5rem);
@@ -502,7 +509,7 @@ a { color: inherit; text-decoration: none; }
   }
 }
 .shot--showcase {
-  box-shadow: 0 16px 48px rgba(31, 41, 55, 0.1);
+  box-shadow: 4px 8px 24px -4px rgba(31, 41, 55, 0.1);
 }
 .shot--showcase .shot__media {
   aspect-ratio: 595 / 1024;
