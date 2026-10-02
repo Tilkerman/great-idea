@@ -810,6 +810,7 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   min-width: 0;
   padding: 0;
+  overflow: visible;
 }
 .lumi-book__sparkles {
   position: absolute;
@@ -855,6 +856,7 @@ a { color: inherit; text-decoration: none; }
   margin: 0;
   border-radius: 0;
   object-fit: contain;
+  object-position: right bottom;
   pointer-events: none;
   user-select: none;
 }
@@ -933,19 +935,29 @@ a { color: inherit; text-decoration: none; }
   }
   .lumi-showcase__intro { grid-area: intro; }
   .lumi-showcase__phone { grid-area: phone; align-self: auto; }
-  .lumi-showcase__book { grid-area: book; align-self: auto; align-items: flex-end; }
+  .lumi-showcase__book { grid-area: book; align-self: auto; align-items: stretch; overflow: visible; }
   .lumi-showcase__accent {
-    margin: 0.75rem 0 0 auto;
-    gap: 0.2rem 1.35rem;
+    margin: 0.75rem 0 0 0;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 0.75rem 1.5rem;
     width: 100%;
-    max-width: min(100%, 22rem);
+    max-width: none;
+    padding: 0 0.15rem 0 0.35rem;
+    box-sizing: border-box;
   }
   .lumi-accent__quote-block {
-    transform: translate(-1.1rem, -0.35rem);
-    max-width: 10rem;
+    transform: translateY(-0.35rem);
+    max-width: 10.5rem;
+    margin-right: 0;
+    flex: 0 1 auto;
   }
   .lumi-book__steps-quote {
-    max-width: 10rem;
+    max-width: 10.5rem;
+  }
+  .lumi-book__illustration {
+    flex: 0 0 auto;
+    width: clamp(7.5rem, 28vw, 10.5rem);
   }
   .lumi-book__copy { max-width: none; }
 }
