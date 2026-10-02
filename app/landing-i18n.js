@@ -300,8 +300,12 @@
       const img = wrap.querySelector('.shot__img');
       if (!img) return;
       function check() {
-        if (!img.complete || img.naturalWidth === 0) wrap.classList.add('is-missing');
-        else wrap.classList.remove('is-missing');
+        if (img.naturalWidth > 0) {
+          wrap.classList.remove('is-missing');
+          return;
+        }
+        /* lazy: пока не complete — не прятать img (иначе lazy не стартует) */
+        if (img.complete) wrap.classList.add('is-missing');
       }
       img.addEventListener('error', () => wrap.classList.add('is-missing'));
       img.addEventListener('load', check);
