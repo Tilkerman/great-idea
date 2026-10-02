@@ -545,12 +545,23 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden;
   background: var(--surface);
   line-height: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 .shot--showcase .shot__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: top center;
+}
+.shots-showcase--hero {
+  align-items: flex-end;
+}
+@media (min-width: 900px) {
+  .shots-showcase--hero {
+    align-items: flex-end;
+  }
 }
 .shot--showcase figcaption {
   text-align: center;
