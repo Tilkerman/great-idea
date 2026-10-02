@@ -851,7 +851,7 @@ a { color: inherit; text-decoration: none; }
 .lumi-book__illustration {
   display: block;
   flex: 0 0 auto;
-  width: clamp(8.25rem, 30vw, 11.25rem);
+  width: clamp(7.5rem, 24vw, 9rem);
   height: auto;
   margin: 0;
   border-radius: 0;
@@ -917,7 +917,7 @@ a { color: inherit; text-decoration: none; }
     font-size: 1.28rem;
   }
   .lumi-book__illustration {
-    width: 11.25rem;
+    width: 8.5rem;
     max-width: 100%;
     transform: none;
   }
@@ -958,7 +958,7 @@ a { color: inherit; text-decoration: none; }
   }
   .lumi-book__illustration {
     flex: 0 0 auto;
-    width: clamp(9.75rem, 36vw, 13.65rem);
+    width: clamp(9rem, 28vw, 10.25rem);
     transform: translateX(0.35rem);
   }
   .lumi-book__copy { max-width: none; }
