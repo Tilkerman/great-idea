@@ -225,6 +225,7 @@
   function appUrl(lang) {
     const params = new URLSearchParams();
     params.set('lang', lang);
+    params.set('theme', 'light');
     try {
       const utm = JSON.parse(localStorage.getItem(UTM_KEY) || '{}');
       Object.entries(utm).forEach(([k, v]) => { if (v) params.set(k, v); });
