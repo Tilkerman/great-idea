@@ -59,6 +59,11 @@ if (fs.existsSync(screensFrom)) {
   fs.cpSync(screensFrom, path.join(dist, 'screens'), { recursive: true });
 }
 
+const landingAssets = path.join(appDir, 'landing');
+if (fs.existsSync(landingAssets)) {
+  fs.cpSync(landingAssets, path.join(dist, 'landing'), { recursive: true });
+}
+
 fs.copyFileSync(path.join(dist, 'landing.html'), path.join(dist, 'index.html'));
 const buildId = landingBuildId();
 for (const name of ['index.html', 'landing.html']) {
