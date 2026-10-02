@@ -919,7 +919,7 @@ a { color: inherit; text-decoration: none; }
   .lumi-book__illustration {
     width: 11.25rem;
     max-width: 100%;
-    transform: translateY(0.8rem);
+    transform: none;
   }
   .lumi-book__copy {
     margin-left: auto;
@@ -938,7 +938,7 @@ a { color: inherit; text-decoration: none; }
   .lumi-showcase__phone { grid-area: phone; align-self: auto; }
   .lumi-showcase__book { grid-area: book; align-self: auto; align-items: stretch; overflow: visible; }
   .lumi-showcase__accent {
-    margin: 0.35rem 0 -0.3rem 0;
+    margin: 0.35rem 0 0;
     justify-content: flex-start;
     align-items: flex-end;
     gap: 0.75rem;
@@ -949,7 +949,7 @@ a { color: inherit; text-decoration: none; }
   }
   .lumi-accent__quote-block {
     align-self: flex-start;
-    transform: none;
+    transform: translateY(0.85rem);
     max-width: 10rem;
     flex: 1 1 0;
   }
@@ -959,7 +959,7 @@ a { color: inherit; text-decoration: none; }
   .lumi-book__illustration {
     flex: 0 0 auto;
     width: clamp(9.75rem, 36vw, 13.65rem);
-    transform: none;
+    transform: translateX(0.35rem);
   }
   .lumi-book__copy { max-width: none; }
 }
