@@ -80,3 +80,8 @@ export async function exportData() {
 export async function clearAllData() {
   await db.tasks.clear();
 }
+
+export async function replaceAllTasks(tasks: Task[]) {
+  await db.tasks.clear();
+  if (tasks.length > 0) await db.tasks.bulkPut(tasks);
+}

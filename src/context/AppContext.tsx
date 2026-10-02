@@ -20,6 +20,7 @@ import {
   saveTask,
   saveTasks,
   seedIfEmpty,
+  replaceAllTasks,
 } from '../db';
 import {
   getDateStrFromTask,
@@ -34,7 +35,7 @@ import {
   idsInDay,
   idsInHour,
 } from '../utils/gridClipboard';
-import { SEED_TASKS } from '../data/seedTasks';
+import { SEED_TASKS, buildThreeWeekDemoTasks } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 import { afterTaskDeleted, afterTaskWritten } from '../utils/wishTaskBridge';
 import { resolveLaunchLocale, setAnalyticsConsent, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
@@ -111,6 +112,7 @@ interface AppContextValue {
       | { kind: 'day'; day: Date }
       | { kind: 'hour'; day: Date; hour: number },
   ) => Promise<void>;
+  loadDemoThreeWeeks: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -151,6 +153,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       await seedIfEmpty(SEED_TASKS);
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('seed') === 'demo3') {
+        await replaceAllTasks(buildThreeWeekDemoTasks());
+        params.delete('seed');
+        const q = params.toString();
+        const next = `${window.location.pathname}${q ? `?${q}` : ''}${window.location.hash}`;
+        window.history.replaceState(null, '', next);
+      }
       let s = await getSettings();
       const migrated = localStorage.getItem('tili-analytics-on-by-default');
       if (migrated !== '1') {
@@ -359,6 +369,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await refreshTasks();
   }, [gridClipboard, refreshTasks, settings.weekStartsOn]);
 
+  const loadDemoThreeWeeks = useCallback(async () => {
+    await replaceAllTasks(buildThreeWeekDemoTasks());
+    await refreshTasks();
+  }, [refreshTasks]);
+
   useEffect(() => {
     if (!ready) return;
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
@@ -423,12 +438,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       gridClipboard,
       setGridClipboard,
       pasteGridClipboard,
+      loadDemoThreeWeeks,
     }),
     [
       ready, screen, mainTab, setScreen, zoom, zoomIn, zoomOut, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
       focusDate, selectedDay, tasks,
       refreshTasks, upsertTask, saveHourSlot, placeTask, deleteTaskInHour, removeTask, settings, updateSettings,
-      session, authStart, authBackScreen, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding, openAuth, taskClipboard, copyTaskToClipboard, gridClipboard, pasteGridClipboard,
+      session, authStart, authBackScreen, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding, openAuth, taskClipboard, copyTaskToClipboard, gridClipboard, pasteGridClipboard, loadDemoThreeWeeks,
     ],
   );
 

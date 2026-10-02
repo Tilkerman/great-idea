@@ -112,15 +112,27 @@ html.is-onboarding {
   box-shadow: 0 160px 0 0 #0a0a0a;
 }
 
-/* Full-screen column: main scrolls, bottom nav is the last row (not fixed). */
+/* Full-screen column: scroll areas above, bottom nav pinned to foot of #root frame. */
 .app-viewport {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
+  height: 100%;
   overflow: hidden;
   background: var(--surface);
+  box-sizing: border-box;
+  padding-bottom: var(--bottom-nav-h);
+}
+
+.app-viewport > .bottom-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin-top: 0;
 }
 
 .app-viewport--center {
@@ -208,14 +220,16 @@ select {
 }
 
 .settings-overlay {
-  position: fixed;
-  inset: 0;
+  position: relative;
   z-index: 200;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
   background: var(--bg);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  height: var(--app-height);
 }
 
 .app-shell__main {

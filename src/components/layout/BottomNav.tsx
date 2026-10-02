@@ -269,19 +269,24 @@ export function BottomNav() {
           onPointerUp={onAddPointerUp}
           onPointerCancel={onAddPointerCancel}
         >
-          <span
-            className={`bottom-nav__plus${holdVisual || listening ? ' bottom-nav__plus--mic' : ''}${addPressed ? ' bottom-nav__plus--pressed' : ''}`}
-            aria-hidden
-          >
-            {holdVisual || listening ? (
-              <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-1.08A7 7 0 0 0 19 11h-2z" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                <path d="M12 5.5v13M5.5 12h13" />
-              </svg>
-            )}
+          <span className="bottom-nav__icon bottom-nav__icon--add">
+            <span
+              className={`bottom-nav__plus${holdVisual || listening ? ' bottom-nav__plus--mic' : ''}${addPressed ? ' bottom-nav__plus--pressed' : ''}`}
+              aria-hidden
+            >
+              {holdVisual || listening ? (
+                <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-1.08A7 7 0 0 0 19 11h-2z" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                  <path d="M12 5.5v13M5.5 12h13" />
+                </svg>
+              )}
+            </span>
+          </span>
+          <span className="bottom-nav__label bottom-nav__label--add-spacer" aria-hidden="true">
+            {'\u00a0'}
           </span>
         </button>
         {tabs.slice(2).map((tab) => (

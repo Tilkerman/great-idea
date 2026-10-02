@@ -1,5 +1,6 @@
-import type { Task } from '../types';
+import type { Task, TaskCategory } from '../types';
 import { rebalanceHourTasks } from '../utils/hourSlot';
+import { newTaskId } from '../utils/id';
 import { toLocalDateString } from '../utils/date';
 
 const today = new Date();
@@ -14,19 +15,16 @@ function dayAt(offset: number) {
   return d;
 }
 
-type Item = {
-  title: string;
-  category: Task['category'];
-  description?: string;
-};
+type Item = { title: string; category: TaskCategory };
+
+type DaySlots = { hour: number; items: Item[] }[];
 
 function hourBlock(dayOffset: number, hour: number, items: Item[]): Task[] {
   const day = dayAt(dayOffset);
-  const dateStr = toLocalDateString(day);
+  const now = new Date().toISOString();
   const drafts: Task[] = items.map((item, i) => ({
-    id: `${dateStr}-${hour}-${i + 1}-${item.title.slice(0, 12)}`,
+    id: newTaskId(),
     title: item.title,
-    description: item.description,
     category: item.category,
     startAt: '',
     endAt: '',
@@ -34,49 +32,97 @@ function hourBlock(dayOffset: number, hour: number, items: Item[]): Task[] {
     important: false,
     reminderOffsetMinutes: null,
     order: i + 1,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
   }));
   return rebalanceHourTasks(day, hour, drafts);
 }
 
-export const SEED_TASKS: Task[] = [
-  // Понедельник — 9:00, два дела по 15 мин (как на макете)
-  ...hourBlock(0, 9, [
-    { title: 'Функционал «История»', category: 'work', description: 'Рассмотреть и оценить' },
-    { title: 'Рекламная кампания Google', category: 'work', description: 'https://ads.google.com/...' },
-  ]),
-  // Понедельник — одиночные часы
-  ...hourBlock(0, 7, [{ title: 'Подъём', category: 'personal' }]),
-  ...hourBlock(0, 8, [{ title: 'Зарядка / душ', category: 'personal' }]),
-  ...hourBlock(0, 10, [{ title: 'Путь на работу', category: 'personal' }]),
-  ...hourBlock(0, 12, [{ title: 'Обед', category: 'personal' }]),
-  ...hourBlock(0, 18, [{ title: 'Ужин', category: 'personal' }]),
+function buildWeek(dayOffsetStart: number, slotsByDay: DaySlots[]) {
+  const tasks: Task[] = [];
+  for (let d = 0; d < 7; d++) {
+    const slots = slotsByDay[d] ?? slotsByDay[0];
+    for (const slot of slots) {
+      tasks.push(...hourBlock(dayOffsetStart + d, slot.hour, slot.items));
+    }
+  }
+  return tasks;
+}
 
-  // Вторник
-  ...hourBlock(1, 7, [{ title: 'Подъём', category: 'personal' }]),
-  ...hourBlock(1, 9, [
-    { title: 'Совещание', category: 'work' },
-    { title: 'Контент-план', category: 'work' },
-    { title: 'Перерыв на кофе', category: 'personal' },
-  ]),
-  ...hourBlock(1, 11, [{ title: 'Контент-план', category: 'work' }]),
-
-  // Среда — 12:00, 4 дела (как на скрине)
-  ...hourBlock(2, 7, [{ title: 'Подъём', category: 'personal' }]),
-  ...hourBlock(2, 12, [
-    { title: 'Позвонить в ресторан', category: 'family', description: 'В 12:00' },
-    { title: 'Рекламная кампания Google', category: 'work', description: 'https://ads.google.com/...' },
-    { title: 'Рекламная кампания Google', category: 'work', description: 'https://ads.google.com/...' },
-    { title: 'Рекламная кампания Google', category: 'work', description: 'https://ads.google.com/...' },
-  ]),
-  ...hourBlock(2, 17, [{ title: 'Выход в магазин', category: 'family' }]),
-
-  // Остальные дни
-  ...hourBlock(3, 9, [{ title: 'Яндекс.Директ', category: 'work' }]),
-  ...hourBlock(4, 9, [{ title: 'Отчёт за неделю', category: 'work' }]),
-  ...hourBlock(5, 10, [{ title: 'Поиграть с ребёнком', category: 'family' }]),
-  ...hourBlock(6, 11, [{ title: 'Повтор с ребёнком', category: 'family' }]),
+const WEEKDAY_EN: DaySlots = [
+  { hour: 7, items: [{ title: 'Wake up', category: 'personal' }] },
+  { hour: 8, items: [{ title: 'Shower & breakfast', category: 'personal' }] },
+  { hour: 9, items: [{ title: 'Commute to work', category: 'personal' }] },
+  { hour: 10, items: [{ title: 'Focus work', category: 'work' }] },
+  { hour: 11, items: [{ title: 'Team meeting', category: 'work' }] },
+  { hour: 12, items: [{ title: 'Lunch', category: 'personal' }] },
+  { hour: 14, items: [{ title: 'Grocery shopping', category: 'family' }] },
+  { hour: 18, items: [{ title: 'Dinner', category: 'family' }] },
+  { hour: 19, items: [{ title: 'Play with the kids', category: 'family' }] },
+  { hour: 20, items: [{ title: 'Evening walk', category: 'personal' }] },
 ];
+
+const WEEKEND_EN: DaySlots = [
+  { hour: 8, items: [{ title: 'Wake up', category: 'personal' }] },
+  { hour: 10, items: [{ title: 'Grocery shopping', category: 'family' }] },
+  { hour: 14, items: [{ title: 'Play with the kids', category: 'family' }] },
+  { hour: 18, items: [{ title: 'Dinner', category: 'family' }] },
+];
+
+const WEEKDAY_RU: DaySlots = [
+  { hour: 7, items: [{ title: 'Подъём', category: 'personal' }] },
+  { hour: 8, items: [{ title: 'Зарядка и завтрак', category: 'personal' }] },
+  { hour: 9, items: [{ title: 'Путь на работу', category: 'personal' }] },
+  { hour: 10, items: [{ title: 'Работа над проектом', category: 'work' }] },
+  { hour: 11, items: [{ title: 'Совещание', category: 'work' }] },
+  { hour: 12, items: [{ title: 'Обед', category: 'personal' }] },
+  { hour: 14, items: [{ title: 'Покупка продуктов', category: 'family' }] },
+  { hour: 18, items: [{ title: 'Ужин', category: 'family' }] },
+  { hour: 19, items: [{ title: 'Игра с ребёнком', category: 'family' }] },
+  { hour: 20, items: [{ title: 'Вечерняя прогулка', category: 'personal' }] },
+];
+
+const WEEKEND_RU: DaySlots = [
+  { hour: 8, items: [{ title: 'Подъём', category: 'personal' }] },
+  { hour: 10, items: [{ title: 'Покупка продуктов', category: 'family' }] },
+  { hour: 14, items: [{ title: 'Игра с ребёнком', category: 'family' }] },
+  { hour: 18, items: [{ title: 'Ужин', category: 'family' }] },
+];
+
+const WEEKDAY_ES: DaySlots = [
+  { hour: 7, items: [{ title: 'Levantarse', category: 'personal' }] },
+  { hour: 8, items: [{ title: 'Ducha y desayuno', category: 'personal' }] },
+  { hour: 9, items: [{ title: 'Camino al trabajo', category: 'personal' }] },
+  { hour: 10, items: [{ title: 'Trabajo concentrado', category: 'work' }] },
+  { hour: 11, items: [{ title: 'Reunión de equipo', category: 'work' }] },
+  { hour: 12, items: [{ title: 'Almuerzo', category: 'personal' }] },
+  { hour: 14, items: [{ title: 'Compra de víveres', category: 'family' }] },
+  { hour: 18, items: [{ title: 'Cena', category: 'family' }] },
+  { hour: 19, items: [{ title: 'Jugar con el niño', category: 'family' }] },
+  { hour: 20, items: [{ title: 'Paseo por la tarde', category: 'personal' }] },
+];
+
+const WEEKEND_ES: DaySlots = [
+  { hour: 8, items: [{ title: 'Levantarse', category: 'personal' }] },
+  { hour: 10, items: [{ title: 'Compra de víveres', category: 'family' }] },
+  { hour: 14, items: [{ title: 'Jugar con el niño', category: 'family' }] },
+  { hour: 18, items: [{ title: 'Cena', category: 'family' }] },
+];
+
+/** Пн–пт = weekday, сб–вс = weekend */
+function weekPattern(weekday: DaySlots, weekend: DaySlots): DaySlots[] {
+  return [0, 1, 2, 3, 4, 5, 6].map((i) => (i >= 5 ? weekend : weekday));
+}
+
+/** Три недели подряд: EN → RU → ES (одинаковый распорядок, разные названия). */
+export function buildThreeWeekDemoTasks(): Task[] {
+  return [
+    ...buildWeek(0, weekPattern(WEEKDAY_EN, WEEKEND_EN)),
+    ...buildWeek(7, weekPattern(WEEKDAY_RU, WEEKEND_RU)),
+    ...buildWeek(14, weekPattern(WEEKDAY_ES, WEEKEND_ES)),
+  ];
+}
+
+export const SEED_TASKS: Task[] = buildThreeWeekDemoTasks();
 
 export const SEED_WEEK_START = toLocalDateString(monday);

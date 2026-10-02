@@ -1,11 +1,13 @@
 .settings-page {
-  min-height: var(--app-height, 100dvh);
-  height: var(--app-height, 100dvh);
+  min-height: 100%;
   background: var(--bg);
-  padding-bottom: calc(var(--bottom-nav-h) - 2px);
+  padding-bottom: 24px;
 }
 
 .settings-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 300;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;

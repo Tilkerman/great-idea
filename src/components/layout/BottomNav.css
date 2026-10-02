@@ -1,5 +1,8 @@
 .bottom-nav {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   flex-shrink: 0;
   width: 100%;
   display: flex;
@@ -7,7 +10,7 @@
   justify-content: space-between;
   box-sizing: border-box;
   min-height: var(--bottom-nav-h);
-  padding: 6px 8px env(safe-area-inset-bottom, 0px);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
   border: none;
   border-radius: 0;
@@ -37,7 +40,7 @@
   justify-content: flex-end;
   gap: 4px;
   min-width: 0;
-  padding: 0 2px 4px;
+  padding: 0 2px 2px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -49,32 +52,14 @@
 
 .bottom-nav__item--add {
   flex: 0 0 72px;
-  gap: 4px;
-  padding: 0;
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-}
-
-.bottom-nav__plus-mark {
-  display: none;
-  width: 26px;
-  height: 4px;
-  border-radius: 999px;
-  background: #d7dbe2;
-}
-
-[data-theme='dark'] .bottom-nav__item:not(.bottom-nav__item--active),
-[data-theme='dark'] .bottom-nav__item:not(.bottom-nav__item--active) .bottom-nav__label {
-  color: #9aa398;
-}
-
-[data-theme='dark'] .bottom-nav__plus-mark {
-  background: #3c4354;
 }
 
 .bottom-nav__item--add-voice {
   touch-action: none;
+}
+
+.bottom-nav__icon--add {
+  overflow: visible;
 }
 
 .bottom-nav__plus {
@@ -87,6 +72,16 @@
   background: #3d9a56;
   color: #fff;
   box-shadow: 0 6px 14px rgba(61, 154, 86, 0.28);
+}
+
+.bottom-nav__label--add-spacer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+[data-theme='dark'] .bottom-nav__item:not(.bottom-nav__item--active),
+[data-theme='dark'] .bottom-nav__item:not(.bottom-nav__item--active) .bottom-nav__label {
+  color: #9aa398;
 }
 
 .bottom-nav__plus svg {
@@ -157,53 +152,6 @@
   pointer-events: none;
 }
 
-.bottom-nav__plus--mic {
-  animation: bottom-nav-mic-pulse 0.9s ease-in-out infinite;
-  background: color-mix(in srgb, var(--accent) 88%, #fff);
-}
-
-.bottom-nav__item--add-voice .bottom-nav__plus {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
-}
-
-@keyframes bottom-nav-mic-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
-}
-
-.bottom-nav-voice-hint {
-  position: fixed;
-  left: 50%;
-  bottom: calc(56px + env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  z-index: 1200;
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  pointer-events: none;
-}
-
-.bottom-nav-toast {
-  position: fixed;
-  left: 50%;
-  bottom: calc(72px + env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  z-index: 1200;
-  max-width: min(92vw, 320px);
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: var(--text-primary);
-  color: var(--surface);
-  font-size: 13px;
-  text-align: center;
-  pointer-events: none;
-}
-
 .bottom-nav__item--active {
   color: var(--accent);
 }
@@ -251,7 +199,6 @@
   font-weight: 650;
 }
 
-/* Пока держим «+» для микрофона — не даём Safari выделять текст календаря под пальцем */
 body.bottom-nav-voice-active,
 body.bottom-nav-voice-active * {
   -webkit-user-select: none !important;

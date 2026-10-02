@@ -576,7 +576,7 @@ export function SettingsTransfer() {
 }
 
 export function SettingsData() {
-  const { setScreen, settings, updateSettings } = useApp();
+  const { setScreen, settings, updateSettings, loadDemoThreeWeeks } = useApp();
   const { t } = useI18n();
 
   const onAnalyticsToggle = (enabled: boolean) => {
@@ -602,6 +602,12 @@ export function SettingsData() {
     await db.feedbacks.clear();
     await db.actionItems.clear();
     window.location.reload();
+  };
+
+  const loadDemo = async () => {
+    if (!confirm(t('demoThreeWeeksConfirm'))) return;
+    await loadDemoThreeWeeks();
+    alert(t('demoThreeWeeksDone'));
   };
 
   return (
@@ -634,6 +640,10 @@ export function SettingsData() {
         >
           {t('analyticsPrivacyLink')}
         </a>
+        <button type="button" className="btn btn--secondary settings-full" onClick={() => { void loadDemo(); }}>
+          {t('demoThreeWeeks')}
+        </button>
+        <p className="settings-note">{t('demoThreeWeeksHint')}</p>
         <button type="button" className="btn btn--danger settings-full" onClick={clearData}>
           {t('clearAll')}
         </button>
