@@ -79,7 +79,7 @@ function SettingsScreens({ screen }: { screen: string }) {
 }
 
 function AppRouter() {
-  const { ready, screen, mainTab, settings } = useApp();
+  const { ready, screen, settings } = useApp();
   const settingsOverlayRef = useRef<HTMLDivElement>(null);
   useTaskReminders();
   useOpenTaskFromNotification();
@@ -129,8 +129,8 @@ function AppRouter() {
   }
 
   const inSettings = screen.startsWith('settings');
-  const showCalendar = screen === 'calendar' || (inSettings && mainTab === 'calendar');
-  const showLumi = screen === 'lumi' || (inSettings && mainTab === 'lumi');
+  const showCalendar = screen === 'calendar';
+  const showLumi = screen === 'lumi';
 
   return (
     <div className="app-viewport">
