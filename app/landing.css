@@ -465,14 +465,37 @@ a { color: inherit; text-decoration: none; }
   scroll-snap-align: center;
   margin: 0;
 }
+@media (max-width: 899px) {
+  .shots-showcase--hero {
+    position: relative;
+    justify-content: center;
+    min-height: 20rem;
+    overflow: visible;
+    padding-bottom: 1rem;
+  }
+  .shots-showcase--hero .shot--showcase {
+    flex: 0 0 min(46vw, 200px);
+    width: min(46vw, 200px);
+  }
+  .shots-showcase--hero .shot--showcase:not(:first-child) {
+    margin-left: clamp(-1.75rem, -10%, -1rem);
+  }
+  .shots-showcase--hero .shot--showcase:nth-child(1) {
+    align-self: flex-start;
+  }
+  .shots-showcase--hero .shot--showcase:nth-child(2) {
+    align-self: flex-end;
+  }
+}
 @media (min-width: 900px) {
   .shots-showcase--hero {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: stretch;
     justify-content: flex-end;
     width: 100%;
     max-width: 100%;
+    min-height: min(26rem, 52vh);
     overflow: clip;
     margin: 0 0 0 auto;
     padding: 0.25rem 0;
@@ -485,12 +508,15 @@ a { color: inherit; text-decoration: none; }
   .shots-showcase--hero .shot--showcase:not(:first-child) {
     margin-left: clamp(-2.25rem, -11%, -1.35rem);
   }
+  /* X-лесенка: TiLi сверху, Lumi снизу, с лёгким наложением */
   .shots-showcase--hero .shot--showcase:nth-child(1) {
+    align-self: flex-start;
     margin-top: 0;
     z-index: 1;
   }
   .shots-showcase--hero .shot--showcase:nth-child(2) {
-    margin-top: clamp(2.75rem, 7vh, 4.25rem);
+    align-self: flex-end;
+    margin-top: 0;
     z-index: 2;
   }
 }
@@ -554,14 +580,6 @@ a { color: inherit; text-decoration: none; }
   height: 100%;
   object-fit: contain;
   object-position: top center;
-}
-.shots-showcase--hero {
-  align-items: flex-end;
-}
-@media (min-width: 900px) {
-  .shots-showcase--hero {
-    align-items: flex-end;
-  }
 }
 .shot--showcase figcaption {
   text-align: center;
