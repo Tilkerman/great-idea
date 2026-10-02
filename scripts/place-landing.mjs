@@ -22,9 +22,10 @@ function landingBuildId() {
 function cacheBustLandingHtml(html, buildId) {
   const q = (file) => `"./${file}?v=${buildId}"`;
   return html
-    .replace(/"\.\/landing\.css"/g, q('landing.css'))
-    .replace(/"\.\/landing-analytics\.js"/g, q('landing-analytics.js'))
-    .replace(/"\.\/landing-i18n\.js"/g, q('landing-i18n.js'));
+    .replace(/"\.\/landing\.css(?:\?[^"]*)?"/g, q('landing.css'))
+    .replace(/"\.\/landing-analytics\.js(?:\?[^"]*)?"/g, q('landing-analytics.js'))
+    .replace(/"\.\/landing-i18n\.js(?:\?[^"]*)?"/g, q('landing-i18n.js'))
+    .replace(/"\.\/landing\/lumi-mascot\.png(?:\?[^"]*)?"/g, `"./landing/lumi-mascot.png?v=${buildId}"`);
 }
 
 if (!fs.existsSync(path.join(appDir, 'index.html'))) {
