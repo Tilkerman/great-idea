@@ -295,7 +295,10 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
 }
 #tili.section {
-  padding-top: 1.75rem;
+  width: 100%;
+  max-width: none;
+  background: #fff;
+  padding: 3.5rem 1.25rem;
 }
 .section--tight { padding: 2.5rem 0; }
 .full-bleed { width: 100%; }
@@ -512,7 +515,7 @@ a { color: inherit; text-decoration: none; }
     position: relative;
     z-index: 2;
     padding-right: 0.5rem;
-    background: var(--bg);
+    background: transparent;
   }
   .split--tili > .tili-shots {
     min-width: 0;
@@ -1321,40 +1324,122 @@ a { color: inherit; text-decoration: none; }
 .cta-final .fine { margin: 0 0 1.5rem; }
 
 #tili { overflow-x: clip; }
-.tili-stage {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
+#tili .split { width: min(1080px, 100%); margin-inline: auto; }
+.tili-num {
+  margin: 0 0 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--tili);
+}
+.tili-title {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 0.15rem;
+  margin: 0 0 1.35rem;
+  line-height: 1.05;
+}
+.tili-title__green {
+  color: var(--tili);
+  font-size: clamp(1.7rem, 2.6vw, 2.15rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.tili-title__dark {
+  color: #16181d;
+  font-size: clamp(1.85rem, 3.1vw, 2.45rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+.tili-copy > p {
+  margin: 0 0 0.9rem;
+  max-width: 34rem;
+  color: #3d4450;
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+.tili-points {
+  list-style: none;
+  padding: 0;
+  margin: 1.6rem 0 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+.tili-points li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+}
+.tili-points__icon {
+  color: var(--tili);
+  line-height: 0;
+  margin-top: 0.12rem;
+}
+.tili-points strong {
+  display: block;
+  margin: 0 0 0.2rem;
+  color: #16181d;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.tili-points li > span > span {
+  display: block;
+  color: #5c6570;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+.tili-signoff {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #16181d;
+}
+.tili-signoff__mark {
+  color: var(--tili);
+  box-shadow: inset 0 -2px 0 var(--tili);
+}
+.tili-stage {
+  position: relative;
+  width: min(100%, 520px);
+  aspect-ratio: 5 / 6.5;
+  margin: 1.75rem auto 0;
 }
 .tili-phone {
-  position: relative;
-  width: min(240px, 72%);
+  position: absolute;
   margin: 0;
-  background: #fff;
+  padding: 7px;
+  background: #1c1e22;
   border-radius: 28px;
-  overflow: hidden;
-  box-shadow: 10px 18px 40px -16px rgba(31, 41, 55, 0.28);
+  box-shadow: 0 22px 40px -18px rgba(22, 24, 29, 0.45);
 }
-.tili-phone--month { transform: rotate(-6deg); z-index: 1; }
+.tili-phone--month {
+  width: 40%;
+  left: 2%;
+  top: 16%;
+  transform: rotate(-7deg);
+  z-index: 1;
+}
 .tili-phone--week {
-  width: min(260px, 78%);
-  margin-top: -4.25rem;
-  transform: rotate(3deg);
-  z-index: 2;
+  width: 48%;
+  left: 26%;
+  top: 2%;
+  z-index: 3;
 }
 .tili-phone--day {
-  width: min(300px, 86%);
-  margin-top: -4.75rem;
-  transform: rotate(5deg);
-  z-index: 3;
+  width: 40%;
+  right: 4%;
+  top: 11%;
+  transform: rotate(6deg);
+  z-index: 2;
 }
 .tili-phone .shot__media {
   aspect-ratio: 390 / 844;
   overflow: hidden;
+  border-radius: 22px;
   line-height: 0;
   background: #fff;
 }
@@ -1367,37 +1452,13 @@ a { color: inherit; text-decoration: none; }
 }
 @media (min-width: 1024px) {
   .tili-stage {
+    width: 100%;
     max-width: none;
-    height: 680px;
+    aspect-ratio: 5 / 5.15;
     margin: 0;
-    display: block;
   }
-  .tili-phone { position: absolute; margin: 0; }
-  .tili-phone--month {
-    width: 200px;
-    left: 0;
-    top: 88px;
-    transform: rotate(-8deg);
-  }
-  .tili-phone--week {
-    width: 230px;
-    left: 118px;
-    top: 40px;
-    transform: rotate(3deg);
-  }
-  .tili-phone--day {
-    width: 270px;
-    right: 0;
-    left: auto;
-    top: 0;
-    transform: rotate(6deg);
-  }
-}
-@media (min-width: 1200px) {
-  .tili-stage { height: 760px; }
-  .tili-phone--month { width: 210px; top: 108px; }
-  .tili-phone--week { width: 250px; left: 128px; top: 48px; }
-  .tili-phone--day { width: 292px; }
+  .tili-phone { border-radius: 32px; padding: 8px; }
+  .tili-phone .shot__media { border-radius: 24px; }
 }
 
 #philosophy h2 { max-width: 18em; }
