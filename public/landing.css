@@ -1412,14 +1412,9 @@ a { color: inherit; text-decoration: none; }
   text-decoration-skip-ink: none;
 }
 .tili-try {
-  margin-top: 1.6rem;
-}
-@media (max-width: 1023px) {
-  .tili-try {
-    display: flex;
-    width: fit-content;
-    margin-inline: auto;
-  }
+  display: flex;
+  width: fit-content;
+  margin: 1.75rem auto 0;
 }
 .tili-stage {
   position: relative;
@@ -1457,9 +1452,9 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   width: 100%;
   margin: 0;
-  padding: 7px;
+  padding: 4px;
   background: #1c1e22;
-  border-radius: 28px;
+  border-radius: 26px;
   box-shadow: 0 22px 40px -18px rgba(22, 24, 29, 0.45);
 }
 .tili-phone--month { transform: rotate(-7deg); z-index: 1; }
@@ -1486,8 +1481,8 @@ a { color: inherit; text-decoration: none; }
     aspect-ratio: 5 / 6;
     margin: 0;
   }
-  .tili-phone { border-radius: 32px; padding: 8px; }
-  .tili-phone .shot__media { border-radius: 24px; }
+  .tili-phone { border-radius: 28px; padding: 5px; }
+  .tili-phone .shot__media { border-radius: 23px; }
 }
 
 #philosophy h2 { max-width: 18em; }
