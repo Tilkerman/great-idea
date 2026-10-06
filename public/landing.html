@@ -250,7 +250,13 @@
               <div class="lumi-accent__quote-block">
                 <p class="lumi-book__steps-quote" data-i18n="lumiStepsQuote">Маленькие шаги<br />к большим<br />изменениям</p>
               </div>
-              <img class="lumi-book__illustration" src="./landing/lumi-mascot.png" alt="" width="685" height="865" loading="lazy" decoding="async" />
+              <button type="button" class="lumi-mascot" data-i18n-aria="mascotLet" aria-label="Отпустить сердечко">
+                <img class="lumi-book__illustration lumi-mascot__rest" src="./landing/lumi-mascot.png" alt="" width="685" height="865" loading="lazy" decoding="async" />
+                <img class="lumi-mascot__up" src="./landing/lumi-mascot-up.png" alt="" width="685" height="865" />
+                <svg class="lumi-mascot__heart" viewBox="0 0 32 30" aria-hidden="true">
+                  <path fill="#fff" stroke="#6a5a86" stroke-width="1.6" stroke-linejoin="round" d="M16 27S4 18.2 4 11.2C4 7.2 7 4.4 10.6 4.4c2.1 0 3.6 1 5.4 2.8 1.8-1.8 3.3-2.8 5.4-2.8 3.6 0 6.6 2.8 6.6 6.8C28 18.2 16 27 16 27z"/>
+                </svg>
+              </button>
             </div>
           </aside>
           <a class="js-lumi-open lumi-try" href="./" data-i18n="tiliTry">Попробовать бесплатно</a>
