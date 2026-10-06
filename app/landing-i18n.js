@@ -327,10 +327,11 @@
     } catch (_) {}
   }
 
-  function appUrl(lang) {
+  function appUrl(lang, open) {
     const params = new URLSearchParams();
     params.set('lang', lang);
     params.set('theme', 'light');
+    if (open) params.set('open', open);
     try {
       const utm = JSON.parse(localStorage.getItem(UTM_KEY) || '{}');
       Object.entries(utm).forEach(([k, v]) => { if (v) params.set(k, v); });
@@ -431,6 +432,9 @@
     document.querySelectorAll('.js-app-open').forEach((a) => {
       a.setAttribute('href', appUrl(lang));
     });
+    document.querySelectorAll('.js-lumi-open').forEach((a) => {
+      a.setAttribute('href', appUrl(lang, 'lumi'));
+    });
 
     try { localStorage.setItem(STORAGE_LANG, lang); } catch (_) {}
     try {
@@ -499,9 +503,14 @@
   }
 
   function initCta() {
-    document.querySelectorAll('.js-app-open').forEach((el) => {
+    document.querySelectorAll('.js-app-open, .js-lumi-open').forEach((el) => {
       el.addEventListener('click', () => {
-        window.TiliLandingAnalytics?.capture('pwa_open', { locale: currentLang, from: el.classList.contains('js-hero-cta') ? 'hero' : 'other' });
+        const from = el.classList.contains('js-hero-cta')
+          ? 'hero'
+          : el.classList.contains('js-lumi-open')
+            ? 'lumi'
+            : 'other';
+        window.TiliLandingAnalytics?.capture('pwa_open', { locale: currentLang, from });
       });
     });
     const hero = document.querySelector('.js-hero-cta');
