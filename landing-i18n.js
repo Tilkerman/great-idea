@@ -91,6 +91,7 @@
       bookAuthor: 'David Cameron Gikandi',
       bookBody: 'Идея автора: записать желание — первый шаг к его исполнению. Lumi помогает хранить образ, чувства и маленькие шаги в одном месте.',
       bookCta: 'Узнать больше о книге',
+      mascotLet: 'Отпустить сердечко',
       lumiStepsQuote: 'Маленькие\u00a0шаги\nк большим\nизменениям',
       philH: 'Время и желания — рядом, но каждое на своём месте.',
       philLead: 'У человека ограниченное количество времени и бесконечное количество желаний.',
@@ -188,6 +189,7 @@
       bookAuthor: 'David Cameron Gikandi',
       bookBody: 'The author’s idea: writing a wish down is the first step toward making it real. Lumi holds the image, feelings, and small steps in one place.',
       bookCta: 'Learn more about the book',
+      mascotLet: 'Let the heart go',
       lumiStepsQuote: 'Small steps\ntoward\u00a0big\nchanges',
       philH: 'Time and wishes — side by side, each in its place.',
       philLead: 'A person has a limited amount of time and an endless number of wishes.',
@@ -283,6 +285,7 @@
       bookAuthor: 'David Cameron Gikandi',
       bookBody: 'La idea del autor: escribir un deseo es el primer paso para cumplirlo. Lumi guarda imagen, sentimientos y pasos en un solo lugar.',
       bookCta: 'Saber más del libro',
+      mascotLet: 'Soltar el corazón',
       lumiStepsQuote: 'Pequeños pasos\na\u00a0grandes\ncambios',
       philH: 'Tiempo y deseos — juntos, cada uno en su lugar.',
       philLead: 'Una persona tiene un tiempo limitado y una cantidad infinita de deseos.',
@@ -535,6 +538,31 @@
     });
   }
 
+  function initMascot() {
+    const btn = document.querySelector('.lumi-mascot');
+    if (!btn) return;
+    const heart = btn.querySelector('.lumi-mascot__heart');
+    let busy = false;
+    btn.addEventListener('click', () => {
+      if (busy) return;
+      busy = true;
+      btn.classList.add('is-let-go');
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        btn.classList.remove('is-let-go');
+        busy = false;
+      };
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        window.setTimeout(finish, 700);
+        return;
+      }
+      heart.addEventListener('animationend', finish, { once: true });
+      window.setTimeout(finish, 1600);
+    });
+  }
+
   function initTiliCarousel() {
     const scroller = document.querySelector('#tili .shots-showcase--aside');
     const dots = document.querySelector('#tili .shots-dots');
@@ -561,6 +589,7 @@
   initSectionAnalytics();
   initCta();
   initMenu();
+  initMascot();
 
   const langSelect = document.getElementById('lang-select');
   if (langSelect) {
