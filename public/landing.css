@@ -1313,3 +1313,152 @@ a { color: inherit; text-decoration: none; }
   background: #f7f8fa;
   color: var(--tili-hover);
 }
+.cta-final .btn:focus-visible {
+  outline: 3px solid #14161a;
+  outline-offset: 3px;
+}
+.cta-final h2 { margin-bottom: 0.75rem; }
+.cta-final .fine { margin: 0 0 1.5rem; }
+
+#tili { overflow-x: clip; }
+.tili-stage {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tili-phone {
+  position: relative;
+  width: min(240px, 72%);
+  margin: 0;
+  background: #fff;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 10px 18px 40px -16px rgba(31, 41, 55, 0.28);
+}
+.tili-phone--month { transform: rotate(-6deg); z-index: 1; }
+.tili-phone--week {
+  width: min(260px, 78%);
+  margin-top: -4.25rem;
+  transform: rotate(3deg);
+  z-index: 2;
+}
+.tili-phone--day {
+  width: min(300px, 86%);
+  margin-top: -4.75rem;
+  transform: rotate(5deg);
+  z-index: 3;
+}
+.tili-phone .shot__media {
+  aspect-ratio: 390 / 844;
+  overflow: hidden;
+  line-height: 0;
+  background: #fff;
+}
+.tili-phone .shot__media picture { display: contents; }
+.tili-phone .shot__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+@media (min-width: 1024px) {
+  .tili-stage {
+    max-width: none;
+    height: 680px;
+    margin: 0;
+    display: block;
+  }
+  .tili-phone { position: absolute; margin: 0; }
+  .tili-phone--month {
+    width: 200px;
+    left: 0;
+    top: 88px;
+    transform: rotate(-8deg);
+  }
+  .tili-phone--week {
+    width: 230px;
+    left: 118px;
+    top: 40px;
+    transform: rotate(3deg);
+  }
+  .tili-phone--day {
+    width: 270px;
+    right: 0;
+    left: auto;
+    top: 0;
+    transform: rotate(6deg);
+  }
+}
+@media (min-width: 1200px) {
+  .tili-stage { height: 760px; }
+  .tili-phone--month { width: 210px; top: 108px; }
+  .tili-phone--week { width: 250px; left: 128px; top: 48px; }
+  .tili-phone--day { width: 292px; }
+}
+
+#philosophy h2 { max-width: 18em; }
+#philosophy .phil-lead { color: var(--text); font-size: 1.125rem; }
+#philosophy p { max-width: 40rem; }
+.phil-chain {
+  list-style: none;
+  padding: 0;
+  margin: 3rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.phil-chain li { min-width: 0; }
+.phil-chain__who {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.phil-chain strong {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 1.2rem;
+  color: var(--text);
+}
+.phil-chain li > span:last-child { color: var(--muted); }
+.phil-principles {
+  list-style: none;
+  padding: 0;
+  margin: 4rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+.phil-principles li { min-width: 0; }
+.phil-principles__n {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--tili);
+}
+.phil-principles strong {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+.phil-principles li > span:last-child { color: var(--muted); }
+@media (min-width: 1024px) {
+  .phil-chain,
+  .phil-principles {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2.5rem;
+  }
+  .phil-chain li,
+  .phil-principles li { flex: 1; }
+}

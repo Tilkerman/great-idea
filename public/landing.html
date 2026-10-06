@@ -112,60 +112,46 @@
     <div class="landing-block-gap" aria-hidden="true"></div>
 
     <section class="section reveal" id="tili" data-analytics-section="tili">
-      <p class="section-label">01</p>
       <div class="split split--tili">
         <div class="tili-copy">
           <h2 data-i18n="tiliH">TiLi — календарь твоего времени</h2>
-          <p class="lead-text" data-i18n="tiliSub">TiLi показывает не то, что тебе нужно сделать. Он показывает, когда в твоём дне это действительно произойдёт.</p>
-          <p data-i18n="tiliP1">Обычный список задач говорит: «У тебя 8 дел». TiLi показывает другое: «Вот как выглядит твой сегодняшний день».</p>
-          <p data-i18n="tiliP2">Каждое дело получает своё место во времени. День — часовая сетка: занятые часы, свободное пространство, куда уходит день.</p>
+          <p class="lead-text" data-i18n="tiliSub">TiLi показывает не то, что тебе нужно сделать. Он показывает, когда это происходит и сколько места занимает в твоём дне.</p>
+          <p data-i18n="tiliP1">Обычный список говорит: «У тебя 8 дел». TiLi показывает: «Вот как выглядит твой сегодняшний день».</p>
           <ul class="meaning-list">
-            <li><strong data-i18n="m1t">Время</strong><span data-i18n="m1d">Каждая задача встаёт на своё место в течение дня — не абстрактный пункт списка, а конкретный час.</span></li>
-            <li><strong data-i18n="m2t">Свободное время</strong><span data-i18n="m2d">Пустое пространство в сетке — тоже часть дня.</span></li>
+            <li><strong data-i18n="m1t">Время</strong><span data-i18n="m1d">Каждое дело получает конкретное место в дне.</span></li>
+            <li><strong data-i18n="m2t">Свободное время</strong><span data-i18n="m2d">Пустое пространство — тоже часть дня.</span></li>
             <li><strong data-i18n="m3t">Несколько уровней</strong><span data-i18n="m3d">Год → месяц → неделя → день.</span></li>
-            <li><strong data-i18n="m4t">Быстрое планирование</strong><span data-i18n="m4d">Создать задачу из нужного часа.</span></li>
-            <li><strong data-i18n="m5t">Напоминания вовремя</strong><span data-i18n="m5d">Напоминание придёт, даже если приложение закрыто. Включи уведомления один раз в настройках — и больше не думай об этом.</span></li>
-            <li><strong data-i18n="m6t">Категории</strong><span data-i18n="m6d">Работа, личное, семья — структура дня.</span></li>
+            <li><strong data-i18n="m5t">Напоминания</strong><span data-i18n="m5d">TiLi напоминает о том, что действительно важно не забыть.</span></li>
           </ul>
         </div>
         <div class="tili-shots">
-        <div class="shots-showcase shots-showcase--aside" tabindex="0" data-i18n-aria="shotsAria" aria-label="Месяц, неделя целиком, сегодня">
-          <figure class="shot shot--showcase" data-shot-wrap>
-            <div class="shot__media">
-              <picture>
-                <source type="image/webp" srcset="./screens/ru/tili-month.webp" />
-                <img class="shot__img" data-shot="month" src="./screens/ru/tili-month.png" alt="Вид месяца в TiLi" data-i18n-alt="altMonth" width="390" height="844" loading="eager" decoding="async" />
-              </picture>
-            </div>
-            <div class="shot__ph" data-i18n="phMonth">[ REAL SCREENSHOT: TiLi Month/Year ]</div>
-            <figcaption data-i18n="capMonth">Месяц</figcaption>
-          </figure>
-          <figure class="shot shot--showcase" data-shot-wrap>
-            <div class="shot__media">
-              <picture>
-                <source type="image/webp" srcset="./screens/ru/tili-week.webp" />
-                <img class="shot__img" data-shot="week" src="./screens/ru/tili-week.png" alt="Вид недели в TiLi" data-i18n-alt="altWeek" width="390" height="844" loading="eager" decoding="async" />
-              </picture>
-            </div>
-            <div class="shot__ph" data-i18n="phWeek">[ REAL SCREENSHOT: TiLi Week View ]</div>
-            <figcaption data-i18n="capWeek">Неделя целиком</figcaption>
-          </figure>
-          <figure class="shot shot--showcase" data-shot-wrap>
-            <div class="shot__media">
-              <picture>
-                <source type="image/webp" srcset="./screens/ru/tili-day.webp" />
-                <img class="shot__img" data-shot="day" src="./screens/ru/tili-day.png" alt="Текущий день с индикатором времени в TiLi" data-i18n-alt="altDay" width="390" height="844" loading="eager" decoding="async" />
-              </picture>
-            </div>
-            <div class="shot__ph" data-i18n="phDay">[ REAL SCREENSHOT: TiLi Day View ]</div>
-            <figcaption data-i18n="capDay">Сегодня, час за часом</figcaption>
-          </figure>
+          <div class="tili-stage">
+            <figure class="tili-phone tili-phone--month shot" data-shot-wrap>
+              <div class="shot__media">
+                <picture>
+                  <source type="image/webp" srcset="./screens/ru/tili-month.webp" />
+                  <img class="shot__img" data-shot="month" src="./screens/ru/tili-month.png" alt="Вид месяца в TiLi" data-i18n-alt="altMonth" width="390" height="844" loading="eager" decoding="async" />
+                </picture>
+              </div>
+            </figure>
+            <figure class="tili-phone tili-phone--week shot" data-shot-wrap>
+              <div class="shot__media">
+                <picture>
+                  <source type="image/webp" srcset="./screens/ru/tili-week.webp" />
+                  <img class="shot__img" data-shot="week" src="./screens/ru/tili-week.png" alt="Вид недели в TiLi" data-i18n-alt="altWeek" width="390" height="844" loading="eager" decoding="async" />
+                </picture>
+              </div>
+            </figure>
+            <figure class="tili-phone tili-phone--day shot" data-shot-wrap>
+              <div class="shot__media">
+                <picture>
+                  <source type="image/webp" srcset="./screens/ru/tili-day.webp" />
+                  <img class="shot__img" data-shot="day" src="./screens/ru/tili-day.png" alt="Текущий день с индикатором времени в TiLi" data-i18n-alt="altDay" width="390" height="844" loading="eager" decoding="async" />
+                </picture>
+              </div>
+            </figure>
+          </div>
         </div>
-        <div class="shots-dots" aria-hidden="true"><span class="is-on"></span><span></span><span></span></div>
-        </div>
-      </div>
-      <div class="quote-block reveal">
-        <p data-i18n="tiliQuote">Не список дел.<br>Сетка твоего времени.</p>
       </div>
     </section>
 
@@ -173,7 +159,6 @@
       <section class="section lumi-showcase reveal" id="lumi" data-analytics-section="lumi">
         <div class="lumi-showcase__grid">
           <div class="lumi-showcase__intro">
-            <p class="section-label section-label--lumi">02</p>
             <h2 data-i18n="lumiH">Lumi — календарь твоих желаний</h2>
             <p class="lumi-showcase__lead" data-i18n="lumiSub">Помогает не забывать о том, что действительно важно. Записывай желания, разбивай их на маленькие шаги и двигайся к мечте шаг за шагом.</p>
             <ul class="lumi-features" aria-label="Lumi">
@@ -246,33 +231,48 @@
     </div>
 
     <section class="section reveal" id="philosophy" data-analytics-section="philosophy">
-      <p class="section-label">03</p>
-      <h2 data-i18n="philH">Время и желания — рядом,<br>но каждое на своём месте.</h2>
-      <div class="philosophy-grid">
-        <div class="phil-card">
-          <h3>TiLi</h3>
-          <p class="dim" data-i18n="philTime">Время</p>
-          <ul>
-            <li data-i18n="philT1">Что я делаю?</li>
-            <li data-i18n="philT2">Когда я это делаю?</li>
-            <li data-i18n="philT3">Сколько времени у меня есть?</li>
-          </ul>
-        </div>
-        <div class="phil-card">
-          <h3>Lumi</h3>
-          <p class="dim" data-i18n="philWish">Желания</p>
-          <ul>
-            <li data-i18n="philL1">Чего я хочу?</li>
-            <li data-i18n="philL2">Почему это важно?</li>
-            <li data-i18n="philL3">Что я чувствую?</li>
-            <li data-i18n="philL4">Какой маленький шаг могу сделать?</li>
-          </ul>
-        </div>
-        <div class="phil-card">
-          <h3 data-i18n="philTogether">Вместе</h3>
-          <p data-i18n="philChain">Желание → шаг → время → действие</p>
-        </div>
-      </div>
+      <h2 data-i18n="philH">Время и желания — рядом, но каждое на своём месте.</h2>
+      <p class="phil-lead" data-i18n="philLead">У человека ограниченное количество времени и бесконечное количество желаний.</p>
+      <p data-i18n="philLead2">TiLi помогает увидеть, на что уходит твоё время. Lumi помогает не забывать о том, чего ты действительно хочешь.</p>
+      <p data-i18n="philLead3">Между желанием и реальностью не всегда нужен большой план. Иногда нужен всего один маленький шаг — и время, в котором этому шагу есть место.</p>
+      <ol class="phil-chain">
+        <li>
+          <span class="phil-chain__who">Lumi</span>
+          <strong data-i18n="chain1t">Желание</strong>
+          <span data-i18n="chain1d">Всё начинается с желания.</span>
+        </li>
+        <li>
+          <span class="phil-chain__who" data-i18n="chain2who">Шаг</span>
+          <strong data-i18n="chain2t">Маленький шаг</strong>
+          <span data-i18n="chain2d">Разбиваем его на маленький шаг.</span>
+        </li>
+        <li>
+          <span class="phil-chain__who">TiLi</span>
+          <strong data-i18n="chain3t">Время</strong>
+          <span data-i18n="chain3d">Находим время в своём дне.</span>
+        </li>
+        <li>
+          <strong data-i18n="chain4t">Действие</strong>
+          <span data-i18n="chain4d">Шаг превращается в действие.</span>
+        </li>
+      </ol>
+      <ol class="phil-principles">
+        <li>
+          <span class="phil-principles__n">01</span>
+          <strong data-i18n="prin1t">Не заполнять всё время желаниями</strong>
+          <span data-i18n="prin1d">Свободное пространство в календаре — не проблема, которую нужно срочно заполнить.</span>
+        </li>
+        <li>
+          <span class="phil-principles__n">02</span>
+          <strong data-i18n="prin2t">Не превращать желания в бесконечный список</strong>
+          <span data-i18n="prin2d">Желание важно не количеством задач, а тем, что ты к нему возвращаешься.</span>
+        </li>
+        <li>
+          <span class="phil-principles__n">03</span>
+          <strong data-i18n="prin3t">Давать важному место</strong>
+          <span data-i18n="prin3d">Если что-то действительно важно, для этого должен появиться маленький шаг и конкретное время.</span>
+        </li>
+      </ol>
     </section>
 
     <section class="section section--tight reveal" id="bridge">
@@ -299,10 +299,9 @@
     </section>
 
     <div class="cta-final reveal">
-      <p class="eyebrow" data-i18n="ctaEyebrow">У тебя уже есть время.</p>
-      <h2 data-i18n="ctaH">Вопрос только в том,<br>на что ты его потратишь.</h2>
-      <a class="btn btn--primary btn--lg js-app-open" href="./" data-i18n="ctaTryFree">Попробовать TiLi</a>
+      <h2 data-i18n="ctaH">А что ты хочешь сделать со своим временем?</h2>
       <p class="fine" data-i18n="ctaFine">Работает в браузере. Без сложной регистрации.</p>
+      <a class="btn btn--primary btn--lg js-app-open" href="./" data-i18n="ctaFree">TiLi бесплатно</a>
     </div>
   </main>
 
