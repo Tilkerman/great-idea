@@ -1325,13 +1325,6 @@ a { color: inherit; text-decoration: none; }
 
 #tili { overflow-x: clip; }
 #tili .split { width: min(1080px, 100%); margin-inline: auto; }
-.tili-num {
-  margin: 0 0 0.85rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--tili);
-}
 .tili-title {
   display: flex;
   flex-direction: column;
