@@ -340,8 +340,6 @@
     return BASE + (q ? '?' + q : '');
   }
 
-  const LANG_FLAGS = { ru: '🇷🇺', en: '🇬🇧', es: '🇪🇸' };
-
   /** Реальные скрины приложения: EN — только английский UI; RU/ES — те же EN (по решению продукта). */
   const SCREENSHOTS = {
     en: {
@@ -427,7 +425,7 @@
     const langSelect = document.getElementById('lang-select');
     if (langSelect) langSelect.value = lang;
     const langFlag = document.getElementById('lang-flag');
-    if (langFlag) langFlag.textContent = LANG_FLAGS[lang] || LANG_FLAGS.ru;
+    if (langFlag) langFlag.setAttribute('data-lang', lang);
 
     document.querySelectorAll('.js-app-open').forEach((a) => {
       a.setAttribute('href', appUrl(lang));
