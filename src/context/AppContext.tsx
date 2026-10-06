@@ -181,12 +181,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await saveSettings(s);
       }
       const launch = new URLSearchParams(window.location.search);
+      let launchUrlDirty = false;
+      if (launch.get('open') === 'lumi') {
+        writeMainTab('lumi');
+        launch.delete('open');
+        launchUrlDirty = true;
+      }
       if (launch.get('theme') === 'light') {
         if (s.theme !== 'light') {
           s = { ...s, theme: 'light' };
           await saveSettings(s);
         }
         launch.delete('theme');
+        launchUrlDirty = true;
+      }
+      if (launchUrlDirty) {
         const q = launch.toString();
         window.history.replaceState(null, '', `${window.location.pathname}${q ? `?${q}` : ''}${window.location.hash}`);
       }
@@ -333,7 +342,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const completeOnboarding = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, '1');
     trackOnboardingComplete(settings.analyticsEnabled, settings.locale);
-    setScreen('calendar');
+    setScreen(readMainTab());
   }, [setScreen, settings.analyticsEnabled, settings.locale]);
 
   const openAuth = useCallback((start: AuthStart, back: AppScreen = 'calendar') => {
