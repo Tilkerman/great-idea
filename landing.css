@@ -1393,7 +1393,13 @@ a { color: inherit; text-decoration: none; }
 }
 .tili-signoff__mark {
   color: var(--tili);
-  box-shadow: inset 0 -2px 0 var(--tili);
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.12em;
+  text-decoration-skip-ink: none;
+}
+.tili-try {
+  margin-top: 1.6rem;
 }
 .tili-stage {
   position: relative;
