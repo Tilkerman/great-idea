@@ -93,17 +93,18 @@
       bookCta: 'Узнать больше о книге',
       mascotLet: 'Отпустить сердечко',
       lumiStepsQuote: 'Маленькие\u00a0шаги\nк большим\nизменениям',
-      philH: 'Время и желания — рядом, но каждое на своём месте.',
-      philLead: 'У человека ограниченное количество времени и бесконечное количество желаний.',
+      philH: 'Когда желание встречается со временем',
+      philLead: 'У человека ограниченное количество времени и бесконечное количество желаний. TiLi помогает увидеть, на что уходит твоё время. Lumi помогает не забывать о том, чего ты действительно хочешь.',
       philLead2: 'TiLi помогает увидеть, на что уходит твоё время. Lumi помогает не забывать о том, чего ты действительно хочешь.',
-      philLead3: 'Между желанием и реальностью не всегда нужен большой план. Иногда нужен всего один маленький шаг — и время, в котором этому шагу есть место.',
-      chain1t: 'Желание', chain1d: 'Всё начинается с желания.',
-      chain2who: 'Шаг', chain2t: 'Маленький шаг', chain2d: 'Разбиваем его на маленький шаг.',
-      chain3t: 'Время', chain3d: 'Находим время в своём дне.',
-      chain4who: 'Действие', chain4t: 'Действие', chain4d: 'Шаг превращается в действие.',
-      prin1t: 'Не заполнять всё время желаниями', prin1d: 'Свободное пространство в календаре — не проблема, которую нужно срочно заполнить.',
-      prin2t: 'Не превращать желания в бесконечный список', prin2d: 'Желание важно не количеством задач, а тем, что ты к нему возвращаешься.',
-      prin3t: 'Давать важному место', prin3d: 'Если что-то действительно важно, для этого должен появиться маленький шаг и конкретное время.',
+      philLead3: 'Между желанием и реальностью не всегда нужен большой план. Иногда нужен один маленький шаг — и время, в котором этому шагу есть место.',
+      chain1t: 'Желание', chain1d: 'Lumi помогает понять, чего ты хочешь',
+      chain2who: 'Шаг', chain2t: 'Маленький шаг', chain2d: 'Разбиваем желание на то, что можно сделать сейчас',
+      chain3t: 'Время', chain3d: 'TiLi помогает найти для этого место в реальном дне',
+      chain4who: 'Действие', chain4t: 'Действие', chain4d: 'Шаг перестаёт быть мыслью и становится частью жизни',
+      prin1t: 'Не заполнять всё время желаниями', prin1d: 'Свободное пространство в календаре — не проблема, которую нужно срочно решить. Это тоже часть твоего дня.',
+      prin2t: 'Не превращать желания в бесконечный список', prin2d: 'Желание важно не количеством задач, а тем, что ты к нему возвращаешься и двигаешься маленькими шагами.',
+      prin3t: 'Давать важному место', prin3d: 'Если что-то действительно важно, для этого стоит найти не только место в мыслях, но и место в реальном времени.',
+      philClose: 'Не заполняй время. Наполняй его смыслом.',
       philTime: 'Время',
       philWish: 'Желания',
       philTogether: 'Вместе',
@@ -118,7 +119,19 @@
       ctaEyebrow: 'У тебя уже есть время.',
       ctaH: 'А что ты хочешь сделать со своим временем?',
       ctaFine: 'Работает в браузере. Без сложной регистрации.',
+      ctaBody: 'TiLi помогает увидеть свой день. Lumi помогает не забыть о желаниях. А дальше решение остаётся за тобой.',
+      ctaBrowser: 'Работает прямо в браузере',
+      ctaHome: 'Можно добавить на главный экран телефона',
       ctaFree: 'TiLi бесплатно',
+      finishH: 'TiLi напомнит о важном.\nТы живёшь день.',
+      noteTitle: 'Напоминания вовремя',
+      noteBody: 'Настрой напоминание для задачи — и TiLi напомнит о ней тогда, когда к ней пора перейти.',
+      noteWhen: 'Через 15 минут',
+      noteWhat: 'Встреча с Анной',
+      noteNow: 'сейчас',
+      addTitle: 'Быстро добавить задачу',
+      addBody: 'Добавь задачу на ходу и продолжай свой день.',
+      addPh: 'Новая задача...',
       footProd: 'Продукт', footAbout: 'О проекте', footDocs: 'Документы', footPrivacy: 'Конфиденциальность',
       footData: 'Без облачного sync задач. Резерв — JSON в настройках.',
     },
@@ -191,17 +204,18 @@
       bookCta: 'Learn more about the book',
       mascotLet: 'Let the heart go',
       lumiStepsQuote: 'Small steps\ntoward\u00a0big\nchanges',
-      philH: 'Time and wishes — side by side, each in its place.',
-      philLead: 'A person has a limited amount of time and an endless number of wishes.',
+      philH: 'When a wish meets time',
+      philLead: 'A person has a limited amount of time and an endless number of wishes. TiLi helps you see where your time goes. Lumi helps you remember what you truly want.',
       philLead2: 'TiLi helps you see where your time goes. Lumi helps you remember what you truly want.',
-      philLead3: 'Between a wish and reality you don’t always need a big plan. Sometimes one small step is enough — and a time where that step has a place.',
-      chain1t: 'Wish', chain1d: 'It all starts with a wish.',
-      chain2who: 'Step', chain2t: 'Small step', chain2d: 'Break it into a small step.',
-      chain3t: 'Time', chain3d: 'Find a time in your day.',
-      chain4who: 'Action', chain4t: 'Action', chain4d: 'The step becomes an action.',
-      prin1t: 'Don’t fill all your time with wishes', prin1d: 'Open space in the calendar is not a problem you need to fill at once.',
-      prin2t: 'Don’t turn wishes into an endless list', prin2d: 'A wish matters by returning to it, not by the number of tasks.',
-      prin3t: 'Give what matters a place', prin3d: 'If something truly matters, it needs a small step and a concrete time.',
+      philLead3: 'Between a wish and reality you don’t always need a big plan. Sometimes you need one small step — and a time where that step has a place.',
+      chain1t: 'Wish', chain1d: 'Lumi helps you see what you want',
+      chain2who: 'Step', chain2t: 'Small step', chain2d: 'Break the wish into something you can do now',
+      chain3t: 'Time', chain3d: 'TiLi finds a place for it in a real day',
+      chain4who: 'Action', chain4t: 'Action', chain4d: 'The step stops being a thought and becomes part of life',
+      prin1t: 'Don’t fill all your time with wishes', prin1d: 'Open space in the calendar is not a problem you need to solve right away. It is part of your day too.',
+      prin2t: 'Don’t turn wishes into an endless list', prin2d: 'A wish matters not by the number of tasks, but by coming back to it and moving in small steps.',
+      prin3t: 'Give what matters a place', prin3d: 'If something truly matters, it deserves a place in your thoughts and a place in real time.',
+      philClose: 'Don’t fill your time. Fill it with meaning.',
       philTime: 'Time', philWish: 'Wishes', philTogether: 'Together',
       philT1: 'What am I doing?', philT2: 'When am I doing it?', philT3: 'How much time do I have?',
       philL1: 'What do I want?', philL2: 'Why does it matter?', philL3: 'What do I feel?', philL4: 'What small step can I take?',
@@ -214,7 +228,19 @@
       ctaEyebrow: 'You already have time.',
       ctaH: 'What do you want to do with your time?',
       ctaFine: 'Works in the browser. No heavy sign-up.',
+      ctaBody: 'TiLi helps you see your day. Lumi helps you remember your wishes. What you do next is up to you.',
+      ctaBrowser: 'Works right in the browser',
+      ctaHome: 'You can add it to your phone’s home screen',
       ctaFree: 'TiLi for free',
+      finishH: 'TiLi will remind you what matters.\nYou live the day.',
+      noteTitle: 'Reminders on time',
+      noteBody: 'Set a reminder on a task — and TiLi will tell you when it’s time to move to it.',
+      noteWhen: 'In 15 minutes',
+      noteWhat: 'Meeting with Anna',
+      noteNow: 'now',
+      addTitle: 'Add a task quickly',
+      addBody: 'Add a task on the go and get on with your day.',
+      addPh: 'New task...',
       footProd: 'Product', footAbout: 'About', footDocs: 'Legal', footPrivacy: 'Privacy',
       footData: 'No cloud task sync. Backup via JSON in settings.',
     },
@@ -287,17 +313,18 @@
       bookCta: 'Saber más del libro',
       mascotLet: 'Soltar el corazón',
       lumiStepsQuote: 'Pequeños pasos\na\u00a0grandes\ncambios',
-      philH: 'Tiempo y deseos — juntos, cada uno en su lugar.',
-      philLead: 'Una persona tiene un tiempo limitado y una cantidad infinita de deseos.',
+      philH: 'Cuando un deseo se encuentra con el tiempo',
+      philLead: 'Una persona tiene un tiempo limitado y un número infinito de deseos. TiLi ayuda a ver a dónde va tu tiempo. Lumi ayuda a no olvidar lo que de verdad quieres.',
       philLead2: 'TiLi ayuda a ver a dónde va tu tiempo. Lumi ayuda a no olvidar lo que de verdad quieres.',
       philLead3: 'Entre un deseo y la realidad no siempre hace falta un gran plan. A veces basta un paso pequeño — y un tiempo donde ese paso tenga lugar.',
-      chain1t: 'Deseo', chain1d: 'Todo empieza con un deseo.',
-      chain2who: 'Paso', chain2t: 'Paso pequeño', chain2d: 'Lo dividimos en un paso pequeño.',
-      chain3t: 'Tiempo', chain3d: 'Encontramos un momento en el día.',
-      chain4who: 'Acción', chain4t: 'Acción', chain4d: 'El paso se convierte en acción.',
-      prin1t: 'No llenar todo el tiempo de deseos', prin1d: 'El espacio libre del calendario no es un problema que haya que llenar de inmediato.',
-      prin2t: 'No convertir los deseos en una lista infinita', prin2d: 'Un deseo importa por volver a él, no por la cantidad de tareas.',
-      prin3t: 'Dar un lugar a lo importante', prin3d: 'Si algo importa de verdad, necesita un paso pequeño y un tiempo concreto.',
+      chain1t: 'Deseo', chain1d: 'Lumi ayuda a entender qué quieres',
+      chain2who: 'Paso', chain2t: 'Paso pequeño', chain2d: 'Dividimos el deseo en algo que puedes hacer ahora',
+      chain3t: 'Tiempo', chain3d: 'TiLi encuentra un lugar para eso en un día real',
+      chain4who: 'Acción', chain4t: 'Acción', chain4d: 'El paso deja de ser un pensamiento y pasa a ser parte de la vida',
+      prin1t: 'No llenar todo el tiempo de deseos', prin1d: 'El espacio libre del calendario no es un problema que haya que resolver de inmediato. También es parte de tu día.',
+      prin2t: 'No convertir los deseos en una lista infinita', prin2d: 'Un deseo importa no por la cantidad de tareas, sino por volver a él y avanzar con pasos pequeños.',
+      prin3t: 'Dar un lugar a lo importante', prin3d: 'Si algo importa de verdad, merece un lugar en tus pensamientos y un lugar en el tiempo real.',
+      philClose: 'No llenes el tiempo. Llénalo de sentido.',
       philTime: 'Tiempo', philWish: 'Deseos', philTogether: 'Juntos',
       philT1: '¿Qué hago?', philT2: '¿Cuándo?', philT3: '¿Cuánto tiempo tengo?',
       philL1: '¿Qué quiero?', philL2: '¿Por qué importa?', philL3: '¿Qué siento?', philL4: '¿Qué paso pequeño puedo dar?',
@@ -310,7 +337,19 @@
       ctaEyebrow: 'Ya tienes tiempo.',
       ctaH: '¿Qué quieres hacer con tu tiempo?',
       ctaFine: 'En el navegador. Sin registro pesado.',
+      ctaBody: 'TiLi ayuda a ver tu día. Lumi ayuda a no olvidar los deseos. Lo que hagas después lo decides tú.',
+      ctaBrowser: 'Funciona en el navegador',
+      ctaHome: 'Puedes añadirlo a la pantalla de inicio del teléfono',
       ctaFree: 'TiLi gratis',
+      finishH: 'TiLi te recordará lo importante.\nTú vives el día.',
+      noteTitle: 'Avisos a tiempo',
+      noteBody: 'Pon un aviso en la tarea — y TiLi te avisará cuando sea hora de pasar a ella.',
+      noteWhen: 'En 15 minutos',
+      noteWhat: 'Quedada con Ana',
+      noteNow: 'ahora',
+      addTitle: 'Añadir una tarea rápido',
+      addBody: 'Añade una tarea al momento y sigue con tu día.',
+      addPh: 'Nueva tarea...',
       footProd: 'Producto', footAbout: 'Proyecto', footDocs: 'Documentos', footPrivacy: 'Privacidad',
       footData: 'Sin sync en la nube. Copia JSON en ajustes.',
     },
@@ -538,6 +577,19 @@
     });
   }
 
+  function initPrinciples() {
+    const items = document.querySelectorAll('#philosophy .phil-principles details');
+    if (!items.length) return;
+    const mq = window.matchMedia('(max-width: 767px)');
+    const apply = () => {
+      items.forEach((el, i) => {
+        el.open = mq.matches ? i === 0 : true;
+      });
+    };
+    apply();
+    mq.addEventListener('change', apply);
+  }
+
   function initMascot() {
     const btn = document.querySelector('.lumi-mascot');
     if (!btn) return;
@@ -590,6 +642,7 @@
   initCta();
   initMenu();
   initMascot();
+  initPrinciples();
 
   const langSelect = document.getElementById('lang-select');
   if (langSelect) {

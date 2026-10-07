@@ -265,48 +265,67 @@
     </div>
 
     <section class="section reveal" id="philosophy" data-analytics-section="philosophy">
-      <h2 data-i18n="philH">Время и желания — рядом, но каждое на своём месте.</h2>
-      <p class="phil-lead" data-i18n="philLead">У человека ограниченное количество времени и бесконечное количество желаний.</p>
-      <p data-i18n="philLead2">TiLi помогает увидеть, на что уходит твоё время. Lumi помогает не забывать о том, чего ты действительно хочешь.</p>
-      <p data-i18n="philLead3">Между желанием и реальностью не всегда нужен большой план. Иногда нужен всего один маленький шаг — и время, в котором этому шагу есть место.</p>
+      <h2 data-i18n="philH">Когда желание встречается со временем</h2>
+      <p class="phil-lead" data-i18n="philLead">У человека ограниченное количество времени и бесконечное количество желаний. TiLi помогает увидеть, на что уходит твоё время. Lumi помогает не забывать о том, чего ты действительно хочешь.</p>
+      <p data-i18n="philLead3">Между желанием и реальностью не всегда нужен большой план. Иногда нужен один маленький шаг — и время, в котором этому шагу есть место.</p>
       <ol class="phil-chain">
-        <li>
-          <span class="phil-chain__who">Lumi</span>
+        <li class="phil-chain__item phil-chain__item--lumi">
+          <span class="phil-chain__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.2l1.15 4.05L17.4 8.4l-4.25 1.15L12 13.6l-1.15-4.05L6.6 8.4l4.25-1.15L12 3.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
           <strong data-i18n="chain1t">Желание</strong>
-          <span data-i18n="chain1d">Всё начинается с желания.</span>
+          <span data-i18n="chain1d">Lumi помогает понять, чего ты хочешь</span>
         </li>
-        <li>
-          <span class="phil-chain__who" data-i18n="chain2who">Шаг</span>
+        <li class="phil-chain__item phil-chain__item--mid">
+          <span class="phil-chain__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 7h10M9 12h10M9 17h10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="5.2" cy="7" r="1" fill="currentColor"/><circle cx="5.2" cy="12" r="1" fill="currentColor"/><circle cx="5.2" cy="17" r="1" fill="currentColor"/></svg></span>
           <strong data-i18n="chain2t">Маленький шаг</strong>
-          <span data-i18n="chain2d">Разбиваем его на маленький шаг.</span>
+          <span data-i18n="chain2d">Разбиваем желание на то, что можно сделать сейчас</span>
         </li>
-        <li>
-          <span class="phil-chain__who">TiLi</span>
+        <li class="phil-chain__item phil-chain__item--tili">
+          <span class="phil-chain__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 8.2V12l2.6 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
           <strong data-i18n="chain3t">Время</strong>
-          <span data-i18n="chain3d">Находим время в своём дне.</span>
+          <span data-i18n="chain3d">TiLi помогает найти для этого место в реальном дне</span>
         </li>
-        <li>
+        <li class="phil-chain__item phil-chain__item--do">
+          <span class="phil-chain__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.2 12.2l2.5 2.5 5-5.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <strong data-i18n="chain4t">Действие</strong>
-          <span data-i18n="chain4d">Шаг превращается в действие.</span>
+          <span data-i18n="chain4d">Шаг перестаёт быть мыслью и становится частью жизни</span>
         </li>
       </ol>
       <ol class="phil-principles">
         <li>
-          <span class="phil-principles__n">01</span>
-          <strong data-i18n="prin1t">Не заполнять всё время желаниями</strong>
-          <span data-i18n="prin1d">Свободное пространство в календаре — не проблема, которую нужно срочно заполнить.</span>
+          <details open>
+            <summary>
+              <span class="phil-principles__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8 3.6v3.2M16 3.6v3.2M4 10h16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+              <span class="phil-principles__n">01</span>
+              <strong data-i18n="prin1t">Не заполнять всё время желаниями</strong>
+              <span class="phil-principles__chev" aria-hidden="true"></span>
+            </summary>
+            <p data-i18n="prin1d">Свободное пространство в календаре — не проблема, которую нужно срочно решить. Это тоже часть твоего дня.</p>
+          </details>
         </li>
         <li>
-          <span class="phil-principles__n">02</span>
-          <strong data-i18n="prin2t">Не превращать желания в бесконечный список</strong>
-          <span data-i18n="prin2d">Желание важно не количеством задач, а тем, что ты к нему возвращаешься.</span>
+          <details open>
+            <summary>
+              <span class="phil-principles__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 7h11M8 12h11M8 17h7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M4.5 7h.01M4.5 12h.01M4.5 17h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+              <span class="phil-principles__n">02</span>
+              <strong data-i18n="prin2t">Не превращать желания в бесконечный список</strong>
+              <span class="phil-principles__chev" aria-hidden="true"></span>
+            </summary>
+            <p data-i18n="prin2d">Желание важно не количеством задач, а тем, что ты к нему возвращаешься и двигаешься маленькими шагами.</p>
+          </details>
         </li>
         <li>
-          <span class="phil-principles__n">03</span>
-          <strong data-i18n="prin3t">Давать важному место</strong>
-          <span data-i18n="prin3d">Если что-то действительно важно, для этого должен появиться маленький шаг и конкретное время.</span>
+          <details open>
+            <summary>
+              <span class="phil-principles__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4.2l1.7 4.1 4.5.4-3.4 2.9 1 4.4L12 13.8 8.2 16l1-4.4L5.8 8.7l4.5-.4L12 4.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
+              <span class="phil-principles__n">03</span>
+              <strong data-i18n="prin3t">Давать важному место</strong>
+              <span class="phil-principles__chev" aria-hidden="true"></span>
+            </summary>
+            <p data-i18n="prin3d">Если что-то действительно важно, для этого стоит найти не только место в мыслях, но и место в реальном времени.</p>
+          </details>
         </li>
       </ol>
+      <p class="phil-close" data-i18n="philClose">Не заполняй время. Наполняй его смыслом.</p>
     </section>
 
     <section class="section section--tight reveal" id="bridge">
@@ -332,11 +351,60 @@
       </div>
     </section>
 
-    <div class="cta-final reveal">
-      <h2 data-i18n="ctaH">А что ты хочешь сделать со своим временем?</h2>
-      <p class="fine" data-i18n="ctaFine">Работает в браузере. Без сложной регистрации.</p>
-      <a class="btn btn--primary btn--lg js-app-open" href="./" data-i18n="ctaFree">TiLi бесплатно</a>
-    </div>
+    <section class="finish reveal" id="finish">
+      <div class="finish__story">
+        <h2 data-i18n="finishH">TiLi напомнит о важном.
+Ты живёшь день.</h2>
+        <div class="finish__cards">
+          <article class="finish-card">
+            <h3>
+              <span class="finish-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.6 16.2h10.8l-1.1-1.6v-3.4a4.3 4.3 0 0 0-8.6 0v3.4l-1.1 1.6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 16.2a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></span>
+              <span data-i18n="noteTitle">Напоминания вовремя</span>
+            </h3>
+            <p data-i18n="noteBody">Настрой напоминание для задачи — и TiLi напомнит о ней тогда, когда к ней пора перейти.</p>
+            <div class="finish-note">
+              <span class="finish-note__bell" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.6 16.2h10.8l-1.1-1.6v-3.4a4.3 4.3 0 0 0-8.6 0v3.4l-1.1 1.6z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M10 16.2a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></span>
+              <span class="finish-note__text">
+                <strong>TiLi</strong>
+                <span data-i18n="noteWhen">Через 15 минут</span>
+                <span data-i18n="noteWhat">Встреча с Анной</span>
+              </span>
+              <span class="finish-note__now" data-i18n="noteNow">сейчас</span>
+            </div>
+          </article>
+          <article class="finish-card">
+            <h3>
+              <span class="finish-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 6.5v11M6.5 12h11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+              <span data-i18n="addTitle">Быстро добавить задачу</span>
+            </h3>
+            <p data-i18n="addBody">Добавь задачу на ходу и продолжай свой день.</p>
+            <div class="finish-add" aria-hidden="true">
+              <span data-i18n="addPh">Новая задача...</span>
+              <span class="finish-add__go"><svg viewBox="0 0 24 24"><path d="M12 6.5v11M6.5 12h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+            </div>
+          </article>
+        </div>
+      </div>
+      <aside class="finish__cta">
+        <p class="finish__mark">
+          <img src="./logo-tili-lumi.png" width="48" height="22" alt="" />
+          <span>TiLi + Lumi</span>
+        </p>
+        <h2 data-i18n="ctaH">А что ты хочешь сделать со своим временем?</h2>
+        <p data-i18n="ctaBody">TiLi помогает увидеть свой день. Lumi помогает не забыть о желаниях. А дальше решение остаётся за тобой.</p>
+        <a class="btn btn--primary btn--lg js-app-open" href="./"><span data-i18n="ctaFree">TiLi бесплатно</span></a>
+        <ul class="finish__trust">
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9h17" stroke="currentColor" stroke-width="1.6"/></svg>
+            <span data-i18n="ctaBrowser">Работает прямо в браузере</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="3.5" width="8" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 17.5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <span data-i18n="ctaHome">Можно добавить на главный экран телефона</span>
+          </li>
+        </ul>
+      </aside>
+    </section>
   </main>
 
   <footer class="site-footer">
