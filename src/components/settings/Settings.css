@@ -1,7 +1,7 @@
 .settings-page {
   min-height: 100%;
   background: var(--bg);
-  padding-bottom: 24px;
+  padding-bottom: calc(var(--bottom-nav-h) + 8px);
 }
 
 .settings-topbar {
