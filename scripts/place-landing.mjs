@@ -28,7 +28,8 @@ function cacheBustLandingHtml(html, buildId) {
     .replace(/"\.\/landing\/lumi-mascot\.png(?:\?[^"]*)?"/g, `"./landing/lumi-mascot.png?v=${buildId}"`)
     .replace(/"\.\/landing\/lumi-mascot-up\.png(?:\?[^"]*)?"/g, `"./landing/lumi-mascot-up.png?v=${buildId}"`)
     .replace(/"\.\/landing\/tili-hero-phones\.png(?:\?[^"]*)?"/g, `"./landing/tili-hero-phones.png?v=${buildId}"`)
-    .replace(/"\.\/logo-tili-lumi-lockup\.png(?:\?[^"]*)?"/g, `"./logo-tili-lumi-lockup.png?v=${buildId}"`);
+    .replace(/"\.\/logo-tili-lumi-lockup\.png(?:\?[^"]*)?"/g, `"./logo-tili-lumi-lockup.png?v=${buildId}"`)
+    .replace(/"\.\/favicon\.png(?:\?[^"]*)?"/g, `"./favicon.png?v=${buildId}"`);
 }
 
 if (!fs.existsSync(path.join(appDir, 'index.html'))) {
