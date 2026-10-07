@@ -313,7 +313,6 @@ a { color: inherit; text-decoration: none; }
   background: #fff;
   padding: 3.5rem 1.25rem;
 }
-.section--tight { padding: 2.5rem 0; }
 .full-bleed { width: 100%; }
 .full-bleed--lumi { background: var(--lumi-soft); }
 .full-bleed--surface { background: var(--surface); }
@@ -1232,41 +1231,6 @@ a { color: inherit; text-decoration: none; }
 .phil-card h3 { margin-top: 0; color: var(--tili); font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; }
 .phil-card ul { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.95rem; }
 .phil-card li { margin-bottom: 0.35rem; }
-
-.flow-minimal {
-  margin: 2.5rem auto;
-  max-width: 280px;
-  text-align: center;
-  font-size: 1rem;
-  line-height: 2;
-  font-weight: 500;
-  color: var(--text);
-}
-.flow-minimal .dim { color: var(--muted); font-weight: 400; font-size: 0.9rem; }
-
-.steps-story {
-  counter-reset: step;
-  list-style: none;
-  padding: 0;
-  margin: 2rem 0 0;
-  max-width: 36rem;
-}
-.steps-story li {
-  position: relative;
-  padding-left: 2.75rem;
-  margin-bottom: 1.25rem;
-  color: var(--muted);
-}
-.steps-story li::before {
-  counter-increment: step;
-  content: counter(step, decimal-leading-zero);
-  position: absolute;
-  left: 0;
-  top: 0;
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--tili);
-}
 
 .site-footer {
   border-top: 1px solid var(--border);
