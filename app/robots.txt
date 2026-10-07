@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /app/
+Disallow: /sw.js
+Disallow: /registerSW.js
 
+Host: tili.su
 Sitemap: https://tili.su/sitemap.xml
