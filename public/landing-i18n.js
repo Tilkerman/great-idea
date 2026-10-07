@@ -11,8 +11,9 @@
 
   const copy = {
     ru: {
-      pageTitle: 'TiLi — календарь твоего времени',
-      metaDescription: 'TiLi — календарь твоего времени. Lumi — желания. День как сетка часов, не список дел.',
+      pageTitle: 'TiLi и Lumi — календарь онлайн и календарь желаний',
+      metaDescription: 'TiLi — календарь онлайн и планировщик дня по часам: неделя, напоминания и распорядок. Lumi — календарь желаний по шагам. Бесплатно в браузере.',
+      metaKeywords: 'календарь онлайн, планировщик дня, календарь желаний, ежедневник, напоминания, распорядок дня, TiLi, Lumi',
       skipMain: 'К содержанию',
       brandTag: 'календарь твоего времени',
       navTili: 'TiLi',
@@ -136,8 +137,9 @@
       footData: 'Без облачного sync задач. Резерв — JSON в настройках.',
     },
     en: {
-      pageTitle: 'TiLi — a calendar for your time',
-      metaDescription: 'TiLi shows your day as hours, not an endless list. Lumi holds your wishes. One calm PWA.',
+      pageTitle: 'TiLi and Lumi — online calendar and wishes',
+      metaDescription: 'TiLi is an online calendar and day planner by the hour, with a week view and reminders. Lumi is a wishes calendar, step by step. Free in the browser.',
+      metaKeywords: 'online calendar, day planner, wishes calendar, reminders, daily schedule, TiLi, Lumi',
       skipMain: 'Skip to content',
       brandTag: 'calendar for your time',
       navTili: 'TiLi', navLumi: 'Lumi', navPhilosophy: 'Philosophy',
@@ -245,8 +247,9 @@
       footData: 'No cloud task sync. Backup via JSON in settings.',
     },
     es: {
-      pageTitle: 'TiLi — calendario de tu tiempo',
-      metaDescription: 'TiLi muestra el día por horas, no como lista infinita. Lumi guarda tus deseos. Una PWA tranquila.',
+      pageTitle: 'TiLi y Lumi — calendario online y deseos',
+      metaDescription: 'TiLi es un calendario online y planificador del día por horas, con semana y recordatorios. Lumi es el calendario de deseos por pasos. Gratis en el navegador.',
+      metaKeywords: 'calendario online, planificador del día, calendario de deseos, recordatorios, TiLi, Lumi',
       skipMain: 'Ir al contenido',
       brandTag: 'calendario de tu tiempo',
       navTili: 'TiLi', navLumi: 'Lumi', navPhilosophy: 'Filosofía',
@@ -443,6 +446,12 @@
     const ogD = document.getElementById('og-desc');
     if (ogT) ogT.setAttribute('content', strings.pageTitle);
     if (ogD) ogD.setAttribute('content', strings.metaDescription);
+    const twT = document.getElementById('tw-title');
+    const twD = document.getElementById('tw-desc');
+    if (twT) twT.setAttribute('content', strings.pageTitle);
+    if (twD) twD.setAttribute('content', strings.metaDescription);
+    const kw = document.getElementById('meta-keywords');
+    if (kw && strings.metaKeywords) kw.setAttribute('content', strings.metaKeywords);
 
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       const key = el.getAttribute('data-i18n');
