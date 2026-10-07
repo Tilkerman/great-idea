@@ -48,6 +48,7 @@ const files = [
   'favicon.png',
   'apple-touch-icon.png',
   'icon-tili-512.png',
+  'og-tili-lumi.png',
   'privacy.html',
   'sitemap.xml',
   'robots.txt',
