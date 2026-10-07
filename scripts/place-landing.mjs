@@ -27,7 +27,8 @@ function cacheBustLandingHtml(html, buildId) {
     .replace(/"\.\/landing-i18n\.js(?:\?[^"]*)?"/g, q('landing-i18n.js'))
     .replace(/"\.\/landing\/lumi-mascot\.png(?:\?[^"]*)?"/g, `"./landing/lumi-mascot.png?v=${buildId}"`)
     .replace(/"\.\/landing\/lumi-mascot-up\.png(?:\?[^"]*)?"/g, `"./landing/lumi-mascot-up.png?v=${buildId}"`)
-    .replace(/"\.\/landing\/tili-hero-phones\.png(?:\?[^"]*)?"/g, `"./landing/tili-hero-phones.png?v=${buildId}"`);
+    .replace(/"\.\/landing\/tili-hero-phones\.png(?:\?[^"]*)?"/g, `"./landing/tili-hero-phones.png?v=${buildId}"`)
+    .replace(/"\.\/logo-tili-lumi-lockup\.png(?:\?[^"]*)?"/g, `"./logo-tili-lumi-lockup.png?v=${buildId}"`);
 }
 
 if (!fs.existsSync(path.join(appDir, 'index.html'))) {
@@ -41,6 +42,7 @@ const files = [
   'landing-i18n.js',
   'landing-analytics.js',
   'logo-tili-lumi.png',
+  'logo-tili-lumi-lockup.png',
   'logo-tili-header.png',
   'favicon.png',
   'apple-touch-icon.png',
