@@ -50,6 +50,7 @@ const files = [
   'privacy.html',
   'sitemap.xml',
   'robots.txt',
+  'yandex_56d4f4676a9b372b.html',
   'CNAME',
 ];
 
