@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type MutableRefObject } from 
 import { useApp } from '../context/AppContext';
 import { tLocale } from '../i18n/catalog';
 import type { Locale, ZoomLevel } from '../types';
+import { DESKTOP_LAYOUT_MIN_PX } from '../constants/layout';
 import { WEEK_TO_MONTH_OVERSHOOT, WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomHint } from '../constants/weekZoom';
 import type { PinchFocus, WeekPinchLive } from '../utils/weekPinchLive';
 
@@ -27,6 +28,11 @@ function isTouchMobile() {
 
 function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
   return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
+function isDesktopLayoutViewport() {
+  return typeof window !== 'undefined'
+    && window.matchMedia(`(min-width: ${DESKTOP_LAYOUT_MIN_PX}px)`).matches;
 }
 
 export function usePinchZoom(weekPinchLive?: MutableRefObject<WeekPinchLive>) {
@@ -299,6 +305,7 @@ export function usePinchZoom(weekPinchLive?: MutableRefObject<WeekPinchLive>) {
       });
     } else {
       const onPointerDown = (event: PointerEvent) => {
+        if (isDesktopLayoutViewport()) return;
         if (event.pointerType === 'mouse' && event.buttons !== 1) return;
         pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
         if (pointers.current.size === 2) {

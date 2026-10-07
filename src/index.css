@@ -127,7 +127,18 @@ html.is-onboarding {
   padding-bottom: var(--bottom-nav-h);
 }
 
-.app-viewport > .bottom-nav {
+.app-viewport__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-viewport__main > .bottom-nav {
   position: absolute;
   left: 0;
   right: 0;
@@ -294,4 +305,29 @@ select {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+}
+
+/* Desktop (≥1024px): CSS media — works without waiting for JS. Mobile rules above unchanged. */
+@media (min-width: 1024px) {
+  html {
+    box-shadow: none;
+  }
+
+  #root {
+    max-width: min(100%, 1440px);
+  }
+
+  .app-viewport {
+    flex-direction: row;
+    align-items: stretch;
+    padding-bottom: 0;
+  }
+
+  .app-viewport__main > .bottom-nav {
+    display: none !important;
+  }
+
+  .settings-page {
+    padding-bottom: 24px;
+  }
 }

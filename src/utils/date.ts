@@ -124,6 +124,21 @@ export function getHoursRange(startHour: number, endHour: number) {
   return hours;
 }
 
+/** All day cells for a month grid (includes leading/trailing days from adjacent months). */
+export function getMonthCalendarCells(year: number, month: number, weekStartsOn: 0 | 1 = 1) {
+  const last = new Date(year, month + 1, 0);
+  let cursor = getWeekStart(new Date(year, month, 1), weekStartsOn);
+  const cells: { date: Date; inMonth: boolean }[] = [];
+  do {
+    cells.push({
+      date: new Date(cursor),
+      inMonth: cursor.getMonth() === month,
+    });
+    cursor = addDays(cursor, 1);
+  } while (cursor <= last || cells.length % 7 !== 0);
+  return cells;
+}
+
 export function getWeeksInMonth(year: number, month: number, weekStartsOn: 0 | 1 = 1) {
   const first = new Date(year, month, 1);
   const last = new Date(year, month + 1, 0);

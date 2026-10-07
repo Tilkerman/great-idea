@@ -27,6 +27,35 @@
   overflow-y: auto;
 }
 
+.task-sheet-dock {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .task-sheet-dock {
+    display: flex;
+    flex-shrink: 0;
+    width: min(400px, 36vw);
+    min-width: 320px;
+    height: 100%;
+    border-left: 1px solid var(--border);
+    background: var(--surface);
+    box-sizing: border-box;
+    overflow: hidden;
+    flex-direction: column;
+    z-index: 900;
+  }
+
+  .task-sheet--dock {
+    max-width: none;
+    max-height: none;
+    height: 100%;
+    border-radius: 0;
+    padding: 20px 20px 24px;
+    box-sizing: border-box;
+  }
+}
+
 .task-sheet__header {
   display: flex;
   align-items: flex-start;

@@ -28,6 +28,9 @@ import { useI18n } from './i18n/useI18n';
 import { LumiEmbed } from './lumi/LumiEmbed';
 import { persistUtmFromUrl, trackAppOpenOnce } from './utils/productAnalytics';
 import { useAppViewportHeight } from './hooks/useAppViewportHeight';
+import { useDesktopLayoutClass } from './hooks/useDesktopLayoutClass';
+import { useLayoutMode } from './hooks/useLayoutMode';
+import { SideNav } from './components/layout/SideNav';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
@@ -79,7 +82,8 @@ function SettingsScreens({ screen }: { screen: string }) {
 }
 
 function AppRouter() {
-  const { ready, screen, settings } = useApp();
+  const { ready, screen, settings, sheetOpen } = useApp();
+  const { isDesktopLayout } = useLayoutMode();
   const settingsOverlayRef = useRef<HTMLDivElement>(null);
   useTaskReminders();
   useOpenTaskFromNotification();
@@ -133,26 +137,34 @@ function AppRouter() {
   const showLumi = screen === 'lumi';
 
   return (
-    <div className="app-viewport">
-      {showCalendar && (
-        <div className={`app-shell${screen === 'calendar' ? '' : ' app-shell--off'}`}>
-          <Header />
+    <div
+      className={[
+        'app-viewport',
+        isDesktopLayout && sheetOpen ? 'app-viewport--task-open' : '',
+      ].filter(Boolean).join(' ')}
+    >
+      <SideNav />
+      <div className="app-viewport__main">
+        {showCalendar && (
+          <div className={`app-shell${screen === 'calendar' ? '' : ' app-shell--off'}`}>
+            <Header />
+            <main className="app-shell__main">
+              <CalendarCanvas />
+            </main>
+          </div>
+        )}
+        <div className={`app-shell app-shell--lumi${showLumi ? '' : ' app-shell--off'}`}>
           <main className="app-shell__main">
-            <CalendarCanvas />
+            <LumiEmbed />
           </main>
         </div>
-      )}
-      <div className={`app-shell app-shell--lumi${showLumi ? '' : ' app-shell--off'}`}>
-        <main className="app-shell__main">
-          <LumiEmbed />
-        </main>
+        {inSettings && (
+          <div ref={settingsOverlayRef} className="settings-overlay">
+            <SettingsScreens screen={screen} />
+          </div>
+        )}
+        <BottomNav />
       </div>
-      {inSettings && (
-        <div ref={settingsOverlayRef} className="settings-overlay">
-          <SettingsScreens screen={screen} />
-        </div>
-      )}
-      <BottomNav />
       <TaskSheet />
     </div>
   );
@@ -160,6 +172,7 @@ function AppRouter() {
 
 export default function App() {
   useAppViewportHeight();
+  useDesktopLayoutClass();
   return (
     <AppProvider>
       <LumiHostProvider>

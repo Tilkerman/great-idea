@@ -19,6 +19,7 @@ import {
 } from '../../utils/reminderNoticeHint';
 import { useLumiHost } from '../../lumi/LumiHost';
 import { taskHasLumiLink } from '../../utils/wishTaskBridge';
+import { useLayoutMode } from '../../hooks/useLayoutMode';
 import './TaskSheet.css';
 
 function parseLocalDate(value: string): Date {
@@ -45,6 +46,7 @@ export function TaskSheet() {
   } = useApp();
   const { t, dateTag } = useI18n();
   const { requestOpenDesire } = useLumiHost();
+  const { isDesktopLayout } = useLayoutMode();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -88,13 +90,25 @@ export function TaskSheet() {
   }, [description, sheetOpen, editingTask]);
 
   useEffect(() => {
-    if (!sheetOpen || !editingTask) return;
+    if (!sheetOpen || !editingTask || isDesktopLayout) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [sheetOpen, editingTask]);
+  }, [sheetOpen, editingTask, isDesktopLayout]);
+
+  useEffect(() => {
+    if (!sheetOpen || !isDesktopLayout) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSheetOpen(false);
+        setEditingTask(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [sheetOpen, isDesktopLayout, setEditingTask, setSheetOpen]);
 
   const hourOptions = useMemo(() => {
     const hours = getHoursRange(settings.dayStartHour, settings.dayEndHour);
@@ -207,11 +221,8 @@ export function TaskSheet() {
     ? formatSheetWhen(slotDate, slotHour, dateTag)
     : t('sheetWhenMissing');
 
-  return (
-    <>
-      {createPortal(
-    <div className="sheet-overlay" onClick={close}>
-      <div className="task-sheet" onClick={(e) => e.stopPropagation()}>
+  const sheetBody = (
+      <div className={`task-sheet${isDesktopLayout ? ' task-sheet--dock' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="task-sheet__header">
           <span className="task-sheet__time">{whenLabel || t('sheetWhenFallback')}</span>
           <div className="task-sheet__tools">
@@ -396,8 +407,21 @@ export function TaskSheet() {
           )}
         </div>
       </div>
-    </div>,
-    document.body,
+  );
+
+  return (
+    <>
+      {isDesktopLayout ? (
+        <aside className="task-sheet-dock" aria-label={t('sheetTitlePh')} data-desktop-dock>
+          {sheetBody}
+        </aside>
+      ) : (
+        createPortal(
+          <div className="sheet-overlay" onClick={close}>
+            {sheetBody}
+          </div>,
+          document.body,
+        )
       )}
       {reminderHintOpen &&
         createPortal(

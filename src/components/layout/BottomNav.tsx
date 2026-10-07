@@ -23,7 +23,7 @@ const TAB_IDS = ['calendar', 'growth', 'settings', 'profile'] as const;
 const HOLD_MS = 420;
 type NavIconName = (typeof TAB_IDS)[number];
 
-function NavIcon({ name }: { name: NavIconName }) {
+export function NavIcon({ name }: { name: NavIconName }) {
   if (name === 'calendar') {
     return (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">

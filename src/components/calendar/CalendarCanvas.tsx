@@ -4,7 +4,10 @@ import { YearView } from './YearView';
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { usePinchZoom } from '../../hooks/usePinchZoom';
+import { useLayoutMode } from '../../hooks/useLayoutMode';
+import { useDesktopCalendarZoom } from '../../hooks/useDesktopCalendarZoom';
 import { emptyWeekPinchLive, type WeekPinchLive } from '../../utils/weekPinchLive';
+import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN, weekZoomPercent } from '../../constants/weekZoom';
 import { useI18n } from '../../i18n/useI18n';
 import type { ZoomLevel } from '../../types';
 import './CalendarViews.css';
@@ -12,10 +15,14 @@ import './CalendarViews.css';
 const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
 
 export function CalendarCanvas() {
-  const { zoom, setZoom, setFocusDate } = useApp();
+  const {
+    zoom, setZoom, setFocusDate, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
+  } = useApp();
   const { t } = useI18n();
+  const { isDesktopLayout } = useLayoutMode();
   const weekPinchLive = useRef<WeekPinchLive>(emptyWeekPinchLive());
   const { ref, liveScale, pinching } = usePinchZoom(weekPinchLive);
+  useDesktopCalendarZoom(ref, isDesktopLayout);
   const [viewportWidth, setViewportWidth] = useState(
     typeof window === 'undefined' ? 390 : window.innerWidth,
   );
@@ -84,6 +91,42 @@ export function CalendarCanvas() {
           </button>
         ))}
       </div>
+      {(zoom === 'week' || zoom === 'day') && (
+        <div className="zoom-bar zoom-bar--desktop-only">
+          <div className="week-zoom-controls">
+            <button
+              type="button"
+              className="week-zoom-btn"
+              aria-label={t('zoomOut')}
+              disabled={weekZoom <= WEEK_ZOOM_MIN + 0.001}
+              onClick={weekZoomOut}
+            >
+              −
+            </button>
+            <span className="week-zoom-level">{weekZoomPercent(weekZoom)}%</span>
+            <button
+              type="button"
+              className="week-zoom-btn"
+              aria-label={t('zoomIn')}
+              disabled={weekZoom >= WEEK_ZOOM_MAX - 0.001}
+              onClick={weekZoomIn}
+            >
+              +
+            </button>
+          </div>
+          <input
+            type="range"
+            className="week-zoom-range"
+            min={0}
+            max={100}
+            step={1}
+            value={weekZoomPercent(weekZoom)}
+            aria-label={t('zoomIn')}
+            onChange={(e) => setWeekZoom(Number(e.target.value) / 100)}
+          />
+          <p className="zoom-hint zoom-hint--desktop">{t('desktopWeekZoomHint')}</p>
+        </div>
+      )}
       <div className={`calendar-canvas__body ${zoom === 'week' || zoom === 'day' ? 'calendar-canvas__body--flush' : ''}`}>
         <div
           key={stageKey}
