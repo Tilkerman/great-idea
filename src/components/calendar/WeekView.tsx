@@ -28,6 +28,7 @@ import {
 } from '../../utils/gridClipboard';
 import type { Task } from '../../types';
 import { useNow } from '../../hooks/useNow';
+import { useLayoutMode } from '../../hooks/useLayoutMode';
 import { nowInHourGrid } from '../../utils/nowIndicator';
 import { NowIndicator } from './NowIndicator';
 import './CalendarViews.css';
@@ -53,6 +54,7 @@ export function WeekView({
     requestDelete, gridClipboard, setGridClipboard, pasteGridClipboard, upsertTask,
   } = useApp();
   const { t, taskWord, weekdays, weekdaysShort, locale, monthsGen, dateTag } = useI18n();
+  const { isDesktopLayout } = useLayoutMode();
 
   const gridScrollRef = useRef<HTMLDivElement>(null);
   const daysTrackRef = useRef<HTMLDivElement>(null);
@@ -91,12 +93,16 @@ export function WeekView({
   /** До 60% × мешает на мелких карточках; с 60% и на дне — виден */
   const showSlotDelete = weekZoomAtLeast(weekZoom, WEEK_ZOOM_DELETE_MIN);
   const showSlotBadge = weekZoomAtLeast(weekZoom, WEEK_ZOOM_BADGE_MIN);
-  const showSlotTitle = weekZoomAtLeast(weekZoom, WEEK_ZOOM_TITLE_MIN);
+  const zoomPct = weekZoomPercent(weekZoom);
+  const showSlotTitle = isDesktopLayout || weekZoomAtLeast(weekZoom, WEEK_ZOOM_TITLE_MIN);
   const showSlotAdd = weekZoomAtLeast(weekZoom, WEEK_ZOOM_ADD_MIN);
   const swipeComplete = !pick;
-  const zoomPct = weekZoomPercent(weekZoom);
-  const titlesOnly = showSlotTitle && zoomPct <= Math.round(WEEK_ZOOM_TITLE_ONLY_MAX * 100);
-  const showSlotDesc = weekZoomAtLeast(weekZoom, WEEK_ZOOM_DESC_MIN);
+  const titlesOnly = isDesktopLayout
+    ? zoomPct < 10
+    : showSlotTitle && zoomPct <= Math.round(WEEK_ZOOM_TITLE_ONLY_MAX * 100);
+  const showSlotDesc = isDesktopLayout
+    ? zoomPct >= 10
+    : weekZoomAtLeast(weekZoom, WEEK_ZOOM_DESC_MIN);
 
   const days = useMemo(
     () => getWeekDays(focusDate, settings.weekStartsOn),
@@ -347,7 +353,8 @@ export function WeekView({
     }
   }, []);
 
-  const showFullWeekday = weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
+  const showFullWeekday = isDesktopLayout
+    || weekZoomAtLeast(weekZoom, WEEK_ZOOM_WEEKDAY_FULL_MIN);
   const layoutCol = pinching ? metricsHold.current.colWidth : colWidth;
   const layoutRow = pinching ? metricsHold.current.rowHeight : rowHeight;
   const gridWidth = layoutCol * displayDays.length;

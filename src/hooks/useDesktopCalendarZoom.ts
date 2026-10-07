@@ -25,8 +25,15 @@ export function useDesktopCalendarZoom(
 
       const z = zoom;
       if (z === 'week' || z === 'day') {
+        // Same direction as pinch: scroll up / pinch-in grows columns, scroll down / pinch-out shrinks them.
         const step = -event.deltaY * 0.0025;
-        const next = Math.min(WEEK_ZOOM_MAX, Math.max(WEEK_ZOOM_MIN, weekZoom + step));
+        if (z === 'day' && step < 0) {
+          setZoom('week');
+          setWeekZoom(Math.max(WEEK_ZOOM_MIN, Math.min(WEEK_ZOOM_MAX, WEEK_ZOOM_MAX + step)));
+          return;
+        }
+        const base = z === 'day' ? WEEK_ZOOM_MAX : weekZoom;
+        const next = Math.min(WEEK_ZOOM_MAX, Math.max(WEEK_ZOOM_MIN, base + step));
         setWeekZoom(next);
         return;
       }
