@@ -21,8 +21,17 @@
   -webkit-touch-callout: none;
 }
 
+/* An iPhone Home-screen app uses the physical screen height, including the
+   indicator. Lift the complete menu, not just its content. ::before keeps
+   the surface painted all the way to the edge. */
 html.is-standalone .bottom-nav {
-  padding-bottom: calc(6px + var(--safe-bottom, 34px));
+  bottom: var(--standalone-home-indicator-h, 34px);
+}
+
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .bottom-nav {
+    bottom: 34px;
+  }
 }
 
 .bottom-nav::before {

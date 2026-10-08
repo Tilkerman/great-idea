@@ -36,11 +36,10 @@
 
 html.is-standalone {
   --app-height: 100vh;
-  /* Home-screen app draws under the home indicator, and iOS often reports
-     env(safe-area-inset-bottom) as 0. Keep at least that inset so labels
-     stay above the indicator. The browser tab does not use this. */
-  --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
-  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + var(--safe-bottom));
+  /* iOS standalone draws the page below the home indicator. Its env inset
+     is unreliable here, so reserve the iPhone indicator area explicitly. */
+  --standalone-home-indicator-h: 34px;
+  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + var(--standalone-home-indicator-h));
 }
 
 [data-theme='dark'] {
