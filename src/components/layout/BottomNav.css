@@ -21,6 +21,10 @@
   -webkit-touch-callout: none;
 }
 
+html.is-standalone .bottom-nav {
+  padding-bottom: calc(6px + var(--safe-bottom, 34px));
+}
+
 .bottom-nav::before {
   content: '';
   position: absolute;
