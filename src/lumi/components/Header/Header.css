@@ -127,6 +127,20 @@
   display: block;
 }
 
+@media (min-width: 1024px) {
+  .header-logo-btn {
+    min-width: max-content;
+    min-height: 44px;
+  }
+
+  .header-logo-mark,
+  .header-logo-img {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
   .header-content {

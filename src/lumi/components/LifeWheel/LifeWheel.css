@@ -128,6 +128,20 @@
   display: block;
 }
 
+@media (min-width: 1024px) {
+  .life-wheel-logo-btn {
+    min-width: max-content;
+    min-height: 44px;
+  }
+
+  .life-wheel-header .header-logo-mark,
+  .life-wheel-header .header-logo-img {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
 .life-wheel-content {
   max-width: 600px;
   margin: 0 auto;
@@ -205,6 +219,18 @@
   aspect-ratio: 1 / 1;
   margin: 0 auto;
   flex-shrink: 0;
+}
+
+.life-wheel-mandala {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8.5%;
+  height: auto;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .life-wheel-svg {

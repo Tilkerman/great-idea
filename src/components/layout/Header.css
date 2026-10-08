@@ -73,3 +73,16 @@
   text-overflow: ellipsis;
   max-width: min(52vw, 220px);
 }
+
+@media (min-width: 1024px) {
+  .app-header__brand,
+  .app-header__logo {
+    display: flex;
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .app-header__logo {
+    height: 36px;
+  }
+}
