@@ -134,8 +134,9 @@ html.is-onboarding {
   width: 100%;
   display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
+  /* Not a containing block: the bottom nav anchors to .app-viewport
+     and sits in its padding, flush with the screen edge. */
+  overflow: visible;
 }
 
 .app-viewport__main > .bottom-nav {
