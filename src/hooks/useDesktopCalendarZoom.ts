@@ -104,7 +104,11 @@ export function useDesktopCalendarZoom(
       const z = zoom;
       if (z === 'week' || z === 'day') {
         // Same direction as pinch: scroll up / pinch-in grows columns, scroll down / pinch-out shrinks them.
-        const step = -event.deltaY * 0.0025;
+        // A Windows mouse notch often reports ±100 pixels, while a trackpad
+        // emits much smaller continuous values. Cap one event so a mouse stays
+        // gradual instead of traversing the entire week in a few notches.
+        const rawStep = -event.deltaY * 0.0025;
+        const step = Math.max(-0.08, Math.min(0.08, rawStep));
         if (z === 'day' && step < 0) {
           setZoom('week');
           setWeekZoom(Math.max(WEEK_ZOOM_MIN, Math.min(WEEK_ZOOM_MAX, WEEK_ZOOM_MAX + step)));

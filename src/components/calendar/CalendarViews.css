@@ -989,12 +989,12 @@
 
   /* On desktop the mouse cursor is the zoom anchor. Day snapping and delayed
      width transitions can otherwise pull the grid away from that anchor. */
-  .week-view__grid-scroll--snap {
+  .calendar-canvas .week-view__grid-scroll--snap {
     scroll-snap-type: none;
   }
 
-  .week-view__col,
-  .week-view__slot {
+  .calendar-canvas .week-view__col,
+  .calendar-canvas .week-view__slot {
     transition: none;
   }
 }
