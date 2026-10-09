@@ -1118,11 +1118,11 @@
   flex-shrink: 0;
   border-bottom: 0.5px solid var(--grid);
   padding: 0 2px;
-  font-family: "Avenir Next Condensed", "Arial Narrow", "Franklin Gothic Medium", "Helvetica Neue", sans-serif;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font-family: var(--font);
+  font-weight: 650;
+  font-size: 13px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   color: var(--text-secondary);
 }
@@ -1130,36 +1130,36 @@
 .week-view__time-start,
 .week-view__time-end {
   display: block;
-  font-size: var(--week-time-size, 12px);
-  transform: scaleX(0.82) scaleY(var(--week-time-y, 1.22));
+  font-size: var(--week-time-size, 13px);
+  transform: none;
 }
 
 .week-view__time-start {
-  transform-origin: center bottom;
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 .week-view__time-end {
-  transform-origin: center top;
-  opacity: 0.55;
-  font-weight: 500;
+  opacity: 0.7;
+  font-weight: 600;
 }
 
 .week-view__time-dash {
-  flex: 0 0 16px;
-  width: 100%;
-  height: 16px;
+  flex: 0 0 12px;
+  width: auto;
+  height: 12px;
   margin: 0;
-  padding: 0 4px;
+  padding: 0;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.12em;
+  letter-spacing: 0;
   color: var(--text-secondary);
-  opacity: 0.45;
+  opacity: 0.5;
   background: none;
   transform: none;
   pointer-events: none;
@@ -1313,15 +1313,14 @@
   align-items: center;
   justify-content: center;
   gap: 3px;
-  font-family: "Avenir Next Condensed", "Arial Narrow", "Franklin Gothic Medium", "Helvetica Neue", sans-serif;
-  font-weight: 600;
-  font-size: var(--week-time-size, 14.5px);
-  line-height: 1;
-  letter-spacing: -0.04em;
+  font-family: var(--font);
+  font-weight: 650;
+  font-size: var(--week-time-size, 14px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   color: var(--text-secondary);
-  --week-time-y: 1.5;
-  --week-time-size: 14.5px;
+  --week-time-size: 14px;
 }
 
 .day-view__empty-slot {

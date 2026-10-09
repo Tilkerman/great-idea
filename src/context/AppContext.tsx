@@ -19,7 +19,6 @@ import {
   saveSettings,
   saveTask,
   saveTasks,
-  seedIfEmpty,
   replaceAllTasks,
 } from '../db';
 import {
@@ -35,14 +34,33 @@ import {
   idsInDay,
   idsInHour,
 } from '../utils/gridClipboard';
-import { SEED_TASKS, buildThreeWeekDemoTasks } from '../data/seedTasks';
+import { buildThreeWeekDemoTasks } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 import { afterTaskDeleted, afterTaskWritten } from '../utils/wishTaskBridge';
 import { resolveLaunchLocale, setAnalyticsConsent, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
 
 const ONBOARDING_KEY = 'tili-onboarding-done';
+const MOBILE_ONBOARDING_KEY = 'tili-onboarding-mobile-done';
+const DESKTOP_ONBOARDING_KEY = 'tili-onboarding-desktop-done';
 const SESSION_KEY = 'tili-session';
 const MAIN_TAB_KEY = 'tili-main-tab';
+
+function isDesktopOnboarding() {
+  return typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches;
+}
+
+function hasCompletedOnboardingForLayout() {
+  const key = isDesktopOnboarding() ? DESKTOP_ONBOARDING_KEY : MOBILE_ONBOARDING_KEY;
+  // People who completed the original, phone-only tour should not see it again
+  // on mobile. They still receive the new desktop tour the first time on a wide screen.
+  return localStorage.getItem(key) === '1'
+    || (!isDesktopOnboarding() && localStorage.getItem(ONBOARDING_KEY) === '1');
+}
+
+function markOnboardingCompletedForLayout() {
+  localStorage.setItem(isDesktopOnboarding() ? DESKTOP_ONBOARDING_KEY : MOBILE_ONBOARDING_KEY, '1');
+  localStorage.setItem(ONBOARDING_KEY, '1');
+}
 
 function readMainTab(): 'calendar' | 'lumi' {
   try {
@@ -158,7 +176,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      await seedIfEmpty(SEED_TASKS);
       const params = new URLSearchParams(window.location.search);
       if (params.get('seed') === 'demo3') {
         await replaceAllTasks(buildThreeWeekDemoTasks());
@@ -201,7 +218,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       setSettingsState(s);
       await refreshTasks();
-      const onboardingDone = localStorage.getItem(ONBOARDING_KEY) === '1';
+      const onboardingDone = hasCompletedOnboardingForLayout();
       const savedSession = localStorage.getItem(SESSION_KEY);
       if (savedSession) {
         try {
@@ -340,13 +357,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [settings]);
 
   const completeOnboarding = useCallback(() => {
-    localStorage.setItem(ONBOARDING_KEY, '1');
+    markOnboardingCompletedForLayout();
     trackOnboardingComplete(settings.analyticsEnabled, settings.locale);
     setScreen(readMainTab());
   }, [setScreen, settings.analyticsEnabled, settings.locale]);
 
   const openAuth = useCallback((start: AuthStart, back: AppScreen = 'calendar') => {
-    localStorage.setItem(ONBOARDING_KEY, '1');
+    markOnboardingCompletedForLayout();
     setAuthStart(start);
     setAuthBackScreen(back);
     setScreen('auth');

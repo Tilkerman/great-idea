@@ -1,19 +1,29 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
+import { useLayoutMode } from '../../hooks/useLayoutMode';
 import './Onboarding.css';
 
 export function Onboarding() {
   const { completeOnboarding, openAuth } = useApp();
   const { t } = useI18n();
+  const { isDesktopLayout } = useLayoutMode();
   const [step, setStep] = useState(0);
-  const steps = [
+  const mobileSteps = [
     { title: t('onb0t'), body: t('onb0b'), emoji: '👋' },
     { title: t('onb1t'), body: t('onb1b'), emoji: '🤏' },
     { title: t('onb2t'), body: t('onb2b'), emoji: '⏱️' },
     { title: t('onb3t'), body: t('onb3b'), emoji: '🎨' },
     { title: t('onb4t'), body: t('onb4b'), emoji: '🔓' },
   ];
+  const desktopSteps = [
+    { title: t('onbDesktop0t'), body: t('onbDesktop0b'), emoji: '🖥️' },
+    { title: t('onbDesktop1t'), body: t('onbDesktop1b'), emoji: '◧' },
+    { title: t('onbDesktop2t'), body: t('onbDesktop2b'), emoji: '⌘' },
+    { title: t('onbDesktop3t'), body: t('onbDesktop3b'), emoji: '✚' },
+    { title: t('onbDesktop4t'), body: t('onbDesktop4b'), emoji: '✓' },
+  ];
+  const steps = isDesktopLayout ? desktopSteps : mobileSteps;
   const current = steps[step];
   const last = step === steps.length - 1;
 
@@ -23,7 +33,7 @@ export function Onboarding() {
   };
 
   return (
-    <div className="onboarding">
+    <div className={`onboarding${isDesktopLayout ? ' onboarding--desktop' : ''}`}>
       <div className="onboarding__content">
         <span className="onboarding__emoji">{current.emoji}</span>
         <h1 className="onboarding__title">{current.title}</h1>
