@@ -68,7 +68,7 @@ export function useDesktopCalendarZoom(
         grid,
         pointerX,
         pointerY,
-        contentX: grid.scrollLeft + pointerX,
+        contentX: grid.scrollLeft + Math.max(0, pointerX - WEEK_TIME_COL_WIDTH),
         contentY: grid.scrollTop + pointerY,
         beforeColWidth: before.colWidth,
         beforeRowHeight: before.rowHeight,
@@ -86,12 +86,12 @@ export function useDesktopCalendarZoom(
           pendingAnchorRef.current = null;
           if (!anchor?.grid.isConnected) return;
 
-          const scaledX = WEEK_TIME_COL_WIDTH
-            + Math.max(0, anchor.contentX - WEEK_TIME_COL_WIDTH)
-              * (anchor.afterColWidth / anchor.beforeColWidth);
+          const dayViewX = Math.max(0, anchor.pointerX - WEEK_TIME_COL_WIDTH);
+          const scaledX = anchor.contentX
+            * (anchor.afterColWidth / anchor.beforeColWidth);
           const scaledY = anchor.contentY
             * (anchor.afterRowHeight / anchor.beforeRowHeight);
-          anchor.grid.scrollLeft = Math.max(0, scaledX - anchor.pointerX);
+          anchor.grid.scrollLeft = Math.max(0, scaledX - dayViewX);
           anchor.grid.scrollTop = Math.max(0, scaledY - anchor.pointerY);
         });
       });

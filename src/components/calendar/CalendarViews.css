@@ -986,6 +986,17 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
+
+  /* On desktop the mouse cursor is the zoom anchor. Day snapping and delayed
+     width transitions can otherwise pull the grid away from that anchor. */
+  .week-view__grid-scroll--snap {
+    scroll-snap-type: none;
+  }
+
+  .week-view__col,
+  .week-view__slot {
+    transition: none;
+  }
 }
 
 .week-view__day-num {
