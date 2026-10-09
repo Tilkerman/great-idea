@@ -3,13 +3,15 @@ import { useApp } from '../../context/AppContext';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useI18n } from '../../i18n/useI18n';
 import { useLumiHost, type LumiSettingsPage } from '../../lumi/LumiHost';
+import { isCloudAccountEnabled } from '../../utils/accountApi';
 import {
-  changePassword,
-  deleteAccount,
+  changeAccountPassword,
   isValidEmail,
-  updateAccountProfile,
-  verifyPassword,
-} from '../../utils/authLocal';
+  removeAccount,
+  signOutAccount,
+  updateAccount,
+  updateAccountSession,
+} from '../../utils/authService';
 import { setAnalyticsConsent, trackAppOpenOnce } from '../../utils/productAnalytics';
 import {
   buildFullBackup,
@@ -17,6 +19,21 @@ import {
   importFullBackup,
   normalizeBackup,
 } from '../../utils/fullBackup';
+import { getAllTasks, replaceAllTasks } from '../../db';
+import {
+  pullCalendarFromCloud,
+  pushCalendarToCloud,
+  readCalendarSyncRevision,
+  writeCalendarSyncRevision,
+} from '../../utils/calendarSync';
+import {
+  pullLumiFromCloud,
+  pushLumiToCloud,
+  readLocalLumiSnapshot,
+  readLumiSyncRevision,
+  replaceLocalLumiSnapshot,
+  writeLumiSyncRevision,
+} from '../../utils/lumiSync';
 import { saveLastBackupDate } from '../../lumi/utils/backupReminder';
 import './Settings.css';
 
@@ -148,8 +165,9 @@ export function SettingsProfile() {
   const [error, setError] = useState('');
   const [confirmExit, setConfirmExit] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
 
-  const saveProfile = () => {
+  const saveProfile = async () => {
     setError('');
     setMessage('');
     if (name.trim().length < 2) {
@@ -161,12 +179,22 @@ export function SettingsProfile() {
       setMessage(t('nameSaved'));
       return;
     }
+    if (isCloudAccountEnabled()) {
+      const updated = await updateAccountSession(session.email ?? '', { name: name.trim() });
+      if (!updated) {
+        setError(t('saveFailed'));
+        return;
+      }
+      setSession(updated);
+      setMessage(t('profileSaved'));
+      return;
+    }
     if (!isValidEmail(email)) {
       setError(t('badEmail'));
       return;
     }
     try {
-      const updated = updateAccountProfile(session.email ?? '', {
+      const updated = updateAccount(session.email ?? '', {
         name: name.trim(),
         email,
       });
@@ -212,6 +240,7 @@ export function SettingsProfile() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               inputMode="email"
+              readOnly={isCloudAccountEnabled()}
             />
           </label>
         )}
@@ -219,7 +248,7 @@ export function SettingsProfile() {
         {error && <p className="auth-form__error" role="alert">{error}</p>}
         {message && <p className="settings-note">{message}</p>}
 
-        <button type="button" className="btn btn--primary settings-full" onClick={saveProfile}>
+        <button type="button" className="btn btn--primary settings-full" onClick={() => { void saveProfile(); }}>
           {t('save')}
         </button>
 
@@ -253,11 +282,24 @@ export function SettingsProfile() {
           cancelLabel={t('cancel')}
           onCancel={() => setConfirmExit(false)}
           onConfirm={() => {
-            setSession({ isGuest: true, name: session.name });
-            setConfirmExit(false);
-            setScreen('settings');
+            void signOutAccount().finally(() => {
+              setSession({ isGuest: true, name: session.name });
+              setConfirmExit(false);
+              setScreen('settings');
+            });
           }}
         />
+      )}
+      {confirmDelete && session.email && isCloudAccountEnabled() && (
+        <label className="settings-field">
+          {t('password')}
+          <input
+            type="password"
+            value={deletePassword}
+            onChange={(e) => setDeletePassword(e.target.value)}
+            autoComplete="current-password"
+          />
+        </label>
       )}
       {confirmDelete && session.email && (
         <ConfirmDialog
@@ -265,12 +307,28 @@ export function SettingsProfile() {
           message={t('deleteAccountMsg')}
           confirmLabel={t('delete')}
           cancelLabel={t('cancel')}
-          onCancel={() => setConfirmDelete(false)}
-          onConfirm={() => {
-            deleteAccount(session.email!);
-            setSession({ isGuest: true });
+          onCancel={() => {
             setConfirmDelete(false);
-            setScreen('settings');
+            setDeletePassword('');
+          }}
+          onConfirm={() => {
+            void (async () => {
+              try {
+                if (isCloudAccountEnabled()) {
+                  await removeAccount(session.email!, deletePassword);
+                  await signOutAccount();
+                } else {
+                  await removeAccount(session.email!);
+                }
+                setSession({ isGuest: true });
+                setConfirmDelete(false);
+                setDeletePassword('');
+                setScreen('settings');
+              } catch {
+                setError(t('passwordWrong'));
+                setConfirmDelete(false);
+              }
+            })();
           }}
         />
       )}
@@ -304,12 +362,7 @@ export function SettingsPassword() {
     }
     setBusy(true);
     try {
-      const okCurrent = await verifyPassword(session.email, current);
-      if (!okCurrent) {
-        setError(t('passwordWrong'));
-        return;
-      }
-      const ok = await changePassword(session.email, current, next);
+      const ok = await changeAccountPassword(session.email, current, next);
       if (!ok) {
         setError(t('passwordChangeFail'));
         return;
@@ -450,7 +503,7 @@ export function SettingsAppearance() {
 }
 
 export function SettingsTransfer() {
-  const { setScreen } = useApp();
+  const { setScreen, session, refreshTasks } = useApp();
   const { t } = useI18n();
   const fileRef = useRef<HTMLInputElement>(null);
   const [exportBusy, setExportBusy] = useState(false);
@@ -458,6 +511,11 @@ export function SettingsTransfer() {
   const [importConfirmOpen, setImportConfirmOpen] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [status, setStatus] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
+  const [cloudBusy, setCloudBusy] = useState(false);
+
+  const cloudAccountReady = isCloudAccountEnabled()
+    && !session.isGuest
+    && session.emailVerified;
 
   const onExport = async () => {
     setStatus(null);
@@ -507,6 +565,124 @@ export function SettingsTransfer() {
       <SettingsTopBar title={t('settingsTransfer')} onBack={() => setScreen('settings')} />
       <div className="settings-form settings-transfer">
         <p className="settings-transfer__lead">{t('transferLead')}</p>
+
+        {cloudAccountReady && (
+          <section className="settings-transfer__step">
+            <h2 className="settings-transfer__step-title">{t('settingsTransfer')}</h2>
+            <p className="settings-note">{t('transferCloudLead')}</p>
+            <button
+              type="button"
+              className="btn btn--primary settings-full settings-transfer__btn"
+              disabled={cloudBusy}
+              onClick={() => {
+                void (async () => {
+                  setCloudBusy(true);
+                  setStatus(null);
+                  try {
+                    const tasks = await getAllTasks();
+                    const baseRevision = readCalendarSyncRevision();
+                    const result = await pushCalendarToCloud(tasks, baseRevision);
+                    if ('conflict' in result && result.conflict) {
+                      await replaceAllTasks(result.snapshot);
+                      writeCalendarSyncRevision(result.revision);
+                      await refreshTasks();
+                    } else {
+                      writeCalendarSyncRevision(result.revision);
+                    }
+                    setStatus({ kind: 'ok', text: t('transferCloudDone') });
+                  } catch {
+                    setStatus({ kind: 'err', text: t('transferCloudFail') });
+                  } finally {
+                    setCloudBusy(false);
+                  }
+                })();
+              }}
+            >
+              {t('transferCloudUpload')}
+            </button>
+            <button
+              type="button"
+              className="btn btn--ghost settings-full settings-transfer__btn"
+              disabled={cloudBusy}
+              onClick={() => {
+                void (async () => {
+                  setCloudBusy(true);
+                  setStatus(null);
+                  try {
+                    const remote = await pullCalendarFromCloud();
+                    if (!remote) throw new Error('no_remote');
+                    await replaceAllTasks(remote.snapshot);
+                    writeCalendarSyncRevision(remote.revision);
+                    await refreshTasks();
+                    setStatus({ kind: 'ok', text: t('transferCloudDone') });
+                  } catch {
+                    setStatus({ kind: 'err', text: t('transferCloudFail') });
+                  } finally {
+                    setCloudBusy(false);
+                  }
+                })();
+              }}
+            >
+              {t('transferCloudDownload')}
+            </button>
+            <p className="settings-note">{t('transferLumiLead')}</p>
+            <button
+              type="button"
+              className="btn btn--primary settings-full settings-transfer__btn"
+              disabled={cloudBusy}
+              onClick={() => {
+                void (async () => {
+                  setCloudBusy(true);
+                  setStatus(null);
+                  try {
+                    const snapshot = await readLocalLumiSnapshot();
+                    const baseRevision = readLumiSyncRevision();
+                    const result = await pushLumiToCloud(snapshot, baseRevision);
+                    if ('conflict' in result && result.conflict) {
+                      await replaceLocalLumiSnapshot(result.snapshot);
+                      writeLumiSyncRevision(result.revision);
+                      window.setTimeout(() => window.location.reload(), 600);
+                    } else {
+                      writeLumiSyncRevision(result.revision);
+                    }
+                    setStatus({ kind: 'ok', text: t('transferLumiDone') });
+                  } catch {
+                    setStatus({ kind: 'err', text: t('transferLumiFail') });
+                  } finally {
+                    setCloudBusy(false);
+                  }
+                })();
+              }}
+            >
+              {t('transferLumiUpload')}
+            </button>
+            <button
+              type="button"
+              className="btn btn--ghost settings-full settings-transfer__btn"
+              disabled={cloudBusy}
+              onClick={() => {
+                void (async () => {
+                  setCloudBusy(true);
+                  setStatus(null);
+                  try {
+                    const remote = await pullLumiFromCloud();
+                    if (!remote) throw new Error('no_remote');
+                    await replaceLocalLumiSnapshot(remote.snapshot);
+                    writeLumiSyncRevision(remote.revision);
+                    setStatus({ kind: 'ok', text: t('transferLumiDone') });
+                    window.setTimeout(() => window.location.reload(), 600);
+                  } catch {
+                    setStatus({ kind: 'err', text: t('transferLumiFail') });
+                  } finally {
+                    setCloudBusy(false);
+                  }
+                })();
+              }}
+            >
+              {t('transferLumiDownload')}
+            </button>
+          </section>
+        )}
 
         <section className="settings-transfer__step">
           <h2 className="settings-transfer__step-title">{t('transferStep1Title')}</h2>

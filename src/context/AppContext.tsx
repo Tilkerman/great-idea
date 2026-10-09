@@ -37,6 +37,7 @@ import {
 import { buildThreeWeekDemoTasks } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 import { afterTaskDeleted, afterTaskWritten } from '../utils/wishTaskBridge';
+import { fetchCloudSession, isCloudAccountEnabled } from '../utils/accountApi';
 import { resolveLaunchLocale, setAnalyticsConsent, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
 
 const ONBOARDING_KEY = 'tili-onboarding-done';
@@ -226,6 +227,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         } catch {
           /* ignore */
         }
+      }
+      if (isCloudAccountEnabled()) {
+        const cloudSession = await fetchCloudSession();
+        if (cloudSession) setSession(cloudSession);
       }
       setScreen(onboardingDone ? readMainTab() : 'onboarding');
       setReady(true);

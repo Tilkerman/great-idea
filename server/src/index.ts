@@ -1,8 +1,9 @@
 import cors from '@fastify/cors';
-import Fastify from 'fastify';
+import Fastify, { type FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import {
   AuthError,
+  changeUserPassword,
   confirmEmailAddress,
   createSession,
   findActiveUserByEmail,
@@ -12,11 +13,20 @@ import {
   registerUser,
   resetPasswordWithToken,
   revokeSession,
+  softDeleteUser,
+  updateDisplayName,
+  verifyUserPassword,
   type SessionUser,
 } from './auth.js';
 import { readConfig } from './config.js';
 import { createPool } from './db.js';
 import { sendMail } from './mail.js';
+import {
+  readCalendarSync,
+  readLumiSync,
+  writeCalendarSync,
+  writeLumiSync,
+} from './sync.js';
 
 const config = readConfig();
 const db = createPool(config);
@@ -88,10 +98,23 @@ function sessionCookie(token: string, expiresInSeconds: number): string {
 
 function authFailure(error: unknown) {
   if (error instanceof AuthError) {
-    return { statusCode: error.code === 'email_taken' ? 409 : 401, code: error.code };
+    if (error.code === 'email_taken') return { statusCode: 409, code: error.code };
+    if (error.code === 'email_not_verified') return { statusCode: 403, code: error.code };
+    return { statusCode: 401, code: error.code };
   }
   throw error;
 }
+
+async function sessionFromRequest(request: FastifyRequest): Promise<SessionUser | null> {
+  const token = readCookie(request.headers.cookie, cookieName);
+  if (!token) return null;
+  return readSession(db, token);
+}
+
+const syncPutSchema = z.object({
+  baseRevision: z.number().int().min(0),
+  snapshot: z.unknown(),
+});
 
 app.post('/v1/auth/register', async (request, reply) => {
   const input = registerSchema.safeParse(request.body);
@@ -298,6 +321,101 @@ app.post('/v1/auth/logout', async (request, reply) => {
   if (token) await revokeSession(db, token);
   reply.header('Set-Cookie', sessionCookie('', 0));
   return reply.code(204).send();
+});
+
+app.patch('/v1/auth/profile', async (request, reply) => {
+  const user = await sessionFromRequest(request);
+  if (!user) return reply.code(401).send({ error: 'invalid_session' });
+
+  const input = z.object({ displayName: z.string().trim().min(2).max(120) }).safeParse(request.body);
+  if (!input.success) return reply.code(400).send({ error: 'invalid_profile' });
+
+  const updated = await updateDisplayName(db, user.id, input.data.displayName);
+  if (!updated) return reply.code(401).send({ error: 'invalid_session' });
+  return { user: updated };
+});
+
+app.post('/v1/auth/password/change', async (request, reply) => {
+  const user = await sessionFromRequest(request);
+  if (!user) return reply.code(401).send({ error: 'invalid_session' });
+
+  const input = z.object({
+    currentPassword: z.string().min(1).max(256),
+    nextPassword: z.string().min(10).max(256),
+  }).safeParse(request.body);
+  if (!input.success) return reply.code(400).send({ error: 'invalid_password' });
+
+  const ok = await changeUserPassword(
+    db,
+    user.id,
+    input.data.currentPassword,
+    input.data.nextPassword,
+  );
+  if (!ok) return reply.code(401).send({ error: 'invalid_credentials' });
+  reply.header('Set-Cookie', sessionCookie('', 0));
+  return { ok: true };
+});
+
+app.post('/v1/auth/account/delete', async (request, reply) => {
+  const user = await sessionFromRequest(request);
+  if (!user) return reply.code(401).send({ error: 'invalid_session' });
+
+  const input = z.object({ password: z.string().min(1).max(256) }).safeParse(request.body);
+  if (!input.success) return reply.code(400).send({ error: 'invalid_credentials' });
+
+  const ok = await verifyUserPassword(db, user.id, input.data.password);
+  if (!ok) return reply.code(401).send({ error: 'invalid_credentials' });
+
+  await softDeleteUser(db, user.id);
+  reply.header('Set-Cookie', sessionCookie('', 0));
+  return reply.code(204).send();
+});
+
+app.get('/v1/sync/calendar', async (request, reply) => {
+  const user = await sessionFromRequest(request);
+  if (!user) return reply.code(401).send({ error: 'invalid_session' });
+  const state = await readCalendarSync(db, user.id);
+  return state;
+});
+
+app.put('/v1/sync/calendar', async (request, reply) => {
+  const user = await sessionFromRequest(request);
+  if (!user) return reply.code(401).send({ error: 'invalid_session' });
+  const input = syncPutSchema.safeParse(request.body);
+  if (!input.success) return reply.code(400).send({ error: 'invalid_sync' });
+
+  const result = await writeCalendarSync(db, user.id, input.data);
+  if (!result.ok) {
+    return reply.code(409).send({
+      error: result.code,
+      revision: result.revision,
+      snapshot: result.snapshot,
+    });
+  }
+  return { revision: result.revision };
+});
+
+app.get('/v1/sync/lumi', async (request, reply) => {
+  const user = await sessionFromRequest(request);
+  if (!user) return reply.code(401).send({ error: 'invalid_session' });
+  return readLumiSync(db, user.id);
+});
+
+app.put('/v1/sync/lumi', async (request, reply) => {
+  const user = await sessionFromRequest(request);
+  if (!user) return reply.code(401).send({ error: 'invalid_session' });
+  const input = syncPutSchema.safeParse(request.body);
+  if (!input.success) return reply.code(400).send({ error: 'invalid_sync' });
+
+  const result = await writeLumiSync(db, user.id, input.data);
+  if (!result.ok) {
+    return reply.code(409).send({
+      error: result.code,
+      revision: result.revision,
+      snapshot: result.snapshot,
+    });
+  }
+  return { revision: result.revision };
 });
 
 const close = async () => {

@@ -21,6 +21,22 @@ The PWA does not call the authentication API yet. Mail stays off until the
 Unisender key is supplied outside Git, so no existing IndexedDB data is uploaded
 or changed by this service.
 
+## Enable cloud auth in the PWA
+
+Set `VITE_ACCOUNT_API_URL=https://api.tili.su` at build time (for example in
+`.env.production`). Without it the app keeps the local mock accounts in
+`authLocal.ts`. CORS on the API must include `https://tili.su`.
+
+## Yandex Cloud rollout (stage 1)
+
+1. Managed PostgreSQL + daily backups.
+2. Container with this `server/` image (`docker compose` or Yandex Serverless
+   Containers).
+3. Public HTTPS `api.tili.su` → container port 8080.
+4. Secrets in Lockbox: `DATABASE_URL`, `UNISENDER_API_KEY`, session pepper if
+   added later.
+5. Keep existing `tili-push` functions unchanged until stage 4.
+
 ## Local run
 
 1. Copy `.env.example` to `.env.local` and set a unique local database password.

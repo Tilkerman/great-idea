@@ -22,7 +22,11 @@ export type SessionUser = {
 
 export class AuthError extends Error {
   constructor(
-    public readonly code: 'invalid_credentials' | 'email_taken' | 'invalid_session',
+    public readonly code:
+      | 'invalid_credentials'
+      | 'email_taken'
+      | 'invalid_session'
+      | 'email_not_verified',
   ) {
     super(code);
   }
@@ -92,7 +96,65 @@ export async function loginUser(
   if (!row || !(await verifyPassword(password, row.password_hash))) {
     throw new AuthError('invalid_credentials');
   }
+  if (!row.email_verified_at) {
+    throw new AuthError('email_not_verified');
+  }
   return toSessionUser(row);
+}
+
+export async function changeUserPassword(
+  db: Pool,
+  userId: string,
+  currentPassword: string,
+  nextPassword: string,
+): Promise<boolean> {
+  const result = await db.query<{ password_hash: string }>(
+    `select password_hash from users where id = $1 and deleted_at is null`,
+    [userId],
+  );
+  const row = result.rows[0];
+  if (!row || !(await verifyPassword(currentPassword, row.password_hash))) return false;
+  const passwordHash = await hashPassword(nextPassword);
+  await db.query(
+    `update users set password_hash = $2, updated_at = now() where id = $1`,
+    [userId, passwordHash],
+  );
+  await db.query(
+    `update auth_sessions set revoked_at = now() where user_id = $1 and revoked_at is null`,
+    [userId],
+  );
+  return true;
+}
+
+export async function updateDisplayName(db: Pool, userId: string, displayName: string) {
+  const result = await db.query<UserRow>(
+    `update users
+     set display_name = $2, updated_at = now()
+     where id = $1 and deleted_at is null
+     returning id, email, display_name, email_verified_at`,
+    [userId, displayName],
+  );
+  return result.rows[0] ? toSessionUser(result.rows[0]) : null;
+}
+
+export async function verifyUserPassword(db: Pool, userId: string, password: string): Promise<boolean> {
+  const result = await db.query<{ password_hash: string }>(
+    `select password_hash from users where id = $1 and deleted_at is null`,
+    [userId],
+  );
+  const row = result.rows[0];
+  return Boolean(row && (await verifyPassword(password, row.password_hash)));
+}
+
+export async function softDeleteUser(db: Pool, userId: string): Promise<void> {
+  await db.query(
+    `update users set deleted_at = now(), updated_at = now() where id = $1`,
+    [userId],
+  );
+  await db.query(
+    `update auth_sessions set revoked_at = now() where user_id = $1 and revoked_at is null`,
+    [userId],
+  );
 }
 
 export async function createSession(

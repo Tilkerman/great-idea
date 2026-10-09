@@ -97,4 +97,5 @@ export interface UserSession {
   isGuest: boolean;
   name?: string;
   email?: string;
+  emailVerified?: boolean;
 }

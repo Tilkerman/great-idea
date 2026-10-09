@@ -3,15 +3,17 @@ import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
 import { trackSignupLocal } from '../../utils/productAnalytics';
 import type { AuthStart } from '../../types';
+import { AccountApiError } from '../../utils/accountApi';
 import {
-  createAccount,
   findAccount,
+  isCloudAccountEnabled,
   isValidEmail,
+  loginAccount,
   normalizeEmail,
-  resetPassword,
-  sessionFromAccount,
-  verifyPassword,
-} from '../../utils/authLocal';
+  registerAccount,
+  requestAccountPasswordReset,
+  resetAccountPassword,
+} from '../../utils/authService';
 import '../settings/Settings.css';
 import './AuthScreen.css';
 
@@ -44,6 +46,7 @@ export function AuthScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [registeredViaCloud, setRegisteredViaCloud] = useState(false);
 
   const backToApp = () => setScreen(authBackScreen === 'auth' ? 'calendar' : authBackScreen);
 
@@ -90,17 +93,22 @@ export function AuthScreen() {
     }
     setBusy(true);
     try {
-      const account = await createAccount({
+      const result = await registerAccount({
         name: name.trim() || normalizeEmail(email).split('@')[0] || 'TiLi',
         email,
         password,
       });
-      setSession(sessionFromAccount(account));
+      if (result.session) setSession(result.session);
+      setRegisteredViaCloud(Boolean(result.cloudPendingVerification));
       setPassword('');
       setPassword2('');
       trackSignupLocal(settings.analyticsEnabled);
       setStep('register-done');
     } catch (e) {
+      if (e instanceof AccountApiError && e.code === 'email_taken') {
+        setError(t('authEmailTakenLogin'));
+        return;
+      }
       setError(e instanceof Error && e.message === 'exists'
         ? t('authEmailTakenLogin')
         : t('authCreateFail'));
@@ -112,15 +120,21 @@ export function AuthScreen() {
   async function submitLogin() {
     setBusy(true);
     try {
-      const account = await verifyPassword(email, password);
-      if (!account) {
-        setError(findAccount(email)
+      const accountSession = await loginAccount(email, password);
+      if (!accountSession) {
+        setError(!isCloudAccountEnabled() && findAccount(email)
           ? t('authBadPassword')
           : t('authNoAccount'));
         return;
       }
-      setSession(sessionFromAccount(account));
+      setSession(accountSession);
       setScreen('calendar');
+    } catch (e) {
+      if (e instanceof AccountApiError && e.code === 'email_not_verified') {
+        setError(t('authEmailNotVerified'));
+        return;
+      }
+      setError(t('authBadPassword'));
     } finally {
       setBusy(false);
     }
@@ -137,7 +151,7 @@ export function AuthScreen() {
     }
     setBusy(true);
     try {
-      const ok = await resetPassword(email, password);
+      const ok = await resetAccountPassword(email, password);
       if (!ok) {
         setError(t('authNoAccount'));
         return;
@@ -231,7 +245,7 @@ export function AuthScreen() {
                   setError(t('badEmail'));
                   return;
                 }
-                if (findAccount(email)) {
+                if (!isCloudAccountEnabled() && findAccount(email)) {
                   setError(t('authEmailExistsOther'));
                   return;
                 }
@@ -267,7 +281,7 @@ export function AuthScreen() {
           <>
             <h2 className="auth-form__title">{t('authDoneHello', { name: session.name ?? '' })}</h2>
             <p className="auth-form__intro">
-              {t('authDoneBody')}
+              {registeredViaCloud ? t('authDoneCloudBody') : t('authDoneBody')}
             </p>
             <button type="button" className="btn btn--primary settings-full" onClick={() => setScreen('calendar')}>
               {t('authOpenCalendar')}
@@ -362,13 +376,17 @@ export function AuthScreen() {
                   setError(t('badEmail'));
                   return;
                 }
-                if (!findAccount(email)) {
+                if (!isCloudAccountEnabled() && !findAccount(email)) {
                   setError(t('authNoAccountOnPhone'));
                   return;
                 }
                 setError('');
                 setPassword('');
                 setPassword2('');
+                if (isCloudAccountEnabled()) {
+                  void requestAccountPasswordReset(email).then(() => setStep('forgot-done'));
+                  return;
+                }
                 setStep('forgot-password');
               }}
             >
