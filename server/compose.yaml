@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tili}
+      POSTGRES_USER: ${POSTGRES_USER:-tili}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.local}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    build: .
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tili}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-tili}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5175}
+    command: node dist/migrate.js
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build: .
+    environment:
+      NODE_ENV: development
+      PORT: 8080
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tili}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-tili}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5175}
+      API_PUBLIC_URL: ${API_PUBLIC_URL:-http://localhost:8080}
+      MAIL_FROM: ${MAIL_FROM:-hello@tili.su}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-TiLi}
+      UNISENDER_API_URL: ${UNISENDER_API_URL:-https://goapi.unisender.ru/ru/transactional/api/v1}
+      UNISENDER_API_KEY: ${UNISENDER_API_KEY:-}
+    ports:
+      - "8080:8080"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  postgres-data:
