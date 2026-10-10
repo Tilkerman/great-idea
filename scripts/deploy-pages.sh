@@ -22,14 +22,14 @@ if gh auth status >/dev/null 2>&1; then
   echo "→ Делаю репозиторий публичным..."
   gh repo edit "$REPO" --visibility public --accept-visibility-change-consequences
   echo "→ Включаю GitHub Pages..."
-  gh api "repos/${REPO}/pages" -X POST \
-    -f build_type=legacy \
-    -f "source[branch]=gh-pages" \
-    -f "source[path]=/" 2>/dev/null \
-    || gh api "repos/${REPO}/pages" -X PUT \
-    -f build_type=legacy \
-    -f "source[branch]=gh-pages" \
-    -f "source[path]=/"
+  if gh api "repos/${REPO}/pages" >/dev/null 2>&1; then
+    echo "   GitHub Pages уже включён — настройки домена не трогаю."
+  else
+    gh api "repos/${REPO}/pages" -X POST \
+      -f build_type=legacy \
+      -f "source[branch]=gh-pages" \
+      -f "source[path]=/"
+  fi
   echo ""
   echo "✅ Готово: https://tili.su/"
 else
