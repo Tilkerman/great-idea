@@ -282,15 +282,6 @@ a { color: inherit; text-decoration: none; }
 @media (min-width: 768px) {
   .section.hero { padding: 4rem 2rem 4.25rem; }
 }
-/* Блок 1 (hero #top) → блок 2 (#tili «01»): отдельная полоса, не padding секций */
-.landing-block-gap {
-  width: var(--content);
-  max-width: 100%;
-  margin: 0 auto;
-  height: clamp(3rem, 8vw, 5rem);
-  flex-shrink: 0;
-  pointer-events: none;
-}
 #tili.section {
   width: 100%;
   max-width: none;
