@@ -610,7 +610,7 @@
     const mascot = block?.querySelector('.tili-mascot');
     if (!block || !mascot) return;
     let busy = false;
-    block.addEventListener('click', () => {
+    const play = () => {
       if (busy) return;
       busy = true;
       mascot.classList.add('is-thumb');
@@ -618,7 +618,16 @@
         mascot.classList.remove('is-thumb');
         busy = false;
       }, 1250);
-    });
+    };
+    block.addEventListener('click', play);
+
+    const observer = new IntersectionObserver((entries) => {
+      const fullyVisible = entries.some((entry) => entry.intersectionRatio >= 0.99);
+      if (!fullyVisible) return;
+      observer.disconnect();
+      play();
+    }, { threshold: [0.99] });
+    observer.observe(mascot);
   }
 
   function initMascot() {
