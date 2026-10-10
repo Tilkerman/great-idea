@@ -1479,7 +1479,7 @@ a { color: inherit; text-decoration: none; }
     transform: scaleX(-1) scale(1.03);
   }
   .tili-mascot__caption {
-    font-size: 0.88rem;
+    display: none;
   }
 }
 @media (min-width: 1024px) {
