@@ -76,6 +76,8 @@
       tp4d: 'TiLi помогает не просто составить план, а заранее увидеть, есть ли в твоём дне место для того, что действительно важно.',
       tiliQuoteA: 'Не список дел.',
       tiliQuoteB: 'Сетка твоего времени.',
+      tiliMascotCaption: 'День под контролем',
+      tiliMascotAction: 'Показать класс',
       tiliTry: 'Попробовать бесплатно',
       tiliQuote: 'Не список дел.\nСетка твоего времени.',
       lumiH: 'Lumi — календарь твоих желаний',
@@ -188,6 +190,8 @@
       tp4d: 'TiLi helps you do more than make a plan. You can see in advance whether your day has room for what truly matters.',
       tiliQuoteA: 'Not a to-do list.',
       tiliQuoteB: 'A grid of your time.',
+      tiliMascotCaption: 'Your day, under control',
+      tiliMascotAction: 'Give a thumbs-up',
       tiliTry: 'Try it for free',
       tiliQuote: 'Not a to-do list.\nA grid of your time.',
       lumiH: 'Lumi — a calendar of your wishes',
@@ -298,6 +302,8 @@
       tp4d: 'TiLi ayuda no solo a hacer un plan, sino a ver de antemano si en tu día hay lugar para lo que de verdad importa.',
       tiliQuoteA: 'No es una lista de tareas.',
       tiliQuoteB: 'La cuadrícula de tu tiempo.',
+      tiliMascotCaption: 'Tu día bajo control',
+      tiliMascotAction: 'Mostrar aprobación',
       tiliTry: 'Probar gratis',
       tiliQuote: 'No es una lista.\nEs la cuadrícula de tu tiempo.',
       lumiH: 'Lumi — calendario de tus deseos',
@@ -599,6 +605,22 @@
     mq.addEventListener('change', apply);
   }
 
+  function initTiliMascot() {
+    const block = document.querySelector('#tili');
+    const mascot = block?.querySelector('.tili-mascot');
+    if (!block || !mascot) return;
+    let busy = false;
+    block.addEventListener('click', () => {
+      if (busy) return;
+      busy = true;
+      mascot.classList.add('is-thumb');
+      window.setTimeout(() => {
+        mascot.classList.remove('is-thumb');
+        busy = false;
+      }, 1250);
+    });
+  }
+
   function initMascot() {
     const btn = document.querySelector('.lumi-mascot');
     if (!btn) return;
@@ -651,6 +673,7 @@
   initSectionAnalytics();
   initCta();
   initMenu();
+  initTiliMascot();
   initMascot();
   initPrinciples();
 

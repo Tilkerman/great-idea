@@ -1408,6 +1408,67 @@ a { color: inherit; text-decoration: none; }
   text-underline-offset: 0.12em;
   text-decoration-skip-ink: none;
 }
+.tili-mascot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
+  margin: 1.25rem 0 0.25rem 0.65rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #16314a;
+  font: inherit;
+  cursor: pointer;
+}
+.tili-mascot__figure {
+  position: relative;
+  display: block;
+  width: clamp(8.5rem, 15vw, 10.75rem);
+  aspect-ratio: 3 / 4;
+}
+.tili-mascot__figure img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.18s ease, transform 0.24s var(--ease);
+}
+.tili-mascot__rest {
+  opacity: 1;
+  transform: scale(1);
+}
+.tili-mascot__thumb {
+  opacity: 0;
+  transform: scale(0.96);
+}
+.tili-mascot.is-thumb .tili-mascot__rest {
+  opacity: 0;
+  transform: scale(0.98);
+}
+.tili-mascot.is-thumb .tili-mascot__thumb {
+  opacity: 1;
+  transform: scale(1.03);
+}
+.tili-mascot__caption {
+  margin-top: -0.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+@media (max-width: 767px) {
+  .tili-mascot {
+    margin-inline: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tili-mascot__figure img {
+    transition: none;
+  }
+}
 .tili-try {
   display: flex;
   width: fit-content;
