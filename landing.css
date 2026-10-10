@@ -1466,8 +1466,8 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 767px) {
   .tili-mascot {
-    right: 0.75rem;
-    bottom: -3rem;
+    right: -0.75rem;
+    bottom: -1.5rem;
   }
   .tili-mascot__figure {
     width: 7.5rem;
