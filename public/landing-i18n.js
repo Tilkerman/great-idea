@@ -636,7 +636,7 @@
     const block = btn.closest('.full-bleed--lumi') || btn;
     const heart = btn.querySelector('.lumi-mascot__heart');
     let busy = false;
-    block.addEventListener('click', () => {
+    const play = () => {
       if (busy) return;
       busy = true;
       btn.classList.add('is-let-go');
@@ -653,7 +653,16 @@
       }
       heart.addEventListener('animationend', finish, { once: true });
       window.setTimeout(finish, 1600);
-    });
+    };
+    block.addEventListener('click', play);
+
+    const observer = new IntersectionObserver((entries) => {
+      const fullyVisible = entries.some((entry) => entry.intersectionRatio >= 0.99);
+      if (!fullyVisible) return;
+      observer.disconnect();
+      play();
+    }, { threshold: [0.99] });
+    observer.observe(btn);
   }
 
   function initTiliCarousel() {
