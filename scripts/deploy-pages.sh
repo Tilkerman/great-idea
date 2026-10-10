@@ -5,10 +5,10 @@ cd "$(dirname "$0")/.."
 
 REPO="Tilkerman/great-idea"
 BASE="/app/"
-# В nested-копии .git часто отстаёт; версия лендинга — из основного workspace.
-WORKSPACE_ROOT="/Users/macbookair/Работа/список\\календарь"
-if git -C "$WORKSPACE_ROOT" rev-parse --short HEAD >/dev/null 2>&1; then
-  export VITE_APP_BUILD="$(git -C "$WORKSPACE_ROOT" rev-parse --short HEAD)"
+# В nested-копии .git отстаёт; берём версию из актуальной ветки main на GitHub.
+if REMOTE_MAIN="$(git ls-remote "git@github.com:${REPO}.git" refs/heads/main | awk 'NR == 1 { print substr($1, 1, 7) }')" \
+  && [[ -n "$REMOTE_MAIN" ]]; then
+  export VITE_APP_BUILD="$REMOTE_MAIN"
 fi
 
 echo "→ Сборка (landing v=${VITE_APP_BUILD:-local})..."
