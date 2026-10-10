@@ -602,9 +602,10 @@
   function initMascot() {
     const btn = document.querySelector('.lumi-mascot');
     if (!btn) return;
+    const block = btn.closest('.full-bleed--lumi') || btn;
     const heart = btn.querySelector('.lumi-mascot__heart');
     let busy = false;
-    btn.addEventListener('click', () => {
+    block.addEventListener('click', () => {
       if (busy) return;
       busy = true;
       btn.classList.add('is-let-go');
