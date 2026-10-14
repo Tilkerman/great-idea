@@ -4,7 +4,10 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map((key) => caches.delete(key)));
+    await Promise.all(keys.map((key) => {
+      if (/workbox|precache/i.test(key)) return undefined;
+      return caches.delete(key);
+    }));
     const clients = await self.clients.matchAll({ type: 'window' });
     await Promise.all(clients.map((client) => {
       const url = new URL(client.url);
