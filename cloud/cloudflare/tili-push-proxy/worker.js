@@ -50,10 +50,12 @@ async function proxyPush(request, url) {
 async function proxyApp(url) {
   let path = url.pathname;
   if (path === '/app' || path === '/app/') path = '/app/index.html';
-  const upstream = `${APP_RAW}${path}`;
-  const res = await fetch(upstream, {
-    cf: { cacheTtl: 60, cacheEverything: true },
-  });
+  // Bust GitHub/CDN caches for HTML so iPhone Home gets the latest shell.
+  const bust = path.endsWith('.html') || path.endsWith('sw.js')
+    ? `?t=${Date.now()}`
+    : '';
+  const upstream = `${APP_RAW}${path}${bust}`;
+  const res = await fetch(upstream);
   if (!res.ok) {
     return new Response(`Upstream ${res.status} for ${path}`, {
       status: res.status,
@@ -62,9 +64,10 @@ async function proxyApp(url) {
   const headers = new Headers();
   headers.set('Content-Type', contentTypeFor(path));
   if (path.endsWith('.html') || path.endsWith('sw.js')) {
-    headers.set('Cache-Control', 'no-cache, must-revalidate');
+    headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    headers.set('Pragma', 'no-cache');
   } else {
-    headers.set('Cache-Control', 'public, max-age=300');
+    headers.set('Cache-Control', 'public, max-age=120');
   }
   headers.set('Access-Control-Allow-Origin', '*');
   return new Response(res.body, { status: 200, headers });
