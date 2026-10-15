@@ -24,13 +24,19 @@
 /* An iPhone Home-screen app uses the physical screen height, including the
    indicator. Lift the complete menu, not just its content. ::before keeps
    the surface painted all the way to the edge. */
+/* Lift above home indicator; height is the bar only — viewport already
+   reserves bar + indicator, so don't also use --bottom-nav-h as min-height. */
 html.is-standalone .bottom-nav {
   bottom: var(--standalone-home-indicator-h, 34px);
+  min-height: var(--bottom-nav-bar-h);
+  padding-bottom: 6px;
 }
 
 @media (display-mode: standalone), (display-mode: fullscreen) {
   .bottom-nav {
     bottom: 34px;
+    min-height: var(--bottom-nav-bar-h);
+    padding-bottom: 6px;
   }
 }
 
