@@ -9,6 +9,7 @@
   align-items: flex-end;
   justify-content: space-between;
   box-sizing: border-box;
+  /* Content (~bar) + bottom inset; border-box keeps total = --bottom-nav-h */
   min-height: var(--bottom-nav-h);
   padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
@@ -21,21 +22,24 @@
   -webkit-touch-callout: none;
 }
 
-/* iPhone Home: lift bar above the home indicator. Height is the bar only —
-   .app-viewport already reserves bar + indicator. ::before paints to the edge. */
+/*
+  iPhone Home (PWA): env(safe-area-inset-bottom) is often 0.
+  Keep bottom: 0 (flush to screen), pad labels ABOVE the home indicator.
+  Do NOT use bottom: 34px — it fights .app-viewport padding and cuts labels.
+*/
 html.is-standalone .bottom-nav,
 html.is-standalone .app-viewport__main > .bottom-nav {
-  bottom: var(--standalone-home-indicator-h, 34px);
-  min-height: var(--bottom-nav-bar-h);
-  padding-bottom: 6px;
+  bottom: 0;
+  min-height: var(--bottom-nav-h);
+  padding-bottom: calc(6px + var(--standalone-home-indicator-h, 34px));
 }
 
 @media (display-mode: standalone), (display-mode: fullscreen) {
   .bottom-nav,
   .app-viewport__main > .bottom-nav {
-    bottom: var(--standalone-home-indicator-h, 34px);
-    min-height: var(--bottom-nav-bar-h);
-    padding-bottom: 6px;
+    bottom: 0;
+    min-height: var(--bottom-nav-h);
+    padding-bottom: calc(6px + var(--standalone-home-indicator-h, 34px));
   }
 }
 

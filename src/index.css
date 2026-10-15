@@ -31,13 +31,14 @@
 @media (display-mode: standalone), (display-mode: fullscreen) {
   :root {
     --app-height: 100vh;
+    --standalone-home-indicator-h: 34px;
+    --bottom-nav-h: calc(var(--bottom-nav-bar-h) + var(--standalone-home-indicator-h));
   }
 }
 
 html.is-standalone {
   --app-height: 100vh;
-  /* iOS standalone draws the page below the home indicator. Its env inset
-     is unreliable here, so reserve the iPhone indicator area explicitly. */
+  /* iOS standalone: env(safe-area) often 0 — reserve home indicator explicitly. */
   --standalone-home-indicator-h: 34px;
   --bottom-nav-h: calc(var(--bottom-nav-bar-h) + var(--standalone-home-indicator-h));
 }
@@ -151,18 +152,17 @@ html.is-onboarding {
   margin-top: 0;
 }
 
-/* Must beat bottom: 0 above — otherwise PWA leaves a white gap and cuts labels. */
 html.is-standalone .app-viewport__main > .bottom-nav {
-  bottom: var(--standalone-home-indicator-h, 34px);
-  min-height: var(--bottom-nav-bar-h);
-  padding-bottom: 6px;
+  bottom: 0;
+  min-height: var(--bottom-nav-h);
+  padding-bottom: calc(6px + var(--standalone-home-indicator-h, 34px));
 }
 
 @media (display-mode: standalone), (display-mode: fullscreen) {
   .app-viewport__main > .bottom-nav {
-    bottom: var(--standalone-home-indicator-h, 34px);
-    min-height: var(--bottom-nav-bar-h);
-    padding-bottom: 6px;
+    bottom: 0;
+    min-height: var(--bottom-nav-h);
+    padding-bottom: calc(6px + var(--standalone-home-indicator-h, 34px));
   }
 }
 
