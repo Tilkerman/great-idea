@@ -151,6 +151,21 @@ html.is-onboarding {
   margin-top: 0;
 }
 
+/* Must beat bottom: 0 above — otherwise PWA leaves a white gap and cuts labels. */
+html.is-standalone .app-viewport__main > .bottom-nav {
+  bottom: var(--standalone-home-indicator-h, 34px);
+  min-height: var(--bottom-nav-bar-h);
+  padding-bottom: 6px;
+}
+
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .app-viewport__main > .bottom-nav {
+    bottom: var(--standalone-home-indicator-h, 34px);
+    min-height: var(--bottom-nav-bar-h);
+    padding-bottom: 6px;
+  }
+}
+
 .app-viewport--center {
   align-items: center;
   justify-content: center;
