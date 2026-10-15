@@ -127,6 +127,18 @@ export function SettingsInstall() {
         <p className="settings-install__heading">{t('installOnPhone')}</p>
         <p className="settings-install__lead">{t('installLead')}</p>
 
+        {isIos && (
+          <div className="settings-install__box settings-install__box--icon-fix">
+            <p className="settings-install__box-title">{t('installIconFixTitle')}</p>
+            <ol className="settings-install__steps">
+              <li>{t('installIconFix1')}</li>
+              <li>{t('installIconFix2')}</li>
+              <li>{t('installIconFix3')}</li>
+              <li>{t('installIconFix4')}</li>
+            </ol>
+          </div>
+        )}
+
         <div className="settings-install__actions">
           {!isInstalled && (
             <button
