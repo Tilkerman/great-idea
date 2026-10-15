@@ -26,24 +26,40 @@
 }
 
 /*
-  iPhone X / Home Screen: env(safe-area-inset-bottom) often reports 0.
-  Keep bottom: 0 (flush). Pad under labels so the home indicator sits in empty space.
-  Do NOT use bottom: 34px — overlaps the week grid (half-cut 21:00) and races
-  with .app-viewport__main > .bottom-nav { bottom: 0 }.
+  iPhone X Home: fixed to the screen + large pad under labels (see also index.html).
+  env(safe-area) is often 0; do not use bottom: 34px (overlaps the week grid).
 */
 html.is-standalone .bottom-nav,
 html.is-standalone .app-viewport__main > .bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
   bottom: 0;
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: content-box !important;
   min-height: var(--bottom-nav-bar-h);
-  padding-bottom: calc(6px + var(--safe-bottom, 34px));
+  padding: 8px 8px calc(8px + var(--safe-bottom, 48px));
+  z-index: 1200;
 }
 
 @media (display-mode: standalone), (display-mode: fullscreen) {
   .bottom-nav,
   .app-viewport__main > .bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
     bottom: 0;
+    width: 100%;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: content-box !important;
     min-height: var(--bottom-nav-bar-h);
-    padding-bottom: calc(6px + var(--safe-bottom, 34px));
+    padding: 8px 8px calc(8px + var(--safe-bottom, 48px));
+    z-index: 1200;
   }
 }
 

@@ -32,17 +32,16 @@
 @media (display-mode: standalone), (display-mode: fullscreen) {
   :root {
     --app-height: 100vh;
-    /* iPhone X home indicator ≈ 34px; env() is often 0 in standalone PWA. */
-    --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
-    --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + var(--safe-bottom));
+    /* iPhone X: use 48px floor — 34px was still clipping label descenders. */
+    --safe-bottom: 48px;
+    --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 16px + var(--safe-bottom));
   }
 }
 
 html.is-standalone {
   --app-height: 100vh;
-  /* Home-screen app draws under the home indicator; env() often 0. */
-  --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
-  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + var(--safe-bottom));
+  --safe-bottom: 48px;
+  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 16px + var(--safe-bottom));
 }
 
 [data-theme='dark'] {
