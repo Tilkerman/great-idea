@@ -24,6 +24,25 @@
     </style>
     <script>
       (function () {
+        try {
+          var standalone = window.matchMedia('(display-mode: standalone)').matches
+            || window.navigator.standalone;
+          fetch('https://api.tili.su/v1/push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'hello',
+              deviceId: localStorage.getItem('tili-push-device') || '',
+              standalone: Boolean(standalone),
+              ua: navigator.userAgent.slice(0, 120),
+              from: 'index',
+            }),
+          }).catch(function () {});
+        } catch (e) {}
+      })();
+    </script>
+    <script>
+      (function () {
         var params = new URLSearchParams(location.search);
         if (params.get('theme') === 'light') {
           document.documentElement.dataset.theme = 'light';
@@ -32,7 +51,7 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-89LfWSd8.js"></script>
+    <script type="module" crossorigin src="/app/assets/index-sckgH1yn.js"></script>
     <link rel="stylesheet" crossorigin href="/app/assets/index-BAlkp-xl.css">
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
