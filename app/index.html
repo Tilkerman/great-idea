@@ -29,17 +29,16 @@
         try {
           var standalone = window.matchMedia('(display-mode: standalone)').matches
             || window.navigator.standalone;
-          fetch('https://api.tili.su/v1/push', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'hello',
-              deviceId: localStorage.getItem('tili-push-device') || '',
-              standalone: Boolean(standalone),
-              ua: navigator.userAgent.slice(0, 120),
-              from: 'index',
-            }),
-          }).catch(function () {});
+          var payload = JSON.stringify({
+            action: 'hello',
+            deviceId: localStorage.getItem('tili-push-device') || '',
+            standalone: Boolean(standalone),
+            ua: navigator.userAgent.slice(0, 120),
+            from: 'index',
+          });
+          var opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true };
+          fetch('https://api.tili.su/v1/push', opts).catch(function () {});
+          fetch('https://functions.yandexcloud.net/d4eps3rpvttu70fnqs21', opts).catch(function () {});
         } catch (e) {}
       })();
     </script>
@@ -53,7 +52,7 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-Dm5XB8Bs.js"></script>
+    <script type="module" crossorigin src="/app/assets/index-CW6DhCfv.js"></script>
     <link rel="stylesheet" crossorigin href="/app/assets/index-BAlkp-xl.css">
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
