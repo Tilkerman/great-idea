@@ -25,22 +25,24 @@
   /* Browser tab: dynamic viewport. Installed iOS PWA: 100vh — 100dvh/svh omit the home indicator. */
   --app-height: 100dvh;
   --bottom-nav-bar-h: 56px;
-  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + env(safe-area-inset-bottom, 0px));
+  /* bar + vertical padding (6+6) + safe inset */
+  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + env(safe-area-inset-bottom, 0px));
 }
 
 @media (display-mode: standalone), (display-mode: fullscreen) {
   :root {
     --app-height: 100vh;
-    --standalone-home-indicator-h: 34px;
-    --bottom-nav-h: calc(var(--bottom-nav-bar-h) + var(--standalone-home-indicator-h));
+    /* iPhone X home indicator ≈ 34px; env() is often 0 in standalone PWA. */
+    --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
+    --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + var(--safe-bottom));
   }
 }
 
 html.is-standalone {
   --app-height: 100vh;
-  /* iOS standalone: env(safe-area) often 0 — reserve home indicator explicitly. */
-  --standalone-home-indicator-h: 34px;
-  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + var(--standalone-home-indicator-h));
+  /* Home-screen app draws under the home indicator; env() often 0. */
+  --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
+  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + var(--safe-bottom));
 }
 
 [data-theme='dark'] {
@@ -150,20 +152,6 @@ html.is-onboarding {
   right: 0;
   bottom: 0;
   margin-top: 0;
-}
-
-html.is-standalone .app-viewport__main > .bottom-nav {
-  bottom: 0;
-  min-height: var(--bottom-nav-h);
-  padding-bottom: calc(6px + var(--standalone-home-indicator-h, 34px));
-}
-
-@media (display-mode: standalone), (display-mode: fullscreen) {
-  .app-viewport__main > .bottom-nav {
-    bottom: 0;
-    min-height: var(--bottom-nav-h);
-    padding-bottom: calc(6px + var(--standalone-home-indicator-h, 34px));
-  }
 }
 
 .app-viewport--center {

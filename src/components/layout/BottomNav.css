@@ -8,9 +8,12 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  box-sizing: border-box;
-  /* Content (~bar) + bottom inset; border-box keeps total = --bottom-nav-h */
-  min-height: var(--bottom-nav-h);
+  /*
+    content-box: home-indicator padding ADDS under the bar.
+    border-box + big padding-bottom crushed labels into the indicator.
+  */
+  box-sizing: content-box;
+  min-height: var(--bottom-nav-bar-h);
   padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
   background: var(--surface);
   border: none;
@@ -23,23 +26,24 @@
 }
 
 /*
-  iPhone Home (PWA): env(safe-area-inset-bottom) is often 0.
-  Keep bottom: 0 (flush to screen), pad labels ABOVE the home indicator.
-  Do NOT use bottom: 34px — it fights .app-viewport padding and cuts labels.
+  iPhone X / Home Screen: env(safe-area-inset-bottom) often reports 0.
+  Keep bottom: 0 (flush). Pad under labels so the home indicator sits in empty space.
+  Do NOT use bottom: 34px — overlaps the week grid (half-cut 21:00) and races
+  with .app-viewport__main > .bottom-nav { bottom: 0 }.
 */
 html.is-standalone .bottom-nav,
 html.is-standalone .app-viewport__main > .bottom-nav {
   bottom: 0;
-  min-height: var(--bottom-nav-h);
-  padding-bottom: calc(6px + var(--standalone-home-indicator-h, 34px));
+  min-height: var(--bottom-nav-bar-h);
+  padding-bottom: calc(6px + var(--safe-bottom, 34px));
 }
 
 @media (display-mode: standalone), (display-mode: fullscreen) {
   .bottom-nav,
   .app-viewport__main > .bottom-nav {
     bottom: 0;
-    min-height: var(--bottom-nav-h);
-    padding-bottom: calc(6px + var(--standalone-home-indicator-h, 34px));
+    min-height: var(--bottom-nav-bar-h);
+    padding-bottom: calc(6px + var(--safe-bottom, 34px));
   }
 }
 
