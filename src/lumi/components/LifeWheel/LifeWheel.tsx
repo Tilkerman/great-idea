@@ -3,7 +3,7 @@ import type { LifeArea } from '../../types';
 import { desireService, lifeAreaService } from '../../services/db';
 import './LifeWheel.css';
 import { useI18n } from '../../i18n';
-import mandalaPng from '../../assets/Мандала.png';
+import mandalaSvg from '../../assets/mandala.svg';
 import { LumiBrand } from '../Header/LumiBrand';
 
 const AREAS: LifeArea[] = ['health', 'love', 'growth', 'family', 'home', 'work', 'hobby', 'finance'];
@@ -272,7 +272,7 @@ export default function LifeWheel({
               );
             })}
           </svg>
-          <img className="life-wheel-mandala" src={mandalaPng} alt="" aria-hidden="true" />
+          <img className="life-wheel-mandala" src={mandalaSvg} alt="" aria-hidden="true" />
           </div>
         </div>
 

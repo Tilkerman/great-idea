@@ -224,20 +224,16 @@ function digitIsDayOfMonth(text: string, match: RegExpExecArray): boolean {
   return false;
 }
 
-function jsDayFromName(name: string): number | null {
-  const key = name.toLowerCase().replace(/\./g, '').trim();
-  for (const [k, v] of Object.entries(RU_DOW)) {
-    if (key === k || key.startsWith(k)) return v;
-  }
-  return null;
-}
-
-function nextCalendarDayForJsDow(from: Date, targetJsDow: number): Date {
+function nextCalendarDayForJsDow(from: Date, targetJsDow: number, hour: number | null = null): Date {
   const d = new Date(from);
   d.setHours(12, 0, 0, 0);
   const cur = d.getDay();
   let add = (targetJsDow - cur + 7) % 7;
-  if (add === 0) add = 7;
+  if (add === 0 && hour != null) {
+    const probe = new Date(from);
+    probe.setHours(hour, 0, 0, 0);
+    if (probe.getTime() <= from.getTime()) add = 7;
+  }
   d.setDate(d.getDate() + add);
   return d;
 }
@@ -250,27 +246,47 @@ function hasRuToken(text: string, token: string): boolean {
   return lower.includes(token);
 }
 
-function extractWeekday(text: string): Date | null {
+const RU_DOW_STEMS: { re: RegExp; js: number }[] = [
+  { re: /(?<!\p{L})понедельник[а-я]*/iu, js: 1 },
+  { re: /(?<!\p{L})вторник[а-я]*/iu, js: 2 },
+  { re: /(?<!\p{L})сред[ауеыоя]?(?!\p{L})/iu, js: 3 },
+  { re: /(?<!\p{L})четверг[а-я]*/iu, js: 4 },
+  { re: /(?<!\p{L})пятниц[ауие](?!\p{L})/iu, js: 5 },
+  { re: /(?<!\p{L})суббот[ауие](?!\p{L})/iu, js: 6 },
+  { re: /(?<!\p{L})воскресень[еяю](?!\p{L})/iu, js: 0 },
+];
+
+function extractRelativeDay(text: string, from: Date): Date | null {
   const lower = text.toLowerCase();
+  if (/(?<!\p{L})послезавтра(?!\p{L})/u.test(lower)) {
+    const d = new Date(from);
+    d.setDate(d.getDate() + 2);
+    return d;
+  }
+  if (/(?<!\p{L})завтра(?!\p{L})/u.test(lower)) {
+    const d = new Date(from);
+    d.setDate(d.getDate() + 1);
+    return d;
+  }
+  if (/(?<!\p{L})сегодня(?!\p{L})/u.test(lower)) return from;
+  return null;
+}
+
+function extractWeekday(text: string, from = new Date(), hour: number | null = null): Date | null {
+  const lower = text.toLowerCase();
+  for (const { re, js } of RU_DOW_STEMS) {
+    if (re.test(text)) return nextCalendarDayForJsDow(from, js, hour);
+  }
   for (const key of Object.keys(EN_DOW).sort((a, b) => b.length - a.length)) {
     if (key.length <= 3) {
-      if (hasRuToken(text, key)) {
-        return nextCalendarDayForJsDow(new Date(), EN_DOW[key]);
-      }
+      if (hasRuToken(text, key)) return nextCalendarDayForJsDow(from, EN_DOW[key], hour);
     } else if (lower.includes(key)) {
-      return nextCalendarDayForJsDow(new Date(), EN_DOW[key]);
+      return nextCalendarDayForJsDow(from, EN_DOW[key], hour);
     }
   }
   for (const key of Object.keys(RU_DOW).sort((a, b) => b.length - a.length)) {
-    if (key.length <= 2) {
-      if (hasRuToken(text, key)) {
-        return nextCalendarDayForJsDow(new Date(), RU_DOW[key]);
-      }
-      continue;
-    }
-    if (lower.includes(key)) {
-      const js = jsDayFromName(key);
-      if (js != null) return nextCalendarDayForJsDow(new Date(), js);
+    if (key.length <= 2 && hasRuToken(text, key)) {
+      return nextCalendarDayForJsDow(from, RU_DOW[key], hour);
     }
   }
   return null;
@@ -308,20 +324,34 @@ function extractHour(text: string, dayStart: number, dayEnd: number): number | n
   return Math.min(dayEnd, Math.max(dayStart, pick));
 }
 
+const TITLE_DOW = 'понедельник[а-я]*|вторник[а-я]*|сред[ауеыоя]?|четверг[а-я]*|пятниц[ауие]|суббот[ауие]|воскресень[еяю]|monday|tuesday|wednesday|thursday|friday|saturday|sunday';
+
+function ruTok(pattern: string): RegExp {
+  return new RegExp(`(?<![\\p{L}\\p{N}])(?:${pattern})(?![\\p{L}\\p{N}])`, 'giu');
+}
+
+function stripScheduleWords(text: string): string {
+  let s = ` ${text} `;
+  s = s.replace(ruTok(`(?:на|в|во)\\s+(?:${TITLE_DOW})`), ' ');
+  s = s.replace(ruTok('(?:на|в|во)\\s+\\d{1,2}(?::\\d{2})?(?:\\s*(?:часов?|ч\\.?))?'), ' ');
+  s = s.replace(ruTok('\\d{1,2}\\s*(?:часов?|ч\\.)'), ' ');
+  s = s.replace(ruTok('сегодня|завтра|послезавтра'), ' ');
+  s = s.replace(ruTok('поставь|поставить|добавь|добавить|запиши|записать|создай|создать'), ' ');
+  s = s.replace(ruTok('задачу|задача|задачи|дело|напоминание|заметка'), ' ');
+  s = s.replace(ruTok('пожалуйста'), ' ');
+  for (const word of Object.keys(RU_HOUR_WORDS).sort((a, b) => b[0].length - a[0].length)) {
+    s = s.replace(ruTok(word.replace(/\s+/g, '\\s+')), ' ');
+  }
+  return s.replace(/\s+/g, ' ').trim();
+}
+
 function guessTitle(text: string): string {
-  const call = text.match(/позвонить\s+[\p{L}\s]{2,40}/iu);
-  if (call) {
-    const s = call[0].trim().replace(/\s+(?:в|на)$/iu, '');
-    return s.charAt(0).toUpperCase() + s.slice(1);
-  }
-  const stripped = text
-    .replace(/\b(заметка|на|четверг|чт|среду|ср|часов?|ч\.)\b/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  if (stripped.length >= 3) {
-    return stripped.charAt(0).toUpperCase() + stripped.slice(1).slice(0, 80);
-  }
-  return text.slice(0, 80);
+  const stripped = stripScheduleWords(text);
+  const call = stripped.match(/позвонить\s+\p{L}[\p{L}\s-]{0,40}/iu);
+  const picked = (call ? call[0] : stripped).replace(/\s+(?:в|на|во)$/iu, '').trim();
+  const s = (picked.length >= 2 ? picked : text).slice(0, 80);
+  if (!s) return text.slice(0, 80);
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function guessCategory(text: string): TaskCategory {
@@ -336,13 +366,14 @@ export function localVoiceDraftFromText(text: string, settings: UserSettings): V
   const raw = text.replace(/\s+/g, ' ').trim();
   const normalized = cleanTranscript(raw) || raw;
   const ref = new Date();
-  const calendar =
-    extractCalendarDate(normalized, ref) ?? extractCalendarDate(raw, ref);
-  const weekday = extractWeekday(normalized) ?? extractWeekday(raw);
-  const day = calendar ?? weekday;
   const hour =
     extractHour(normalized, settings.dayStartHour, settings.dayEndHour)
     ?? extractHour(raw, settings.dayStartHour, settings.dayEndHour);
+  const calendar =
+    extractCalendarDate(normalized, ref) ?? extractCalendarDate(raw, ref);
+  const relative = extractRelativeDay(normalized, ref) ?? extractRelativeDay(raw, ref);
+  const weekday = extractWeekday(normalized, ref, hour) ?? extractWeekday(raw, ref, hour);
+  const day = calendar ?? relative ?? weekday;
   return {
     title: guessTitle(normalized),
     date: day ? toLocalDateString(day) : null,
@@ -351,11 +382,20 @@ export function localVoiceDraftFromText(text: string, settings: UserSettings): V
   };
 }
 
-export function mergeVoiceDrafts(local: VoiceTaskDraft, remote: VoiceTaskDraft): VoiceTaskDraft {
+function titleLooksLikeUtterance(title: string, raw: string): boolean {
+  const n = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+  const a = n(title);
+  const b = n(raw);
+  if (!a || !b) return false;
+  return a === b || (b.length >= 18 && a.length >= b.length - 4);
+}
+
+export function mergeVoiceDrafts(local: VoiceTaskDraft, remote: VoiceTaskDraft, raw = ''): VoiceTaskDraft {
   const remoteTitle = remote.title?.trim() ?? '';
   const useRemoteTitle = remoteTitle.length >= 3
     && remoteTitle.length <= 90
-    && !/заметка\s+заметка/i.test(remoteTitle);
+    && !/заметка\s+заметка/i.test(remoteTitle)
+    && !titleLooksLikeUtterance(remoteTitle, raw);
   return {
     title: useRemoteTitle ? remoteTitle : local.title,
     date: local.date || remote.date,

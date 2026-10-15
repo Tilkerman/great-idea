@@ -47,6 +47,16 @@ const files = [
   'logo-tili-header.png',
   'favicon.png',
   'apple-touch-icon.png',
+  'apple-touch-icon-precomposed.png',
+  'apple-touch-icon-180x180.png',
+  'apple-touch-icon-180x180-precomposed.png',
+  'apple-touch-icon-v5.png',
+  'apple-touch-icon-v6.png',
+  'apple-touch-icon-v7.png',
+  'tili-home-icon-v7.png',
+  'tili-home-icon-v6.png',
+  'tili-home-icon-v4.png',
+  'tili-home-icon-v5.png',
   'icon-tili-512.png',
   'og-tili-lumi.png',
   'privacy.html',
@@ -93,7 +103,10 @@ fs.writeFileSync(
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.map((key) => caches.delete(key)));
+    await Promise.all(keys.map((key) => {
+      if (/workbox|precache/i.test(key)) return undefined;
+      return caches.delete(key);
+    }));
     const clients = await self.clients.matchAll({ type: 'window' });
     await Promise.all(clients.map((client) => {
       const url = new URL(client.url);

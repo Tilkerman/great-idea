@@ -11,6 +11,12 @@ const envSchema = z.object({
   MAIL_FROM_NAME: z.string().trim().min(1).max(80).default('TiLi'),
   UNISENDER_API_URL: z.string().url().default('https://goapi.unisender.ru/ru/transactional/api/v1'),
   UNISENDER_API_KEY: z.string().default(''),
+  DATABASE_SSL: z.enum(['true', 'false']).default('false'),
+  VAPID_PUBLIC: z.string().default(''),
+  VAPID_PRIVATE: z.string().default(''),
+  VAPID_SUBJECT: z.string().default('mailto:hello@tili.su'),
+  GROQ_API_KEY: z.string().default(''),
+  GROQ_MODEL: z.string().default('openai/gpt-oss-20b'),
 });
 
 export type AppConfig = z.infer<typeof envSchema> & {

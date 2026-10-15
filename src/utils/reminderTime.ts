@@ -3,24 +3,28 @@ import { isUnscheduledTask } from './hourSlot';
 
 const DUE_NOW_KEY = 'tili-push-due-now';
 
+function calendarHourStartMs(task: Task): number | null {
+  const start = new Date(task.startAt);
+  if (!Number.isFinite(start.getTime())) return null;
+  const hourStart = new Date(start);
+  hourStart.setMinutes(0, 0, 0);
+  return hourStart.getTime();
+}
+
+/** «За N минут» и «вовремя» — от начала календарного часа, не от 15‑мин слота внутри часа. */
 export function reminderFireAtMs(task: Task): number | null {
   if (task.status === 'completed' || isUnscheduledTask(task)) return null;
   if (task.reminderOffsetMinutes == null || task.reminderOffsetMinutes < 0) return null;
-  const start = new Date(task.startAt);
-  if (!Number.isFinite(start.getTime())) return null;
-  if (task.reminderOffsetMinutes === 0) {
-    const hourStart = new Date(start);
-    hourStart.setMinutes(0, 0, 0);
-    return hourStart.getTime();
-  }
-  return start.getTime() - task.reminderOffsetMinutes * 60_000;
+  const hourStart = calendarHourStartMs(task);
+  if (hourStart == null) return null;
+  if (task.reminderOffsetMinutes === 0) return hourStart;
+  return hourStart - task.reminderOffsetMinutes * 60_000;
 }
 
 function calendarHourEndMs(task: Task) {
-  const hourStart = new Date(task.startAt);
-  if (!Number.isFinite(hourStart.getTime())) return NaN;
-  hourStart.setMinutes(0, 0, 0);
-  return hourStart.getTime() + 60 * 60 * 1000;
+  const hourStart = calendarHourStartMs(task);
+  if (hourStart == null) return NaN;
+  return hourStart + 60 * 60 * 1000;
 }
 
 /** Догон, пока календарный час ещё идёт (не 15-минутный кусок внутри часа). */

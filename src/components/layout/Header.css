@@ -75,14 +75,17 @@
 }
 
 @media (min-width: 1024px) {
-  .app-header__brand,
-  .app-header__logo {
+  .app-header__brand {
     display: flex;
     visibility: visible;
     opacity: 1;
   }
 
+  /* img must stay display:block — Safari hides replaced elements with display:flex */
   .app-header__logo {
+    display: block;
+    visibility: visible;
+    opacity: 1;
     height: 36px;
   }
 }

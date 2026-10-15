@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { notificationPermission, reminderNoticeBody, showTiliNotification } from '../utils/notifications';
 import { tLocale } from '../i18n/catalog';
-import { cloudPushConfigured, subscribeTiliPush, syncCloudReminders } from '../utils/webPush';
+import { cloudPushConfigured, subscribeTiliPush, refreshCloudReminders } from '../utils/webPush';
 import { reminderFireAtMs, alreadyCloudDueNow, markCloudDueNowSent, reminderStillInSlot } from '../utils/reminderTime';
 
 const MAX_DELAY_MS = 12 * 60 * 60 * 1000;
@@ -45,20 +45,44 @@ export function useTaskReminders() {
       }
     };
 
-    const boot = async () => {
-      if (cloudPushConfigured()) {
-        await subscribeTiliPush();
-        if (cancelled) return;
-        await syncCloudReminders(tasks, settings.locale);
-      }
-      if (cancelled) return;
-      armLocal();
+    const flushReminders = () => {
+      if (!cloudPushConfigured()) return;
+      void refreshCloudReminders(settings.locale);
     };
 
-    void boot();
+    const syncCloud = () => {
+      if (cancelled || !cloudPushConfigured()) return;
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+        flushReminders();
+        return;
+      }
+      void subscribeTiliPush().then((result) => {
+        if (result !== 'ok') return;
+        flushReminders();
+      });
+    };
+
+    armLocal();
+    syncCloud();
+    const delayed = window.setTimeout(syncCloud, 600);
+    const onHide = () => flushReminders();
+    document.addEventListener('visibilitychange', syncCloud);
+    window.addEventListener('pageshow', syncCloud);
+    window.addEventListener('pagehide', onHide);
+    const onTap = () => {
+      document.removeEventListener('pointerdown', onTap, true);
+      syncCloud();
+    };
+    document.addEventListener('pointerdown', onTap, true);
 
     return () => {
       cancelled = true;
+      flushReminders();
+      window.clearTimeout(delayed);
+      document.removeEventListener('visibilitychange', syncCloud);
+      window.removeEventListener('pageshow', syncCloud);
+      window.removeEventListener('pagehide', onHide);
+      document.removeEventListener('pointerdown', onTap, true);
       for (const id of timers) window.clearTimeout(id);
     };
   }, [ready, tasks, settings.notificationsEnabled, settings.locale]);

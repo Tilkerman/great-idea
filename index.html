@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="favicon.png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="tili-home-icon-v4.png" sizes="180x180" />
+    <link rel="apple-touch-icon" href="apple-touch-icon-v7.png" sizes="180x180" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="apple-touch-icon-precomposed" href="apple-touch-icon-precomposed.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,6 +24,25 @@
       html.is-standalone, html.is-standalone body, html.is-standalone #root { height: 100vh; }
       html.is-onboarding, html.is-onboarding body, html.is-onboarding #root { background: #fff; }
     </style>
+    <script>
+      (function () {
+        try {
+          var standalone = window.matchMedia('(display-mode: standalone)').matches
+            || window.navigator.standalone;
+          var payload = JSON.stringify({
+            action: 'hello',
+            deviceId: localStorage.getItem('tili-push-device') || '',
+            standalone: Boolean(standalone),
+            ua: navigator.userAgent.slice(0, 120),
+            from: 'index',
+          });
+          var opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true };
+          fetch('/v1/push', opts).catch(function () {});
+          fetch('https://api.tili.su/v1/push', opts).catch(function () {});
+          fetch('https://functions.yandexcloud.net/d4eps3rpvttu70fnqs21', opts).catch(function () {});
+        } catch (e) {}
+      })();
+    </script>
     <script>
       (function () {
         var params = new URLSearchParams(location.search);

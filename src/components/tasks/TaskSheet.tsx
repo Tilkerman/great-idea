@@ -20,6 +20,8 @@ import {
 import { useLumiHost } from '../../lumi/LumiHost';
 import { taskHasLumiLink } from '../../utils/wishTaskBridge';
 import { useLayoutMode } from '../../hooks/useLayoutMode';
+import { enablePushFromGesture } from '../../utils/enablePush';
+import { refreshCloudReminders } from '../../utils/webPush';
 import './TaskSheet.css';
 
 function parseLocalDate(value: string): Date {
@@ -41,7 +43,7 @@ function formatSheetWhen(
 export function TaskSheet() {
   const {
     sheetOpen, setSheetOpen, editingTask, setEditingTask,
-    tasks, placeTask, requestDelete, settings,
+    tasks, placeTask, requestDelete, settings, updateSettings,
     taskClipboard, copyTaskToClipboard, setScreen,
   } = useApp();
   const { t, dateTag } = useI18n();
@@ -176,6 +178,15 @@ export function TaskSheet() {
     if (result === 'past') {
       setError(t('sheetNoPastDay'));
       return;
+    }
+    if (updated.reminderOffsetMinutes != null) {
+      void enablePushFromGesture().then(async (push) => {
+        if (push === 'denied' || push === 'dismissed' || push === 'blocked' || push === 'unsupported') {
+          return;
+        }
+        await updateSettings({ notificationsEnabled: true });
+        await refreshCloudReminders(settings.locale);
+      });
     }
     close();
   };

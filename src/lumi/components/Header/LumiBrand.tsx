@@ -1,12 +1,12 @@
 import LumiWordmark from './LumiWordmark';
-import mandalaPng from '../../assets/Мандала.png';
+import mandalaSvg from '../../assets/mandala.svg';
 
 export function LumiBrand({ title }: { title: string }) {
   return (
     <>
       <img
         className="header-logo-mark"
-        src={mandalaPng}
+        src={mandalaSvg}
         alt=""
         width={32}
         height={32}

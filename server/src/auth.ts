@@ -38,8 +38,8 @@ function tokenHash(token: string): string {
 
 export async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16).toString('base64url');
-  const key = await scrypt(password, salt, SCRYPT_KEY_LENGTH);
-  return `scrypt$${salt}$${Buffer.from(key).toString('base64url')}`;
+  const key = (await scrypt(password, salt, SCRYPT_KEY_LENGTH)) as Buffer;
+  return `scrypt$${salt}$${key.toString('base64url')}`;
 }
 
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
@@ -47,7 +47,7 @@ export async function verifyPassword(password: string, stored: string): Promise<
   if (algorithm !== 'scrypt' || !salt || !encodedKey) return false;
 
   const expected = Buffer.from(encodedKey, 'base64url');
-  const actual = Buffer.from(await scrypt(password, salt, expected.length));
+  const actual = (await scrypt(password, salt, expected.length)) as Buffer;
   return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 

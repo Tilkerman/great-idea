@@ -1,0 +1,7 @@
+name = "tili-push-proxy"
+main = "worker.js"
+compatibility_date = "2024-08-01"
+
+routes = [
+  { pattern = "tili.su/v1/push*", zone_name = "tili.su" },
+]

@@ -68,16 +68,9 @@ export async function requestVoiceTaskParse(
           ? data.draft.category
           : local.category,
       };
-      return mergeVoiceDrafts(local, remote);
+      return mergeVoiceDrafts(local, remote, apiText);
     }
-    if (data.fallback && !data.ok) {
-      return mergeVoiceDrafts(local, {
-        title: String(data.fallback.title || ''),
-        date: null,
-        hour: null,
-        category: local.category,
-      });
-    }
+    if (!data.ok) return local;
   } catch {
     /* use local */
   }

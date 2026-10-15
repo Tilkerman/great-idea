@@ -22,11 +22,16 @@ import { readConfig } from './config.js';
 import { createPool } from './db.js';
 import { sendMail } from './mail.js';
 import {
+  handlePushRequest,
+  startPushTicker,
+} from './push.js';
+import {
   readCalendarSync,
   readLumiSync,
   writeCalendarSync,
   writeLumiSync,
 } from './sync.js';
+import { parseVoiceNote } from './voice.js';
 
 const config = readConfig();
 const db = createPool(config);
@@ -52,7 +57,7 @@ app.addContentTypeParser(
   { parseAs: 'string' },
   (_request, body, done) => {
     const fields: Record<string, string> = {};
-    for (const [key, value] of new URLSearchParams(body)) fields[key] = value;
+    for (const [key, value] of new URLSearchParams(String(body))) fields[key] = value;
     done(null, fields);
   },
 );
@@ -92,7 +97,10 @@ function sessionCookie(token: string, expiresInSeconds: number): string {
     'SameSite=Lax',
     `Max-Age=${expiresInSeconds}`,
   ];
-  if (config.NODE_ENV === 'production') parts.push('Secure');
+  if (config.API_PUBLIC_URL.startsWith('https://')) {
+    parts.push('Secure');
+    parts[parts.indexOf('SameSite=Lax')] = 'SameSite=None';
+  }
   return parts.join('; ');
 }
 
@@ -384,7 +392,10 @@ app.put('/v1/sync/calendar', async (request, reply) => {
   const input = syncPutSchema.safeParse(request.body);
   if (!input.success) return reply.code(400).send({ error: 'invalid_sync' });
 
-  const result = await writeCalendarSync(db, user.id, input.data);
+  const result = await writeCalendarSync(db, user.id, {
+    baseRevision: input.data.baseRevision,
+    snapshot: input.data.snapshot ?? [],
+  });
   if (!result.ok) {
     return reply.code(409).send({
       error: result.code,
@@ -407,7 +418,10 @@ app.put('/v1/sync/lumi', async (request, reply) => {
   const input = syncPutSchema.safeParse(request.body);
   if (!input.success) return reply.code(400).send({ error: 'invalid_sync' });
 
-  const result = await writeLumiSync(db, user.id, input.data);
+  const result = await writeLumiSync(db, user.id, {
+    baseRevision: input.data.baseRevision,
+    snapshot: input.data.snapshot ?? {},
+  });
   if (!result.ok) {
     return reply.code(409).send({
       error: result.code,
@@ -426,4 +440,36 @@ const close = async () => {
 process.once('SIGINT', () => { void close(); });
 process.once('SIGTERM', () => { void close(); });
 
+app.get('/v1/push', async () => {
+  const result = await handlePushRequest(db, config, 'GET', { action: 'health' });
+  return result.payload;
+});
+
+app.post('/v1/push', async (request, reply) => {
+  const body = (request.body && typeof request.body === 'object')
+    ? request.body as Record<string, unknown>
+    : {};
+  const reminders = Array.isArray(body.reminders) ? body.reminders : null;
+  request.log.info({
+    action: String(body.action || ''),
+    device: String(body.deviceId || '').slice(0, 8),
+    standalone: body.standalone,
+    from: typeof body.from === 'string' ? body.from : undefined,
+    ua: typeof body.ua === 'string' ? body.ua.slice(0, 120) : undefined,
+    reminderCount: reminders ? reminders.length : undefined,
+    replace: body.replace,
+  }, 'push action');
+  const result = await handlePushRequest(db, config, 'POST', body);
+  return reply.code(result.status).send(result.payload);
+});
+
+app.post('/v1/voice', async (request, reply) => {
+  const body = (request.body && typeof request.body === 'object')
+    ? request.body as Record<string, unknown>
+    : {};
+  const result = await parseVoiceNote(config, body);
+  return reply.code(result.status).send(result.payload);
+});
+
 await app.listen({ host: '0.0.0.0', port: config.PORT });
+startPushTicker(db, config, app.log);

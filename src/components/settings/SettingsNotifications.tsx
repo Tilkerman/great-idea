@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
 import {
@@ -9,6 +9,7 @@ import {
 } from '../../utils/notifications';
 import { isAppleMobile, isStandaloneApp, TILI_PUBLIC_URL } from '../../utils/pwaInstall';
 import { enablePushFromGesture } from '../../utils/enablePush';
+import { pingPushHello, runPushDiagnostics, sendTestPush, type PushDiagnostics } from '../../utils/webPush';
 import { trackPushEnabledOnce } from '../../utils/productAnalytics';
 import './Settings.css';
 
@@ -16,11 +17,20 @@ export function SettingsNotifications() {
   const { setScreen, settings, updateSettings } = useApp();
   const { t, locale } = useI18n();
   const [perm, setPerm] = useState(() => notificationPermission());
-  const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [diag, setDiag] = useState<PushDiagnostics | null>(null);
+  const [diagBusy, setDiagBusy] = useState(false);
   const blocked = useMemo(() => notificationsBlockedReason(locale), [locale]);
   const ios = useMemo(() => isAppleMobile(), []);
   const installed = useMemo(() => isStandaloneApp(), []);
+
+  useEffect(() => {
+    const refresh = () => setPerm(notificationPermission());
+    refresh();
+    void pingPushHello();
+    document.addEventListener('visibilitychange', refresh);
+    return () => document.removeEventListener('visibilitychange', refresh);
+  }, []);
 
   const permLabel =
     perm === 'granted' ? t('notifStatusGranted')
@@ -28,16 +38,25 @@ export function SettingsNotifications() {
         : perm === 'unsupported' ? t('notifStatusOff')
           : t('notifStatusAsk');
 
-  const onEnable = async () => {
-    setFeedback(null);
-    setBusy(true);
-    try {
+  const onEnable = () => {
+    setFeedback(t('notifCloudSaving'));
+    void (async () => {
       const result = await enablePushFromGesture();
       setPerm(notificationPermission());
-      if (result === 'granted') {
+      if (
+        result === 'granted'
+        || result === 'granted-no-cloud'
+        || result === 'granted-no-push'
+        || result === 'granted-no-network'
+      ) {
         updateSettings({ notificationsEnabled: true });
         trackPushEnabledOnce(settings.analyticsEnabled);
-        setFeedback(t('notifGranted'));
+        setFeedback(
+          result === 'granted' ? t('notifGranted')
+            : result === 'granted-no-push' ? t('notifNoPush')
+              : result === 'granted-no-network' ? t('notifNoNetwork')
+                : t('notifCloudFail'),
+        );
       } else if (result === 'denied') {
         updateSettings({ notificationsEnabled: false });
         setFeedback(t('notifDenied'));
@@ -48,26 +67,48 @@ export function SettingsNotifications() {
       } else {
         setFeedback(t('notifDismissed'));
       }
-    } finally {
-      setBusy(false);
-    }
+    })();
   };
 
-  const onTest = async () => {
-    setFeedback(null);
-    setBusy(true);
-    try {
-      if (notificationPermission() !== 'granted') {
-        setFeedback(t('notifNeedAllow'));
-        return;
+  const onDiag = () => {
+    setDiagBusy(true);
+    setDiag(null);
+    setFeedback(t('notifDiagRunning'));
+    void (async () => {
+      try {
+        const result = await runPushDiagnostics();
+        setDiag(result);
+        setFeedback(null);
+      } catch {
+        setFeedback(t('notifNoNetwork'));
+      } finally {
+        setDiagBusy(false);
       }
-      await showTiliNotification('TiLi', reminderNoticeBody(locale), 'tili-test');
-      setFeedback(t('notifTestSent'));
-    } catch {
-      setFeedback(t('notifTestFail'));
-    } finally {
-      setBusy(false);
+    })();
+  };
+
+  const diagMark = (v: 'ok' | 'fail' | 'skip') => (
+    v === 'ok' ? t('notifDiagOk') : v === 'fail' ? t('notifDiagFail') : t('notifDiagSkip')
+  );
+
+  const onTest = () => {
+    if (notificationPermission() !== 'granted') {
+      setFeedback(t('notifNeedAllow'));
+      return;
     }
+    setFeedback(t('notifTestSending'));
+    void (async () => {
+      try {
+        if (await sendTestPush()) {
+          setFeedback(t('notifTestSent'));
+          return;
+        }
+        await showTiliNotification('TiLi', reminderNoticeBody(locale), 'tili-test');
+        setFeedback(t('notifTestLocalOnly'));
+      } catch {
+        setFeedback(t('notifTestFail'));
+      }
+    })();
   };
 
   return (
@@ -79,7 +120,9 @@ export function SettingsNotifications() {
       </header>
       <div className="settings-form">
         <p className="settings-note">
-          {t('notifNote', { url: TILI_PUBLIC_URL })}
+          {ios
+            ? t('notifNote', { url: TILI_PUBLIC_URL })
+            : t('notifNoteDesktop', { url: TILI_PUBLIC_URL })}
         </p>
 
         {ios && !installed && (
@@ -94,25 +137,63 @@ export function SettingsNotifications() {
 
         <p className="settings-note">
           {t('notifStatusPrefix')} {permLabel}
-          {settings.notificationsEnabled ? t('notifEnabledSuffix') : ''}
+          {settings.notificationsEnabled && perm === 'granted' ? t('notifEnabledSuffix') : ''}
         </p>
+        {perm === 'default' && ios && (
+          <p className="settings-note settings-note--warn" role="status">
+            {t('notifDiagPermDefault')}
+          </p>
+        )}
+        {perm === 'denied' && !ios && (
+          <p className="settings-note settings-note--warn" role="status">
+            {t('notifDeniedDesktop')}
+          </p>
+        )}
 
         <button
           type="button"
           className="btn btn--primary settings-full"
-          disabled={busy || Boolean(blocked)}
-          onClick={() => { void onEnable(); }}
+          onClick={onEnable}
         >
           {t('notifAllow')}
         </button>
         <button
           type="button"
           className="btn btn--ghost settings-full"
-          disabled={busy || perm !== 'granted'}
-          onClick={() => { void onTest(); }}
+          disabled={perm !== 'granted'}
+          onClick={onTest}
         >
           {t('notifTest')}
         </button>
+
+        <h2 className="settings-section-title">{t('notifDiagTitle')}</h2>
+        <p className="settings-note">{t('notifDiagHint')}</p>
+        <button
+          type="button"
+          className="btn btn--ghost settings-full"
+          disabled={diagBusy}
+          onClick={onDiag}
+        >
+          {t('notifDiagRun')}
+        </button>
+        {diag && (
+          <pre className="settings-diag" aria-live="polite">
+            {installed ? t('notifDiagStandalone') : t('notifDiagSafari')}
+            {'\n'}
+            {t('notifDiagPerm')}: {diag.permission}
+            {'\n'}
+            {t('notifDiagDevice')}: {diag.deviceId.slice(0, 8)}…
+            {'\n'}
+            {t('notifDiagSameSite')}: {diagMark(diag.apiSameSite)}
+            {'\n'}
+            {t('notifDiagApi')}: {diagMark(diag.apiPrimary)}
+            {'\n'}
+            {t('notifDiagYandex')}: {diagMark(diag.apiFallback)}
+            {'\n'}
+            {t('notifDiagPush')}: {diag.subscribe}
+          </pre>
+        )}
+
         {feedback && <p className="settings-note" role="status">{feedback}</p>}
       </div>
     </div>

@@ -27,6 +27,7 @@ import { useOpenTaskFromNotification } from './hooks/useOpenTaskFromNotification
 import { useI18n } from './i18n/useI18n';
 import { LumiEmbed } from './lumi/LumiEmbed';
 import { persistUtmFromUrl, trackAppOpenOnce } from './utils/productAnalytics';
+import { pingPushHello } from './utils/webPush';
 import { useAppViewportHeight } from './hooks/useAppViewportHeight';
 import { useDesktopLayoutClass } from './hooks/useDesktopLayoutClass';
 import { useLayoutMode } from './hooks/useLayoutMode';
@@ -103,6 +104,7 @@ function AppRouter() {
   useEffect(() => {
     if (!ready) return;
     persistUtmFromUrl();
+    void pingPushHello();
     if (settings.analyticsEnabled) {
       trackAppOpenOnce(true, settings.locale);
     }
