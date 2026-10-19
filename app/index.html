@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/app/favicon.png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="/app/apple-touch-icon-v8.png" sizes="180x180" />
+    <link rel="apple-touch-icon" href="https://tili.su/app/apple-touch-icon-v8.png" sizes="180x180" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -76,8 +76,11 @@
     <script>
       (function () {
         try {
+          var ua = navigator.userAgent || '';
+          var ios = /iPhone|iPad|iPod/.test(ua);
           var standalone = window.matchMedia('(display-mode: standalone)').matches
             || window.navigator.standalone;
+          if (ios && !standalone) return;
           var payload = JSON.stringify({
             action: 'hello',
             deviceId: localStorage.getItem('tili-push-device') || '',
@@ -102,9 +105,9 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-CufZULtW.js"></script>
-    <link rel="stylesheet" crossorigin href="/app/assets/index-BbNFt8kA.css">
-      <link rel="apple-touch-icon-precomposed" href="/app/apple-touch-icon-v8.png" />
+    <script type="module" crossorigin src="/app/assets/index-BW-6SpAu.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/index-e4kl8UIQ.css">
+      <link rel="apple-touch-icon-precomposed" href="https://tili.su/app/apple-touch-icon-v8.png" />
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
     <div id="root"></div>
