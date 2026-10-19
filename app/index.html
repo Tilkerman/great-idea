@@ -44,44 +44,33 @@
     </script>
     <style>
       html, body, #root { height: 100dvh; margin: 0; background: #fff; }
-      html.is-ios-standalone, html.is-ios-standalone body { height: 100vh; }
+      html.is-ios-standalone, html.is-ios-standalone body, html.is-ios-standalone #root { height: 100vh; }
       html.is-onboarding, html.is-onboarding body, html.is-onboarding #root { background: #fff; }
       /*
         iPhone Home only: critical inset before CSS bundle (env() is often 0 in standalone).
       */
       html.is-ios-standalone {
-        --safe-bottom: env(safe-area-inset-bottom, 34px);
-        --bottom-nav-h: calc(56px + 12px + var(--safe-bottom));
-        background: #fff;
-      }
-      html.is-ios-standalone body {
-        background: #fff;
-      }
-      html.is-ios-standalone #root {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%;
-        max-width: 480px;
-        height: auto;
-        margin: 0;
+        --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
+        --bottom-nav-h: calc(72px + var(--safe-bottom));
       }
       html.is-ios-standalone .app-viewport {
-        padding-bottom: 0;
+        padding-bottom: var(--bottom-nav-h);
       }
-      html.is-ios-standalone .app-viewport__main {
-        display: flex;
-        flex-direction: column;
-        flex: 1 1 auto;
-        min-height: 0;
-      }
+      html.is-ios-standalone .bottom-nav,
       html.is-ios-standalone .app-viewport__main > .bottom-nav {
-        position: static;
-        flex-shrink: 0;
-        margin-top: auto;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
         width: 100%;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: content-box;
+        min-height: 56px;
+        height: auto;
+        padding: 8px 8px calc(8px + var(--safe-bottom));
+        z-index: 1200;
       }
     </style>
     <script>
@@ -116,8 +105,8 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-ITURutQY.js"></script>
-    <link rel="stylesheet" crossorigin href="/app/assets/index-D9cEx0V0.css">
+    <script type="module" crossorigin src="/app/assets/index-DkBAKsNX.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/index-CqXq4P51.css">
       <link rel="apple-touch-icon-precomposed" href="https://tili.su/app/apple-touch-icon-v8.png" />
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
