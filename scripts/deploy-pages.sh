@@ -1,40 +1,39 @@
 #!/bin/bash
-# GitHub Pages needs a public repo + gh-pages branch enabled in Settings.
+# Official TiLi prod deploy: gh-pages branch + jsDelivr purge + Cloudflare Worker + smoke.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 REPO="Tilkerman/great-idea"
-BASE="/app/"
-# В nested-копии .git отстаёт; берём версию из актуальной ветки main на GitHub.
-if REMOTE_MAIN="$(git ls-remote "git@github.com:${REPO}.git" refs/heads/main | awk 'NR == 1 { print substr($1, 1, 7) }')" \
-  && [[ -n "$REMOTE_MAIN" ]]; then
-  export VITE_APP_BUILD="$REMOTE_MAIN"
-fi
+SCRIPTS="$(dirname "$0")"
 
-echo "→ Сборка (landing v=${VITE_APP_BUILD:-local})..."
+# Version label in PWA «О приложении» = commit being built (local main).
+export VITE_APP_BUILD="$(git rev-parse --short HEAD 2>/dev/null || echo local)"
+
+echo "→ Сборка (VITE_APP_BUILD=${VITE_APP_BUILD})..."
 npm run build:pages
 
 echo "→ Деплой на gh-pages..."
 touch dist/.nojekyll
 npx --yes gh-pages -d dist -r "git@github.com:${REPO}.git" -m "Deploy TiLi Calendar $(date +%Y-%m-%d)"
 
-if [[ -x "$(dirname "$0")/purge-jsdelivr-app.sh" ]]; then
-  bash "$(dirname "$0")/purge-jsdelivr-app.sh"
-fi
-
-WORKER_DIR="$(dirname "$0")/../cloud/cloudflare/tili-push-proxy"
 GH_PAGES_SHA="$(git ls-remote "git@github.com:${REPO}.git" refs/heads/gh-pages | awk 'NR == 1 { print substr($1, 1, 7) }')"
-if [[ -n "${GH_PAGES_SHA}" && -f "${WORKER_DIR}/wrangler.toml" ]]; then
-  echo "→ Worker APP_BUILD=${GH_PAGES_SHA} (jsDelivr @gh-pages commit)"
-  if sed --version >/dev/null 2>&1; then
-    sed -i "s/^APP_BUILD = .*/APP_BUILD = \"${GH_PAGES_SHA}\"/" "${WORKER_DIR}/wrangler.toml"
-  else
-    sed -i '' "s/^APP_BUILD = .*/APP_BUILD = \"${GH_PAGES_SHA}\"/" "${WORKER_DIR}/wrangler.toml"
-  fi
-  if command -v wrangler >/dev/null 2>&1 || [[ -f "${WORKER_DIR}/node_modules/.bin/wrangler" ]]; then
-    (cd "${WORKER_DIR}" && npx --yes wrangler deploy) || echo "⚠️  wrangler deploy skipped (auth or network)"
-  fi
+if [[ -z "${GH_PAGES_SHA}" ]]; then
+  echo "FAIL: could not read gh-pages SHA"
+  exit 1
 fi
+echo "→ gh-pages @ ${GH_PAGES_SHA}"
+
+bash "${SCRIPTS}/purge-jsdelivr-app.sh"
+
+WORKER_DIR="${SCRIPTS}/../cloud/cloudflare/tili-push-proxy"
+echo "→ Cloudflare Worker (APP_BUILD=${GH_PAGES_SHA})..."
+(
+  cd "${WORKER_DIR}"
+  npx --yes wrangler deploy --var "APP_BUILD:${GH_PAGES_SHA}"
+)
+
+echo "→ Smoke test..."
+bash "${SCRIPTS}/smoke-tili-app.sh"
 
 if gh auth status >/dev/null 2>&1; then
   echo "→ Делаю репозиторий публичным..."
@@ -49,14 +48,9 @@ if gh auth status >/dev/null 2>&1; then
       -f "source[path]=/"
   fi
   echo ""
-  echo "✅ Готово: https://tili.su/"
+  echo "✅ Готово: https://tili.su/app/ (release ${GH_PAGES_SHA})"
 else
   echo ""
-  echo "⚠️  gh не авторизован — включи Pages вручную:"
-  echo "   1. https://github.com/Tilkerman/great-idea/settings"
-  echo "      → Danger zone → Change visibility → Public"
-  echo "   2. https://github.com/Tilkerman/great-idea/settings/pages"
-  echo "      → Deploy from branch → gh-pages → / (root) → Save"
-  echo ""
-  echo "   Ссылка: https://tilkerman.github.io/great-idea/"
+  echo "✅ gh-pages + Worker + smoke OK. gh CLI не авторизован — Pages settings вручную при необходимости."
+  echo "   https://tili.su/app/"
 fi

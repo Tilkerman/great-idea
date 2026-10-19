@@ -1,5 +1,5 @@
 #!/bin/bash
-# jsDelivr caches gh-pages; after deploy stale index.html can point at removed hashed assets → white screen.
+# jsDelivr caches gh-pages; stale index.html + removed Vite hashes → white screen in Safari.
 set -euo pipefail
 
 REPO_PATH="/gh/Tilkerman/great-idea@gh-pages"
@@ -10,7 +10,7 @@ PATHS=(
 
 for p in "${PATHS[@]}"; do
   echo "→ Purge jsDelivr ${p}"
-  curl -fsS "https://purge.jsdelivr.net${p}" >/dev/null || true
+  curl -fsS "https://purge.jsdelivr.net${p}" >/dev/null
 done
 
-echo "✅ jsDelivr purge requested (index + sw)"
+echo "✅ jsDelivr purge finished (index + sw)"

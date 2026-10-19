@@ -28,19 +28,21 @@
 
 ---
 
-## 1. GitHub + GitHub Pages
+## 1. GitHub + GitHub Pages + Cloudflare (/app)
 
 **Роль:** код в git, прод-сайт для пользователей.
 
 | | |
 |---|---|
-| Прод URL | https://tili.su/ (приложение: https://tili.su/app/) |
+| Прод URL | https://tili.su/ (приложение: **https://tili.su/app/**) |
 | Репозиторий | https://github.com/Tilkerman/great-idea |
 | Ветки | `main` — исходники; `gh-pages` — собранный `dist` |
-| Сборка | Из папки без `\` в пути (см. `.cursor/rules/project-location.mdc`): `npm run build`, `npx gh-pages -d dist` |
-| Доступ | Аккаунт GitHub владельца репо (логин/2FA только у владельца) |
+| **Единственный деплой** | `bash scripts/deploy-pages.sh` (см. [deploy-runbook.md](./deploy-runbook.md)) |
+| `/app` на tili.su | Cloudflare Worker → jsDelivr `@<gh-pages-commit>` (не напрямую Pages CDN) |
+| CI | GitHub Actions только **проверяет сборку**, не публикует |
+| Доступ | GitHub + `wrangler` для Worker (логин владельца) |
 
-**Ключи в проекте:** нет (деploy через git/gh-pages с машины разработчика).
+**Ключи в проекте:** нет (deploy с машины разработчика; Worker — Cloudflare account).
 
 ---
 

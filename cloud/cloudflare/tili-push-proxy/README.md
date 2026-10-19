@@ -1,31 +1,33 @@
-# Прокси push: `tili.su/v1/push` → `api.tili.su`
+# Cloudflare Worker: `tili.su`
 
-GitHub Pages не умеет POST на `/v1/push` (ответ 405). Worker на Cloudflare пересылает запросы на VPS.
+| Route | Upstream |
+|-------|----------|
+| `/v1/push*` | `https://api.tili.su` |
+| `/app`, `/app/*` | jsDelivr `Tilkerman/great-idea@APP_BUILD` (fallback `@gh-pages`) |
 
-## Проверка до деплоя
+GitHub Pages serves **tili.su/** (landing). **/app** goes through this Worker because the custom-domain CDN can lag after deploy.
+
+## Deploy (with the PWA)
+
+From the nested build copy:
 
 ```bash
-curl -sS https://api.tili.su/v1/push
-# {"ok":true,"service":"tili-push",...}
+bash scripts/deploy-pages.sh
 ```
 
-## Деплой (один раз)
+That script: `gh-pages` → purge jsDelivr → `wrangler deploy --var APP_BUILD:<gh-pages-sha>` → `smoke-tili-app.sh`.
 
-1. Домен **tili.su** в Cloudflare (DNS оранжевое облако).
-2. В терминале:
+Manual Worker-only:
 
 ```bash
 cd cloud/cloudflare/tili-push-proxy
 npx wrangler login
-npx wrangler deploy
+npx wrangler deploy --var APP_BUILD:abc1234
 ```
 
-3. Проверка:
+## Checks
 
 ```bash
+bash scripts/smoke-tili-app.sh
 curl -sS https://tili.su/v1/push
 ```
-
-Должен быть тот же JSON, что у `api.tili.su/v1/push`, не HTML GitHub «Page not found».
-
-Маршрут задан в `wrangler.toml`: `tili.su/v1/push*`.

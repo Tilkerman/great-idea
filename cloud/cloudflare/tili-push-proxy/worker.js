@@ -1,31 +1,34 @@
 /**
  * tili.su Worker:
  * - /v1/push* → api.tili.su
- * - /app* → jsDelivr gh-pages (GitHub Pages custom-domain CDN is stuck)
+ * - /app* → jsDelivr @APP_BUILD (gh-pages commit), fallback @gh-pages
  *
- * raw.githubusercontent.com is often blocked from Workers (throws 1101).
- * jsDelivr works; purge after each deploy: purge.jsdelivr.net/gh/...
+ * GitHub Pages custom-domain CDN can lag; jsDelivr + purge after each deploy.
+ * raw.githubusercontent.com often fails from Workers (1101).
  */
 
 const PUSH_HOST = 'api.tili.su';
-const APP_REPO = 'https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@gh-pages';
+const GH_REPO = 'Tilkerman/great-idea';
 
-function appReleaseId(env) {
-  return env?.APP_BUILD || 'gh-pages';
+function releaseRef(env) {
+  const pin = env?.APP_BUILD?.trim();
+  return pin && pin !== 'gh-pages' ? pin : 'gh-pages';
 }
 
-/** Shell from gh-pages (purged each deploy); hashed assets try pinned commit then gh-pages. */
-function appUpstreamUrls(path, env) {
-  const urls = [`${APP_REPO}${path}`];
-  const pin = env?.APP_BUILD;
-  if (pin && path.includes('/assets/')) {
-    urls.unshift(`https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@${pin}${path}`);
-  }
+function jsdelivrUrl(ref, path) {
+  return `https://cdn.jsdelivr.net/gh/${GH_REPO}@${ref}${path}`;
+}
+
+function upstreamUrls(path, env) {
+  const pin = env?.APP_BUILD?.trim();
+  const urls = [];
+  if (pin && pin !== 'gh-pages') urls.push(jsdelivrUrl(pin, path));
+  urls.push(jsdelivrUrl('gh-pages', path));
   return urls;
 }
 
 async function fetchAppPath(path, env) {
-  for (const upstream of appUpstreamUrls(path, env)) {
+  for (const upstream of upstreamUrls(path, env)) {
     const res = await fetch(upstream, {
       cf: { cacheTtl: 0, cacheEverything: false },
     });
@@ -74,12 +77,11 @@ export default {
       }
 
       if (url.pathname === '/app' || url.pathname.startsWith('/app/')) {
-        const build = env?.APP_BUILD || 'gh-pages';
+        const build = releaseRef(env);
         let path = url.pathname;
         const isAppRoot = path === '/app' || path === '/app/';
         if (isAppRoot) path = '/app/index.html';
 
-        // Safari/PWA often keep an old index → 404 on removed hashed bundles (white screen).
         if (
           request.method === 'GET'
           && (isAppRoot || path.endsWith('index.html'))
@@ -90,19 +92,9 @@ export default {
           return Response.redirect(bust.toString(), 302);
         }
 
-        const tryFetch = async (ref) => {
-          const upstream = `https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@${ref}${path}`;
-          return fetch(upstream, { cf: { cacheTtl: 0, cacheEverything: false } });
-        };
-
-        let res = await tryFetch(build);
-        if (!res.ok && build !== 'gh-pages') {
-          res = await tryFetch('gh-pages');
-        }
-        if (!res.ok) {
-          return new Response(`Upstream ${res.status}: ${path}`, {
-            status: res.status,
-          });
+        const res = await fetchAppPath(path, env);
+        if (!res) {
+          return new Response(`Upstream 404: ${path}`, { status: 502 });
         }
 
         const isShell = path.endsWith('.html') || path.endsWith('sw.js');
