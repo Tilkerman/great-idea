@@ -60,33 +60,33 @@
       html.is-ios-standalone #root {
         position: fixed;
         top: 0;
-        left: 0;
-        right: 0;
         bottom: 0;
-        height: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
         max-width: 480px;
-        margin-left: auto;
-        margin-right: auto;
+        height: auto;
+        margin: 0;
       }
       html.is-ios-standalone .app-viewport {
         padding-bottom: var(--bottom-nav-h);
       }
       html.is-ios-standalone .bottom-nav,
       html.is-ios-standalone .app-viewport__main > .bottom-nav {
-        position: fixed;
+        position: absolute;
         left: 0;
         right: 0;
         bottom: 0;
         width: 100%;
-        max-width: 480px;
-        margin-left: auto;
-        margin-right: auto;
         box-sizing: border-box;
-        min-height: calc(56px + var(--safe-bottom));
-        height: auto;
-        padding: 6px 8px calc(6px + var(--safe-bottom));
+        min-height: 56px;
+        padding: 6px 4px calc(6px + var(--safe-bottom));
         z-index: 1200;
         background: #fff;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        align-items: end;
+        justify-items: center;
       }
     </style>
     <script>
@@ -121,8 +121,8 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-CYS-1kH6.js"></script>
-    <link rel="stylesheet" crossorigin href="/app/assets/index-CqRPIvre.css">
+    <script type="module" crossorigin src="/app/assets/index-jSX3t-Vj.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/index-b8adPtV_.css">
       <link rel="apple-touch-icon-precomposed" href="https://tili.su/app/apple-touch-icon-v8.png" />
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
