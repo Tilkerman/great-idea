@@ -50,7 +50,7 @@
         iPhone Home only: critical inset before CSS bundle (env() is often 0 in standalone).
       */
       html.is-ios-standalone {
-        --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
+        --safe-bottom: env(safe-area-inset-bottom, 34px);
         --bottom-nav-h: calc(56px + 12px + var(--safe-bottom));
         background: #fff;
       }
@@ -69,24 +69,7 @@
         margin: 0;
       }
       html.is-ios-standalone .app-viewport {
-        padding-bottom: var(--bottom-nav-h);
-      }
-      html.is-ios-standalone .bottom-nav,
-      html.is-ios-standalone .app-viewport__main > .bottom-nav {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        box-sizing: border-box;
-        min-height: 56px;
-        padding: 6px 4px calc(6px + var(--safe-bottom));
-        z-index: 1200;
-        background: #fff;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        align-items: end;
-        justify-items: center;
+        padding-bottom: 0;
       }
     </style>
     <script>
@@ -121,8 +104,8 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-jSX3t-Vj.js"></script>
-    <link rel="stylesheet" crossorigin href="/app/assets/index-b8adPtV_.css">
+    <script type="module" crossorigin src="/app/assets/index-ITURutQY.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/index-D9cEx0V0.css">
       <link rel="apple-touch-icon-precomposed" href="https://tili.su/app/apple-touch-icon-v8.png" />
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
