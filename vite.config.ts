@@ -6,7 +6,9 @@ export default defineConfig(({ command }) => {
   const base = process.env.BASE_PATH ?? (command === 'build' ? '/app/' : '/');
   const appAtSubpath = base === '/app/';
   const manifestIcon = (file: string) => (appAtSubpath ? `/app/${file}` : file);
-  const manifestStart = appAtSubpath ? '/app/' : './';
+  const manifestStart = appAtSubpath
+    ? (command === 'build' ? 'https://tili.su/app/' : '/app/')
+    : './';
 
   return {
   base,

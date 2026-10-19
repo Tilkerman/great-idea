@@ -7,6 +7,12 @@ declare const self: ServiceWorkerGlobalScope & {
 self.addEventListener('install', (event) => {
   event.waitUntil(self.skipWaiting());
 });
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    void self.skipWaiting();
+  }
+});
 self.addEventListener('activate', (event) => {
   // Must keep self.__WB_MANIFEST as a live read so injectManifest can inject.
   const manifest = self.__WB_MANIFEST;

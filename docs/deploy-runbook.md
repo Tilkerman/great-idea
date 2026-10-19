@@ -46,4 +46,5 @@ Workflow **CI build** (`.github/workflows/pages.yml`) — только **сбо�
 ## Почему был белый экран
 
 Vite удаляет старые `index-*.js` при новом билде. Safari держит старый `index.html` → 404 на JS.  
-Лечение: редирект `?_r=<release>`, purge jsDelivr, Worker pin на коммит gh-pages, smoke перед «готово».
+Лечение: purge jsDelivr, Worker pin на коммит gh-pages, `Cache-Control: no-store` на shell, smoke перед «готово».  
+Редирект `/app/` → `?_r=` **не используем** — ломает «На экран Домой» на iPhone (start_url должен открываться с 200).

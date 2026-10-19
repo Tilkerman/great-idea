@@ -32,12 +32,15 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
       });
     });
   });
+  const iosSafariTab = isAppleMobile() && !isStandaloneApp();
   void navigator.serviceWorker.register(`${base}sw.js`, { scope: base }).then((reg) => {
-    // Always pull a fresh SW once on launch (iPhone Home used to skip updates).
     void reg.update();
-    activateWaitingWorker(reg);
-    reg.addEventListener('updatefound', () => activateWaitingWorker(reg));
-    if (!gentleSw) {
+    // Aggressive skipWaiting breaks iOS «На экран Домой» while still in Safari.
+    if (!iosSafariTab) {
+      activateWaitingWorker(reg);
+      reg.addEventListener('updatefound', () => activateWaitingWorker(reg));
+    }
+    if (!gentleSw && !iosSafariTab) {
       window.setInterval(() => { void reg.update(); }, 5 * 60 * 1000);
     }
   });

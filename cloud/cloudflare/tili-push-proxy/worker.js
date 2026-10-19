@@ -10,11 +10,6 @@
 const PUSH_HOST = 'api.tili.su';
 const GH_REPO = 'Tilkerman/great-idea';
 
-function releaseRef(env) {
-  const pin = env?.APP_BUILD?.trim();
-  return pin && pin !== 'gh-pages' ? pin : 'gh-pages';
-}
-
 function jsdelivrUrl(ref, path) {
   return `https://cdn.jsdelivr.net/gh/${GH_REPO}@${ref}${path}`;
 }
@@ -77,21 +72,10 @@ export default {
       }
 
       if (url.pathname === '/app' || url.pathname.startsWith('/app/')) {
-        const build = releaseRef(env);
         let path = url.pathname;
-        const isAppRoot = path === '/app' || path === '/app/';
-        if (isAppRoot) path = '/app/index.html';
+        if (path === '/app' || path === '/app/') path = '/app/index.html';
 
-        if (
-          request.method === 'GET'
-          && (isAppRoot || path.endsWith('index.html'))
-          && !url.searchParams.has('_r')
-        ) {
-          const bust = new URL(request.url);
-          bust.searchParams.set('_r', build);
-          return Response.redirect(bust.toString(), 302);
-        }
-
+        // No redirect on /app/ — iOS «На экран Домой» validates manifest start_url (must be 200).
         const res = await fetchAppPath(path, env);
         if (!res) {
           return new Response(`Upstream 404: ${path}`, { status: 502 });

@@ -8,12 +8,12 @@ ORIGIN="${SMOKE_ORIGIN:-https://tili.su}"
 echo "→ Smoke ${APP_URL}"
 
 first_code="$(curl -fsS -o /dev/null -w "%{http_code}" "${APP_URL}")"
-if [[ "${first_code}" != "302" && "${first_code}" != "301" ]]; then
-  echo "FAIL: expected 302 from ${APP_URL}, got ${first_code}"
+if [[ "${first_code}" != "200" ]]; then
+  echo "FAIL: expected 200 from ${APP_URL}, got ${first_code}"
   exit 1
 fi
 
-html="$(curl -fsSL "${APP_URL}")"
+html="$(curl -fsS "${APP_URL}")"
 js_path="$(echo "${html}" | grep -oE '/app/assets/index-[A-Za-z0-9_-]+\.js' | head -1 || true)"
 if [[ -z "${js_path}" ]]; then
   echo "FAIL: index has no /app/assets/index-*.js"
@@ -35,4 +35,10 @@ if [[ -n "${css_path}" ]]; then
   fi
 fi
 
-echo "OK: redirect + ${js_path} (${js_code})"
+manifest_code="$(curl -fsS -o /dev/null -w "%{http_code}" "${ORIGIN}/app/manifest.webmanifest")"
+if [[ "${manifest_code}" != "200" ]]; then
+  echo "FAIL: manifest.webmanifest → HTTP ${manifest_code}"
+  exit 1
+fi
+
+echo "OK: ${js_path} (${js_code}), manifest ${manifest_code}"
