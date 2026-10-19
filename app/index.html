@@ -44,7 +44,7 @@
     </script>
     <style>
       html, body, #root { height: 100dvh; margin: 0; background: #fff; }
-      html.is-ios-standalone, html.is-ios-standalone body, html.is-ios-standalone #root { height: 100vh; }
+      html.is-ios-standalone, html.is-ios-standalone body { height: 100vh; }
       html.is-onboarding, html.is-onboarding body, html.is-onboarding #root { background: #fff; }
       /*
         iPhone Home only: critical inset before CSS bundle (env() is often 0 in standalone).
@@ -70,6 +70,18 @@
       }
       html.is-ios-standalone .app-viewport {
         padding-bottom: 0;
+      }
+      html.is-ios-standalone .app-viewport__main {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+      html.is-ios-standalone .app-viewport__main > .bottom-nav {
+        position: static;
+        flex-shrink: 0;
+        margin-top: auto;
+        width: 100%;
       }
     </style>
     <script>
