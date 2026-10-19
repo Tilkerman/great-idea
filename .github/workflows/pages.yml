@@ -1,17 +1,19 @@
-name: Deploy GitHub Pages
+# Prod deploy is ONLY scripts/deploy-pages.sh (gh-pages branch + Worker + jsDelivr purge).
+# This workflow: compile check on push to main — no competing Pages artifact.
+name: CI build
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -24,19 +26,6 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npm run build:pages
         env:
-          BASE_PATH: /app/
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          VITE_APP_BUILD: ${{ github.sha }}
