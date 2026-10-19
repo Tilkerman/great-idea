@@ -7,3 +7,6 @@ routes = [
   { pattern = "tili.su/app", zone_name = "tili.su" },
   { pattern = "tili.su/app/*", zone_name = "tili.su" },
 ]
+
+[vars]
+APP_BUILD = "3725051"

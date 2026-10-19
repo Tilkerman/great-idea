@@ -18,6 +18,10 @@ echo "→ Деплой на gh-pages..."
 touch dist/.nojekyll
 npx --yes gh-pages -d dist -r "git@github.com:${REPO}.git" -m "Deploy TiLi Calendar $(date +%Y-%m-%d)"
 
+if [[ -x "$(dirname "$0")/purge-jsdelivr-app.sh" ]]; then
+  bash "$(dirname "$0")/purge-jsdelivr-app.sh"
+fi
+
 if gh auth status >/dev/null 2>&1; then
   echo "→ Делаю репозиторий публичным..."
   gh repo edit "$REPO" --visibility public --accept-visibility-change-consequences

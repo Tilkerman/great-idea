@@ -10,6 +10,17 @@
 const PUSH_HOST = 'api.tili.su';
 const APP_CDN = 'https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@gh-pages';
 
+/** Bust jsDelivr/edge cache for shell files (set via wrangler.toml [vars] on deploy). */
+function appUpstreamUrl(path, env) {
+  const base = `${APP_CDN}${path}`;
+  const bust = env?.APP_BUILD;
+  if (!bust) return base;
+  if (path.endsWith('.html') || path.endsWith('sw.js') || path.endsWith('sw.mjs')) {
+    return `${base}?v=${encodeURIComponent(bust)}`;
+  }
+  return base;
+}
+
 function contentTypeFor(path) {
   if (path.endsWith('.html')) return 'text/html; charset=utf-8';
   if (path.endsWith('.js') || path.endsWith('.mjs')) {
@@ -26,7 +37,7 @@ function contentTypeFor(path) {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     try {
       const url = new URL(request.url);
 
@@ -64,9 +75,11 @@ export default {
         headers.set(
           'Cache-Control',
           path.endsWith('.html') || path.endsWith('sw.js')
-            ? 'no-store'
+            ? 'no-store, must-revalidate'
             : 'public, max-age=120',
         );
+        headers.set('CDN-Cache-Control', 'no-store');
+        headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
         return new Response(res.body, { status: 200, headers });
       }
 
