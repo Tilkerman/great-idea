@@ -15,7 +15,29 @@ export function isStandaloneApp() {
 }
 
 export function isAppleMobile() {
+  if (typeof navigator === 'undefined') return false;
   return /iPhone|iPad|iPod/.test(navigator.userAgent);
+}
+
+/** Installed from iOS Home / iPad; needs home-indicator padding when env() is 0. */
+export function isIosStandalonePwa() {
+  if (!isStandaloneApp()) return false;
+  const nav = window.navigator as Navigator & { standalone?: boolean };
+  return isAppleMobile() || nav.standalone === true;
+}
+
+/** Installed Android WebAPK / shortcut; use env(safe-area) only, no iOS floor. */
+export function isAndroidStandalonePwa() {
+  if (!isStandaloneApp()) return false;
+  if (isIosStandalonePwa()) return false;
+  return /Android/i.test(navigator.userAgent);
+}
+
+export function applyPwaRootClasses(root: HTMLElement = document.documentElement) {
+  const standalone = isStandaloneApp();
+  root.classList.toggle('is-standalone', standalone);
+  root.classList.toggle('is-ios-standalone', isIosStandalonePwa());
+  root.classList.toggle('is-android-standalone', isAndroidStandalonePwa());
 }
 
 export function canWebShare() {

@@ -26,22 +26,21 @@
   --app-height: 100dvh;
   --bottom-nav-bar-h: 56px;
   /* bar + vertical padding (6+6) + safe inset */
-  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + env(safe-area-inset-bottom, 0px));
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + var(--safe-bottom));
 }
 
-@media (display-mode: standalone), (display-mode: fullscreen) {
-  :root {
-    --app-height: 100vh;
-    /* iPhone X: use 48px floor — 34px was still clipping label descenders. */
-    --safe-bottom: 48px;
-    --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 16px + var(--safe-bottom));
-  }
-}
-
-html.is-standalone {
+/* iOS Home: env() often 0; small floor keeps labels above the indicator without Android-sized pad. */
+html.is-ios-standalone {
   --app-height: 100vh;
-  --safe-bottom: 48px;
+  --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
   --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 16px + var(--safe-bottom));
+}
+
+/* Installed Android: no iOS floor — only real safe-area (usually 0 on gesture nav). */
+html.is-android-standalone {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + var(--safe-bottom));
 }
 
 [data-theme='dark'] {

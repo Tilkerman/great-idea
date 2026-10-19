@@ -14,7 +14,7 @@
   */
   box-sizing: content-box;
   min-height: var(--bottom-nav-bar-h);
-  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  padding: 6px 8px calc(6px + var(--safe-bottom, env(safe-area-inset-bottom, 0px)));
   background: var(--surface);
   border: none;
   border-radius: 0;
@@ -25,12 +25,9 @@
   -webkit-touch-callout: none;
 }
 
-/*
-  iPhone X Home: fixed to the screen + large pad under labels (see also index.html).
-  env(safe-area) is often 0; do not use bottom: 34px (overlaps the week grid).
-*/
-html.is-standalone .bottom-nav,
-html.is-standalone .app-viewport__main > .bottom-nav {
+/* iPhone Home only — see index.html critical CSS; Android stays absolute in .app-viewport. */
+html.is-ios-standalone .bottom-nav,
+html.is-ios-standalone .app-viewport__main > .bottom-nav {
   position: fixed;
   left: 0;
   right: 0;
@@ -41,26 +38,8 @@ html.is-standalone .app-viewport__main > .bottom-nav {
   margin-right: auto;
   box-sizing: content-box !important;
   min-height: var(--bottom-nav-bar-h);
-  padding: 8px 8px calc(8px + var(--safe-bottom, 48px));
+  padding: 8px 8px calc(8px + var(--safe-bottom));
   z-index: 1200;
-}
-
-@media (display-mode: standalone), (display-mode: fullscreen) {
-  .bottom-nav,
-  .app-viewport__main > .bottom-nav {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    max-width: 480px;
-    margin-left: auto;
-    margin-right: auto;
-    box-sizing: content-box !important;
-    min-height: var(--bottom-nav-bar-h);
-    padding: 8px 8px calc(8px + var(--safe-bottom, 48px));
-    z-index: 1200;
-  }
 }
 
 .bottom-nav::before {
