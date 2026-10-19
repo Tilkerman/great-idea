@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/app/favicon.png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="https://tili.su/app/apple-touch-icon-v8.png?v=4f3e671" sizes="180x180" />
+    <link rel="apple-touch-icon" href="https://tili.su/app/apple-touch-icon-v8.png?v=3725051" sizes="180x180" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -13,37 +13,46 @@
     <script>
       (function () {
         var n = window.navigator;
-        if (window.matchMedia('(display-mode: standalone)').matches || n.standalone) {
-          document.documentElement.classList.add('is-standalone');
-        }
+        var standalone = window.matchMedia('(display-mode: standalone)').matches || n.standalone;
+        if (!standalone) return;
+        var root = document.documentElement;
+        var ua = n.userAgent || '';
+        var ios = /iPhone|iPad|iPod/.test(ua) || n.standalone;
+        var android = /Android/i.test(ua) && !ios;
+        root.classList.add('is-standalone');
+        if (ios) root.classList.add('is-ios-standalone');
+        if (android) root.classList.add('is-android-standalone');
       })();
     </script>
     <style>
       html, body, #root { height: 100dvh; margin: 0; background: #fff; }
-      html.is-standalone, html.is-standalone body, html.is-standalone #root { height: 100vh; }
+      html.is-ios-standalone, html.is-ios-standalone body, html.is-ios-standalone #root { height: 100vh; }
       html.is-onboarding, html.is-onboarding body, html.is-onboarding #root { background: #fff; }
       /*
-        iPhone X Home: critical nav inset in HTML (not only CSS bundle).
-        Labels must sit above the home indicator; empty pad absorbs it.
+        iPhone Home only: critical inset before CSS bundle (env() is often 0 in standalone).
       */
-      html.is-standalone .app-viewport {
-        padding-bottom: 118px !important;
+      html.is-ios-standalone {
+        --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
+        --bottom-nav-h: calc(72px + var(--safe-bottom));
       }
-      html.is-standalone .bottom-nav,
-      html.is-standalone .app-viewport__main > .bottom-nav {
-        position: fixed !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100% !important;
-        max-width: 480px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        box-sizing: content-box !important;
-        min-height: 56px !important;
-        height: auto !important;
-        padding: 8px 8px 48px 8px !important;
-        z-index: 1200 !important;
+      html.is-ios-standalone .app-viewport {
+        padding-bottom: var(--bottom-nav-h);
+      }
+      html.is-ios-standalone .bottom-nav,
+      html.is-ios-standalone .app-viewport__main > .bottom-nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+        box-sizing: content-box;
+        min-height: 56px;
+        height: auto;
+        padding: 8px 8px calc(8px + var(--safe-bottom));
+        z-index: 1200;
       }
     </style>
     <script>
@@ -75,8 +84,8 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-CI2Hp1Ao.js"></script>
-    <link rel="stylesheet" crossorigin href="/app/assets/index-Bm7BfRtF.css">
+    <script type="module" crossorigin src="/app/assets/index-LVBFrOHU.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/index-BbNFt8kA.css">
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
     <div id="root"></div>
