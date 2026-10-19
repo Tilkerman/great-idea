@@ -3,13 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/app/favicon.png" sizes="192x192" />
-    <link rel="apple-touch-icon" href="https://tili.su/app/apple-touch-icon-v8.png?v=d4d55fb" sizes="180x180" />
+    <link rel="apple-touch-icon" href="/app/apple-touch-icon-v8.png" sizes="180x180" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="TiLi" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>TiLi Calendar</title>
+    <script>
+      (function () {
+        var n = window.navigator;
+        var ua = n.userAgent || '';
+        var ios = /iPhone|iPad|iPod/.test(ua);
+        var standalone = window.matchMedia('(display-mode: standalone)').matches || n.standalone;
+        if (ios && !standalone && 'serviceWorker' in n) {
+          n.serviceWorker.getRegistrations().then(function (regs) {
+            return Promise.all(regs.map(function (r) { return r.unregister(); }));
+          }).catch(function () {});
+          if (typeof caches !== 'undefined') {
+            caches.keys().then(function (keys) {
+              return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+            }).catch(function () {});
+          }
+        }
+      })();
+    </script>
     <script>
       (function () {
         var n = window.navigator;
@@ -84,8 +102,9 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-BnGuaJz9.js"></script>
+    <script type="module" crossorigin src="/app/assets/index-CufZULtW.js"></script>
     <link rel="stylesheet" crossorigin href="/app/assets/index-BbNFt8kA.css">
+      <link rel="apple-touch-icon-precomposed" href="/app/apple-touch-icon-v8.png" />
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
     <div id="root"></div>
