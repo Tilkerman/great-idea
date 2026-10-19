@@ -22,6 +22,20 @@ if [[ -x "$(dirname "$0")/purge-jsdelivr-app.sh" ]]; then
   bash "$(dirname "$0")/purge-jsdelivr-app.sh"
 fi
 
+WORKER_DIR="$(dirname "$0")/../cloud/cloudflare/tili-push-proxy"
+GH_PAGES_SHA="$(git ls-remote "git@github.com:${REPO}.git" refs/heads/gh-pages | awk 'NR == 1 { print substr($1, 1, 7) }')"
+if [[ -n "${GH_PAGES_SHA}" && -f "${WORKER_DIR}/wrangler.toml" ]]; then
+  echo "→ Worker APP_BUILD=${GH_PAGES_SHA} (jsDelivr @gh-pages commit)"
+  if sed --version >/dev/null 2>&1; then
+    sed -i "s/^APP_BUILD = .*/APP_BUILD = \"${GH_PAGES_SHA}\"/" "${WORKER_DIR}/wrangler.toml"
+  else
+    sed -i '' "s/^APP_BUILD = .*/APP_BUILD = \"${GH_PAGES_SHA}\"/" "${WORKER_DIR}/wrangler.toml"
+  fi
+  if command -v wrangler >/dev/null 2>&1 || [[ -f "${WORKER_DIR}/node_modules/.bin/wrangler" ]]; then
+    (cd "${WORKER_DIR}" && npx --yes wrangler deploy) || echo "⚠️  wrangler deploy skipped (auth or network)"
+  fi
+fi
+
 if gh auth status >/dev/null 2>&1; then
   echo "→ Делаю репозиторий публичным..."
   gh repo edit "$REPO" --visibility public --accept-visibility-change-consequences

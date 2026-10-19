@@ -8,17 +8,11 @@
  */
 
 const PUSH_HOST = 'api.tili.su';
-const APP_CDN = 'https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@gh-pages';
 
-/** Bust jsDelivr/edge cache for shell files (set via wrangler.toml [vars] on deploy). */
-function appUpstreamUrl(path, env) {
-  const base = `${APP_CDN}${path}`;
-  const bust = env?.APP_BUILD;
-  if (!bust) return base;
-  if (path.endsWith('.html') || path.endsWith('sw.js') || path.endsWith('sw.mjs')) {
-    return `${base}?v=${encodeURIComponent(bust)}`;
-  }
-  return base;
+/** Pin to deploy commit (wrangler [vars] APP_BUILD) so index and hashed assets stay in sync. */
+function appCdnBase(env) {
+  const ref = env?.APP_BUILD || 'gh-pages';
+  return `https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@${ref}`;
 }
 
 function contentTypeFor(path) {
@@ -63,8 +57,10 @@ export default {
       if (url.pathname === '/app' || url.pathname.startsWith('/app/')) {
         let path = url.pathname;
         if (path === '/app' || path === '/app/') path = '/app/index.html';
-        const upstream = `${APP_CDN}${path}`;
-        const res = await fetch(upstream);
+        const upstream = `${appCdnBase(env)}${path}`;
+        const res = await fetch(upstream, {
+          cf: { cacheTtl: 0, cacheEverything: false },
+        });
         if (!res.ok) {
           return new Response(`Upstream ${res.status}: ${path}`, {
             status: res.status,
