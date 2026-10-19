@@ -6,8 +6,15 @@ cd "$(dirname "$0")/.."
 REPO="Tilkerman/great-idea"
 SCRIPTS="$(dirname "$0")"
 
-# Version label in PWA «О приложении» = commit being built (local main).
-export VITE_APP_BUILD="$(git rev-parse --short HEAD 2>/dev/null || echo local)"
+WORKSPACE_ROOT="/Users/macbookair/Работа/список\\кalендарь"
+if git -C "${WORKSPACE_ROOT}" rev-parse --short HEAD >/dev/null 2>&1; then
+  export VITE_APP_BUILD="$(git -C "${WORKSPACE_ROOT}" rev-parse --short HEAD)"
+elif REMOTE_MAIN="$(git ls-remote "git@github.com:${REPO}.git" refs/heads/main | awk 'NR == 1 { print substr($1, 1, 7) }')" \
+  && [[ -n "${REMOTE_MAIN}" ]]; then
+  export VITE_APP_BUILD="${REMOTE_MAIN}"
+else
+  export VITE_APP_BUILD="$(git rev-parse --short HEAD 2>/dev/null || echo local)"
+fi
 
 echo "→ Сборка (VITE_APP_BUILD=${VITE_APP_BUILD})..."
 npm run build:pages
