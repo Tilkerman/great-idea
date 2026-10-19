@@ -8,11 +8,30 @@
  */
 
 const PUSH_HOST = 'api.tili.su';
+const APP_REPO = 'https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@gh-pages';
 
-/** Pin to deploy commit (wrangler [vars] APP_BUILD) so index and hashed assets stay in sync. */
-function appCdnBase(env) {
-  const ref = env?.APP_BUILD || 'gh-pages';
-  return `https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@${ref}`;
+function appReleaseId(env) {
+  return env?.APP_BUILD || 'gh-pages';
+}
+
+/** Shell from gh-pages (purged each deploy); hashed assets try pinned commit then gh-pages. */
+function appUpstreamUrls(path, env) {
+  const urls = [`${APP_REPO}${path}`];
+  const pin = env?.APP_BUILD;
+  if (pin && path.includes('/assets/')) {
+    urls.unshift(`https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@${pin}${path}`);
+  }
+  return urls;
+}
+
+async function fetchAppPath(path, env) {
+  for (const upstream of appUpstreamUrls(path, env)) {
+    const res = await fetch(upstream, {
+      cf: { cacheTtl: 0, cacheEverything: false },
+    });
+    if (res.ok) return res;
+  }
+  return null;
 }
 
 function contentTypeFor(path) {
@@ -55,27 +74,48 @@ export default {
       }
 
       if (url.pathname === '/app' || url.pathname.startsWith('/app/')) {
+        const build = env?.APP_BUILD || 'gh-pages';
         let path = url.pathname;
-        if (path === '/app' || path === '/app/') path = '/app/index.html';
-        const upstream = `${appCdnBase(env)}${path}`;
-        const res = await fetch(upstream, {
-          cf: { cacheTtl: 0, cacheEverything: false },
-        });
+        const isAppRoot = path === '/app' || path === '/app/';
+        if (isAppRoot) path = '/app/index.html';
+
+        // Safari/PWA often keep an old index → 404 on removed hashed bundles (white screen).
+        if (
+          request.method === 'GET'
+          && (isAppRoot || path.endsWith('index.html'))
+          && !url.searchParams.has('_r')
+        ) {
+          const bust = new URL(request.url);
+          bust.searchParams.set('_r', build);
+          return Response.redirect(bust.toString(), 302);
+        }
+
+        const tryFetch = async (ref) => {
+          const upstream = `https://cdn.jsdelivr.net/gh/Tilkerman/great-idea@${ref}${path}`;
+          return fetch(upstream, { cf: { cacheTtl: 0, cacheEverything: false } });
+        };
+
+        let res = await tryFetch(build);
+        if (!res.ok && build !== 'gh-pages') {
+          res = await tryFetch('gh-pages');
+        }
         if (!res.ok) {
           return new Response(`Upstream ${res.status}: ${path}`, {
             status: res.status,
           });
         }
+
+        const isShell = path.endsWith('.html') || path.endsWith('sw.js');
         const headers = new Headers();
         headers.set('Content-Type', contentTypeFor(path));
         headers.set(
           'Cache-Control',
-          path.endsWith('.html') || path.endsWith('sw.js')
-            ? 'no-store, must-revalidate'
-            : 'public, max-age=120',
+          isShell ? 'no-store, must-revalidate' : 'public, max-age=31536000, immutable',
         );
-        headers.set('CDN-Cache-Control', 'no-store');
-        headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
+        if (isShell) {
+          headers.set('CDN-Cache-Control', 'no-store');
+          headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
+        }
         return new Response(res.body, { status: 200, headers });
       }
 

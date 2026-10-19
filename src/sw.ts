@@ -12,10 +12,12 @@ self.addEventListener('activate', (event) => {
   const manifest = self.__WB_MANIFEST;
   const precacheCount = Array.isArray(manifest) ? manifest.length : 0;
   event.waitUntil((async () => {
-    // Drop any old Cache Storage from earlier Workbox builds so iPhone Home
-    // cannot keep a stale CSS that clips the bottom nav under the home bar.
     const keys = await caches.keys();
-    await Promise.all(keys.map((k) => caches.delete(k)));
+    await Promise.all(
+      keys
+        .filter((k) => k.startsWith('workbox-') || k.startsWith('tili-'))
+        .map((k) => caches.delete(k)),
+    );
     await self.clients.claim();
     if (precacheCount < 0) await self.registration.unregister();
   })());

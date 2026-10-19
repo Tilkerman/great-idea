@@ -177,6 +177,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     (async () => {
+      try {
       const params = new URLSearchParams(window.location.search);
       if (params.get('seed') === 'demo3') {
         await replaceAllTasks(buildThreeWeekDemoTasks());
@@ -233,7 +234,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (cloudSession) setSession(cloudSession);
       }
       setScreen(onboardingDone ? readMainTab() : 'onboarding');
-      setReady(true);
+      } catch (err) {
+        console.error('TiLi init failed', err);
+      } finally {
+        setReady(true);
+      }
     })();
   }, [refreshTasks, setScreen]);
 

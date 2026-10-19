@@ -9,4 +9,4 @@ routes = [
 ]
 
 [vars]
-APP_BUILD = "4ded3d1"
+APP_BUILD = "487a9c7"
