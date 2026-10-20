@@ -37,6 +37,7 @@ import {
 import { buildThreeWeekDemoTasks } from '../data/seedTasks';
 import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 import { afterTaskDeleted, afterTaskWritten } from '../utils/wishTaskBridge';
+import { notifyCalendarCloudDirty } from '../hooks/useCalendarCloudAutoSync';
 import { fetchCloudSession, isCloudAccountEnabled } from '../utils/accountApi';
 import { resolveLaunchLocale, setAnalyticsConsent, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
 
@@ -289,12 +290,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await saveTask({ ...task, updatedAt: new Date().toISOString() });
     await afterTaskWritten(task);
     await refreshTasks();
+    notifyCalendarCloudDirty();
   }, [refreshTasks]);
 
   const saveHourSlot = useCallback(async (day: Date, hour: number, slotTasks: Task[]) => {
     const rebalanced = rebalanceHourTasks(day, hour, slotTasks);
     await saveTasks(rebalanced);
     await refreshTasks();
+    notifyCalendarCloudDirty();
   }, [refreshTasks]);
 
   const placeTask = useCallback(async (task: Task, day: Date, hour: number): Promise<'ok' | 'full' | 'past'> => {
@@ -334,6 +337,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       completed: task.status === 'completed',
       category: task.category,
     });
+    notifyCalendarCloudDirty();
     return 'ok';
   }, [refreshTasks, settings.analyticsEnabled]);
 
@@ -349,6 +353,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await saveTasks(rebalanceHourTasks(day, hour, remaining));
     }
     await refreshTasks();
+    notifyCalendarCloudDirty();
   }, [refreshTasks]);
 
   const requestDelete = useCallback((task: Task) => {
@@ -373,6 +378,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await deleteTask(id);
     if (task) await afterTaskDeleted(task);
     await refreshTasks();
+    notifyCalendarCloudDirty();
   }, [refreshTasks]);
 
   const updateSettings = useCallback(async (partial: Partial<UserSettings>) => {
@@ -421,6 +427,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ).filter((task) => liveDates.has(toLocalDateString(new Date(task.startAt))));
       await saveTasks(incoming);
       await refreshTasks();
+      notifyCalendarCloudDirty();
       return;
     }
     const removeRows = all.filter((task) => (target.kind === 'day'
@@ -434,11 +441,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const incoming = buildPastedTasks(gridClipboard, target);
     await saveTasks(incoming);
     await refreshTasks();
+    notifyCalendarCloudDirty();
   }, [gridClipboard, refreshTasks, settings.weekStartsOn]);
 
   const loadDemoThreeWeeks = useCallback(async () => {
     await replaceAllTasks(buildThreeWeekDemoTasks());
     await refreshTasks();
+    notifyCalendarCloudDirty();
   }, [refreshTasks]);
 
   useEffect(() => {

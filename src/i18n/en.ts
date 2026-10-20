@@ -541,7 +541,7 @@ export const en: typeof ru = {
     authDoneBody: 'The account is saved on this phone. The calendar already works. Name, email and password can be changed in settings.',
     authDoneCloudBody: 'We sent a confirmation email. Open it (check Spam), then sign in to TiLi. This phone keeps its local calendar until you sync.',
     authEmailNotVerified: 'Confirm your email using the link we sent. Check Spam if you do not see it.',
-    transferCloudLead: 'When you are signed into a cloud account, you can store the calendar on TiLi servers.',
+    transferCloudLead: 'With a cloud account, the calendar usually syncs on its own (within ~30 sec). Use the buttons below only for a manual sync.',
     transferCloudUpload: 'Save calendar to account',
     transferCloudDownload: 'Load calendar from account',
     transferCloudDone: 'Calendar synced with your account.',

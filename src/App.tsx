@@ -34,6 +34,7 @@ import { useDesktopLayoutClass } from './hooks/useDesktopLayoutClass';
 import { useLayoutMode } from './hooks/useLayoutMode';
 import { SideNav } from './components/layout/SideNav';
 import { IosInstallBanner } from './components/pwa/IosInstallBanner';
+import { CalendarCloudSyncBridge } from './components/sync/CalendarCloudSyncBridge';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
@@ -184,6 +185,7 @@ export default function App() {
   return (
     <AppProvider>
       <LumiHostProvider>
+        <CalendarCloudSyncBridge />
         <IosInstallBanner />
         <AppRouter />
         <DeleteConfirm />

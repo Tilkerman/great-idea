@@ -537,7 +537,7 @@ export const es: typeof ru = {
     authDoneBody: 'La cuenta quedó en este teléfono. El calendario ya funciona. Nombre, email y contraseña se cambian en ajustes.',
     authDoneCloudBody: 'Enviamos un correo de confirmación. Ábrelo (revisa Spam) e inicia sesión en TiLi. Este teléfono sigue con el calendario local hasta que sincronices.',
     authEmailNotVerified: 'Confirma el correo con el enlace que enviamos. Revisa Spam si no lo ves.',
-    transferCloudLead: 'Si iniciaste sesión en la cuenta en la nube, puedes guardar el calendario en los servidores de TiLi.',
+    transferCloudLead: 'Con cuenta en la nube, el calendario suele sincronizarse solo (hasta ~30 s). Los botones son solo para sincronizar a mano.',
     transferCloudUpload: 'Guardar calendario en la cuenta',
     transferCloudDownload: 'Cargar calendario desde la cuenta',
     transferCloudDone: 'Calendario sincronizado con la cuenta.',
