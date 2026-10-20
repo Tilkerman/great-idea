@@ -273,7 +273,8 @@ select {
   top: 0;
   left: 0;
   right: 0;
-  bottom: var(--bottom-nav-h);
+  /* .app-viewport already reserves --bottom-nav-h; do not subtract twice */
+  bottom: 0;
   z-index: 200;
   width: 100%;
   background: var(--bg);
