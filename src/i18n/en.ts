@@ -106,6 +106,7 @@ export const en: typeof ru = {
     settingsTransfer: 'New phone',
     settingsTransferSub: 'Save everything and move',
     transferLead: 'Tasks, wishes, and settings live only on this phone. Before you switch devices, save a file and open it on the new phone.',
+    transferLeadCloud: 'You’re signed in: calendar and wishes sync to your other devices automatically (usually within ~30 sec). Below is an optional file backup.',
     transferStep1Title: 'Step 1. On this phone',
     transferStep1Body: 'Tap the button — you get tili-backup-….json. Save it to Files, iCloud, Google Drive, or send it to yourself in a messenger.',
     transferExportBtn: 'Save my data',
