@@ -30,11 +30,12 @@
   --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + var(--safe-bottom));
 }
 
-/* iOS Home: env() often 0; small floor keeps labels above the indicator without Android-sized pad. */
+/* iOS Home: one safe inset; --bottom-nav-h must match .bottom-nav outer height (border-box). */
 html.is-ios-standalone {
   --app-height: 100vh;
-  --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
-  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 16px + var(--safe-bottom));
+  --ios-nav-safe: env(safe-area-inset-bottom, 34px);
+  --safe-bottom: var(--ios-nav-safe);
+  --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + var(--ios-nav-safe));
 }
 
 /* Installed Android: no iOS floor — only real safe-area (usually 0 on gesture nav). */
@@ -133,6 +134,7 @@ html.is-onboarding {
 }
 
 .app-viewport__main {
+  position: relative;
   flex: 1 1 auto;
   min-width: 0;
   min-height: 0;
@@ -236,13 +238,44 @@ select {
   display: none !important;
 }
 
-.settings-overlay {
-  position: relative;
-  z-index: 200;
-  flex: 1 1 auto;
-  min-height: 0;
+.app-fatal {
+  min-height: var(--app-height);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg);
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.app-fatal__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.app-fatal__text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.app-fatal__btn {
   width: 100%;
-  height: 100%;
+}
+
+.settings-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: var(--bottom-nav-h);
+  z-index: 200;
+  width: 100%;
   background: var(--bg);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -335,5 +368,9 @@ select {
 
   .settings-page {
     padding-bottom: 24px;
+  }
+
+  .settings-overlay {
+    bottom: 0;
   }
 }

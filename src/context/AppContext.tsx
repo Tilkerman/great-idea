@@ -176,6 +176,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let finished = false;
+    const watchdog = window.setTimeout(() => {
+      if (!finished) {
+        console.warn('TiLi init exceeded deadline — showing UI anyway');
+        setReady(true);
+      }
+    }, 12_000);
+
     (async () => {
       try {
       const params = new URLSearchParams(window.location.search);
@@ -237,9 +245,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       } catch (err) {
         console.error('TiLi init failed', err);
       } finally {
+        finished = true;
+        window.clearTimeout(watchdog);
         setReady(true);
       }
     })();
+
+    return () => {
+      finished = true;
+      window.clearTimeout(watchdog);
+    };
   }, [refreshTasks, setScreen]);
 
   const zoomIn = useCallback(() => {

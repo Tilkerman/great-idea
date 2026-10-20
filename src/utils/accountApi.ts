@@ -40,6 +40,18 @@ function toSession(user: ApiUser): UserSession {
   };
 }
 
+const API_TIMEOUT_MS = 8_000;
+
+async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function apiFetch<T>(
   path: string,
   init?: RequestInit & { json?: unknown },
@@ -54,7 +66,7 @@ async function apiFetch<T>(
     body = JSON.stringify(init.json);
   }
 
-  const response = await fetch(`${base}${path}`, {
+  const response = await fetchWithTimeout(`${base}${path}`, {
     ...init,
     headers,
     body,

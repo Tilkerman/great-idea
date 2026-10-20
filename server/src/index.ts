@@ -244,6 +244,56 @@ async function sendVerificationEmail(user: SessionUser) {
   }, 'verification email');
 }
 
+const feedbackSchema = z.object({
+  message: z.string().trim().min(10).max(4000),
+  contact: z.string().trim().email().max(254).optional(),
+  locale: z.enum(['ru', 'en', 'es']).default('ru'),
+  website: z.string().max(200).optional(),
+});
+
+app.post('/v1/feedback', async (request, reply) => {
+  const input = feedbackSchema.safeParse(request.body);
+  if (!input.success) return reply.code(400).send({ error: 'invalid_feedback' });
+
+  // Honeypot: bots often fill hidden website fields. Pretend success.
+  if (input.data.website) return reply.code(202).send({ ok: true });
+  if (tooManyRequests(`feedback:${request.ip}`)) {
+    return reply.code(429).send({ error: 'too_many_requests' });
+  }
+
+  const contact = input.data.contact || 'не указан';
+  const text = [
+    'Новое сообщение из TiLi',
+    '',
+    input.data.message,
+    '',
+    `Email для ответа: ${contact}`,
+    `Язык приложения: ${input.data.locale}`,
+  ].join('\n');
+
+  try {
+    const result = await sendMail(config, {
+      to: config.FEEDBACK_TO_EMAIL,
+      subject: 'Обратная связь TiLi',
+      text,
+      html: [
+        '<h1>Новое сообщение из TiLi</h1>',
+        `<p style="white-space:pre-wrap">${escapeHtml(input.data.message)}</p>`,
+        `<p><strong>Email для ответа:</strong> ${escapeHtml(contact)}</p>`,
+        `<p><strong>Язык приложения:</strong> ${escapeHtml(input.data.locale)}</p>`,
+      ].join(''),
+    });
+    if (result === 'skipped') {
+      request.log.error('feedback mail is not configured');
+      return reply.code(503).send({ error: 'feedback_unavailable' });
+    }
+    return reply.code(202).send({ ok: true });
+  } catch (error) {
+    request.log.error({ error }, 'feedback email could not be sent');
+    return reply.code(502).send({ error: 'feedback_unavailable' });
+  }
+});
+
 app.post('/v1/auth/verify-email/request', async (request, reply) => {
   const input = emailSchema.safeParse(request.body);
   if (!input.success) return reply.code(400).send({ error: 'invalid_email' });

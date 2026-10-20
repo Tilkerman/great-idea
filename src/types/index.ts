@@ -70,6 +70,7 @@ export type AppScreen =
   | 'settings-notifications'
   | 'settings-about'
   | 'settings-support'
+  | 'settings-feedback'
   | 'lumi';
 
 export type AuthStart = 'choice' | 'register' | 'login';

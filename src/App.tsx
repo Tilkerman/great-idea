@@ -22,6 +22,7 @@ import { SettingsStatistics } from './components/settings/SettingsStatistics';
 import { SettingsInstall } from './components/settings/SettingsInstall';
 import { SettingsNotifications } from './components/settings/SettingsNotifications';
 import { SettingsSupport } from './components/settings/SettingsSupport';
+import { SettingsFeedback } from './components/settings/SettingsFeedback';
 import { useTaskReminders } from './hooks/useTaskReminders';
 import { useOpenTaskFromNotification } from './hooks/useOpenTaskFromNotification';
 import { useI18n } from './i18n/useI18n';
@@ -32,6 +33,7 @@ import { useAppViewportHeight } from './hooks/useAppViewportHeight';
 import { useDesktopLayoutClass } from './hooks/useDesktopLayoutClass';
 import { useLayoutMode } from './hooks/useLayoutMode';
 import { SideNav } from './components/layout/SideNav';
+import { IosInstallBanner } from './components/pwa/IosInstallBanner';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
@@ -77,6 +79,8 @@ function SettingsScreens({ screen }: { screen: string }) {
       return <SettingsAbout />;
     case 'settings-support':
       return <SettingsSupport />;
+    case 'settings-feedback':
+      return <SettingsFeedback />;
     default:
       return null;
   }
@@ -155,11 +159,13 @@ function AppRouter() {
             </main>
           </div>
         )}
-        <div className={`app-shell app-shell--lumi${showLumi ? '' : ' app-shell--off'}`}>
-          <main className="app-shell__main">
-            <LumiEmbed />
-          </main>
-        </div>
+        {showLumi && (
+          <div className="app-shell app-shell--lumi">
+            <main className="app-shell__main">
+              <LumiEmbed />
+            </main>
+          </div>
+        )}
         {inSettings && (
           <div ref={settingsOverlayRef} className="settings-overlay">
             <SettingsScreens screen={screen} />
@@ -178,6 +184,7 @@ export default function App() {
   return (
     <AppProvider>
       <LumiHostProvider>
+        <IosInstallBanner />
         <AppRouter />
         <DeleteConfirm />
       </LumiHostProvider>

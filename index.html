@@ -13,6 +13,24 @@
     <script>
       (function () {
         var n = window.navigator;
+        var ua = n.userAgent || '';
+        var ios = /iPhone|iPad|iPod/.test(ua);
+        var standalone = window.matchMedia('(display-mode: standalone)').matches || n.standalone;
+        if (ios && !standalone && 'serviceWorker' in n) {
+          n.serviceWorker.getRegistrations().then(function (regs) {
+            return Promise.all(regs.map(function (r) { return r.unregister(); }));
+          }).catch(function () {});
+          if (typeof caches !== 'undefined') {
+            caches.keys().then(function (keys) {
+              return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+            }).catch(function () {});
+          }
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        var n = window.navigator;
         var standalone = window.matchMedia('(display-mode: standalone)').matches || n.standalone;
         if (!standalone) return;
         var root = document.documentElement;
@@ -32,8 +50,9 @@
         iPhone Home only: critical inset before CSS bundle (env() is often 0 in standalone).
       */
       html.is-ios-standalone {
-        --safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
-        --bottom-nav-h: calc(72px + var(--safe-bottom));
+        --ios-nav-safe: env(safe-area-inset-bottom, 34px);
+        --safe-bottom: var(--ios-nav-safe);
+        --bottom-nav-h: calc(68px + var(--ios-nav-safe));
       }
       html.is-ios-standalone .app-viewport {
         padding-bottom: var(--bottom-nav-h);
@@ -48,18 +67,21 @@
         max-width: 480px;
         margin-left: auto;
         margin-right: auto;
-        box-sizing: content-box;
-        min-height: 56px;
+        box-sizing: border-box;
+        min-height: var(--bottom-nav-h);
         height: auto;
-        padding: 8px 8px calc(8px + var(--safe-bottom));
+        padding: 6px 4px var(--ios-nav-safe);
         z-index: 1200;
       }
     </style>
     <script>
       (function () {
         try {
+          var ua = navigator.userAgent || '';
+          var ios = /iPhone|iPad|iPod/.test(ua);
           var standalone = window.matchMedia('(display-mode: standalone)').matches
             || window.navigator.standalone;
+          if (ios && !standalone) return;
           var payload = JSON.stringify({
             action: 'hello',
             deviceId: localStorage.getItem('tili-push-device') || '',

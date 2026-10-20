@@ -1,5 +1,5 @@
-import { TELEGRAM_WALLET_URL } from '../constants/support';
-import { isAppleMobile } from './pwaInstall';
+import { TELEGRAM_WALLET_URL, telegramWalletHref } from '../constants/support';
+import { isAppleMobile, isStandaloneApp } from './pwaInstall';
 
 /** Синхронное копирование — на iPhone async теряет жест и буфер пустой. */
 export function copyToClipboardSync(text: string): boolean {
@@ -21,30 +21,48 @@ export function copyToClipboardSync(text: string): boolean {
   } catch {
     /* clipboard API below */
   }
-  try {
-    if (navigator.clipboard?.writeText) {
-      void navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch {
-    return false;
-  }
   return false;
 }
 
-export async function copyToClipboard(text: string): Promise<boolean> {
-  return copyToClipboardSync(text);
+/** После sync-пути (важно для жеста на iPhone). */
+export async function copyToClipboardAsync(text: string): Promise<boolean> {
+  if (copyToClipboardSync(text)) return true;
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-/** Открыть Telegram снаружи PWA (iPhone: target=_blank → Safari → приложение). */
+export async function copyToClipboard(text: string): Promise<boolean> {
+  return copyToClipboardAsync(text);
+}
+
+/**
+ * Внешняя ссылка из PWA. Не откладывать вызов — только синхронно из клика.
+ * t.me в standalone часто даёт белый экран; на телефоне — tg:// в приложение.
+ */
 export function openExternalUrl(url: string) {
-  const link = document.createElement('a');
-  link.href = url;
-  link.target = '_blank';
-  link.rel = 'noopener noreferrer';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const href = url === TELEGRAM_WALLET_URL || url.includes('t.me/wallet')
+    ? telegramWalletHref()
+    : url;
+  const isHttp = href.startsWith('http');
+
+  if (!isHttp) {
+    window.location.assign(href);
+    return;
+  }
+
+  if (isStandaloneApp() && isAppleMobile()) {
+    window.location.assign(href);
+    return;
+  }
+
+  const opened = window.open(href, '_blank', 'noopener,noreferrer');
+  if (!opened) {
+    window.location.assign(href);
+  }
 }
 
 export function isMobilePhone() {

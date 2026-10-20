@@ -41,6 +41,7 @@ services:
       API_PUBLIC_URL: ${API_PUBLIC_URL:-http://localhost:8080}
       MAIL_FROM: ${MAIL_FROM:-hello@tili.su}
       MAIL_FROM_NAME: ${MAIL_FROM_NAME:-TiLi}
+      FEEDBACK_TO_EMAIL: ${FEEDBACK_TO_EMAIL:-vasil.ev81@mail.ru}
       UNISENDER_API_URL: ${UNISENDER_API_URL:-https://goapi.unisender.ru/ru/transactional/api/v1}
       UNISENDER_API_KEY: ${UNISENDER_API_KEY:-}
       VAPID_PUBLIC: ${VAPID_PUBLIC:-}

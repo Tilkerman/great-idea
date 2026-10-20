@@ -1,4 +1,5 @@
 import { useRef, useState, type ChangeEvent } from 'react';
+import { MIN_PASSWORD_LENGTH } from '../../constants/auth';
 import { useApp } from '../../context/AppContext';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import { useI18n } from '../../i18n/useI18n';
@@ -95,6 +96,7 @@ export function SettingsHub() {
   const { t } = useI18n();
 
   const commonItems: HubItem[] = [
+    { id: 'settings-feedback', label: t('feedbackMenuTitle'), sub: t('feedbackMenuSub') },
     { id: 'settings-transfer', label: t('settingsTransfer'), sub: t('settingsTransferSub') },
     { id: 'settings-appearance', label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
     { id: 'settings-install', label: t('settingsInstall'), sub: t('settingsInstallSub') },
@@ -352,7 +354,7 @@ export function SettingsPassword() {
       setError(t('loginFirst'));
       return;
     }
-    if (next.length < 6) {
+    if (next.length < MIN_PASSWORD_LENGTH) {
       setError(t('passwordMin'));
       return;
     }

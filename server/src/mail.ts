@@ -23,7 +23,6 @@ export async function sendMail(config: AppConfig, message: OutboundMail): Promis
         from_email: config.MAIL_FROM,
         from_name: config.MAIL_FROM_NAME,
         subject: message.subject,
-        skip_unsubscribe: 1,
         global_language: 'ru',
         body: {
           html: message.html,

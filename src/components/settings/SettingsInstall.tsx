@@ -24,6 +24,7 @@ function InstallGuide({ ios }: { ios: boolean }) {
         <li>{t('installIos3')}</li>
         <li>{t('installIos4')}</li>
         <li>{t('installIos5')}</li>
+        <li>{t('installIos6')}</li>
       </ol>
     );
   }
@@ -72,6 +73,12 @@ export function SettingsInstall() {
     trackInstallButtonClick();
     trackInstallHintClick(settings.analyticsEnabled, isIos ? 'ios' : 'android');
     setFeedback(null);
+
+    if (isIos) {
+      setShowGuide(true);
+      setFeedback(t('installIosButtonNote'));
+      return;
+    }
 
     if (installPrompt) {
       setInstallBusy(true);

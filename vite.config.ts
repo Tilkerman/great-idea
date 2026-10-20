@@ -9,21 +9,36 @@ export default defineConfig(({ command }) => {
   const manifestStart = appAtSubpath
     ? (command === 'build' ? 'https://tili.su/app/' : '/app/')
     : './';
+  const manifestIconAbs = (file: string) =>
+    appAtSubpath && command === 'build' ? `https://tili.su/app/${file}` : manifestIcon(file);
 
   return {
   base,
-  ...(appAtSubpath ? { build: { outDir: 'dist/app', emptyOutDir: true } } : {}),
+  ...(appAtSubpath
+    ? {
+        build: {
+          outDir: 'dist/app',
+          emptyOutDir: true,
+          modulePreload: { polyfill: true },
+        },
+      }
+    : { build: { modulePreload: { polyfill: true } } }),
   plugins: [
     react(),
     {
       name: 'tili-html-icons',
       transformIndexHtml(html) {
         if (!appAtSubpath) return html;
-        const build = process.env.VITE_APP_BUILD || 'dev';
-        const iconV = `https://tili.su/app/apple-touch-icon-v8.png?v=${build}`;
         return html
           .replace('href="favicon.png"', 'href="/app/favicon.png"')
-          .replace('href="apple-touch-icon-v8.png"', `href="${iconV}"`);
+          .replace(
+            'href="apple-touch-icon-v8.png"',
+            'href="https://tili.su/app/apple-touch-icon-v8.png"',
+          )
+          .replace(
+            '</head>',
+            '    <link rel="apple-touch-icon-precomposed" href="https://tili.su/app/apple-touch-icon-v8.png" />\n  </head>',
+          );
       },
     },
     VitePWA({
@@ -80,25 +95,25 @@ export default defineConfig(({ command }) => {
         scope: manifestStart,
         icons: [
           {
-            src: manifestIcon('tili-pwa-192-v8.png'),
+            src: manifestIconAbs('tili-pwa-192-v8.png'),
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: manifestIcon('apple-touch-icon-v8.png'),
+            src: manifestIconAbs('apple-touch-icon-v8.png'),
             sizes: '180x180',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: manifestIcon('tili-pwa-512-v8.png'),
+            src: manifestIconAbs('tili-pwa-512-v8.png'),
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: manifestIcon('tili-pwa-512-v8.png'),
+            src: manifestIconAbs('tili-pwa-512-v8.png'),
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',

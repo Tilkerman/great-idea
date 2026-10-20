@@ -19,6 +19,34 @@ export function isAppleMobile() {
   return /iPhone|iPad|iPod/.test(navigator.userAgent);
 }
 
+/** Built-in browser (Telegram, Instagram, …) — «На экран Домой» there does nothing useful. */
+export function isIosInAppBrowser() {
+  if (!isAppleMobile()) return false;
+  const ua = navigator.userAgent;
+  if (/Telegram|Instagram|FBAN|FBAV|Line\/|Twitter|GSA\/|WhatsApp|LinkedInApp|Snapchat/i.test(ua)) {
+    return true;
+  }
+  const webkit = /AppleWebKit/i.test(ua);
+  const safari = /Safari/i.test(ua);
+  const notOtherIosBrowser = !/CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua);
+  if (webkit && notOtherIosBrowser && !safari) return true;
+  if (webkit && notOtherIosBrowser && safari && !/Version\/[\d.]+/i.test(ua)) return true;
+  return false;
+}
+
+export function isIosChrome() {
+  if (!isAppleMobile()) return false;
+  return /CriOS/i.test(navigator.userAgent);
+}
+
+/** Real Mobile Safari tab (not Home Screen, not Chrome, not in-app). */
+export function isIosSafariBrowser() {
+  if (!isAppleMobile() || isStandaloneApp()) return false;
+  if (isIosInAppBrowser() || isIosChrome()) return false;
+  const ua = navigator.userAgent;
+  return /Safari/i.test(ua) && /Version\/[\d.]+/i.test(ua);
+}
+
 /** Installed from iOS Home / iPad; needs home-indicator padding when env() is 0. */
 export function isIosStandalonePwa() {
   if (!isStandaloneApp()) return false;

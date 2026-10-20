@@ -1,16 +1,10 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
-import { SUPPORT_TG_WALLET_ADDRESS, TELEGRAM_WALLET_URL } from '../../constants/support';
+import { SUPPORT_TG_WALLET_ADDRESS, telegramWalletHref } from '../../constants/support';
 import { trackSupportAuthorClick } from '../../utils/productAnalytics';
-import {
-  copyToClipboardSync,
-  isMobilePhone,
-  openExternalUrl,
-} from '../../utils/openExternal';
+import { copyToClipboardAsync, copyToClipboardSync, isMobilePhone } from '../../utils/openExternal';
 import './Settings.css';
-
-const TELEGRAM_OPEN_DELAY_MS = 2800;
 
 export function SettingsSupport() {
   const { setScreen, settings } = useApp();
@@ -19,29 +13,22 @@ export function SettingsSupport() {
   const address = SUPPORT_TG_WALLET_ADDRESS.trim();
   const hasAddress = address.length > 0;
   const mobile = isMobilePhone();
+  const walletHref = telegramWalletHref();
+  const walletOpensInNewTab = walletHref.startsWith('http');
 
-  const onCopy = () => {
+  /** Копирование до click — иначе setState в onClick ломает переход по ссылке. */
+  const onWalletPointerDown = () => {
     if (!hasAddress) return;
-    const ok = copyToClipboardSync(address);
-    setBanner(ok ? 'ok' : 'fail');
-    trackSupportAuthorClick(settings.analyticsEnabled, 'copy');
-  };
-
-  const onSend = () => {
-    if (!hasAddress) return;
-    const copied = copyToClipboardSync(address);
-    setBanner(copied ? 'ok' : 'fail');
     trackSupportAuthorClick(settings.analyticsEnabled, 'open_wallet');
-
-    if (!mobile) return;
-
-    window.setTimeout(() => {
-      openExternalUrl(TELEGRAM_WALLET_URL);
-    }, TELEGRAM_OPEN_DELAY_MS);
-  };
-
-  const onOpenTelegramOnly = () => {
-    openExternalUrl(TELEGRAM_WALLET_URL);
+    const copied = copyToClipboardSync(address);
+    const showBanner = (ok: boolean) => {
+      window.setTimeout(() => setBanner(ok ? 'ok' : 'fail'), 0);
+    };
+    if (copied) {
+      showBanner(true);
+      return;
+    }
+    void copyToClipboardAsync(address).then(showBanner);
   };
 
   return (
@@ -52,47 +39,42 @@ export function SettingsSupport() {
         <span />
       </header>
 
-      {banner !== 'idle' && (
-        <div
-          className={`support-banner ${banner === 'ok' ? 'support-banner--ok' : 'support-banner--warn'}`}
-          role="status"
-        >
-          <p className="support-banner__title">
-            {banner === 'ok' ? t('supportBannerTitle') : t('supportCopyFail')}
-          </p>
-          {banner === 'ok' && (
-            <p className="support-banner__body">{t('supportBannerBody')}</p>
-          )}
-        </div>
-      )}
-
-      <div className="settings-form">
+      <div className="settings-form settings-form--support">
         <p className="settings-note">{t('supportLead')}</p>
         <p className="settings-note">{t('supportFreeNote')}</p>
 
         {hasAddress ? (
           <>
-            <p className="settings-note support-how">{t('supportHowIntro')}</p>
             <p className="settings-note">{t('supportNetworkNote')}</p>
             <ol className="support-steps">
-              <li>{t('supportStep1')}</li>
+              <li>{t('supportStepOpenWallet')}</li>
               <li>{t('supportStep2')}</li>
               <li>{t('supportStep3')}</li>
             </ol>
             <div className="support-wallet" role="group" aria-label={t('supportWalletLabel')}>
               <code className="support-wallet__address">{address}</code>
             </div>
-            <button type="button" className="btn btn--primary settings-full" onClick={onSend}>
-              {mobile ? t('supportSendTelegram') : t('supportCopyAddress')}
-            </button>
-            {mobile && (
-              <button type="button" className="btn btn--ghost settings-full" onClick={onOpenTelegramOnly}>
-                {t('supportOpenTelegramOnly')}
-              </button>
+            <p className="settings-note support-wallet-hint">{t('supportWalletManualCopy')}</p>
+            <a
+              href={walletHref}
+              className="btn btn--primary settings-full support-wallet-link"
+              {...(walletOpensInNewTab
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
+              onPointerDown={onWalletPointerDown}
+            >
+              {t('supportOpenWallet')}
+            </a>
+            {banner !== 'idle' && (
+              <p
+                className={`support-feedback${banner === 'ok' ? ' support-feedback--ok' : ' support-feedback--warn'}`}
+                role="status"
+              >
+                {banner === 'ok'
+                  ? (mobile ? t('supportCopiedOpenTelegram') : t('supportCopiedOpenTelegramDesktop'))
+                  : t('supportCopyFail')}
+              </p>
             )}
-            <button type="button" className="btn btn--ghost settings-full" onClick={onCopy}>
-              {t('supportCopyAgain')}
-            </button>
           </>
         ) : (
           <p className="settings-note" role="status">{t('supportAddressPending')}</p>

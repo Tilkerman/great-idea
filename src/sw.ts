@@ -13,19 +13,35 @@ self.addEventListener('message', (event) => {
     void self.skipWaiting();
   }
 });
+const ASSET_CACHE = 'tili-app-assets-v2';
+
 self.addEventListener('activate', (event) => {
-  // Must keep self.__WB_MANIFEST as a live read so injectManifest can inject.
-  const manifest = self.__WB_MANIFEST;
-  const precacheCount = Array.isArray(manifest) ? manifest.length : 0;
   event.waitUntil((async () => {
+    const manifest = self.__WB_MANIFEST;
+    if (!Array.isArray(manifest)) return;
     const keys = await caches.keys();
-    await Promise.all(
-      keys
-        .filter((k) => k.startsWith('workbox-') || k.startsWith('tili-'))
-        .map((k) => caches.delete(k)),
-    );
+    await Promise.all(keys.filter((k) => k.startsWith('tili-app-assets-') && k !== ASSET_CACHE).map((k) => caches.delete(k)));
     await self.clients.claim();
-    if (precacheCount < 0) await self.registration.unregister();
+  })());
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (!url.pathname.startsWith('/app/assets/')) return;
+  event.respondWith((async () => {
+    const cache = await caches.open(ASSET_CACHE);
+    try {
+      const res = await fetch(event.request);
+      if (res.ok) {
+        void cache.put(event.request, res.clone());
+      }
+      return res;
+    } catch {
+      const cached = await cache.match(event.request);
+      if (cached) return cached;
+      throw new Error('asset fetch failed');
+    }
   })());
 });
 

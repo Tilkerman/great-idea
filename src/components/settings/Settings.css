@@ -417,6 +417,48 @@
   border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
 }
 
+.support-feedback--warn {
+  background: color-mix(in srgb, #e8a317 18%, var(--surface));
+  border-color: #c99200;
+}
+
+.settings-form--support {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-page--support {
+  min-height: 100%;
+  background: var(--bg);
+}
+
+.settings-overlay .settings-page--support {
+  min-height: 100%;
+}
+
+.support-wallet-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  touch-action: manipulation;
+}
+
+.support-wallet-hint {
+  font-size: 13px;
+  margin-top: -4px;
+}
+
+.support-fallback-note {
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.support-fallback-note a {
+  color: var(--accent);
+}
+
 .settings-about {
   padding: 16px 16px 32px;
   text-align: left;
@@ -973,4 +1015,76 @@
 
 .stats-footer-note {
   margin-top: 16px;
+}
+
+.settings-feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.settings-feedback__lead,
+.settings-feedback__privacy {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.settings-feedback__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.settings-feedback__field textarea,
+.settings-feedback__field input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.settings-feedback__field textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+.settings-feedback__field textarea:focus,
+.settings-feedback__field input:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-color: var(--accent);
+}
+
+.settings-feedback__field small {
+  align-self: flex-end;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.settings-feedback__status {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.settings-feedback__status--ok {
+  color: var(--cat-family-text);
+  background: var(--cat-family-soft);
+}
+
+.settings-feedback__status--error {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, var(--surface));
 }

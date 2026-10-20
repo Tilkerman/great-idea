@@ -36,10 +36,24 @@ html.is-ios-standalone .app-viewport__main > .bottom-nav {
   max-width: 480px;
   margin-left: auto;
   margin-right: auto;
-  box-sizing: content-box !important;
-  min-height: var(--bottom-nav-bar-h);
-  padding: 8px 8px calc(8px + var(--safe-bottom));
+  box-sizing: border-box !important;
+  min-height: var(--bottom-nav-h);
+  padding: 6px 4px var(--ios-nav-safe, var(--safe-bottom));
   z-index: 1200;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: end;
+  justify-items: center;
+}
+
+html.is-ios-standalone .bottom-nav__item {
+  width: 100%;
+  max-width: 88px;
+}
+
+html.is-ios-standalone .bottom-nav__item--add {
+  flex: none;
+  max-width: 72px;
 }
 
 .bottom-nav::before {

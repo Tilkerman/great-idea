@@ -9,6 +9,7 @@ const envSchema = z.object({
   API_PUBLIC_URL: z.string().url().default('http://localhost:8080'),
   MAIL_FROM: z.string().email().default('hello@tili.su'),
   MAIL_FROM_NAME: z.string().trim().min(1).max(80).default('TiLi'),
+  FEEDBACK_TO_EMAIL: z.string().email().default('vasil.ev81@mail.ru'),
   UNISENDER_API_URL: z.string().url().default('https://goapi.unisender.ru/ru/transactional/api/v1'),
   UNISENDER_API_KEY: z.string().default(''),
   DATABASE_SSL: z.enum(['true', 'false']).default('false'),

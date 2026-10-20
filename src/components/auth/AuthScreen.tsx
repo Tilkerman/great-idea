@@ -14,6 +14,7 @@ import {
   requestAccountPasswordReset,
   resetAccountPassword,
 } from '../../utils/authService';
+import { MIN_PASSWORD_LENGTH } from '../../constants/auth';
 import '../settings/Settings.css';
 import './AuthScreen.css';
 
@@ -83,7 +84,7 @@ export function AuthScreen() {
           : '';
 
   async function submitRegister() {
-    if (password.length < 6) {
+    if (password.length < MIN_PASSWORD_LENGTH) {
       setError(t('authPasswordMinShort'));
       return;
     }
@@ -141,7 +142,7 @@ export function AuthScreen() {
   }
 
   async function submitReset() {
-    if (password.length < 6) {
+    if (password.length < MIN_PASSWORD_LENGTH) {
       setError(t('authPasswordMinShort'));
       return;
     }

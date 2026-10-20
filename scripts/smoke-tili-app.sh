@@ -41,4 +41,11 @@ if [[ "${manifest_code}" != "200" ]]; then
   exit 1
 fi
 
+if [[ -n "${css_path}" ]]; then
+  if ! curl -fsS "${ORIGIN}${css_path}" | grep -q 'is-ios-standalone .bottom-nav.*position:fixed'; then
+    echo "FAIL: stylesheet missing iOS fixed bottom-nav rule"
+    exit 1
+  fi
+fi
+
 echo "OK: ${js_path} (${js_code}), manifest ${manifest_code}"
