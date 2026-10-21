@@ -31,6 +31,17 @@
   color: var(--danger);
 }
 
+.auth-form__success {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(159, 212, 168, 0.2);
+  border: 1px solid rgba(159, 212, 168, 0.35);
+}
+
 .auth-progress {
   text-align: right;
   font-size: 13px;

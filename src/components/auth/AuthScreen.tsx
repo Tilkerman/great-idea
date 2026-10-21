@@ -12,6 +12,7 @@ import {
   normalizeEmail,
   registerAccount,
   requestAccountPasswordReset,
+  resendVerificationEmail,
   resetAccountPassword,
 } from '../../utils/authService';
 import { MIN_PASSWORD_LENGTH } from '../../constants/auth';
@@ -48,11 +49,43 @@ export function AuthScreen() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [registeredViaCloud, setRegisteredViaCloud] = useState(false);
+  const [loginAwaitingVerify, setLoginAwaitingVerify] = useState(false);
+  const [verifyResent, setVerifyResent] = useState(false);
+  const [resendBusy, setResendBusy] = useState(false);
 
   const backToApp = () => setScreen(authBackScreen === 'auth' ? 'calendar' : authBackScreen);
 
+  const showVerifyResend =
+    isCloudAccountEnabled()
+    && ((step === 'register-done' && registeredViaCloud)
+      || (step === 'login-password' && loginAwaitingVerify));
+
+  async function submitResendVerify() {
+    if (!isValidEmail(email)) {
+      setError(t('badEmail'));
+      return;
+    }
+    setResendBusy(true);
+    setError('');
+    setVerifyResent(false);
+    try {
+      await resendVerificationEmail(email);
+      setVerifyResent(true);
+    } catch (e) {
+      if (e instanceof AccountApiError && e.code === 'too_many_requests') {
+        setError(t('authTooManyRequests'));
+      } else {
+        setError(t('authVerifyResendFail'));
+      }
+    } finally {
+      setResendBusy(false);
+    }
+  }
+
   const goBack = () => {
     setError('');
+    setLoginAwaitingVerify(false);
+    setVerifyResent(false);
     if (step === 'choice') backToApp();
     else if (step === 'register-name') {
       if (authStart === 'register') backToApp();
@@ -132,6 +165,8 @@ export function AuthScreen() {
       setScreen('calendar');
     } catch (e) {
       if (e instanceof AccountApiError && e.code === 'email_not_verified') {
+        setLoginAwaitingVerify(true);
+        setVerifyResent(false);
         setError(t('authEmailNotVerified'));
         return;
       }
@@ -284,6 +319,21 @@ export function AuthScreen() {
             <p className="auth-form__intro">
               {registeredViaCloud ? t('authDoneCloudBody') : t('authDoneBody')}
             </p>
+            {showVerifyResend && verifyResent && (
+              <p className="auth-form__success" role="status">
+                {t('authVerifyResent', { email: normalizeEmail(email) })}
+              </p>
+            )}
+            {showVerifyResend && (
+              <button
+                type="button"
+                className="btn btn--ghost settings-full"
+                disabled={resendBusy || verifyResent}
+                onClick={() => { void submitResendVerify(); }}
+              >
+                {resendBusy ? t('authResendVerifyBusy') : t('authResendVerify')}
+              </button>
+            )}
             <button type="button" className="btn btn--primary settings-full" onClick={() => setScreen('calendar')}>
               {t('authOpenCalendar')}
             </button>
@@ -314,6 +364,8 @@ export function AuthScreen() {
                   return;
                 }
                 setError('');
+                setLoginAwaitingVerify(false);
+                setVerifyResent(false);
                 setPassword('');
                 setStep('login-password');
               }}
@@ -346,6 +398,21 @@ export function AuthScreen() {
             <button type="button" className="btn btn--primary settings-full" disabled={busy} onClick={() => { void submitLogin(); }}>
               {t('authSignIn')}
             </button>
+            {showVerifyResend && verifyResent && (
+              <p className="auth-form__success" role="status">
+                {t('authVerifyResent', { email: normalizeEmail(email) })}
+              </p>
+            )}
+            {showVerifyResend && (
+              <button
+                type="button"
+                className="btn btn--ghost settings-full"
+                disabled={resendBusy || verifyResent}
+                onClick={() => { void submitResendVerify(); }}
+              >
+                {resendBusy ? t('authResendVerifyBusy') : t('authResendVerify')}
+              </button>
+            )}
             <button type="button" className="auth-form__switch" onClick={() => { setError(''); setPassword(''); setPassword2(''); setStep('forgot-email'); }}>
               {t('authForgot')}
             </button>
