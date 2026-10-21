@@ -6,6 +6,10 @@ import {
   registerLumiCloudDirtyNotifier,
 } from '../utils/lumiCloudDirty';
 import {
+  consumePendingLumiUpload,
+  peekPendingLumiUpload,
+} from '../utils/cloudSyncPending';
+import {
   pullLumiFromCloud,
   pushLumiToCloud,
   readLocalLumiSnapshot,
@@ -30,14 +34,15 @@ function snapshotEmpty(snapshot: Awaited<ReturnType<typeof readLocalLumiSnapshot
 
 export function useLumiCloudAutoSync(session: UserSession) {
   const active = cloudSyncActive(session);
+  const accountEmail = session.email ?? '';
   const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const busy = useRef(false);
 
   const applyRemoteSnapshot = useCallback(async (revision: number, snapshot: Awaited<ReturnType<typeof readLocalLumiSnapshot>>) => {
     await replaceLocalLumiSnapshot(snapshot);
-    writeLumiSyncRevision(revision);
+    writeLumiSyncRevision(revision, accountEmail);
     dispatchLumiCloudSynced();
-  }, []);
+  }, [accountEmail]);
 
   const pullRemote = useCallback(async () => {
     if (!active || busy.current) return;
@@ -45,7 +50,7 @@ export function useLumiCloudAutoSync(session: UserSession) {
     try {
       const remote = await pullLumiFromCloud();
       if (!remote) return;
-      const localRev = readLumiSyncRevision();
+      const localRev = readLumiSyncRevision(accountEmail);
       if (remote.revision > localRev) {
         await applyRemoteSnapshot(remote.revision, remote.snapshot);
       }
@@ -54,26 +59,26 @@ export function useLumiCloudAutoSync(session: UserSession) {
     } finally {
       busy.current = false;
     }
-  }, [active, applyRemoteSnapshot]);
+  }, [active, accountEmail, applyRemoteSnapshot]);
 
   const pushLocal = useCallback(async () => {
     if (!active || busy.current) return;
     busy.current = true;
     try {
       const snapshot = await readLocalLumiSnapshot();
-      const baseRevision = readLumiSyncRevision();
+      const baseRevision = readLumiSyncRevision(accountEmail);
       const result = await pushLumiToCloud(snapshot, baseRevision);
       if ('conflict' in result && result.conflict) {
         await applyRemoteSnapshot(result.revision, result.snapshot);
       } else {
-        writeLumiSyncRevision(result.revision);
+        writeLumiSyncRevision(result.revision, accountEmail);
       }
     } catch (err) {
       console.warn('[lumi-sync] push failed', err);
     } finally {
       busy.current = false;
     }
-  }, [active, applyRemoteSnapshot]);
+  }, [active, accountEmail, applyRemoteSnapshot]);
 
   const schedulePush = useCallback(() => {
     if (!active) return;
@@ -97,10 +102,15 @@ export function useLumiCloudAutoSync(session: UserSession) {
         const remote = await pullLumiFromCloud();
         if (!remote) return;
         const local = await readLocalLumiSnapshot();
-        const localRev = readLumiSyncRevision();
+        const localRev = readLumiSyncRevision(accountEmail);
 
         if (remote.revision === 0 && snapshotEmpty(remote.snapshot) && !snapshotEmpty(local)) {
-          await pushLocal();
+          if (peekPendingLumiUpload(accountEmail)) {
+            await pushLocal();
+            consumePendingLumiUpload(accountEmail);
+          } else {
+            await applyRemoteSnapshot(0, remote.snapshot);
+          }
           return;
         }
         if (remote.revision > localRev) {
@@ -114,7 +124,7 @@ export function useLumiCloudAutoSync(session: UserSession) {
         console.warn('[lumi-sync] bootstrap failed', err);
       }
     })();
-  }, [active, session.email, applyRemoteSnapshot, pushLocal, schedulePush]);
+  }, [active, accountEmail, applyRemoteSnapshot, pushLocal, schedulePush]);
 
   useEffect(() => {
     if (!active) return;

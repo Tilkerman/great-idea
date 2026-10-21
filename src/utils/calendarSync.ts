@@ -1,5 +1,6 @@
 import type { Task } from '../types';
 import { accountApiBase, isCloudAccountEnabled } from './accountApi';
+import { normalizeEmail } from './authLocal';
 
 type CalendarSyncState = {
   revision: number;
@@ -72,21 +73,31 @@ export async function pushCalendarToCloud(
   return { revision: payload.revision ?? baseRevision + 1 };
 }
 
-const CALENDAR_REV_KEY = 'tili-calendar-sync-revision';
+const CALENDAR_REV_PREFIX = 'tili-calendar-sync-revision';
+const CALENDAR_REV_LEGACY = CALENDAR_REV_PREFIX;
 
-export function readCalendarSyncRevision(): number {
+function calendarRevisionKey(accountEmail: string): string {
+  return `${CALENDAR_REV_PREFIX}:${normalizeEmail(accountEmail)}`;
+}
+
+export function readCalendarSyncRevision(accountEmail: string): number {
   try {
-    const raw = localStorage.getItem(CALENDAR_REV_KEY);
-    const n = Number(raw);
+    const scoped = localStorage.getItem(calendarRevisionKey(accountEmail));
+    if (scoped != null) {
+      const n = Number(scoped);
+      return Number.isFinite(n) && n >= 0 ? n : 0;
+    }
+    const legacy = localStorage.getItem(CALENDAR_REV_LEGACY);
+    const n = Number(legacy);
     return Number.isFinite(n) && n >= 0 ? n : 0;
   } catch {
     return 0;
   }
 }
 
-export function writeCalendarSyncRevision(revision: number) {
+export function writeCalendarSyncRevision(revision: number, accountEmail: string) {
   try {
-    localStorage.setItem(CALENDAR_REV_KEY, String(revision));
+    localStorage.setItem(calendarRevisionKey(accountEmail), String(revision));
   } catch {
     /* private mode */
   }

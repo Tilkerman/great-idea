@@ -1,6 +1,7 @@
 import type { ActionItem, Contact, Desire, Feedback, LifeAreaRating } from '../lumi/types';
 import { db as lumiDb } from '../lumi/services/db';
 import { accountApiBase, isCloudAccountEnabled } from './accountApi';
+import { normalizeEmail } from './authLocal';
 
 export type LumiSnapshot = {
   desires: Desire[];
@@ -125,21 +126,31 @@ export async function pushLumiToCloud(
   return { revision: payload.revision ?? baseRevision + 1 };
 }
 
-const LUMI_REV_KEY = 'tili-lumi-sync-revision';
+const LUMI_REV_PREFIX = 'tili-lumi-sync-revision';
+const LUMI_REV_LEGACY = LUMI_REV_PREFIX;
 
-export function readLumiSyncRevision(): number {
+function lumiRevisionKey(accountEmail: string): string {
+  return `${LUMI_REV_PREFIX}:${normalizeEmail(accountEmail)}`;
+}
+
+export function readLumiSyncRevision(accountEmail: string): number {
   try {
-    const raw = localStorage.getItem(LUMI_REV_KEY);
-    const n = Number(raw);
+    const scoped = localStorage.getItem(lumiRevisionKey(accountEmail));
+    if (scoped != null) {
+      const n = Number(scoped);
+      return Number.isFinite(n) && n >= 0 ? n : 0;
+    }
+    const legacy = localStorage.getItem(LUMI_REV_LEGACY);
+    const n = Number(legacy);
     return Number.isFinite(n) && n >= 0 ? n : 0;
   } catch {
     return 0;
   }
 }
 
-export function writeLumiSyncRevision(revision: number) {
+export function writeLumiSyncRevision(revision: number, accountEmail: string) {
   try {
-    localStorage.setItem(LUMI_REV_KEY, String(revision));
+    localStorage.setItem(lumiRevisionKey(accountEmail), String(revision));
   } catch {
     /* private mode */
   }

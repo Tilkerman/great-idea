@@ -11,6 +11,7 @@ import {
   requestVerifyEmail,
   updateCloudProfile,
 } from './accountApi';
+import { markPendingCloudUpload } from './cloudSyncPending';
 import {
   createAccount,
   deleteAccount,
@@ -39,6 +40,7 @@ export async function registerAccount(input: {
       email: input.email,
       password: input.password,
     });
+    markPendingCloudUpload(input.email);
     return { cloudPendingVerification: true };
   }
   const account = await createAccount(input);
