@@ -208,8 +208,8 @@ export function SettingsProfile() {
           </span>
           <p className="settings-profile-card__hint">
             {session.isGuest
-              ? t('guestHint')
-              : t('accountHint')}
+              ? t(isCloudAccountEnabled() ? 'guestHintCloud' : 'guestHint')
+              : t(isCloudAccountEnabled() ? 'accountHintCloud' : 'accountHint')}
           </p>
         </div>
 

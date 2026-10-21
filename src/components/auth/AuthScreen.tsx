@@ -177,7 +177,7 @@ export function AuthScreen() {
         {step === 'choice' && (
           <>
             <p className="auth-form__intro">
-              {t('authIntro')}
+              {t(isCloudAccountEnabled() ? 'authIntroCloud' : 'authIntro')}
             </p>
             <button type="button" className="btn btn--primary settings-full" onClick={() => { setError(''); setStep('register-name'); }}>
               {t('onbRegister')}
