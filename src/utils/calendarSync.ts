@@ -74,7 +74,6 @@ export async function pushCalendarToCloud(
 }
 
 const CALENDAR_REV_PREFIX = 'tili-calendar-sync-revision';
-const CALENDAR_REV_LEGACY = CALENDAR_REV_PREFIX;
 
 function calendarRevisionKey(accountEmail: string): string {
   return `${CALENDAR_REV_PREFIX}:${normalizeEmail(accountEmail)}`;
@@ -83,12 +82,8 @@ function calendarRevisionKey(accountEmail: string): string {
 export function readCalendarSyncRevision(accountEmail: string): number {
   try {
     const scoped = localStorage.getItem(calendarRevisionKey(accountEmail));
-    if (scoped != null) {
-      const n = Number(scoped);
-      return Number.isFinite(n) && n >= 0 ? n : 0;
-    }
-    const legacy = localStorage.getItem(CALENDAR_REV_LEGACY);
-    const n = Number(legacy);
+    if (scoped == null) return 0;
+    const n = Number(scoped);
     return Number.isFinite(n) && n >= 0 ? n : 0;
   } catch {
     return 0;

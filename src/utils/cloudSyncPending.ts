@@ -65,3 +65,33 @@ export function peekPendingLumiUpload(email: string): boolean {
     return false;
   }
 }
+
+export type CloudSyncKind = 'calendar' | 'lumi';
+
+const LAST_CLOUD_SYNC_EMAIL: Record<CloudSyncKind, string> = {
+  calendar: 'tili-last-cloud-sync-email-calendar',
+  lumi: 'tili-last-cloud-sync-email-lumi',
+};
+
+export function readLastCloudSyncEmail(kind: CloudSyncKind): string {
+  try {
+    return localStorage.getItem(LAST_CLOUD_SYNC_EMAIL[kind]) ?? '';
+  } catch {
+    return '';
+  }
+}
+
+export function writeLastCloudSyncEmail(email: string, kind: CloudSyncKind) {
+  try {
+    localStorage.setItem(LAST_CLOUD_SYNC_EMAIL[kind], normalizeEmail(email));
+  } catch {
+    /* private mode */
+  }
+}
+
+/** True when this verified session is a different cloud user than the last sync on this browser. */
+export function hasCloudAccountSwitched(accountEmail: string, kind: CloudSyncKind): boolean {
+  const last = readLastCloudSyncEmail(kind);
+  if (!last) return false;
+  return last !== normalizeEmail(accountEmail);
+}

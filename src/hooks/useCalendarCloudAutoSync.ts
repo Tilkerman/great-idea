@@ -4,7 +4,9 @@ import { getAllTasks, replaceAllTasks } from '../db';
 import { isCloudAccountEnabled } from '../utils/accountApi';
 import {
   consumePendingCalendarUpload,
+  hasCloudAccountSwitched,
   peekPendingCalendarUpload,
+  writeLastCloudSyncEmail,
 } from '../utils/cloudSyncPending';
 import {
   pullCalendarFromCloud,
@@ -100,6 +102,13 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
         if (!remote) return;
         const localTasks = await getAllTasks();
         const localRev = readCalendarSyncRevision(accountEmail);
+        const accountSwitched = hasCloudAccountSwitched(accountEmail, 'calendar');
+
+        if (accountSwitched) {
+          await applyRemoteSnapshot(remote.revision, remote.snapshot);
+          writeLastCloudSyncEmail(accountEmail, 'calendar');
+          return;
+        }
 
         if (remote.revision === 0 && remote.snapshot.length === 0 && localTasks.length > 0) {
           if (peekPendingCalendarUpload(accountEmail)) {
@@ -117,6 +126,7 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
         if (localTasks.length > 0 && remote.revision === localRev) {
           schedulePush();
         }
+        writeLastCloudSyncEmail(accountEmail, 'calendar');
       } catch (err) {
         console.warn('[calendar-sync] bootstrap failed', err);
       }

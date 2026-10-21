@@ -127,7 +127,6 @@ export async function pushLumiToCloud(
 }
 
 const LUMI_REV_PREFIX = 'tili-lumi-sync-revision';
-const LUMI_REV_LEGACY = LUMI_REV_PREFIX;
 
 function lumiRevisionKey(accountEmail: string): string {
   return `${LUMI_REV_PREFIX}:${normalizeEmail(accountEmail)}`;
@@ -136,12 +135,8 @@ function lumiRevisionKey(accountEmail: string): string {
 export function readLumiSyncRevision(accountEmail: string): number {
   try {
     const scoped = localStorage.getItem(lumiRevisionKey(accountEmail));
-    if (scoped != null) {
-      const n = Number(scoped);
-      return Number.isFinite(n) && n >= 0 ? n : 0;
-    }
-    const legacy = localStorage.getItem(LUMI_REV_LEGACY);
-    const n = Number(legacy);
+    if (scoped == null) return 0;
+    const n = Number(scoped);
     return Number.isFinite(n) && n >= 0 ? n : 0;
   } catch {
     return 0;

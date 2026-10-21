@@ -7,7 +7,9 @@ import {
 } from '../utils/lumiCloudDirty';
 import {
   consumePendingLumiUpload,
+  hasCloudAccountSwitched,
   peekPendingLumiUpload,
+  writeLastCloudSyncEmail,
 } from '../utils/cloudSyncPending';
 import {
   pullLumiFromCloud,
@@ -103,6 +105,13 @@ export function useLumiCloudAutoSync(session: UserSession) {
         if (!remote) return;
         const local = await readLocalLumiSnapshot();
         const localRev = readLumiSyncRevision(accountEmail);
+        const accountSwitched = hasCloudAccountSwitched(accountEmail, 'lumi');
+
+        if (accountSwitched) {
+          await applyRemoteSnapshot(remote.revision, remote.snapshot);
+          writeLastCloudSyncEmail(accountEmail, 'lumi');
+          return;
+        }
 
         if (remote.revision === 0 && snapshotEmpty(remote.snapshot) && !snapshotEmpty(local)) {
           if (peekPendingLumiUpload(accountEmail)) {
@@ -120,6 +129,7 @@ export function useLumiCloudAutoSync(session: UserSession) {
         if (!snapshotEmpty(local) && remote.revision === localRev) {
           schedulePush();
         }
+        writeLastCloudSyncEmail(accountEmail, 'lumi');
       } catch (err) {
         console.warn('[lumi-sync] bootstrap failed', err);
       }
