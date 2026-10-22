@@ -173,11 +173,17 @@ export function useLumiCloudAutoSync(session: UserSession) {
 
   useEffect(() => {
     if (!active) return;
-    const onVis = () => {
-      if (document.visibilityState !== 'visible') return;
+    const onResume = () => {
+      if (document.visibilityState === 'hidden') return;
       void reconcile();
     };
-    document.addEventListener('visibilitychange', onVis);
-    return () => document.removeEventListener('visibilitychange', onVis);
+    document.addEventListener('visibilitychange', onResume);
+    window.addEventListener('pageshow', onResume);
+    window.addEventListener('focus', onResume);
+    return () => {
+      document.removeEventListener('visibilitychange', onResume);
+      window.removeEventListener('pageshow', onResume);
+      window.removeEventListener('focus', onResume);
+    };
   }, [active, reconcile]);
 }

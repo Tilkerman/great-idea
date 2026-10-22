@@ -1,5 +1,5 @@
 import type { Task } from '../types';
-import { accountApiBase, isCloudAccountEnabled } from './accountApi';
+import { cloudFetch, isCloudAccountEnabled } from './accountApi';
 import { normalizeEmail } from './authLocal';
 
 type CalendarSyncState = {
@@ -9,23 +9,7 @@ type CalendarSyncState = {
 };
 
 async function syncFetch<T>(path: string, init?: RequestInit & { json?: unknown }): Promise<T> {
-  const base = accountApiBase();
-  if (!base) throw new Error('cloud_disabled');
-
-  const headers = new Headers(init?.headers);
-  let body = init?.body;
-  if (init?.json !== undefined) {
-    headers.set('content-type', 'application/json');
-    body = JSON.stringify(init.json);
-  }
-
-  const response = await fetch(`${base}${path}`, {
-    ...init,
-    headers,
-    body,
-    credentials: 'include',
-  });
-
+  const response = await cloudFetch(path, init);
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(typeof payload.error === 'string' ? payload.error : 'sync_failed');
@@ -49,12 +33,9 @@ export async function pushCalendarToCloud(
 ): Promise<{ revision: number } | { conflict: true; revision: number; snapshot: Task[] }> {
   if (!isCloudAccountEnabled()) throw new Error('cloud_disabled');
 
-  const base = accountApiBase()!;
-  const response = await fetch(`${base}/v1/sync/calendar`, {
+  const response = await cloudFetch('/v1/sync/calendar', {
     method: 'PUT',
-    credentials: 'include',
-    headers: { 'content-type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({ baseRevision, snapshot: tasks }),
+    json: { baseRevision, snapshot: tasks },
   });
   const payload = await response.json().catch(() => ({})) as {
     revision?: number;

@@ -22,6 +22,9 @@ export class AccountApiError extends Error {
   }
 }
 
+const PREFERRED_BASE_KEY = 'tili-account-api-base';
+const KNOWN_API_HOSTS = ['https://tili.su', 'https://api.tili.su'] as const;
+
 export function accountApiBase(): string | null {
   const url = import.meta.env.VITE_ACCOUNT_API_URL?.trim().replace(/\/$/, '');
   return url || null;
@@ -29,6 +32,29 @@ export function accountApiBase(): string | null {
 
 export function isCloudAccountEnabled(): boolean {
   return Boolean(accountApiBase());
+}
+
+function rememberApiBase(base: string) {
+  try {
+    sessionStorage.setItem(PREFERRED_BASE_KEY, base);
+  } catch {
+    /* private mode */
+  }
+}
+
+export function accountApiBases(): string[] {
+  const primary = accountApiBase();
+  const preferred = (() => {
+    try {
+      return sessionStorage.getItem(PREFERRED_BASE_KEY);
+    } catch {
+      return null;
+    }
+  })();
+  const ordered = [preferred, primary, ...KNOWN_API_HOSTS].filter(
+    (value): value is string => Boolean(value),
+  );
+  return [...new Set(ordered)];
 }
 
 function toSession(user: ApiUser): UserSession {
@@ -52,12 +78,12 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
   }
 }
 
-async function apiFetch<T>(
+export async function cloudFetch(
   path: string,
   init?: RequestInit & { json?: unknown },
-): Promise<T> {
-  const base = accountApiBase();
-  if (!base) throw new AccountApiError('network');
+): Promise<Response> {
+  const bases = accountApiBases();
+  if (bases.length === 0) throw new AccountApiError('network');
 
   const headers = new Headers(init?.headers);
   let body = init?.body;
@@ -66,12 +92,34 @@ async function apiFetch<T>(
     body = JSON.stringify(init.json);
   }
 
-  const response = await fetchWithTimeout(`${base}${path}`, {
-    ...init,
-    headers,
-    body,
-    credentials: 'include',
-  });
+  let unauthorized: Response | null = null;
+  for (const base of bases) {
+    try {
+      const response = await fetchWithTimeout(`${base}${path}`, {
+        ...init,
+        headers,
+        body,
+        credentials: 'include',
+      });
+      if (response.status === 401 && response !== unauthorized) {
+        unauthorized = response;
+        continue;
+      }
+      rememberApiBase(base);
+      return response;
+    } catch {
+      continue;
+    }
+  }
+  if (unauthorized) return unauthorized;
+  throw new AccountApiError('network');
+}
+
+async function apiFetch<T>(
+  path: string,
+  init?: RequestInit & { json?: unknown },
+): Promise<T> {
+  const response = await cloudFetch(path, init);
 
   if (response.status === 204) return undefined as T;
 

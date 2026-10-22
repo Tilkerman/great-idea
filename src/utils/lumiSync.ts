@@ -1,6 +1,6 @@
 import type { ActionItem, Contact, Desire, Feedback, LifeAreaRating } from '../lumi/types';
 import { db as lumiDb } from '../lumi/services/db';
-import { accountApiBase, isCloudAccountEnabled } from './accountApi';
+import { cloudFetch, isCloudAccountEnabled } from './accountApi';
 import { normalizeEmail } from './authLocal';
 import { mergeById } from './cloudSyncPolicy';
 
@@ -83,11 +83,8 @@ export async function replaceLocalLumiSnapshot(snapshot: LumiSnapshot): Promise<
 
 export async function pullLumiFromCloud(): Promise<LumiSyncState | null> {
   if (!isCloudAccountEnabled()) return null;
-  const base = accountApiBase();
-  if (!base) return null;
 
-  const response = await fetch(`${base}/v1/sync/lumi`, {
-    credentials: 'include',
+  const response = await cloudFetch('/v1/sync/lumi', {
     headers: { accept: 'application/json' },
   });
   const payload = await response.json().catch(() => ({})) as {
@@ -111,14 +108,10 @@ export async function pushLumiToCloud(
   baseRevision: number,
 ): Promise<{ revision: number } | { conflict: true; revision: number; snapshot: LumiSnapshot }> {
   if (!isCloudAccountEnabled()) throw new Error('cloud_disabled');
-  const base = accountApiBase();
-  if (!base) throw new Error('cloud_disabled');
 
-  const response = await fetch(`${base}/v1/sync/lumi`, {
+  const response = await cloudFetch('/v1/sync/lumi', {
     method: 'PUT',
-    credentials: 'include',
-    headers: { 'content-type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({ baseRevision, snapshot }),
+    json: { baseRevision, snapshot },
   });
   const payload = await response.json().catch(() => ({})) as {
     revision?: number;

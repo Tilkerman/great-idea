@@ -13,7 +13,7 @@ self.addEventListener('message', (event) => {
     void self.skipWaiting();
   }
 });
-const ASSET_CACHE = 'tili-app-assets-v2';
+const ASSET_CACHE = 'tili-app-assets-v3';
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
