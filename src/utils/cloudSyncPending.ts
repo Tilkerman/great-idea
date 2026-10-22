@@ -1,7 +1,17 @@
 import { normalizeEmail } from './authLocal';
 
+export type CloudSyncKind = 'calendar' | 'lumi';
+
 const CALENDAR_PENDING = 'tili-calendar-pending-upload';
 const LUMI_PENDING = 'tili-lumi-pending-upload';
+const OWNER_KEY: Record<CloudSyncKind, string> = {
+  calendar: 'tili-cloud-data-owner-calendar',
+  lumi: 'tili-cloud-data-owner-lumi',
+};
+const DIRTY_PREFIX: Record<CloudSyncKind, string> = {
+  calendar: 'tili-calendar-cloud-dirty',
+  lumi: 'tili-lumi-cloud-dirty',
+};
 
 function key(prefix: string, email: string): string {
   return `${prefix}:${normalizeEmail(email)}`;
@@ -24,8 +34,10 @@ export function markPendingLumiUpload(email: string) {
 }
 
 export function markPendingCloudUpload(email: string) {
-  markPendingCalendarUpload(email);
-  markPendingLumiUpload(email);
+  // Only unowned local data is guest data. Data owned by another account must
+  // never be migrated into a newly registered account on the same browser.
+  if (!readCloudDataOwner('calendar')) markPendingCalendarUpload(email);
+  if (!readCloudDataOwner('lumi')) markPendingLumiUpload(email);
 }
 
 export function consumePendingCalendarUpload(email: string): boolean {
@@ -66,32 +78,46 @@ export function peekPendingLumiUpload(email: string): boolean {
   }
 }
 
-export type CloudSyncKind = 'calendar' | 'lumi';
-
-const LAST_CLOUD_SYNC_EMAIL: Record<CloudSyncKind, string> = {
-  calendar: 'tili-last-cloud-sync-email-calendar',
-  lumi: 'tili-last-cloud-sync-email-lumi',
-};
-
-export function readLastCloudSyncEmail(kind: CloudSyncKind): string {
+export function readCloudDataOwner(kind: CloudSyncKind): string {
   try {
-    return localStorage.getItem(LAST_CLOUD_SYNC_EMAIL[kind]) ?? '';
+    return localStorage.getItem(OWNER_KEY[kind]) ?? '';
   } catch {
     return '';
   }
 }
 
-export function writeLastCloudSyncEmail(email: string, kind: CloudSyncKind) {
+export function writeCloudDataOwner(kind: CloudSyncKind, email: string) {
   try {
-    localStorage.setItem(LAST_CLOUD_SYNC_EMAIL[kind], normalizeEmail(email));
+    localStorage.setItem(OWNER_KEY[kind], normalizeEmail(email));
   } catch {
     /* private mode */
   }
 }
 
-/** True when this verified session is a different cloud user than the last sync on this browser. */
-export function hasCloudAccountSwitched(accountEmail: string, kind: CloudSyncKind): boolean {
-  const last = readLastCloudSyncEmail(kind);
-  if (!last) return false;
-  return last !== normalizeEmail(accountEmail);
+function dirtyKey(kind: CloudSyncKind, email: string): string {
+  return `${DIRTY_PREFIX[kind]}:${normalizeEmail(email)}`;
+}
+
+export function markCloudDataDirty(kind: CloudSyncKind, email: string) {
+  try {
+    localStorage.setItem(dirtyKey(kind, email), '1');
+  } catch {
+    /* private mode */
+  }
+}
+
+export function isCloudDataDirty(kind: CloudSyncKind, email: string): boolean {
+  try {
+    return localStorage.getItem(dirtyKey(kind, email)) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function clearCloudDataDirty(kind: CloudSyncKind, email: string) {
+  try {
+    localStorage.removeItem(dirtyKey(kind, email));
+  } catch {
+    /* private mode */
+  }
 }

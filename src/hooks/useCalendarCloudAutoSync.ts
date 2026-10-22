@@ -3,11 +3,15 @@ import type { UserSession } from '../types';
 import { getAllTasks, replaceAllTasks } from '../db';
 import { isCloudAccountEnabled } from '../utils/accountApi';
 import {
+  clearCloudDataDirty,
   consumePendingCalendarUpload,
-  hasCloudAccountSwitched,
+  isCloudDataDirty,
+  markCloudDataDirty,
   peekPendingCalendarUpload,
-  writeLastCloudSyncEmail,
+  readCloudDataOwner,
+  writeCloudDataOwner,
 } from '../utils/cloudSyncPending';
+import { canPushLocalSnapshot, decideCloudBootstrap } from '../utils/cloudSyncPolicy';
 import {
   pullCalendarFromCloud,
   pushCalendarToCloud,
@@ -31,65 +35,112 @@ function cloudSyncActive(session: UserSession): boolean {
 
 export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () => Promise<void>) {
   const active = cloudSyncActive(session);
-  const accountEmail = session.email ?? '';
+  const accountEmail = (session.email ?? '').trim().toLowerCase();
   const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const busy = useRef(false);
+  const busyAccount = useRef('');
+  const replaceQueue = useRef<Promise<void>>(Promise.resolve());
+  const activeAccount = useRef(active ? accountEmail : '');
+  activeAccount.current = active ? accountEmail : '';
+
+  const isCurrentAccount = useCallback(
+    () => activeAccount.current === accountEmail && accountEmail.length > 0,
+    [accountEmail],
+  );
 
   const applyRemoteSnapshot = useCallback(async (revision: number, snapshot: Awaited<ReturnType<typeof getAllTasks>>) => {
-    await replaceAllTasks(snapshot);
-    writeCalendarSyncRevision(revision, accountEmail);
-    await refreshTasks();
-  }, [refreshTasks, accountEmail]);
+    const apply = replaceQueue.current.then(async () => {
+      if (!isCurrentAccount()) return;
+      await replaceAllTasks(snapshot);
+      if (!isCurrentAccount()) return;
+      writeCalendarSyncRevision(revision, accountEmail);
+      writeCloudDataOwner('calendar', accountEmail);
+      clearCloudDataDirty('calendar', accountEmail);
+      consumePendingCalendarUpload(accountEmail);
+      await refreshTasks();
+    });
+    replaceQueue.current = apply.catch(() => undefined);
+    await apply;
+  }, [refreshTasks, accountEmail, isCurrentAccount]);
 
   const pullRemote = useCallback(async () => {
-    if (!active || busy.current) return;
-    busy.current = true;
+    if (!active || !isCurrentAccount()) return;
+    if (busyAccount.current === accountEmail) return;
+    busyAccount.current = accountEmail;
     try {
       const remote = await pullCalendarFromCloud();
-      if (!remote) return;
-      const localRev = readCalendarSyncRevision(accountEmail);
-      if (remote.revision > localRev) {
+      if (!remote || !isCurrentAccount()) return;
+      const localTasks = await getAllTasks();
+      if (!isCurrentAccount()) return;
+      const action = decideCloudBootstrap({
+        accountEmail,
+        localOwnerEmail: readCloudDataOwner('calendar'),
+        pendingUpload: peekPendingCalendarUpload(accountEmail),
+        localDirty: isCloudDataDirty('calendar', accountEmail),
+        localEmpty: localTasks.length === 0,
+        localRevision: readCalendarSyncRevision(accountEmail),
+        remoteRevision: remote.revision,
+      });
+      if (action === 'apply-remote') {
         await applyRemoteSnapshot(remote.revision, remote.snapshot);
+        return;
+      }
+      if (action === 'push-local') {
+        busyAccount.current = '';
+        await pushLocalRef.current?.();
       }
     } catch (err) {
       console.warn('[calendar-sync] pull failed', err);
     } finally {
-      busy.current = false;
+      if (busyAccount.current === accountEmail) busyAccount.current = '';
     }
-  }, [active, accountEmail, applyRemoteSnapshot]);
+  }, [active, accountEmail, applyRemoteSnapshot, isCurrentAccount]);
 
+  const pushLocalRef = useRef<(() => Promise<void>) | null>(null);
   const pushLocal = useCallback(async () => {
-    if (!active || busy.current) return;
-    busy.current = true;
+    if (!active || !isCurrentAccount() || busyAccount.current === accountEmail) return;
+    const owner = readCloudDataOwner('calendar');
+    if (!canPushLocalSnapshot(accountEmail, owner, peekPendingCalendarUpload(accountEmail))) return;
+    busyAccount.current = accountEmail;
     try {
       const tasks = await getAllTasks();
+      if (!isCurrentAccount()) return;
       const baseRevision = readCalendarSyncRevision(accountEmail);
       const result = await pushCalendarToCloud(tasks, baseRevision);
+      if (!isCurrentAccount()) return;
       if ('conflict' in result && result.conflict) {
         await applyRemoteSnapshot(result.revision, result.snapshot);
       } else {
         writeCalendarSyncRevision(result.revision, accountEmail);
+        writeCloudDataOwner('calendar', accountEmail);
+        clearCloudDataDirty('calendar', accountEmail);
+        consumePendingCalendarUpload(accountEmail);
       }
     } catch (err) {
       console.warn('[calendar-sync] push failed', err);
     } finally {
-      busy.current = false;
+      if (busyAccount.current === accountEmail) busyAccount.current = '';
     }
-  }, [active, accountEmail, applyRemoteSnapshot]);
+  }, [active, accountEmail, applyRemoteSnapshot, isCurrentAccount]);
+  pushLocalRef.current = pushLocal;
 
   const schedulePush = useCallback(() => {
     if (!active) return;
+    markCloudDataDirty('calendar', accountEmail);
     if (pushTimer.current) clearTimeout(pushTimer.current);
     pushTimer.current = setTimeout(() => {
       pushTimer.current = null;
       void pushLocal();
     }, PUSH_DEBOUNCE_MS);
-  }, [active, pushLocal]);
+  }, [active, accountEmail, pushLocal]);
 
   useEffect(() => {
     schedulePushRef = schedulePush;
     return () => {
       schedulePushRef = null;
+      if (pushTimer.current) {
+        clearTimeout(pushTimer.current);
+        pushTimer.current = null;
+      }
     };
   }, [schedulePush]);
 
@@ -97,41 +148,38 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
     if (!active) return;
 
     void (async () => {
+      if (busyAccount.current === accountEmail) return;
+      busyAccount.current = accountEmail;
       try {
         const remote = await pullCalendarFromCloud();
-        if (!remote) return;
+        if (!remote || !isCurrentAccount()) return;
         const localTasks = await getAllTasks();
-        const localRev = readCalendarSyncRevision(accountEmail);
-        const accountSwitched = hasCloudAccountSwitched(accountEmail, 'calendar');
+        if (!isCurrentAccount()) return;
+        const action = decideCloudBootstrap({
+          accountEmail,
+          localOwnerEmail: readCloudDataOwner('calendar'),
+          pendingUpload: peekPendingCalendarUpload(accountEmail),
+          localDirty: isCloudDataDirty('calendar', accountEmail),
+          localEmpty: localTasks.length === 0,
+          localRevision: readCalendarSyncRevision(accountEmail),
+          remoteRevision: remote.revision,
+        });
 
-        if (accountSwitched) {
-          await applyRemoteSnapshot(remote.revision, remote.snapshot);
-          writeLastCloudSyncEmail(accountEmail, 'calendar');
-          return;
-        }
-
-        if (remote.revision === 0 && remote.snapshot.length === 0 && localTasks.length > 0) {
-          if (peekPendingCalendarUpload(accountEmail)) {
-            await pushLocal();
-            consumePendingCalendarUpload(accountEmail);
-          } else {
-            await applyRemoteSnapshot(0, []);
-          }
-          return;
-        }
-        if (remote.revision > localRev) {
+        if (action === 'apply-remote') {
           await applyRemoteSnapshot(remote.revision, remote.snapshot);
           return;
         }
-        if (localTasks.length > 0 && remote.revision === localRev) {
-          schedulePush();
+        if (action === 'push-local') {
+          busyAccount.current = '';
+          await pushLocal();
         }
-        writeLastCloudSyncEmail(accountEmail, 'calendar');
       } catch (err) {
         console.warn('[calendar-sync] bootstrap failed', err);
+      } finally {
+        if (busyAccount.current === accountEmail) busyAccount.current = '';
       }
     })();
-  }, [active, accountEmail, applyRemoteSnapshot, pushLocal, schedulePush]);
+  }, [active, accountEmail, applyRemoteSnapshot, isCurrentAccount, pushLocal]);
 
   useEffect(() => {
     if (!active) return;
@@ -146,9 +194,8 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
     const onVis = () => {
       if (document.visibilityState !== 'visible') return;
       void pullRemote();
-      schedulePush();
     };
     document.addEventListener('visibilitychange', onVis);
     return () => document.removeEventListener('visibilitychange', onVis);
-  }, [active, pullRemote, schedulePush]);
+  }, [active, pullRemote]);
 }
