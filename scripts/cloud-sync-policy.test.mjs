@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   canPushLocalSnapshot,
   decideCloudBootstrap,
+  mergeTaskSnapshots,
 } from '../src/utils/cloudSyncPolicy.ts';
 
 const base = {
@@ -119,12 +120,47 @@ test('does not create a cloud revision for an empty guest migration', () => {
   }), 'apply-remote');
 });
 
-test('server wins when local dirty data also has a stale revision', () => {
+test('lagging device with a new local task pushes instead of discarding it', () => {
   assert.equal(decideCloudBootstrap({
     ...base,
     localDirty: true,
     remoteRevision: 4,
-  }), 'apply-remote');
+  }), 'push-local');
+});
+
+test('merge keeps a locally created task that the server snapshot does not have', () => {
+  const remote = [{
+    id: 'a', title: 'phone', category: 'work', startAt: '1', endAt: '2',
+    status: 'active', important: false, reminderOffsetMinutes: null, order: 1,
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z',
+  }];
+  const local = [
+    remote[0],
+    {
+      id: 'b', title: 'windows', category: 'personal', startAt: '3', endAt: '4',
+      status: 'active', important: false, reminderOffsetMinutes: null, order: 1,
+      createdAt: '2026-01-02T00:00:00.000Z', updatedAt: '2026-01-02T00:00:00.000Z',
+    },
+  ];
+  const merged = mergeTaskSnapshots(remote, local);
+  assert.equal(merged.length, 2);
+  assert.ok(merged.some((task) => task.id === 'b' && task.title === 'windows'));
+});
+
+test('merge prefers the newer updatedAt for the same id', () => {
+  const remote = [{
+    id: 'a', title: 'old', category: 'work', startAt: '1', endAt: '2',
+    status: 'active', important: false, reminderOffsetMinutes: null, order: 1,
+    createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z',
+  }];
+  const local = [{
+    ...remote[0],
+    title: 'new',
+    updatedAt: '2026-01-03T00:00:00.000Z',
+  }];
+  const merged = mergeTaskSnapshots(remote, local);
+  assert.equal(merged.length, 1);
+  assert.equal(merged[0].title, 'new');
 });
 
 test('runtime push guard rejects a snapshot owned by another account', () => {

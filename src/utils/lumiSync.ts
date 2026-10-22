@@ -2,6 +2,7 @@ import type { ActionItem, Contact, Desire, Feedback, LifeAreaRating } from '../l
 import { db as lumiDb } from '../lumi/services/db';
 import { accountApiBase, isCloudAccountEnabled } from './accountApi';
 import { normalizeEmail } from './authLocal';
+import { mergeById } from './cloudSyncPolicy';
 
 export type LumiSnapshot = {
   desires: Desire[];
@@ -43,6 +44,16 @@ export async function readLocalLumiSnapshot(): Promise<LumiSnapshot> {
     lumiDb.actionItems.toArray(),
   ]);
   return { desires, contacts, lifeAreas, feedbacks, actionItems };
+}
+
+export function mergeLumiSnapshots(remote: LumiSnapshot, local: LumiSnapshot): LumiSnapshot {
+  return {
+    desires: mergeById(remote.desires, local.desires),
+    contacts: mergeById(remote.contacts, local.contacts),
+    lifeAreas: mergeById(remote.lifeAreas, local.lifeAreas),
+    feedbacks: mergeById(remote.feedbacks, local.feedbacks),
+    actionItems: mergeById(remote.actionItems, local.actionItems),
+  };
 }
 
 export async function replaceLocalLumiSnapshot(snapshot: LumiSnapshot): Promise<void> {

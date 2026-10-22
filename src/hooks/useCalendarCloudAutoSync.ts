@@ -11,7 +11,7 @@ import {
   readCloudDataOwner,
   writeCloudDataOwner,
 } from '../utils/cloudSyncPending';
-import { canPushLocalSnapshot, decideCloudBootstrap } from '../utils/cloudSyncPolicy';
+import { canPushLocalSnapshot, decideCloudBootstrap, mergeTaskSnapshots } from '../utils/cloudSyncPolicy';
 import {
   pullCalendarFromCloud,
   pushCalendarToCloud,
@@ -50,12 +50,25 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
   const applyRemoteSnapshot = useCallback(async (revision: number, snapshot: Awaited<ReturnType<typeof getAllTasks>>) => {
     const apply = replaceQueue.current.then(async () => {
       if (!isCurrentAccount()) return;
-      await replaceAllTasks(snapshot);
+      const owner = readCloudDataOwner('calendar');
+      const dirty = isCloudDataDirty('calendar', accountEmail);
+      const keepLocalEdits = dirty && canPushLocalSnapshot(
+        accountEmail,
+        owner,
+        peekPendingCalendarUpload(accountEmail),
+      );
+      const next = keepLocalEdits
+        ? mergeTaskSnapshots(snapshot, await getAllTasks())
+        : snapshot;
+      if (!isCurrentAccount()) return;
+      await replaceAllTasks(next);
       if (!isCurrentAccount()) return;
       writeCalendarSyncRevision(revision, accountEmail);
       writeCloudDataOwner('calendar', accountEmail);
-      clearCloudDataDirty('calendar', accountEmail);
-      consumePendingCalendarUpload(accountEmail);
+      if (!keepLocalEdits) {
+        clearCloudDataDirty('calendar', accountEmail);
+        consumePendingCalendarUpload(accountEmail);
+      }
       await refreshTasks();
     });
     replaceQueue.current = apply.catch(() => undefined);
@@ -82,6 +95,10 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
       });
       if (action === 'apply-remote') {
         await applyRemoteSnapshot(remote.revision, remote.snapshot);
+        if (isCloudDataDirty('calendar', accountEmail)) {
+          busyAccount.current = '';
+          await pushLocalRef.current?.();
+        }
         return;
       }
       if (action === 'push-local') {
@@ -108,7 +125,20 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
       const result = await pushCalendarToCloud(tasks, baseRevision);
       if (!isCurrentAccount()) return;
       if ('conflict' in result && result.conflict) {
-        await applyRemoteSnapshot(result.revision, result.snapshot);
+        const merged = mergeTaskSnapshots(result.snapshot, await getAllTasks());
+        if (!isCurrentAccount()) return;
+        const retry = await pushCalendarToCloud(merged, result.revision);
+        if (!isCurrentAccount()) return;
+        if ('conflict' in retry && retry.conflict) {
+          await applyRemoteSnapshot(retry.revision, mergeTaskSnapshots(retry.snapshot, merged));
+          return;
+        }
+        await replaceAllTasks(merged);
+        writeCalendarSyncRevision(retry.revision, accountEmail);
+        writeCloudDataOwner('calendar', accountEmail);
+        clearCloudDataDirty('calendar', accountEmail);
+        consumePendingCalendarUpload(accountEmail);
+        await refreshTasks();
       } else {
         writeCalendarSyncRevision(result.revision, accountEmail);
         writeCloudDataOwner('calendar', accountEmail);
@@ -120,7 +150,7 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
     } finally {
       if (busyAccount.current === accountEmail) busyAccount.current = '';
     }
-  }, [active, accountEmail, applyRemoteSnapshot, isCurrentAccount]);
+  }, [active, accountEmail, applyRemoteSnapshot, isCurrentAccount, refreshTasks]);
   pushLocalRef.current = pushLocal;
 
   const schedulePush = useCallback(() => {
@@ -129,20 +159,23 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
     if (pushTimer.current) clearTimeout(pushTimer.current);
     pushTimer.current = setTimeout(() => {
       pushTimer.current = null;
-      void pushLocal();
+      void pushLocalRef.current?.();
     }, PUSH_DEBOUNCE_MS);
-  }, [active, accountEmail, pushLocal]);
+  }, [active, accountEmail]);
 
   useEffect(() => {
     schedulePushRef = schedulePush;
     return () => {
-      schedulePushRef = null;
-      if (pushTimer.current) {
-        clearTimeout(pushTimer.current);
-        pushTimer.current = null;
-      }
+      if (schedulePushRef === schedulePush) schedulePushRef = null;
     };
   }, [schedulePush]);
+
+  useEffect(() => () => {
+    if (pushTimer.current) {
+      clearTimeout(pushTimer.current);
+      pushTimer.current = null;
+    }
+  }, [accountEmail]);
 
   useEffect(() => {
     if (!active) return;
@@ -167,6 +200,10 @@ export function useCalendarCloudAutoSync(session: UserSession, refreshTasks: () 
 
         if (action === 'apply-remote') {
           await applyRemoteSnapshot(remote.revision, remote.snapshot);
+          if (isCloudDataDirty('calendar', accountEmail)) {
+            busyAccount.current = '';
+            await pushLocal();
+          }
           return;
         }
         if (action === 'push-local') {

@@ -1,3 +1,5 @@
+import type { Task } from '../types';
+
 export type CloudBootstrapAction = 'apply-remote' | 'push-local' | 'idle';
 
 export type CloudBootstrapState = {
@@ -43,7 +45,36 @@ export function decideCloudBootstrap(state: CloudBootstrapState): CloudBootstrap
   }
 
   if (owner !== account) return 'apply-remote';
+  // Local edits of the signed-in account must upload first. Applying a newer
+  // server snapshot here drops a task created on a lagging device (typical on
+  // a Windows PC that opened after the phone already pushed).
+  if (state.localDirty && canPushLocalSnapshot(account, owner, state.pendingUpload)) {
+    return 'push-local';
+  }
   if (state.remoteRevision !== state.localRevision) return 'apply-remote';
-  if (state.localDirty) return 'push-local';
   return 'idle';
+}
+
+function stamp(row: { updatedAt?: string; createdAt?: string }): string {
+  return row.updatedAt || row.createdAt || '';
+}
+
+export function mergeById<T extends { id: string; updatedAt?: string; createdAt?: string }>(
+  remote: T[],
+  local: T[],
+): T[] {
+  const map = new Map<string, T>();
+  for (const row of remote) {
+    if (row?.id) map.set(row.id, row);
+  }
+  for (const row of local) {
+    if (!row?.id) continue;
+    const prev = map.get(row.id);
+    if (!prev || stamp(row) >= stamp(prev)) map.set(row.id, row);
+  }
+  return [...map.values()];
+}
+
+export function mergeTaskSnapshots(remote: Task[], local: Task[]): Task[] {
+  return mergeById(remote, local);
 }
