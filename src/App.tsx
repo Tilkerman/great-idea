@@ -133,7 +133,7 @@ function AppRouter() {
   }
   if (screen === 'auth') {
     return (
-      <div className="app-viewport app-viewport--scroll">
+      <div className="app-viewport app-viewport--scroll app-viewport--auth">
         <AuthScreen />
       </div>
     );

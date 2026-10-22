@@ -7,6 +7,7 @@ const envSchema = z.object({
   CORS_ORIGINS: z.string().default('http://localhost:5175,https://tili.su'),
   SESSION_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
   API_PUBLIC_URL: z.string().url().default('http://localhost:8080'),
+  APP_PUBLIC_URL: z.string().url().default('https://tili.su/app/'),
   MAIL_FROM: z.string().email().default('hello@tili.su'),
   MAIL_FROM_NAME: z.string().trim().min(1).max(80).default('TiLi'),
   FEEDBACK_TO_EMAIL: z.string().email().default('vasil.ev81@mail.ru'),

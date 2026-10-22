@@ -1,4 +1,4 @@
-import type { UserSession } from '../types';
+import type { Locale, UserSession } from '../types';
 
 type ApiUser = {
   id: string;
@@ -151,6 +151,7 @@ export async function registerCloudAccount(input: {
   displayName: string;
   email: string;
   password: string;
+  locale?: Locale;
 }): Promise<ApiUser> {
   const data = await apiFetch<{ user: ApiUser }>('/v1/auth/register', {
     method: 'POST',
@@ -158,6 +159,7 @@ export async function registerCloudAccount(input: {
       displayName: input.displayName,
       email: input.email,
       password: input.password,
+      locale: input.locale,
     },
   });
   return data.user;
@@ -176,17 +178,17 @@ export async function logoutCloudAccount(): Promise<void> {
   await apiFetch('/v1/auth/logout', { method: 'POST' });
 }
 
-export async function requestVerifyEmail(email: string): Promise<void> {
+export async function requestVerifyEmail(email: string, locale?: Locale): Promise<void> {
   await apiFetch('/v1/auth/verify-email/request', {
     method: 'POST',
-    json: { email },
+    json: { email, locale },
   });
 }
 
-export async function requestPasswordResetEmail(email: string): Promise<void> {
+export async function requestPasswordResetEmail(email: string, locale?: Locale): Promise<void> {
   await apiFetch('/v1/auth/password-reset/request', {
     method: 'POST',
-    json: { email },
+    json: { email, locale },
   });
 }
 

@@ -1,4 +1,4 @@
-import type { UserSession } from '../types';
+import type { Locale, UserSession } from '../types';
 import {
   AccountApiError,
   changeCloudPassword,
@@ -33,12 +33,14 @@ export async function registerAccount(input: {
   name: string;
   email: string;
   password: string;
+  locale?: Locale;
 }): Promise<{ session?: UserSession; cloudPendingVerification?: boolean }> {
   if (isCloudAccountEnabled()) {
     await registerCloudAccount({
       displayName: input.name,
       email: input.email,
       password: input.password,
+      locale: input.locale,
     });
     markPendingCloudUpload(input.email);
     return { cloudPendingVerification: true };
@@ -60,17 +62,17 @@ export async function loginAccount(email: string, password: string): Promise<Use
   return account ? sessionFromAccount(account) : null;
 }
 
-export async function requestAccountPasswordReset(email: string): Promise<boolean> {
+export async function requestAccountPasswordReset(email: string, locale?: Locale): Promise<boolean> {
   if (isCloudAccountEnabled()) {
-    await requestPasswordResetEmail(email);
+    await requestPasswordResetEmail(email, locale);
     return true;
   }
   return Boolean(findAccount(email));
 }
 
-export async function resetAccountPassword(email: string, password: string): Promise<boolean> {
+export async function resetAccountPassword(email: string, password: string, locale?: Locale): Promise<boolean> {
   if (isCloudAccountEnabled()) {
-    await requestPasswordResetEmail(email);
+    await requestPasswordResetEmail(email, locale);
     return true;
   }
   return resetPassword(email, password);
@@ -118,7 +120,7 @@ export async function signOutAccount(): Promise<void> {
   if (isCloudAccountEnabled()) await logoutCloudAccount();
 }
 
-export async function resendVerificationEmail(email: string): Promise<void> {
+export async function resendVerificationEmail(email: string, locale?: Locale): Promise<void> {
   if (!isCloudAccountEnabled()) return;
-  await requestVerifyEmail(email);
+  await requestVerifyEmail(email, locale);
 }

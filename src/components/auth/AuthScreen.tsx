@@ -39,7 +39,7 @@ function stepFromStart(start: AuthStart): Step {
 
 export function AuthScreen() {
   const { session, setSession, setScreen, authStart, authBackScreen, settings } = useApp();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [step, setStep] = useState<Step>(() => stepFromStart(authStart));
   const [name, setName] = useState(session.name ?? '');
   const [email, setEmail] = useState(session.email ?? '');
@@ -69,7 +69,7 @@ export function AuthScreen() {
     setError('');
     setVerifyResent(false);
     try {
-      await resendVerificationEmail(email);
+      await resendVerificationEmail(email, locale);
       setVerifyResent(true);
     } catch (e) {
       if (e instanceof AccountApiError && e.code === 'too_many_requests') {
@@ -131,6 +131,7 @@ export function AuthScreen() {
         name: name.trim() || normalizeEmail(email).split('@')[0] || 'TiLi',
         email,
         password,
+        locale,
       });
       if (result.session) setSession(result.session);
       setRegisteredViaCloud(Boolean(result.cloudPendingVerification));
@@ -187,7 +188,7 @@ export function AuthScreen() {
     }
     setBusy(true);
     try {
-      const ok = await resetAccountPassword(email, password);
+      const ok = await resetAccountPassword(email, password, locale);
       if (!ok) {
         setError(t('authNoAccount'));
         return;
@@ -423,7 +424,7 @@ export function AuthScreen() {
           <>
             <h2 className="auth-form__title">{t('authResetTitle')}</h2>
             <p className="auth-form__intro">
-              {t('authResetIntro')}
+              {t(isCloudAccountEnabled() ? 'authResetIntroCloud' : 'authResetIntro')}
             </p>
             <label className="settings-field">
               {t('email')}
@@ -439,6 +440,7 @@ export function AuthScreen() {
             <button
               type="button"
               className="btn btn--primary settings-full"
+              disabled={busy}
               onClick={() => {
                 if (!isValidEmail(email)) {
                   setError(t('badEmail'));
@@ -452,7 +454,17 @@ export function AuthScreen() {
                 setPassword('');
                 setPassword2('');
                 if (isCloudAccountEnabled()) {
-                  void requestAccountPasswordReset(email).then(() => setStep('forgot-done'));
+                  setBusy(true);
+                  void requestAccountPasswordReset(email, locale)
+                    .then(() => setStep('forgot-done'))
+                    .catch((e) => {
+                      if (e instanceof AccountApiError && e.code === 'too_many_requests') {
+                        setError(t('authTooManyRequests'));
+                      } else {
+                        setError(t('authResetFail'));
+                      }
+                    })
+                    .finally(() => setBusy(false));
                   return;
                 }
                 setStep('forgot-password');
@@ -483,8 +495,14 @@ export function AuthScreen() {
 
         {step === 'forgot-done' && (
           <>
-            <h2 className="auth-form__title">{t('authPasswordUpdated')}</h2>
-            <p className="auth-form__intro">{t('authPasswordUpdatedBody')}</p>
+            <h2 className="auth-form__title">
+              {t(isCloudAccountEnabled() ? 'authResetMailSent' : 'authPasswordUpdated')}
+            </h2>
+            <p className="auth-form__intro">
+              {isCloudAccountEnabled()
+                ? t('authResetMailSentBody', { email: normalizeEmail(email) })
+                : t('authPasswordUpdatedBody')}
+            </p>
             <button type="button" className="btn btn--primary settings-full" onClick={() => { setPassword(''); setStep('login-password'); }}>
               {t('authSignIn')}
             </button>

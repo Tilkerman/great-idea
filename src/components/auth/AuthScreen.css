@@ -53,3 +53,26 @@
   max-width: 480px;
   margin: 0 auto;
 }
+
+@media (min-width: 1024px) {
+  .auth-page {
+    width: min(100%, 420px);
+    min-height: auto;
+    margin: 0;
+    padding-bottom: 8px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .auth-page .settings-topbar {
+    background: var(--surface);
+  }
+
+  .auth-page .settings-form {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+}

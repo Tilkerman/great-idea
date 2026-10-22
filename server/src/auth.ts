@@ -300,7 +300,9 @@ export async function resetPasswordWithToken(
     }
     await client.query(
       `update users
-       set password_hash = $2, updated_at = now()
+       set password_hash = $2,
+           email_verified_at = coalesce(email_verified_at, now()),
+           updated_at = now()
        where id = $1 and deleted_at is null`,
       [userId, passwordHash],
     );

@@ -363,6 +363,19 @@ select {
     padding-bottom: 0;
   }
 
+  /* Auth / onboarding have no side nav — keep a column so the form can sit in the middle. */
+  .app-viewport--auth,
+  .app-viewport--onboarding,
+  .app-viewport--center {
+    flex-direction: column;
+  }
+
+  .app-viewport--auth {
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
   .app-viewport__main > .bottom-nav {
     display: none !important;
   }

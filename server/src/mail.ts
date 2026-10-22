@@ -5,6 +5,7 @@ export type OutboundMail = {
   subject: string;
   text: string;
   html: string;
+  language?: 'ru' | 'en' | 'es';
 };
 
 export async function sendMail(config: AppConfig, message: OutboundMail): Promise<'sent' | 'skipped'> {
@@ -23,7 +24,7 @@ export async function sendMail(config: AppConfig, message: OutboundMail): Promis
         from_email: config.MAIL_FROM,
         from_name: config.MAIL_FROM_NAME,
         subject: message.subject,
-        global_language: 'ru',
+        global_language: message.language ?? 'ru',
         body: {
           html: message.html,
           plaintext: message.text,
@@ -32,8 +33,15 @@ export async function sendMail(config: AppConfig, message: OutboundMail): Promis
     }),
   });
 
-  if (!response.ok) {
-    throw new Error(`Unisender rejected the message with status ${response.status}`);
+  const payload = await response.json().catch(() => ({})) as {
+    status?: string;
+    message?: string;
+    code?: number;
+  };
+  if (!response.ok || payload.status === 'error') {
+    throw new Error(
+      `Unisender rejected the message (${response.status}${payload.code ? `/${payload.code}` : ''}): ${payload.message ?? 'unknown error'}`,
+    );
   }
   return 'sent';
 }
