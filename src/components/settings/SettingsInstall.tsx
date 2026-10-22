@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
 import {
   type BeforeInstallPromptEvent,
   canWebShare,
   copyAppLink,
-  isAppleMobile,
   isStandaloneApp,
   shareAppLink,
   trackInstallButtonClick,
@@ -14,28 +13,12 @@ import {
 import { trackInstallHintClick } from '../../utils/productAnalytics';
 import './Settings.css';
 
-function InstallGuide({ ios }: { ios: boolean }) {
-  const { t } = useI18n();
-  if (ios) {
-    return (
-      <ol className="settings-install__steps">
-        <li>{t('installIos1')}</li>
-        <li>{t('installGo')} <strong>{TILI_PUBLIC_URL}</strong></li>
-        <li>{t('installIos3')}</li>
-        <li>{t('installIos4')}</li>
-        <li>{t('installIos5')}</li>
-        <li>{t('installIos6')}</li>
-      </ol>
-    );
-  }
-
+function StepList({ steps }: { steps: string[] }) {
   return (
     <ol className="settings-install__steps">
-      <li>{t('installAnd1')}</li>
-      <li>{t('installGo')} <strong>{TILI_PUBLIC_URL}</strong></li>
-      <li>{t('installAnd3')}</li>
-      <li>{t('installAnd4')}</li>
-      <li>{t('installAnd5')}</li>
+      {steps.map((step) => (
+        <li key={step}>{step}</li>
+      ))}
     </ol>
   );
 }
@@ -44,13 +27,10 @@ export function SettingsInstall() {
   const { setScreen, settings } = useApp();
   const { t, locale } = useI18n();
   const isInstalled = useMemo(() => isStandaloneApp(), []);
-  const isIos = useMemo(() => isAppleMobile(), []);
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installBusy, setInstallBusy] = useState(false);
   const [shareBusy, setShareBusy] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [showGuide, setShowGuide] = useState(false);
-  const guideRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onInstallPrompt = (event: Event) => {
@@ -61,44 +41,24 @@ export function SettingsInstall() {
     return () => window.removeEventListener('beforeinstallprompt', onInstallPrompt);
   }, []);
 
-  useEffect(() => {
-    if (showGuide) {
-      guideRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [showGuide]);
-
   const showShare = canWebShare();
 
-  const onInstall = async () => {
+  const onInstallHere = async () => {
+    if (!installPrompt) return;
     trackInstallButtonClick();
-    trackInstallHintClick(settings.analyticsEnabled, isIos ? 'ios' : 'android');
+    trackInstallHintClick(settings.analyticsEnabled, 'android');
     setFeedback(null);
-
-    if (isIos) {
-      setShowGuide(true);
-      setFeedback(t('installIosButtonNote'));
-      return;
-    }
-
-    if (installPrompt) {
-      setInstallBusy(true);
-      try {
-        await installPrompt.prompt();
-        const { outcome } = await installPrompt.userChoice;
-        if (outcome === 'accepted') {
-          setFeedback(t('installBusy'));
-          setInstallPrompt(null);
-          setShowGuide(false);
-        } else {
-          setShowGuide(true);
-        }
-      } finally {
-        setInstallBusy(false);
+    setInstallBusy(true);
+    try {
+      await installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setFeedback(t('installBusy'));
+        setInstallPrompt(null);
       }
-      return;
+    } finally {
+      setInstallBusy(false);
     }
-
-    setShowGuide(true);
   };
 
   const onShare = async () => {
@@ -131,31 +91,24 @@ export function SettingsInstall() {
       </header>
 
       <div className="settings-form settings-install-page">
-        <p className="settings-install__heading">{t('installOnPhone')}</p>
+        <p className="settings-install__heading">{t('installPageTitle')}</p>
         <p className="settings-install__lead">{t('installLead')}</p>
-
-        {isIos && (
-          <div className="settings-install__box settings-install__box--icon-fix">
-            <p className="settings-install__box-title">{t('installIconFixTitle')}</p>
-            <ol className="settings-install__steps">
-              <li>{t('installIconFix1')}</li>
-              <li>{t('installIconFix2')}</li>
-              <li>{t('installIconFix3')}</li>
-              <li>{t('installIconFix4')}</li>
-            </ol>
-          </div>
-        )}
+        <p className="settings-install__url">
+          {t('installOneUrl')}
+          {' '}
+          <strong>{TILI_PUBLIC_URL}</strong>
+        </p>
 
         <div className="settings-install__actions">
-          {!isInstalled && (
+          {!isInstalled && installPrompt && (
             <button
               type="button"
               className="btn btn--primary settings-full"
               disabled={installBusy}
               data-track="install-button-click"
-              onClick={() => { void onInstall(); }}
+              onClick={() => { void onInstallHere(); }}
             >
-              {t('installOnPhone')}
+              {t('installHere')}
             </button>
           )}
           <button
@@ -170,48 +123,76 @@ export function SettingsInstall() {
 
         {feedback && <p className="settings-install__feedback" role="status">{feedback}</p>}
 
-        {showGuide && !isInstalled && (
-          <div ref={guideRef} className="settings-install__guide" role="region" aria-label={t('howInstall')}>
-            <p className="settings-install__guide-title">
-              {isIos ? t('installIos') : t('installAndroid')}
-            </p>
-            <InstallGuide ios={isIos} />
-            <p className="settings-install__text">
-              {t('afterInstall')}
-            </p>
-          </div>
+        {isInstalled && (
+          <p className="settings-install__text">{t('alreadyHome')}</p>
         )}
 
-        {isInstalled ? (
-          <p className="settings-install__text">
-            {t('alreadyHome')}
-          </p>
-        ) : (
-          <>
-            <p className="settings-install__text">
-              {t('pwaExplainLong')}
-            </p>
-            <div className="settings-install__box">
-              <p className="settings-install__box-title">{t('installOfflineTitle')}</p>
-              <p className="settings-install__text">
-                {t('installOfflineBody')}
-              </p>
-            </div>
-            {!showGuide && (
-              <>
-                <p className="settings-install__subhead">{t('installBrief')}</p>
-                <ul className="settings-install__list">
-                  <li>{t('installBriefAndroid')}</li>
-                  <li>{t('installBriefIos')}</li>
-                </ul>
-              </>
-            )}
-            <p className="settings-install__text">
-              {t('installTapHint')}
-            </p>
-            <p className="settings-note">{t('installRefreshNote')}</p>
-          </>
-        )}
+        <section className="settings-install__guide" aria-labelledby="install-iphone">
+          <h2 id="install-iphone" className="settings-install__guide-title">{t('installIos')}</h2>
+          <StepList steps={[
+            t('installIos1'),
+            t('installIos2'),
+            t('installIos3'),
+            t('installIos4'),
+            t('installIos5'),
+            t('installIos6'),
+          ]} />
+          <p className="settings-install__guide-sub">{t('installIconFixTitle')}</p>
+          <StepList steps={[
+            t('installIconFix1'),
+            t('installIconFix2'),
+            t('installIconFix3'),
+            t('installIconFix4'),
+          ]} />
+        </section>
+
+        <section className="settings-install__guide" aria-labelledby="install-android">
+          <h2 id="install-android" className="settings-install__guide-title">{t('installAndroid')}</h2>
+          <StepList steps={[
+            t('installAnd1'),
+            t('installAnd2'),
+            t('installAnd3'),
+            t('installAnd4'),
+            t('installAnd5'),
+          ]} />
+        </section>
+
+        <section className="settings-install__guide" aria-labelledby="install-mac">
+          <h2 id="install-mac" className="settings-install__guide-title">{t('installMac')}</h2>
+          <p className="settings-install__guide-sub">{t('installMacSafari')}</p>
+          <StepList steps={[
+            t('installMacSafari1'),
+            t('installMacSafari2'),
+            t('installMacSafari3'),
+            t('installMacSafari4'),
+            t('installMacSafari5'),
+          ]} />
+          <p className="settings-install__text">{t('installMacSafariMissing')}</p>
+          <p className="settings-install__guide-sub settings-install__guide-sub--next">{t('installMacChrome')}</p>
+          <StepList steps={[
+            t('installMacChrome1'),
+            t('installMacChrome2'),
+            t('installMacChrome3'),
+            t('installMacChrome4'),
+          ]} />
+        </section>
+
+        <section className="settings-install__guide" aria-labelledby="install-windows">
+          <h2 id="install-windows" className="settings-install__guide-title">{t('installWindows')}</h2>
+          <StepList steps={[
+            t('installWin1'),
+            t('installWin2'),
+            t('installWin3'),
+            t('installWin4'),
+            t('installWin5'),
+          ]} />
+        </section>
+
+        <p className="settings-install__text">{t('installAccountNote')}</p>
+        <div className="settings-install__box">
+          <p className="settings-install__box-title">{t('installOfflineTitle')}</p>
+          <p className="settings-install__text">{t('installOfflineBody')}</p>
+        </div>
       </div>
     </div>
   );

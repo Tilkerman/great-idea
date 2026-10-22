@@ -932,10 +932,25 @@
 }
 
 .settings-install__lead {
-  margin: 0 0 16px;
-  font-size: 14px;
-  line-height: 1.45;
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.5;
   color: var(--text-secondary);
+}
+
+.settings-install__url {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.settings-install__url strong {
+  display: inline-block;
+  margin-top: 2px;
+  color: var(--text-primary);
+  font-weight: 700;
+  word-break: break-all;
 }
 
 .settings-install__subhead {
@@ -996,6 +1011,17 @@
   font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.settings-install__guide-sub {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.settings-install__guide-sub--next {
+  margin-top: 4px;
 }
 
 .settings-install__steps {
