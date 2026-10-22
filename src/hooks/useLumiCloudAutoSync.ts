@@ -23,6 +23,7 @@ import {
   readLumiSyncRevision,
   replaceLocalLumiSnapshot,
   writeLumiSyncRevision,
+  type LumiSnapshot,
 } from '../utils/lumiSync';
 
 const PUSH_DEBOUNCE_MS = 2_500;
@@ -32,7 +33,7 @@ function cloudSyncActive(session: UserSession): boolean {
   return isCloudAccountEnabled() && !session.isGuest && session.emailVerified === true;
 }
 
-function snapshotEmpty(snapshot: Awaited<ReturnType<typeof readLocalLumiSnapshot>>): boolean {
+function snapshotEmpty(snapshot: LumiSnapshot): boolean {
   return snapshot.desires.length === 0
     && snapshot.contacts.length === 0
     && snapshot.actionItems.length === 0
@@ -53,35 +54,50 @@ export function useLumiCloudAutoSync(session: UserSession) {
     [accountEmail],
   );
 
-  const applyRemoteSnapshot = useCallback(async (revision: number, snapshot: Awaited<ReturnType<typeof readLocalLumiSnapshot>>) => {
+  const applyRemoteSnapshot = useCallback(async (revision: number, snapshot: LumiSnapshot) => {
     const apply = replaceQueue.current.then(async () => {
       if (!isCurrentAccount()) return;
-      const owner = readCloudDataOwner('lumi');
-      const dirty = isCloudDataDirty('lumi', accountEmail);
-      const keepLocalEdits = dirty && canPushLocalSnapshot(
-        accountEmail,
-        owner,
-        peekPendingLumiUpload(accountEmail),
-      );
-      const next = keepLocalEdits
-        ? mergeLumiSnapshots(snapshot, await readLocalLumiSnapshot())
-        : snapshot;
-      if (!isCurrentAccount()) return;
-      await replaceLocalLumiSnapshot(next);
+      await replaceLocalLumiSnapshot(snapshot);
       if (!isCurrentAccount()) return;
       writeLumiSyncRevision(revision, accountEmail);
       writeCloudDataOwner('lumi', accountEmail);
-      if (!keepLocalEdits) {
-        clearCloudDataDirty('lumi', accountEmail);
-        consumePendingLumiUpload(accountEmail);
-      }
+      clearCloudDataDirty('lumi', accountEmail);
+      consumePendingLumiUpload(accountEmail);
       dispatchLumiCloudSynced();
     });
     replaceQueue.current = apply.catch(() => undefined);
     await apply;
   }, [accountEmail, isCurrentAccount]);
 
-  const pullRemote = useCallback(async () => {
+  const markSynced = useCallback((revision: number) => {
+    writeLumiSyncRevision(revision, accountEmail);
+    writeCloudDataOwner('lumi', accountEmail);
+    clearCloudDataDirty('lumi', accountEmail);
+    consumePendingLumiUpload(accountEmail);
+  }, [accountEmail]);
+
+  const pushSnapshot = useCallback(async (snapshot: LumiSnapshot, baseRevision: number) => {
+    if (!canPushLocalSnapshot(accountEmail, readCloudDataOwner('lumi'), peekPendingLumiUpload(accountEmail))) {
+      return;
+    }
+    let result = await pushLumiToCloud(snapshot, baseRevision);
+    if (!isCurrentAccount()) return;
+    if ('conflict' in result && result.conflict) {
+      const merged = mergeLumiSnapshots(result.snapshot, await readLocalLumiSnapshot());
+      await replaceLocalLumiSnapshot(merged);
+      dispatchLumiCloudSynced();
+      if (!isCurrentAccount()) return;
+      result = await pushLumiToCloud(merged, result.revision);
+      if (!isCurrentAccount()) return;
+      if ('conflict' in result && result.conflict) {
+        await applyRemoteSnapshot(result.revision, mergeLumiSnapshots(result.snapshot, merged));
+        return;
+      }
+    }
+    markSynced(result.revision);
+  }, [accountEmail, applyRemoteSnapshot, isCurrentAccount, markSynced]);
+
+  const reconcile = useCallback(async () => {
     if (!active || !isCurrentAccount()) return;
     if (busyAccount.current === accountEmail) return;
     busyAccount.current = accountEmail;
@@ -99,65 +115,26 @@ export function useLumiCloudAutoSync(session: UserSession) {
         localRevision: readLumiSyncRevision(accountEmail),
         remoteRevision: remote.revision,
       });
+
+      if (action === 'idle') return;
       if (action === 'apply-remote') {
         await applyRemoteSnapshot(remote.revision, remote.snapshot);
-        if (isCloudDataDirty('lumi', accountEmail)) {
-          busyAccount.current = '';
-          await pushLocalRef.current?.();
-        }
         return;
       }
-      if (action === 'push-local') {
-        busyAccount.current = '';
-        await pushLocalRef.current?.();
-      }
-    } catch (err) {
-      console.warn('[lumi-sync] pull failed', err);
-    } finally {
-      if (busyAccount.current === accountEmail) busyAccount.current = '';
-    }
-  }, [active, accountEmail, applyRemoteSnapshot, isCurrentAccount]);
-
-  const pushLocalRef = useRef<(() => Promise<void>) | null>(null);
-  const pushLocal = useCallback(async () => {
-    if (!active || !isCurrentAccount() || busyAccount.current === accountEmail) return;
-    const owner = readCloudDataOwner('lumi');
-    if (!canPushLocalSnapshot(accountEmail, owner, peekPendingLumiUpload(accountEmail))) return;
-    busyAccount.current = accountEmail;
-    try {
-      const snapshot = await readLocalLumiSnapshot();
-      if (!isCurrentAccount()) return;
-      const baseRevision = readLumiSyncRevision(accountEmail);
-      const result = await pushLumiToCloud(snapshot, baseRevision);
-      if (!isCurrentAccount()) return;
-      if ('conflict' in result && result.conflict) {
-        const merged = mergeLumiSnapshots(result.snapshot, await readLocalLumiSnapshot());
-        if (!isCurrentAccount()) return;
-        const retry = await pushLumiToCloud(merged, result.revision);
-        if (!isCurrentAccount()) return;
-        if ('conflict' in retry && retry.conflict) {
-          await applyRemoteSnapshot(retry.revision, mergeLumiSnapshots(retry.snapshot, merged));
-          return;
-        }
+      if (action === 'merge-and-push') {
+        const merged = mergeLumiSnapshots(remote.snapshot, local);
         await replaceLocalLumiSnapshot(merged);
-        writeLumiSyncRevision(retry.revision, accountEmail);
-        writeCloudDataOwner('lumi', accountEmail);
-        clearCloudDataDirty('lumi', accountEmail);
-        consumePendingLumiUpload(accountEmail);
         dispatchLumiCloudSynced();
-      } else {
-        writeLumiSyncRevision(result.revision, accountEmail);
-        writeCloudDataOwner('lumi', accountEmail);
-        clearCloudDataDirty('lumi', accountEmail);
-        consumePendingLumiUpload(accountEmail);
+        await pushSnapshot(merged, remote.revision);
+        return;
       }
+      await pushSnapshot(local, readLumiSyncRevision(accountEmail));
     } catch (err) {
-      console.warn('[lumi-sync] push failed', err);
+      console.warn('[lumi-sync] reconcile failed', err);
     } finally {
       if (busyAccount.current === accountEmail) busyAccount.current = '';
     }
-  }, [active, accountEmail, applyRemoteSnapshot, isCurrentAccount]);
-  pushLocalRef.current = pushLocal;
+  }, [active, accountEmail, applyRemoteSnapshot, isCurrentAccount, pushSnapshot]);
 
   const schedulePush = useCallback(() => {
     if (!active) return;
@@ -165,15 +142,13 @@ export function useLumiCloudAutoSync(session: UserSession) {
     if (pushTimer.current) clearTimeout(pushTimer.current);
     pushTimer.current = setTimeout(() => {
       pushTimer.current = null;
-      void pushLocalRef.current?.();
+      void reconcile();
     }, PUSH_DEBOUNCE_MS);
-  }, [active, accountEmail]);
+  }, [active, accountEmail, reconcile]);
 
   useEffect(() => {
     registerLumiCloudDirtyNotifier(schedulePush);
-    return () => {
-      registerLumiCloudDirtyNotifier(null);
-    };
+    return () => registerLumiCloudDirtyNotifier(null);
   }, [schedulePush]);
 
   useEffect(() => () => {
@@ -185,60 +160,24 @@ export function useLumiCloudAutoSync(session: UserSession) {
 
   useEffect(() => {
     if (!active) return;
-
-    void (async () => {
-      if (busyAccount.current === accountEmail) return;
-      busyAccount.current = accountEmail;
-      try {
-        const remote = await pullLumiFromCloud();
-        if (!remote || !isCurrentAccount()) return;
-        const local = await readLocalLumiSnapshot();
-        if (!isCurrentAccount()) return;
-        const action = decideCloudBootstrap({
-          accountEmail,
-          localOwnerEmail: readCloudDataOwner('lumi'),
-          pendingUpload: peekPendingLumiUpload(accountEmail),
-          localDirty: isCloudDataDirty('lumi', accountEmail),
-          localEmpty: snapshotEmpty(local),
-          localRevision: readLumiSyncRevision(accountEmail),
-          remoteRevision: remote.revision,
-        });
-
-        if (action === 'apply-remote') {
-          await applyRemoteSnapshot(remote.revision, remote.snapshot);
-          if (isCloudDataDirty('lumi', accountEmail)) {
-            busyAccount.current = '';
-            await pushLocal();
-          }
-          return;
-        }
-        if (action === 'push-local') {
-          busyAccount.current = '';
-          await pushLocal();
-        }
-      } catch (err) {
-        console.warn('[lumi-sync] bootstrap failed', err);
-      } finally {
-        if (busyAccount.current === accountEmail) busyAccount.current = '';
-      }
-    })();
-  }, [active, accountEmail, applyRemoteSnapshot, isCurrentAccount, pushLocal]);
+    void reconcile();
+  }, [active, accountEmail, reconcile]);
 
   useEffect(() => {
     if (!active) return;
     const id = window.setInterval(() => {
-      void pullRemote();
+      void reconcile();
     }, PULL_INTERVAL_MS);
     return () => clearInterval(id);
-  }, [active, pullRemote]);
+  }, [active, reconcile]);
 
   useEffect(() => {
     if (!active) return;
     const onVis = () => {
       if (document.visibilityState !== 'visible') return;
-      void pullRemote();
+      void reconcile();
     };
     document.addEventListener('visibilitychange', onVis);
     return () => document.removeEventListener('visibilitychange', onVis);
-  }, [active, pullRemote]);
+  }, [active, reconcile]);
 }

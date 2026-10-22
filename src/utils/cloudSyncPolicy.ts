@@ -1,6 +1,6 @@
 import type { Task } from '../types';
 
-export type CloudBootstrapAction = 'apply-remote' | 'push-local' | 'idle';
+export type CloudBootstrapAction = 'apply-remote' | 'push-local' | 'merge-and-push' | 'idle';
 
 export type CloudBootstrapState = {
   accountEmail: string;
@@ -45,13 +45,15 @@ export function decideCloudBootstrap(state: CloudBootstrapState): CloudBootstrap
   }
 
   if (owner !== account) return 'apply-remote';
-  // Local edits of the signed-in account must upload first. Applying a newer
-  // server snapshot here drops a task created on a lagging device (typical on
-  // a Windows PC that opened after the phone already pushed).
-  if (state.localDirty && canPushLocalSnapshot(account, owner, state.pendingUpload)) {
-    return 'push-local';
-  }
-  if (state.remoteRevision !== state.localRevision) return 'apply-remote';
+
+  const canPush = canPushLocalSnapshot(account, owner, state.pendingUpload);
+  const revMismatch = state.remoteRevision !== state.localRevision;
+
+  // Lagging device with local edits: keep both the server snapshot and the
+  // new local task, then upload the union. Never skip the server snapshot.
+  if (state.localDirty && canPush && revMismatch) return 'merge-and-push';
+  if (state.localDirty && canPush) return 'push-local';
+  if (revMismatch) return 'apply-remote';
   return 'idle';
 }
 

@@ -1,6 +1,6 @@
 /**
  * tili.su Worker:
- * - /v1/push* → api.tili.su
+ * - /v1/* → api.tili.su (auth, sync, push, feedback) so cookies are first-party
  * - /app* → jsDelivr @APP_BUILD (gh-pages commit), fallback @gh-pages
  *
  * GitHub Pages custom-domain CDN can lag; jsDelivr + purge after each deploy.
@@ -52,7 +52,7 @@ export default {
     try {
       const url = new URL(request.url);
 
-      if (url.pathname.startsWith('/v1/push')) {
+      if (url.pathname.startsWith('/v1/')) {
         const upstream = new URL(request.url);
         upstream.hostname = PUSH_HOST;
         upstream.protocol = 'https:';

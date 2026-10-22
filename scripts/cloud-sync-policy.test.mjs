@@ -120,11 +120,18 @@ test('does not create a cloud revision for an empty guest migration', () => {
   }), 'apply-remote');
 });
 
-test('lagging device with a new local task pushes instead of discarding it', () => {
+test('lagging device with a new local task merges then uploads instead of discarding it', () => {
   assert.equal(decideCloudBootstrap({
     ...base,
     localDirty: true,
     remoteRevision: 4,
+  }), 'merge-and-push');
+});
+
+test('owning device with local edits and matching revision just pushes', () => {
+  assert.equal(decideCloudBootstrap({
+    ...base,
+    localDirty: true,
   }), 'push-local');
 });
 
