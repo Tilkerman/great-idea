@@ -52,6 +52,11 @@ export interface GridClipItem {
 export interface GridClipboard {
   kind: GridClipKind;
   items: GridClipItem[];
+  /** YYYY-MM-DD первого дня скопированной недели */
+  sourceWeekStart?: string;
+  /** YYYY-MM-DD для копии дня или часа */
+  sourceDay?: string;
+  sourceHour?: number;
 }
 
 export type AppScreen =

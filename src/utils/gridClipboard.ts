@@ -1,7 +1,7 @@
 import type { GridClipItem, GridClipboard, Locale, Task } from '../types';
 import { tLocale } from '../i18n/catalog';
 import { newTaskId } from './id';
-import { getWeekDays, toLocalDateString } from './date';
+import { formatWeekHeaderTitle, getWeekDays, localDateFromYmd, toLocalDateString } from './date';
 import { MAX_TASKS_PER_HOUR, rebalanceHourTasks } from './hourSlot';
 
 function isCopyable(task: Task) {
@@ -45,7 +45,7 @@ export function copyDayClipboard(tasks: Task[], day: Date): GridClipboard {
     .filter((task) => isCopyable(task) && toLocalDateString(new Date(task.startAt)) === dateStr)
     .map((task) => toItem(task, 0))
     .sort((a, b) => a.hour - b.hour || a.order - b.order);
-  return { kind: 'day', items };
+  return { kind: 'day', items, sourceDay: dateStr };
 }
 
 export function copyHourClipboard(tasks: Task[], day: Date, hour: number): GridClipboard {
@@ -58,7 +58,7 @@ export function copyHourClipboard(tasks: Task[], day: Date, hour: number): GridC
     })
     .map((task) => toItem(task, 0))
     .sort((a, b) => a.order - b.order);
-  return { kind: 'hour', items };
+  return { kind: 'hour', items, sourceDay: dateStr, sourceHour: hour };
 }
 
 export function countTasksInWeek(tasks: Task[], focusDate: Date, weekStartsOn: 0 | 1) {
@@ -175,4 +175,30 @@ export function clipKindLabel(kind: GridClipboard['kind'], locale: Locale = 'ru'
   if (kind === 'week') return tLocale(locale, 'kindWeek');
   if (kind === 'day') return tLocale(locale, 'kindDay');
   return tLocale(locale, 'kindHour');
+}
+
+/** Диапазон или дата источника — не меняется при листании календаря после копирования. */
+export function clipboardSourceLabel(
+  clipboard: GridClipboard,
+  weekStartsOn: 0 | 1,
+  localeTag: string,
+  monthsGen: readonly string[],
+  locale: Locale = 'ru',
+): string {
+  if (clipboard.kind === 'week') {
+    const anchor = clipboard.sourceWeekStart
+      ? localDateFromYmd(clipboard.sourceWeekStart)
+      : new Date();
+    return formatWeekHeaderTitle(anchor, weekStartsOn, localeTag, monthsGen);
+  }
+  if (clipboard.sourceDay) {
+    const day = localDateFromYmd(clipboard.sourceDay);
+    const datePart = day.toLocaleDateString(localeTag, { day: 'numeric', month: 'long' });
+    if (clipboard.kind === 'hour' && clipboard.sourceHour !== undefined) {
+      const h = String(clipboard.sourceHour).padStart(2, '0');
+      return `${datePart}, ${h}:00`;
+    }
+    return datePart;
+  }
+  return clipKindLabel(clipboard.kind, locale);
 }

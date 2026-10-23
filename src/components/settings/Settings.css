@@ -924,6 +924,60 @@
   border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
 }
 
+.settings-install__jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.settings-install__jump-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  touch-action: manipulation;
+}
+
+.settings-install__brief {
+  margin: 0 0 20px;
+  padding: 14px 14px 12px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.settings-install__brief-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.settings-install__brief-list {
+  margin: 0 0 10px;
+  padding-left: 1.15rem;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.settings-install__brief-list strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.settings-install__tap-hint {
+  margin: 0;
+  font-size: 13px;
+}
+
 .settings-install__heading {
   margin: 0 0 6px;
   font-size: 20px;
@@ -1004,6 +1058,7 @@
   border-radius: 12px;
   background: var(--surface-2);
   border: 1px solid var(--accent);
+  scroll-margin-top: 72px;
 }
 
 .settings-install__guide-title {

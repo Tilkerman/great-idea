@@ -18,7 +18,7 @@ import {
   toLocalDateString,
 } from '../../utils/date';
 import {
-  clipKindLabel,
+  clipboardSourceLabel,
   copyDayClipboard,
   copyHourClipboard,
   copyWeekClipboard,
@@ -90,16 +90,15 @@ export function WeekView({
   const { colWidth, rowHeight } = getWeekZoomMetrics(weekZoom, viewportWidth);
   const metricsHold = useRef({ colWidth, rowHeight });
   if (!pinching) metricsHold.current = { colWidth, rowHeight };
-  /** До 60% × мешает на мелких карточках; с 60% и на дне — виден */
-  const showSlotDelete = weekZoomAtLeast(weekZoom, WEEK_ZOOM_DELETE_MIN);
+  /** На телефоне до 60% крестик мешает на мелких карточках; на широком экране — сразу */
+  const showSlotDelete = isDesktopLayout || weekZoomAtLeast(weekZoom, WEEK_ZOOM_DELETE_MIN);
   const showSlotBadge = weekZoomAtLeast(weekZoom, WEEK_ZOOM_BADGE_MIN);
   const zoomPct = weekZoomPercent(weekZoom);
   const showSlotTitle = isDesktopLayout || weekZoomAtLeast(weekZoom, WEEK_ZOOM_TITLE_MIN);
   const showSlotAdd = weekZoomAtLeast(weekZoom, WEEK_ZOOM_ADD_MIN);
   const swipeComplete = !pick;
-  const titlesOnly = isDesktopLayout
-    ? zoomPct < 10
-    : showSlotTitle && zoomPct <= Math.round(WEEK_ZOOM_TITLE_ONLY_MAX * 100);
+  const titlesOnly = !isDesktopLayout
+    && showSlotTitle && zoomPct <= Math.round(WEEK_ZOOM_TITLE_ONLY_MAX * 100);
   const showSlotDesc = isDesktopLayout
     ? zoomPct >= 10
     : weekZoomAtLeast(weekZoom, WEEK_ZOOM_DESC_MIN);
@@ -248,16 +247,26 @@ export function WeekView({
     // pinching не в deps — иначе после жеста снова прыгнем к «сейчас».
   }, [zoom, focusDate, days, hours.length, settings.dayStartHour, settings.dayEndHour]);
 
-  const finishCopy = (clip: ReturnType<typeof copyWeekClipboard>, emptyHint: string, filledHint: string) => {
+  const finishCopy = (clip: ReturnType<typeof copyWeekClipboard>) => {
     setGridClipboard(clip);
     setMenuOpen(false);
     setPick(null);
-    showToast(clip.items.length === 0 ? emptyHint : filledHint.replace('{n}', String(clip.items.length)));
+    const n = clip.items.length;
+    if (clip.kind === 'week') {
+      showToast(n === 0 ? t('weekCopiedEmpty') : t('weekCopiedN', { n: String(n) }));
+      return;
+    }
+    const source = clipboardSourceLabel(clip, settings.weekStartsOn, dateTag, monthsGen, locale);
+    if (clip.kind === 'day') {
+      showToast(n === 0 ? t('dayCopiedEmptyRange', { range: source }) : t('dayCopiedNRange', { range: source, n }));
+    } else {
+      showToast(n === 0 ? t('hourCopiedEmptyRange', { range: source }) : t('hourCopiedNRange', { range: source, n }));
+    }
   };
 
   const copyWeek = () => {
     const clip = copyWeekClipboard(tasks, focusDate, settings.weekStartsOn);
-    finishCopy(clip, t('weekCopiedEmpty'), t('weekCopiedN'));
+    finishCopy(clip);
   };
 
   const requestPaste = (target: PendingPaste, count: number) => {
@@ -310,8 +319,7 @@ export function WeekView({
 
   const onPickDay = (day: Date) => {
     if (pick === 'copy-day') {
-      const clip = copyDayClipboard(tasks, day);
-      finishCopy(clip, t('dayCopiedEmpty'), t('dayCopiedN'));
+      finishCopy(copyDayClipboard(tasks, day));
       return;
     }
     if (pick === 'paste-day' && gridClipboard?.kind === 'day') {
@@ -321,8 +329,7 @@ export function WeekView({
 
   const onPickHour = (day: Date, hour: number) => {
     if (pick === 'copy-hour') {
-      const clip = copyHourClipboard(tasks, day, hour);
-      finishCopy(clip, t('hourCopiedEmpty'), t('hourCopiedN'));
+      finishCopy(copyHourClipboard(tasks, day, hour));
       return;
     }
     if (pick === 'paste-hour' && gridClipboard?.kind === 'hour') {
@@ -368,10 +375,10 @@ export function WeekView({
       const range = formatWeekHeaderTitle(focusDate, settings.weekStartsOn, dateTag, monthsGen);
       return `${t('kindWeekCap')} · ${range}`;
     }
+    const source = clipboardSourceLabel(gridClipboard, settings.weekStartsOn, dateTag, monthsGen, locale);
     const n = gridClipboard.items.length;
-    const kind = clipKindLabel(gridClipboard.kind, locale);
-    return `${kind} · ${n} ${taskWord(n)}`;
-  }, [gridClipboard, focusDate, settings.weekStartsOn, dateTag, monthsGen, t, locale, taskWord]);
+    return `${source} · ${n} ${taskWord(n)}`;
+  }, [gridClipboard, focusDate, settings.weekStartsOn, dateTag, monthsGen, locale, t, taskWord]);
 
   const onPasteFromMenu = () => {
     if (!gridClipboard) return;
@@ -403,13 +410,15 @@ export function WeekView({
     >
       {pick && (
         <div className="week-view__pick-bar">
-          <span>
+          <span className="week-view__pick-bar-text">
             {pick === 'copy-day' && t('pickCopyDay')}
             {pick === 'copy-hour' && t('pickCopyHour')}
             {pick === 'paste-day' && t('pickPasteDay')}
             {pick === 'paste-hour' && t('pickPasteHour')}
           </span>
-          <button type="button" onClick={() => setPick(null)}>{t('cancel')}</button>
+          <div className="week-view__pick-bar-actions">
+            <button type="button" onClick={() => setPick(null)}>{t('cancel')}</button>
+          </div>
         </div>
       )}
       {toast && !pick && <p className="week-view__clip-toast">{toast}</p>}

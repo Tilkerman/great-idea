@@ -43,6 +43,16 @@ export function SettingsInstall() {
 
   const showShare = canWebShare();
 
+  const platformGuides = useMemo(
+    () => [
+      { id: 'install-iphone', label: t('installIos') },
+      { id: 'install-android', label: t('installAndroid') },
+      { id: 'install-mac', label: t('installMac') },
+      { id: 'install-windows', label: t('installWindows') },
+    ],
+    [t],
+  );
+
   const onInstallHere = async () => {
     if (!installPrompt) return;
     trackInstallButtonClick();
@@ -126,6 +136,25 @@ export function SettingsInstall() {
         {isInstalled && (
           <p className="settings-install__text">{t('alreadyHome')}</p>
         )}
+
+        <nav className="settings-install__jump" aria-label={t('installJumpLabel')}>
+          {platformGuides.map((platform) => (
+            <a key={platform.id} className="settings-install__jump-link" href={`#${platform.id}`}>
+              {platform.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="settings-install__brief">
+          <p className="settings-install__brief-title">{t('installBrief')}</p>
+          <ul className="settings-install__brief-list">
+            <li><strong>{t('installIos')}:</strong> {t('installBriefIos')}</li>
+            <li><strong>{t('installAndroid')}:</strong> {t('installBriefAndroid')}</li>
+            <li><strong>{t('installMac')}:</strong> {t('installBriefMac')}</li>
+            <li><strong>{t('installWindows')}:</strong> {t('installBriefWin')}</li>
+          </ul>
+          <p className="settings-install__text settings-install__tap-hint">{t('installTapHint')}</p>
+        </div>
 
         <section className="settings-install__guide" aria-labelledby="install-iphone">
           <h2 id="install-iphone" className="settings-install__guide-title">{t('installIos')}</h2>

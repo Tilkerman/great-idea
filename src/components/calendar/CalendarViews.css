@@ -813,6 +813,67 @@
   color: #1565c0;
 }
 
+.week-view__clip-week-target {
+  margin: 0 12px 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.week-view__clip-week-target-label {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.week-view__clip-week-target-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.week-view__clip-week-target-range {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+.week-view__clip-week-target-arrow {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.week-view__clip-week-target-btn {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
 .week-view__clip-footer {
   margin: 10px 10px 0;
   padding: 10px 12px;
@@ -842,7 +903,11 @@
 
 .week-view__pick-bar,
 .week-view__clip-toast {
-  flex-shrink: 0;
+  position: absolute;
+  top: calc(var(--chrome-stack-h, var(--chrome-overlay-h, 48px)) + var(--week-day-head-h, 60px));
+  left: 0;
+  right: 0;
+  z-index: 32;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -852,6 +917,21 @@
   font-weight: 600;
   background: color-mix(in srgb, var(--accent) 16%, var(--surface));
   color: var(--text-primary);
+  border-bottom: 0.5px solid color-mix(in srgb, var(--accent) 25%, var(--grid));
+  pointer-events: auto;
+}
+
+.week-view__pick-bar-text {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.week-view__pick-bar-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
 }
 
 .week-view__pick-bar button {
@@ -862,6 +942,7 @@
   font-weight: 700;
   cursor: pointer;
   touch-action: manipulation;
+  white-space: nowrap;
 }
 
 .week-view__clip-toast {
@@ -927,6 +1008,12 @@
 }
 
 @media (min-width: 1024px) {
+  /* Полная неделя на большом экране: название и × читаемы без Ctrl+колёсико */
+  .week-view {
+    --week-title-scale: 1;
+    --week-title-size: clamp(10px, calc(var(--week-col-width) * 0.05), 13px);
+  }
+
   .week-view__head-float,
   .week-view__time-head,
   .week-view__time-col {
