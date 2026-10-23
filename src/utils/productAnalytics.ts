@@ -1,6 +1,6 @@
 import { newTaskId } from './id';
 import { isStandaloneApp } from './pwaInstall';
-import type { Locale, TaskCategory } from '../types';
+import type { TaskCategory } from '../types';
 
 const CONSENT_KEY = 'tili-analytics-consent';
 const DISTINCT_ID_KEY = 'tili-analytics-id';
@@ -119,25 +119,7 @@ export function trackAppOpenOnce(settingsEnabled: boolean, locale: string): void
   trackProductEvent('app_open', { locale }, settingsEnabled);
 }
 
-/** Язык из ?lang= и браузера (не по стране). */
-export function resolveLaunchLocale(current: Locale): Locale {
-  try {
-    const param = new URLSearchParams(window.location.search).get('lang')?.trim().toLowerCase();
-    if (param === 'ru' || param === 'en' || param === 'es') return param;
-  } catch {
-    /* ignore */
-  }
-  if (current !== 'ru') return current;
-  try {
-    const nav = navigator.language.toLowerCase();
-    if (nav.startsWith('ru')) return 'ru';
-    if (nav.startsWith('es')) return 'es';
-    if (nav.startsWith('en')) return 'en';
-  } catch {
-    /* ignore */
-  }
-  return 'en';
-}
+export { resolveLaunchLocale } from './appLocale';
 
 export function trackCalendarTask(
   settingsEnabled: boolean,

@@ -1,4 +1,5 @@
 import type { Locale, UserSession } from '../types';
+import { acceptLanguageForLocale, parseAppLocale, runtimeLocale } from './appLocale';
 
 type ApiUser = {
   id: string;
@@ -91,6 +92,9 @@ export async function cloudFetch(
     headers.set('content-type', 'application/json');
     body = JSON.stringify(init.json);
   }
+  if (!headers.has('accept-language')) {
+    headers.set('accept-language', acceptLanguageForLocale(runtimeLocale()));
+  }
 
   let unauthorized: Response | null = null;
   for (const base of bases) {
@@ -147,11 +151,15 @@ export async function fetchCloudSession(): Promise<UserSession | null> {
   }
 }
 
+function mailLocale(locale?: Locale): Locale {
+  return parseAppLocale(locale) ?? runtimeLocale();
+}
+
 export async function registerCloudAccount(input: {
   displayName: string;
   email: string;
   password: string;
-  locale?: Locale;
+  locale: Locale;
 }): Promise<ApiUser> {
   const data = await apiFetch<{ user: ApiUser }>('/v1/auth/register', {
     method: 'POST',
@@ -159,7 +167,7 @@ export async function registerCloudAccount(input: {
       displayName: input.displayName,
       email: input.email,
       password: input.password,
-      locale: input.locale,
+      locale: mailLocale(input.locale),
     },
   });
   return data.user;
@@ -178,17 +186,17 @@ export async function logoutCloudAccount(): Promise<void> {
   await apiFetch('/v1/auth/logout', { method: 'POST' });
 }
 
-export async function requestVerifyEmail(email: string, locale?: Locale): Promise<void> {
+export async function requestVerifyEmail(email: string, locale: Locale): Promise<void> {
   await apiFetch('/v1/auth/verify-email/request', {
     method: 'POST',
-    json: { email, locale },
+    json: { email, locale: mailLocale(locale) },
   });
 }
 
-export async function requestPasswordResetEmail(email: string, locale?: Locale): Promise<void> {
+export async function requestPasswordResetEmail(email: string, locale: Locale): Promise<void> {
   await apiFetch('/v1/auth/password-reset/request', {
     method: 'POST',
-    json: { email, locale },
+    json: { email, locale: mailLocale(locale) },
   });
 }
 

@@ -7,6 +7,7 @@ export const en = {
   'header.themeToLight': 'Switch to light theme',
   'header.lang.ru': 'RU',
   'header.lang.en': 'EN',
+  'header.lang.es': 'ES',
   'header.langLabel': 'Language',
 
   // Common

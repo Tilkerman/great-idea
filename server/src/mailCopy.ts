@@ -2,18 +2,36 @@ export type MailLocale = 'ru' | 'en' | 'es';
 
 const LOCALES: MailLocale[] = ['ru', 'en', 'es'];
 
-export function parseMailLocale(value: unknown): MailLocale {
+/** Valid ru/en/es only. Missing or junk is null — never silently Russian. */
+export function parseMailLocale(value: unknown): MailLocale | null {
   const raw = String(value ?? '').trim().toLowerCase().slice(0, 2);
-  return LOCALES.includes(raw as MailLocale) ? (raw as MailLocale) : 'ru';
+  return LOCALES.includes(raw as MailLocale) ? (raw as MailLocale) : null;
 }
 
-export function localeFromAcceptLanguage(header?: string): MailLocale {
-  if (!header) return 'ru';
+export function localeFromAcceptLanguage(header?: string): MailLocale | null {
+  if (!header) return null;
   const tags = header.split(',').map((part) => part.split(';')[0].trim().toLowerCase().slice(0, 2));
   for (const tag of tags) {
     if (LOCALES.includes(tag as MailLocale)) return tag as MailLocale;
   }
-  return 'ru';
+  return null;
+}
+
+/**
+ * App body locale wins (the language the person actually sees).
+ * Then ?lang= on recovery links. Then Accept-Language. Russian is last resort.
+ */
+export function resolveMailLocale(input: {
+  bodyLocale?: unknown;
+  queryLang?: unknown;
+  acceptLanguage?: string;
+  fallback?: MailLocale;
+}): MailLocale {
+  return parseMailLocale(input.bodyLocale)
+    ?? parseMailLocale(input.queryLang)
+    ?? localeFromAcceptLanguage(input.acceptLanguage)
+    ?? input.fallback
+    ?? 'ru';
 }
 
 type Copy = {

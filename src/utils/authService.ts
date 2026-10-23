@@ -33,7 +33,7 @@ export async function registerAccount(input: {
   name: string;
   email: string;
   password: string;
-  locale?: Locale;
+  locale: Locale;
 }): Promise<{ session?: UserSession; cloudPendingVerification?: boolean }> {
   if (isCloudAccountEnabled()) {
     await registerCloudAccount({
@@ -62,7 +62,7 @@ export async function loginAccount(email: string, password: string): Promise<Use
   return account ? sessionFromAccount(account) : null;
 }
 
-export async function requestAccountPasswordReset(email: string, locale?: Locale): Promise<boolean> {
+export async function requestAccountPasswordReset(email: string, locale: Locale): Promise<boolean> {
   if (isCloudAccountEnabled()) {
     await requestPasswordResetEmail(email, locale);
     return true;
@@ -70,7 +70,7 @@ export async function requestAccountPasswordReset(email: string, locale?: Locale
   return Boolean(findAccount(email));
 }
 
-export async function resetAccountPassword(email: string, password: string, locale?: Locale): Promise<boolean> {
+export async function resetAccountPassword(email: string, password: string, locale: Locale): Promise<boolean> {
   if (isCloudAccountEnabled()) {
     await requestPasswordResetEmail(email, locale);
     return true;
@@ -120,7 +120,7 @@ export async function signOutAccount(): Promise<void> {
   if (isCloudAccountEnabled()) await logoutCloudAccount();
 }
 
-export async function resendVerificationEmail(email: string, locale?: Locale): Promise<void> {
+export async function resendVerificationEmail(email: string, locale: Locale): Promise<void> {
   if (!isCloudAccountEnabled()) return;
   await requestVerifyEmail(email, locale);
 }

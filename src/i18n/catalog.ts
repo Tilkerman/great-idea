@@ -1,4 +1,5 @@
 import type { Locale } from '../types';
+import { parseAppLocale } from '../utils/appLocale';
 import { en } from './en';
 import { es } from './es';
 import { ru } from './ru';
@@ -9,7 +10,7 @@ export type MsgKey = keyof Catalog['msg'];
 const packs = { ru, en, es } as const;
 
 export function getPack(locale: Locale) {
-  return packs[locale] ?? packs.ru;
+  return packs[parseAppLocale(locale) ?? 'ru'];
 }
 
 export function dateTag(locale: Locale) {

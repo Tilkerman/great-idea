@@ -32,7 +32,7 @@ import {
   writeLumiSync,
 } from './sync.js';
 import { parseVoiceNote } from './voice.js';
-import { localeFromAcceptLanguage, mailCopy, parseMailLocale, type MailLocale } from './mailCopy.js';
+import { mailCopy, resolveMailLocale, type MailLocale } from './mailCopy.js';
 import { appHomeUrl, escapeHtml, page, transactionalMailHtml } from './webUi.js';
 
 const config = readConfig();
@@ -142,7 +142,7 @@ app.post('/v1/auth/register', async (request, reply) => {
       displayName: input.data.displayName,
       password: input.data.password,
     });
-    await sendVerificationEmail(user, parseMailLocale(input.data.locale));
+    await sendVerificationEmail(user, bodyMailLocale(request, input.data.locale));
     return reply.code(201).send({ user, emailVerificationRequired: true });
   } catch (error) {
     const failure = authFailure(error);
@@ -216,15 +216,24 @@ function actionLink(path: string, token: string, locale: MailLocale): string {
   return url.toString();
 }
 
+function acceptLanguageHeader(request: FastifyRequest): string | undefined {
+  const raw = request.headers['accept-language'];
+  return Array.isArray(raw) ? raw[0] : raw;
+}
+
+function bodyMailLocale(request: FastifyRequest, bodyLocale?: unknown): MailLocale {
+  return resolveMailLocale({
+    bodyLocale,
+    acceptLanguage: acceptLanguageHeader(request),
+  });
+}
+
 function pageLocale(request: FastifyRequest, bodyLocale?: unknown): MailLocale {
-  const queryLang = (request.query as { lang?: unknown } | undefined)?.lang;
-  if (queryLang) return parseMailLocale(queryLang);
-  if (bodyLocale) return parseMailLocale(bodyLocale);
-  return localeFromAcceptLanguage(
-    Array.isArray(request.headers['accept-language'])
-      ? request.headers['accept-language'][0]
-      : request.headers['accept-language'],
-  );
+  return resolveMailLocale({
+    queryLang: (request.query as { lang?: unknown } | undefined)?.lang,
+    bodyLocale,
+    acceptLanguage: acceptLanguageHeader(request),
+  });
 }
 
 async function deliver(message: Parameters<typeof sendMail>[1], logLabel: string) {
@@ -238,7 +247,7 @@ async function deliver(message: Parameters<typeof sendMail>[1], logLabel: string
   }
 }
 
-async function sendVerificationEmail(user: SessionUser, locale: MailLocale = 'ru') {
+async function sendVerificationEmail(user: SessionUser, locale: MailLocale) {
   if (user.emailVerified) return;
   const t = mailCopy(locale);
   const token = await issueEmailToken(db, user.id, 'verify-email', 24);
@@ -315,7 +324,7 @@ app.post('/v1/auth/verify-email/request', async (request, reply) => {
   if (tooManyRequests(`verify:${request.ip}:${input.data.email}`)) return reply.code(429).send({ error: 'too_many_requests' });
 
   const user = await findActiveUserByEmail(db, input.data.email);
-  if (user && !user.emailVerified) await sendVerificationEmail(user, parseMailLocale(input.data.locale));
+  if (user && !user.emailVerified) await sendVerificationEmail(user, bodyMailLocale(request, input.data.locale));
   return reply.code(202).send({ ok: true });
 });
 
@@ -339,7 +348,7 @@ app.post('/v1/auth/password-reset/request', async (request, reply) => {
   if (!input.success) return reply.code(400).send({ error: 'invalid_email' });
   if (tooManyRequests(`reset:${request.ip}:${input.data.email}`)) return reply.code(429).send({ error: 'too_many_requests' });
 
-  const locale = parseMailLocale(input.data.locale);
+  const locale = bodyMailLocale(request, input.data.locale);
   const t = mailCopy(locale);
   const user = await findActiveUserByEmail(db, input.data.email);
   if (user) {

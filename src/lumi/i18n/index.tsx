@@ -16,6 +16,7 @@ function interpolate(template: string, vars?: TranslateVars): string {
 }
 
 function dictLocale(locale: Locale): 'ru' | 'en' {
+  // Lumi screens are still ru/en only; Spanish follows English copy until es exists.
   return locale === 'ru' ? 'ru' : 'en';
 }
 

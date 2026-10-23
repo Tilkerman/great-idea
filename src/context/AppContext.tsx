@@ -39,7 +39,13 @@ import { WEEK_ZOOM_MAX, WEEK_ZOOM_MIN } from '../constants/weekZoom';
 import { afterTaskDeleted, afterTaskWritten } from '../utils/wishTaskBridge';
 import { notifyCalendarCloudDirty } from '../hooks/useCalendarCloudAutoSync';
 import { fetchCloudSession, isCloudAccountEnabled } from '../utils/accountApi';
-import { resolveLaunchLocale, setAnalyticsConsent, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
+import {
+  markLocaleChosen,
+  readLocaleChosenFlag,
+  resolveLaunchLocale,
+  setRuntimeLocale,
+} from '../utils/appLocale';
+import { setAnalyticsConsent, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
 
 const ONBOARDING_KEY = 'tili-onboarding-done';
 const MOBILE_ONBOARDING_KEY = 'tili-onboarding-mobile-done';
@@ -203,11 +209,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await saveSettings(s);
         localStorage.setItem('tili-analytics-on-by-default', '1');
       }
-      const resolved = resolveLaunchLocale(s.locale);
+      const resolved = resolveLaunchLocale({
+        stored: s.locale,
+        localeChosen: readLocaleChosenFlag(),
+        search: window.location.search,
+        navigatorLanguage: navigator.language,
+      });
       if (resolved !== s.locale) {
         s = { ...s, locale: resolved };
         await saveSettings(s);
       }
+      markLocaleChosen();
+      setRuntimeLocale(s.locale);
       const launch = new URLSearchParams(window.location.search);
       let launchUrlDirty = false;
       if (launch.get('open') === 'lumi') {
@@ -383,6 +396,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const updateSettings = useCallback(async (partial: Partial<UserSettings>) => {
     const next = { ...settings, ...partial };
+    if (partial.locale) {
+      markLocaleChosen();
+      setRuntimeLocale(next.locale);
+    }
     setSettingsState(next);
     await saveSettings(next);
   }, [settings]);
@@ -468,6 +485,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', root.dataset.theme === 'dark' ? '#0f1117' : '#ffffff');
     root.lang = settings.locale;
+    setRuntimeLocale(settings.locale);
   }, [settings.theme, settings.locale]);
 
   const value = useMemo(

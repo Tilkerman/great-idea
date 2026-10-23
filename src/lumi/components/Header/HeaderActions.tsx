@@ -51,6 +51,13 @@ export default function HeaderActions({ onSettingsClick }: HeaderActionsProps) {
         >
           {t('header.lang.en')}
         </button>
+        <button
+          type="button"
+          className={`header-lang-btn ${locale === 'es' ? 'active' : ''}`}
+          onClick={() => setLocale('es')}
+        >
+          {t('header.lang.es')}
+        </button>
       </div>
 
       {/* Тема */}

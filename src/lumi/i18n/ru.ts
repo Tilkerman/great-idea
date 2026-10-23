@@ -9,6 +9,7 @@ export const ru: Record<TranslationKey, string> = {
   'header.themeToLight': 'Переключить на светлую тему',
   'header.lang.ru': 'RU',
   'header.lang.en': 'EN',
+  'header.lang.es': 'ES',
   'header.langLabel': 'Язык',
 
   // Common

@@ -1,6 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { Task, UserSettings } from '../types';
 import { DEFAULT_SETTINGS } from '../constants/categories';
+import { parseAppLocale } from '../utils/appLocale';
 
 export class TiLiDB extends Dexie {
   tasks!: EntityTable<Task, 'id'>;
@@ -28,6 +29,7 @@ export async function getSettings(): Promise<UserSettings> {
   const merged = { ...DEFAULT_SETTINGS, ...stored };
   const offsets = [0, 5, 15, 30, 60, 1440];
   if (!offsets.includes(merged.reminderBeforeMin)) merged.reminderBeforeMin = 15;
+  merged.locale = parseAppLocale(merged.locale) ?? DEFAULT_SETTINGS.locale;
   return merged;
 }
 

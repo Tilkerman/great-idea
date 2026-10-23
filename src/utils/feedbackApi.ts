@@ -1,4 +1,5 @@
 import type { Locale } from '../types';
+import { acceptLanguageForLocale, parseAppLocale, runtimeLocale } from './appLocale';
 
 const DEFAULT_FEEDBACK_API = 'https://api.tili.su';
 
@@ -15,16 +16,18 @@ export async function sendFeedback(input: {
   contact?: string;
   locale: Locale;
 }) {
+  const locale = parseAppLocale(input.locale) ?? runtimeLocale();
   const response = await fetch(`${feedbackApiBase()}/v1/feedback`, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
       accept: 'application/json',
+      'accept-language': acceptLanguageForLocale(locale),
     },
     body: JSON.stringify({
       message: input.message,
       contact: input.contact || undefined,
-      locale: input.locale,
+      locale,
       website: '',
     }),
   });
