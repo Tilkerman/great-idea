@@ -1,0 +1,26 @@
+.onboarding-mascot {
+  width: min(220px, 58vw);
+  margin: 0 auto 12px;
+  flex-shrink: 0;
+}
+
+.onboarding-mascot__figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+@media (min-width: 1024px) {
+  .onboarding--desktop .onboarding-mascot {
+    width: min(200px, 22vw);
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .onboarding--desktop.onboarding--with-art .onboarding-mascot {
+    width: 180px;
+  }
+}
