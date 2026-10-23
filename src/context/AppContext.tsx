@@ -401,6 +401,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setRuntimeLocale(next.locale);
     }
     setSettingsState(next);
+    if (partial.locale) {
+      markLocaleChosen();
+      setRuntimeLocale(next.locale);
+    }
     await saveSettings(next);
   }, [settings]);
 
