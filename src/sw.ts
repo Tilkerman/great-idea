@@ -22,11 +22,20 @@ function isOfflineMediaAsset(pathname: string) {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
-    const manifest = self.__WB_MANIFEST;
-    if (!Array.isArray(manifest)) return;
     const keys = await caches.keys();
     await Promise.all(keys.filter((k) => k.startsWith('tili-app-assets-') && k !== ASSET_CACHE).map((k) => caches.delete(k)));
     await self.clients.claim();
+    // Dock / «На экран Домой» держит старое окно. Браузерная вкладка открывается заново и видит деплой.
+    // При активации нового SW сами переходим на свежий index (один раз: повторной активации без смены sw.js нет).
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    await Promise.all(windows.map(async (client) => {
+      if (!client.url.startsWith(self.registration.scope)) return;
+      try {
+        await client.navigate(client.url);
+      } catch {
+        /* Safari может отказать — страница перезагрузится по controllerchange */
+      }
+    }));
   })());
 });
 

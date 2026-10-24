@@ -82,13 +82,18 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator && !iosSafariTab) {
   } else {
     registerSw();
   }
-  // Reload only when a new worker replaces one that already ran this tab.
-  // Reloading on the first claim loops: install → claim → reload → install…
-  if (alreadyControlled && !gentleSw) {
-    let reloaded = false;
+  // Уже был worker: новый забрал вкладку — один reload.
+  // В том числе standalone на Mac: раньше gentleSw этот reload отключал, и Dock оставался на старом JS.
+  // Флаг в sessionStorage не даёт циклу install → claim → reload.
+  if (alreadyControlled) {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (reloaded) return;
-      reloaded = true;
+      const key = 'tili-sw-ctrl-reload';
+      try {
+        if (sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, '1');
+      } catch {
+        /* private mode */
+      }
       window.location.reload();
     });
   }
