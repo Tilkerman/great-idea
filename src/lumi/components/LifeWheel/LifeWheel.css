@@ -160,7 +160,7 @@
 .life-wheel-content::after {
   content: '';
   display: block;
-  flex: 0 0 calc(var(--bottom-nav-h) + 8px);
+  flex: 0 0 12px;
 }
 
 .life-wheel-title {

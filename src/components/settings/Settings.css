@@ -1,8 +1,8 @@
 .settings-page {
   min-height: 100%;
   background: var(--bg);
-  /* Scroll past content under the bottom nav (nav sits in viewport padding band). */
-  padding-bottom: calc(var(--bottom-nav-h) + 12px);
+  /* Nav sits in the viewport padding band, below this overlay. */
+  padding-bottom: 16px;
 }
 
 .settings-topbar {

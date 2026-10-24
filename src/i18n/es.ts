@@ -538,11 +538,12 @@ export const es: typeof ru = {
     onbShort2bTitle: 'Desliza —\nhecho',
     onbShort2bMobile: 'Desliza la tarjeta de izquierda a derecha — la tarea está hecha.',
     onbShort2bDesktop: 'Arrastra la tarjeta a la derecha o pulsa la marca — la tarea está hecha.',
-    onbShort3t: 'Tus tareas en tu dispositivo',
+    onbShort3t: 'Una cuenta',
+    onbShort3lead: 'En el teléfono y en el ordenador.',
     onbShort3bMobile:
-      'TiLi funciona en el teléfono y en el ordenador.\n\nLas tareas se guardan en este dispositivo, no en un servidor.\n\nPara no perderlas o pasarlas a otro dispositivo, haz una copia en Ajustes → Teléfono nuevo.',
+      'Entra, y las tareas y los deseos te siguen.\n\nSin cuenta se quedan en este dispositivo.',
     onbShort3bDesktop:
-      'TiLi funciona en el teléfono y en el ordenador.\n\nLas tareas se guardan en este navegador, no en un servidor.\n\nPara no perderlas o pasarlas a otro dispositivo, haz una copia en Ajustes → Teléfono nuevo.',
+      'Entra, y las tareas y los deseos te siguen.\n\nSin cuenta se quedan en este navegador.',
     onbStart: 'Empezar',
     onb0t: 'Bienvenido a TiLi',
     onb0b: 'Tiempo por horas,\ndeseos por pasos.\n\nTiLi es tu calendario del tiempo.\nLumi es tu calendario de deseos.\n\nCámbialos abajo. El plus verde añade rápido una tarea o un deseo.',

@@ -147,8 +147,8 @@ html.is-onboarding {
   width: 100%;
   display: flex;
   flex-direction: column;
-  /* Not a containing block: the bottom nav anchors to .app-viewport
-     and sits in its padding, flush with the screen edge. */
+  /* Containing block for the nav. The nav is shifted into the viewport
+     padding band so the last calendar row can scroll fully above the tabs. */
   overflow: visible;
 }
 
@@ -156,7 +156,8 @@ html.is-onboarding {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  /* Панель живёт в padding-bottom вьюпорта, а не поверх последней строки календаря. */
+  bottom: calc(-1 * var(--bottom-nav-h));
   margin-top: 0;
 }
 
@@ -307,6 +308,13 @@ select {
 .app-shell--lumi .app-shell__main {
   padding-bottom: 0;
   background: var(--surface);
+}
+
+button,
+[role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .btn {

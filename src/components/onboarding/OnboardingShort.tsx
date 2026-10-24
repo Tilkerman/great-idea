@@ -105,6 +105,7 @@ export function OnboardingShort() {
               <OnboardingMascot pose={SHORT_POSES[step] ?? 'welcome'} />
             )}
             {step === 0 && <p className="onboarding__lead">{t('onbShort1lead')}</p>}
+            {step === 2 && <p className="onboarding__lead">{t('onbShort3lead')}</p>}
             {step !== 1 && <p className="onboarding__body">{current.body}</p>}
             {step === 0 && (
               <ul className="onboarding__palette" aria-label={t('onb3t')}>

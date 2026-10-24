@@ -542,11 +542,12 @@ export const en: typeof ru = {
     onbShort2bTitle: 'Swipe —\ndone',
     onbShort2bMobile: 'Swipe a card left to right — the task is done.',
     onbShort2bDesktop: 'Drag a card to the right or tap the checkmark — the task is done.',
-    onbShort3t: 'Your tasks stay on your device',
+    onbShort3t: 'One account',
+    onbShort3lead: 'On your phone and your computer.',
     onbShort3bMobile:
-      'TiLi works on both your phone and your computer.\n\nTasks stay on this device, not on a server.\n\nTo keep them or move them to another device, make a backup in Settings → New phone.',
+      'Sign in, and your tasks and wishes follow you.\n\nWithout an account they stay on this device.',
     onbShort3bDesktop:
-      'TiLi works on both your phone and your computer.\n\nTasks stay in this browser, not on a server.\n\nTo keep them or move them to another device, make a backup in Settings → New phone.',
+      'Sign in, and your tasks and wishes follow you.\n\nWithout an account they stay in this browser.',
     onbStart: 'Get started',
     onb0t: 'Welcome to TiLi',
     onb0b: 'Time by the hour,\nWishes step by step.\n\nTiLi is your time calendar.\nLumi is your wishes calendar.\n\nSwitch between them at the bottom. The green plus quickly adds a task or a wish.',

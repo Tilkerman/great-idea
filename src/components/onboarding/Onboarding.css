@@ -97,6 +97,10 @@
   padding-top: calc(8px + env(safe-area-inset-top));
 }
 
+.onboarding--short .onboarding__step-num {
+  margin-top: 14px;
+}
+
 .onboarding--short .onboarding__scroll {
   flex: 1 1 auto;
   min-height: 0;
@@ -275,7 +279,7 @@
 }
 
 .onboarding__gesture .onboarding-mascot {
-  width: 172px;
+  width: 206px;
   margin: 0;
   flex-shrink: 0;
 }
@@ -417,6 +421,10 @@
     max-width: 1120px;
     margin: 0 auto;
     width: 100%;
+  }
+
+  .onboarding--desktop .onboarding__gesture .onboarding-mascot {
+    width: 240px;
   }
 
   .onboarding--desktop .onboarding__main {
