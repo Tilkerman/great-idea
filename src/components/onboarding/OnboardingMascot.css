@@ -11,6 +11,8 @@
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
+  border-radius: 16px;
+  background: #fff;
 }
 
 @media (min-width: 1024px) {

@@ -522,7 +522,7 @@ export const es: typeof ru = {
     taskMany: 'tareas',
     taskEn: 'tareas',
     onb0t: 'Bienvenido a TiLi',
-    onb0b: 'Tiempo por horas,\ndeseos por pasos.\n\nTiLi es tu calendario del tiempo.\nLumi es tu calendario de deseos.\n\nCámbialos abajo. El más verde añade rápido una tarea o un deseo.',
+    onb0b: 'Tiempo por horas,\ndeseos por pasos.\n\nTiLi es tu calendario del tiempo.\nLumi es tu calendario de deseos.\n\nCámbialos abajo. El plus verde añade rápido una tarea o un deseo.',
     onbProgress: 'Pasos de bienvenida',
     onb1t: 'Pellizca para cambiar la vista',
     onb1b: 'Separa los dedos para acercar, júntalos para alejar. En la semana ves los siete días; luego puedes ir al mes y al año.',

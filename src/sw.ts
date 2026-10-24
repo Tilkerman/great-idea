@@ -13,7 +13,12 @@ self.addEventListener('message', (event) => {
     void self.skipWaiting();
   }
 });
-const ASSET_CACHE = 'tili-app-assets-v3';
+const ASSET_CACHE = 'tili-app-assets-v4';
+
+/** JS/CSS всегда с сети — иначе на Mac после обновления ловили «голый» календарь без стилей. */
+function isOfflineMediaAsset(pathname: string) {
+  return /\.(png|jpe?g|webp|gif|svg|woff2?|ico)$/i.test(pathname);
+}
 
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
@@ -29,6 +34,7 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (!url.pathname.startsWith('/app/assets/')) return;
+  if (!isOfflineMediaAsset(url.pathname)) return;
   event.respondWith((async () => {
     const cache = await caches.open(ASSET_CACHE);
     try {

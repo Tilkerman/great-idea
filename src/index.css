@@ -111,11 +111,17 @@ body {
 html.is-onboarding,
 html.is-onboarding body,
 html.is-onboarding #root {
-  background: #fff;
+  background: #fff !important;
+  color-scheme: light;
 }
 
 html.is-onboarding {
   box-shadow: 0 160px 0 0 #fff;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
 }
 
 /* Full-screen column: scroll areas above, bottom nav pinned to foot of #root frame. */

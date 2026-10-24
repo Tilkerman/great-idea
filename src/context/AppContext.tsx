@@ -473,7 +473,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [session, ready]);
 
   useEffect(() => {
+    if (!ready) return;
     const root = document.documentElement;
+    const meta = document.querySelector('meta[name="theme-color"]');
+
+    if (screen === 'onboarding') {
+      root.dataset.theme = 'light';
+      root.style.colorScheme = 'light';
+      if (meta) meta.setAttribute('content', '#ffffff');
+      root.lang = settings.locale;
+      setRuntimeLocale(settings.locale);
+      return;
+    }
+
+    root.style.colorScheme = '';
     const fromOpen = new URLSearchParams(window.location.search).get('theme') === 'light';
     const theme = fromOpen ? 'light' : settings.theme;
     if (theme === 'dark') root.dataset.theme = 'dark';
@@ -482,11 +495,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       root.dataset.theme = prefersDark ? 'dark' : 'light';
     }
-    const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', root.dataset.theme === 'dark' ? '#0f1117' : '#ffffff');
     root.lang = settings.locale;
     setRuntimeLocale(settings.locale);
-  }, [settings.theme, settings.locale]);
+  }, [ready, screen, settings.theme, settings.locale]);
 
   const value = useMemo(
     () => ({
