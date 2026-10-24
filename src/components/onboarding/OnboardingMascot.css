@@ -15,7 +15,25 @@
   background: #fff;
 }
 
+@media (max-width: 1023px) {
+  .onboarding--short .onboarding-mascot__figure {
+    border-radius: 12px;
+  }
+}
+
 @media (min-width: 1024px) {
+  .onboarding--short.onboarding--desktop .onboarding-mascot {
+    width: min(200px, 22vw);
+  }
+
+  .onboarding--short.onboarding--desktop .onboarding__title {
+    font-size: clamp(24px, 2.5vw, 32px);
+  }
+
+  .onboarding--short.onboarding--desktop .onboarding__body {
+    font-size: 16px;
+  }
+
   .onboarding--desktop .onboarding-mascot {
     width: min(200px, 22vw);
     margin-left: 0;

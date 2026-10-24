@@ -343,6 +343,7 @@ export const en: typeof ru = {
     aboutMainTitle: 'The main thing',
     aboutMain: 'TiLi helps you see your time as it is, and decide for yourself what to spend it on.',
     showIntro: 'Show intro',
+    showIntro2: 'Show intro 2',
     mvp: 'v0.1.0 — MVP',
     httpsNeeded: 'HTTPS is required. Open the app from the Home Screen icon (GitHub Pages), not a local Wi‑Fi address.',
     browserNoNotif: 'This browser cannot show notifications.',
@@ -525,6 +526,20 @@ export const en: typeof ru = {
     taskFew: 'tasks',
     taskMany: 'tasks',
     taskEn: 'tasks',
+    onbShort1t: 'Welcome to TiLi',
+    onbShort1bMobile:
+      'Time by the hour. Wishes step by step.\n\nTiLi is your time calendar. Lumi is your wishes calendar. Switch at the bottom. The green plus adds a task or a wish.\n\nPink — work, blue — personal and rest, green — family.',
+    onbShort1bDesktop:
+      'Time by the hour. Wishes step by step.\n\nTiLi is your time calendar. Lumi is your wishes calendar. Switch in the menu on the left. The green plus adds a task or a wish.\n\nPink — work, blue — personal and rest, green — family.',
+    onbShort2t: 'Two gestures worth knowing',
+    onbShort2bMobile:
+      'Zoom in and out\nSpread or pinch your fingers — from year down to an hour.\n\nSwipe = done\nSwipe a card left to right to mark it complete.',
+    onbShort2bDesktop:
+      'Zoom in and out\nHold Ctrl (Windows) or ⌘ (Mac) and scroll the wheel. On a trackpad, pinch. From year down to an hour.\n\nSwipe = done\nDrag a card to the right or tap the checkmark to complete it.',
+    onbShort3t: 'Your tasks stay on your device',
+    onbShort3b:
+      'Tasks and wishes are stored locally on this device, not on a server. To avoid losing data when you change phones, make a backup in Settings → Data.',
+    onbStart: 'Get started',
     onb0t: 'Welcome to TiLi',
     onb0b: 'Time by the hour,\nWishes step by step.\n\nTiLi is your time calendar.\nLumi is your wishes calendar.\n\nSwitch between them at the bottom. The green plus quickly adds a task or a wish.',
     onbProgress: 'Welcome steps',

@@ -21,6 +21,7 @@ import {
   normalizeBackup,
 } from '../../utils/fullBackup';
 import { saveLastBackupDate } from '../../lumi/utils/backupReminder';
+import { SHOW_INTRO_SHORT_PREVIEW_IN_SETTINGS } from '../../constants/onboarding';
 import './Settings.css';
 
 type HubItem = { id: string; label: string; sub: string };
@@ -705,7 +706,7 @@ export function SettingsData() {
 }
 
 export function SettingsAbout() {
-  const { setScreen } = useApp();
+  const { setScreen, openOnboarding } = useApp();
   const { t } = useI18n();
 
   return (
@@ -749,9 +750,23 @@ export function SettingsAbout() {
         <h2 className="settings-about__h">{t('aboutMainTitle')}</h2>
         <p>{t('aboutMain')}</p>
 
-        <button type="button" className="btn btn--ghost settings-full" onClick={() => setScreen('onboarding')}>
+        <button
+          type="button"
+          className="btn btn--ghost settings-full"
+          onClick={() => openOnboarding('legacy', 'settings-about')}
+        >
           {t('showIntro')}
         </button>
+
+        {SHOW_INTRO_SHORT_PREVIEW_IN_SETTINGS && (
+          <button
+            type="button"
+            className="btn btn--ghost settings-full"
+            onClick={() => openOnboarding('short', 'settings-about')}
+          >
+            {t('showIntro2')}
+          </button>
+        )}
 
         <button type="button" className="btn btn--ghost settings-full" onClick={() => setScreen('settings-support')}>
           {t('supportTitle')}

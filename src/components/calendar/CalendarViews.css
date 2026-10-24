@@ -1084,6 +1084,32 @@
   .calendar-canvas .week-view__slot {
     transition: none;
   }
+
+  /* Сетка заполняет высоту окна — без белой полосы под последним часом */
+  .week-view__grid-scroll {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .week-view__grid {
+    flex: 1 1 auto;
+    min-height: 100%;
+    align-items: stretch;
+  }
+
+  .week-view__time-col,
+  .week-view__col {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .week-view__time-label,
+  .week-view__slot {
+    flex: 1 1 0;
+    min-height: var(--week-row-height, 72px);
+    height: auto;
+  }
 }
 
 .week-view__day-num {
@@ -1352,6 +1378,23 @@
   padding: 0;
   box-sizing: border-box;
   transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Телефоны: сетка в центре еле заметна; часы слева и шапка дней — как были */
+@media (max-width: 1023px) {
+  .week-view {
+    --week-center-grid: color-mix(in srgb, var(--grid) 16%, transparent);
+  }
+
+  .week-view__grid-scroll .week-view__col {
+    border-left-width: 0.25px;
+    border-left-color: var(--week-center-grid);
+  }
+
+  .week-view__grid-scroll .week-view__slot {
+    border-bottom-width: 0.25px;
+    border-bottom-color: var(--week-center-grid);
+  }
 }
 
 .is-pinching .week-view__grid-scroll,

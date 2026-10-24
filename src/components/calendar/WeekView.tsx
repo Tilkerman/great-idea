@@ -168,7 +168,8 @@ export function WeekView({
     const firstHour = settings.dayStartHour;
     const pos = nowInHourGrid(new Date(), firstHour, settings.dayEndHour);
     const viewH = grid.clientHeight;
-    const nowY = pos ? pos.ratio * hours.length * rowHeight : 0;
+    const gridH = gridInnerRef.current?.offsetHeight ?? hours.length * rowHeight;
+    const nowY = pos ? pos.ratio * gridH : 0;
     const top = pos && isToday(focusDate)
       ? Math.max(0, nowY - viewH / 3)
       : 0;
@@ -228,7 +229,8 @@ export function WeekView({
     let done = false;
     const apply = () => {
       if (done || grid.clientHeight < 48) return;
-      const nowY = pos.ratio * hours.length * rowHeight;
+      const gridH = gridInnerRef.current?.offsetHeight ?? hours.length * rowHeight;
+      const nowY = pos.ratio * gridH;
       const top = Math.max(0, nowY - grid.clientHeight / 3);
       grid.scrollTop = top;
       done = true;

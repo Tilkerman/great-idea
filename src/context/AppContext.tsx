@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -46,6 +47,7 @@ import {
   setRuntimeLocale,
 } from '../utils/appLocale';
 import { setAnalyticsConsent, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
+import type { OnboardingFlowId } from '../constants/onboarding';
 
 const ONBOARDING_KEY = 'tili-onboarding-done';
 const MOBILE_ONBOARDING_KEY = 'tili-onboarding-mobile-done';
@@ -127,6 +129,8 @@ interface AppContextValue {
   cancelDelete: () => void;
   confirmDelete: () => Promise<void>;
   completeOnboarding: () => void;
+  onboardingFlow: OnboardingFlowId;
+  openOnboarding: (flow: OnboardingFlowId, returnTo?: AppScreen) => void;
   openAuth: (start: AuthStart, back?: AppScreen) => void;
   taskClipboard: TaskClipboard | null;
   copyTaskToClipboard: (data: TaskClipboard) => void;
@@ -148,6 +152,8 @@ const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
 export function AppProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [screen, setScreenState] = useState<AppScreen>('onboarding');
+  const [onboardingFlow, setOnboardingFlow] = useState<OnboardingFlowId>('short');
+  const onboardingReturnScreenRef = useRef<AppScreen | null>(null);
   const [mainTab, setMainTab] = useState<'calendar' | 'lumi'>(readMainTab);
   const setScreen = useCallback((s: AppScreen) => {
     setScreenState(s);
@@ -404,10 +410,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await saveSettings(next);
   }, [settings]);
 
+  const openOnboarding = useCallback((flow: OnboardingFlowId, returnTo?: AppScreen) => {
+    setOnboardingFlow(flow);
+    onboardingReturnScreenRef.current = returnTo ?? null;
+    setScreenState('onboarding');
+  }, []);
+
   const completeOnboarding = useCallback(() => {
     markOnboardingCompletedForLayout();
     trackOnboardingComplete(settings.analyticsEnabled, settings.locale);
-    setScreen(readMainTab());
+    const back = onboardingReturnScreenRef.current;
+    onboardingReturnScreenRef.current = null;
+    setScreen(back ?? readMainTab());
   }, [setScreen, settings.analyticsEnabled, settings.locale]);
 
   const openAuth = useCallback((start: AuthStart, back: AppScreen = 'calendar') => {
@@ -541,6 +555,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       cancelDelete,
       confirmDelete,
       completeOnboarding,
+      onboardingFlow,
+      openOnboarding,
       openAuth,
       taskClipboard,
       copyTaskToClipboard,
@@ -553,7 +569,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ready, screen, mainTab, setScreen, zoom, zoomIn, zoomOut, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
       focusDate, selectedDay, tasks,
       refreshTasks, upsertTask, saveHourSlot, placeTask, deleteTaskInHour, removeTask, settings, updateSettings,
-      session, authStart, authBackScreen, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding, openAuth, taskClipboard, copyTaskToClipboard, gridClipboard, pasteGridClipboard, loadDemoThreeWeeks,
+      session, authStart, authBackScreen, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding, onboardingFlow, openOnboarding, openAuth, taskClipboard, copyTaskToClipboard, gridClipboard, pasteGridClipboard, loadDemoThreeWeeks,
     ],
   );
 

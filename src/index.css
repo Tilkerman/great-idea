@@ -367,6 +367,13 @@ select {
     flex-direction: row;
     align-items: stretch;
     padding-bottom: 0;
+    min-height: var(--app-height);
+    height: var(--app-height);
+  }
+
+  .side-nav {
+    align-self: stretch;
+    min-height: 100%;
   }
 
   /* Auth / onboarding have no side nav — keep a column so the form can sit in the middle. */

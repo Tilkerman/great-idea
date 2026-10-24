@@ -343,6 +343,7 @@ export const es: typeof ru = {
     aboutMainTitle: 'Lo principal',
     aboutMain: 'TiLi te ayuda a ver tu tiempo tal como es, y a decidir tú mismo en qué gastarlo.',
     showIntro: 'Ver introducción',
+    showIntro2: 'Ver introducción 2',
     mvp: 'v0.1.0 — MVP',
     httpsNeeded: 'Se necesita HTTPS. Abre la app desde el ícono en Inicio (sitio de GitHub Pages), no una dirección local por Wi‑Fi.',
     browserNoNotif: 'Este navegador no puede mostrar notificaciones.',
@@ -521,6 +522,20 @@ export const es: typeof ru = {
     taskFew: 'tareas',
     taskMany: 'tareas',
     taskEn: 'tareas',
+    onbShort1t: 'Bienvenido a TiLi',
+    onbShort1bMobile:
+      'Tiempo por horas. Deseos por pasos.\n\nTiLi es tu calendario de tiempo, Lumi — de deseos. Cambia abajo. El plus verde añade una tarea o un deseo.\n\nRosa — trabajo, azul — personal y descanso, verde — familia.',
+    onbShort1bDesktop:
+      'Tiempo por horas. Deseos por pasos.\n\nTiLi es tu calendario de tiempo, Lumi — de deseos. Cambia en el menú de la izquierda. El plus verde añade una tarea o un deseo.\n\nRosa — trabajo, azul — personal y descanso, verde — familia.',
+    onbShort2t: 'Dos gestos que conviene conocer',
+    onbShort2bMobile:
+      'Acercar y alejar\nSepara o junta los dedos: del año a la hora.\n\nDeslizar = hecho\nDesliza la tarjeta de izquierda a derecha para completarla.',
+    onbShort2bDesktop:
+      'Acercar y alejar\nMantén Ctrl (Windows) o ⌘ (Mac) y usa la rueda. En el trackpad, pellizca. Del año a la hora.\n\nDeslizar = hecho\nArrastra la tarjeta a la derecha o pulsa la marca para completarla.',
+    onbShort3t: 'Tus tareas en tu dispositivo',
+    onbShort3b:
+      'Las tareas y deseos se guardan en este dispositivo, no en un servidor. Para no perder datos al cambiar de teléfono, haz una copia en Ajustes → Datos.',
+    onbStart: 'Empezar',
     onb0t: 'Bienvenido a TiLi',
     onb0b: 'Tiempo por horas,\ndeseos por pasos.\n\nTiLi es tu calendario del tiempo.\nLumi es tu calendario de deseos.\n\nCámbialos abajo. El plus verde añade rápido una tarea o un deseo.',
     onbProgress: 'Pasos de bienvenida',

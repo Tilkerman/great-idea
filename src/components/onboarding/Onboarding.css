@@ -77,6 +77,46 @@
   justify-content: center;
 }
 
+.onboarding__dots--footer {
+  flex-shrink: 0;
+  margin-top: 0;
+  padding: 10px 0 6px;
+}
+
+/* Короткое введение: контент выше, точки всегда над кнопками */
+.onboarding--short {
+  padding-top: calc(8px + env(safe-area-inset-top));
+}
+
+.onboarding--short .onboarding__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.onboarding--short .onboarding__main {
+  gap: 10px;
+}
+
+.onboarding--short .onboarding__title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.onboarding--short .onboarding__body {
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 32ch;
+}
+
+.onboarding--short .onboarding-mascot {
+  width: min(168px, 46vw);
+  margin-bottom: 6px;
+}
+
+.onboarding--short .onboarding__actions {
+  padding-top: 8px;
+}
+
 .onboarding__dot {
   width: 7px;
   height: 7px;
@@ -94,6 +134,15 @@
   gap: 10px;
   flex-shrink: 0;
   padding-top: 12px;
+}
+
+.onboarding__actions--final-short {
+  justify-content: stretch;
+}
+
+.onboarding__actions--final-short .onboarding__btn--start {
+  flex: 1;
+  max-width: none;
 }
 
 .onboarding__btn {
