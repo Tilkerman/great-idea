@@ -1396,9 +1396,9 @@
     border-bottom-color: var(--week-center-grid);
   }
 
-  /* Иначе низ 21:00 остаётся под вкладками: у скролла был запас 8px, меню выше. */
+  /* Небольшой запас, чтобы низ 21:00 не заезжал под вкладки и не висел высоко. */
   .week-view__grid-scroll {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: 28px;
   }
 
   /* Черта у часов — как линия под днями недели, не как тонкая сетка в центре. */
@@ -1451,7 +1451,7 @@
 
 @media (max-width: 1023px) {
   .day-view {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: 28px;
   }
 }
 
