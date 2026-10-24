@@ -523,18 +523,26 @@ export const es: typeof ru = {
     taskMany: 'tareas',
     taskEn: 'tareas',
     onbShort1t: 'Bienvenido a TiLi',
+    onbShort1lead: 'Tiempo por horas. Deseos por pasos.',
     onbShort1bMobile:
-      'Tiempo por horas. Deseos por pasos.\n\nTiLi es tu calendario de tiempo, Lumi — de deseos. Cambia abajo. El plus verde añade una tarea o un deseo.\n\nRosa — trabajo, azul — personal y descanso, verde — familia.',
+      'TiLi es tu calendario de tiempo.\nLumi es tu calendario de deseos.\n\nCámbialos abajo.\nEl plus verde añade rápido una tarea o un deseo.',
     onbShort1bDesktop:
-      'Tiempo por horas. Deseos por pasos.\n\nTiLi es tu calendario de tiempo, Lumi — de deseos. Cambia en el menú de la izquierda. El plus verde añade una tarea o un deseo.\n\nRosa — trabajo, azul — personal y descanso, verde — familia.',
+      'TiLi es tu calendario de tiempo.\nLumi es tu calendario de deseos.\n\nCámbialos en el menú de la izquierda.\nEl plus verde añade rápido una tarea o un deseo.',
+    onbShortWork: 'Trabajo',
+    onbShortPersonal: 'Personal\ny descanso',
+    onbShortFamily: 'Familia',
     onbShort2t: 'Dos gestos que conviene conocer',
-    onbShort2bMobile:
-      'Acercar y alejar\nSepara o junta los dedos: del año a la hora.\n\nDeslizar = hecho\nDesliza la tarjeta de izquierda a derecha para completarla.',
-    onbShort2bDesktop:
-      'Acercar y alejar\nMantén Ctrl (Windows) o ⌘ (Mac) y usa la rueda. En el trackpad, pellizca. Del año a la hora.\n\nDeslizar = hecho\nArrastra la tarjeta a la derecha o pulsa la marca para completarla.',
+    onbShort2aTitle: 'Acerca\ny aleja',
+    onbShort2aMobile: 'Separa los dedos para acercar, júntalos para alejar.',
+    onbShort2aDesktop: 'Mantén Ctrl (Windows) o ⌘ (Mac) y usa la rueda. En el trackpad, pellizca.',
+    onbShort2bTitle: 'Desliza —\nhecho',
+    onbShort2bMobile: 'Desliza la tarjeta de izquierda a derecha — la tarea está hecha.',
+    onbShort2bDesktop: 'Arrastra la tarjeta a la derecha o pulsa la marca — la tarea está hecha.',
     onbShort3t: 'Tus tareas en tu dispositivo',
-    onbShort3b:
-      'Las tareas y deseos se guardan en este dispositivo, no en un servidor. Para no perder datos al cambiar de teléfono, haz una copia en Ajustes → Datos.',
+    onbShort3bMobile:
+      'TiLi funciona en el teléfono y en el ordenador.\n\nLas tareas se guardan en este dispositivo, no en un servidor.\n\nPara no perderlas o pasarlas a otro dispositivo, haz una copia en Ajustes → Teléfono nuevo.',
+    onbShort3bDesktop:
+      'TiLi funciona en el teléfono y en el ordenador.\n\nLas tareas se guardan en este navegador, no en un servidor.\n\nPara no perderlas o pasarlas a otro dispositivo, haz una copia en Ajustes → Teléfono nuevo.',
     onbStart: 'Empezar',
     onb0t: 'Bienvenido a TiLi',
     onb0b: 'Tiempo por horas,\ndeseos por pasos.\n\nTiLi es tu calendario del tiempo.\nLumi es tu calendario de deseos.\n\nCámbialos abajo. El plus verde añade rápido una tarea o un deseo.',

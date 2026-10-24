@@ -11,14 +11,6 @@
   user-select: none;
   pointer-events: none;
   -webkit-user-drag: none;
-  border-radius: 16px;
-  background: #fff;
-}
-
-@media (max-width: 1023px) {
-  .onboarding--short .onboarding-mascot__figure {
-    border-radius: 12px;
-  }
 }
 
 @media (min-width: 1024px) {

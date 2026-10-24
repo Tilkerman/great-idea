@@ -527,18 +527,26 @@ export const en: typeof ru = {
     taskMany: 'tasks',
     taskEn: 'tasks',
     onbShort1t: 'Welcome to TiLi',
+    onbShort1lead: 'Time by the hour. Wishes step by step.',
     onbShort1bMobile:
-      'Time by the hour. Wishes step by step.\n\nTiLi is your time calendar. Lumi is your wishes calendar. Switch at the bottom. The green plus adds a task or a wish.\n\nPink — work, blue — personal and rest, green — family.',
+      'TiLi is your time calendar.\nLumi is your wishes calendar.\n\nSwitch between them at the bottom.\nThe green plus quickly adds a task or a wish.',
     onbShort1bDesktop:
-      'Time by the hour. Wishes step by step.\n\nTiLi is your time calendar. Lumi is your wishes calendar. Switch in the menu on the left. The green plus adds a task or a wish.\n\nPink — work, blue — personal and rest, green — family.',
+      'TiLi is your time calendar.\nLumi is your wishes calendar.\n\nSwitch in the menu on the left.\nThe green plus quickly adds a task or a wish.',
+    onbShortWork: 'Work',
+    onbShortPersonal: 'Personal\nand rest',
+    onbShortFamily: 'Family',
     onbShort2t: 'Two gestures worth knowing',
-    onbShort2bMobile:
-      'Zoom in and out\nSpread or pinch your fingers — from year down to an hour.\n\nSwipe = done\nSwipe a card left to right to mark it complete.',
-    onbShort2bDesktop:
-      'Zoom in and out\nHold Ctrl (Windows) or ⌘ (Mac) and scroll the wheel. On a trackpad, pinch. From year down to an hour.\n\nSwipe = done\nDrag a card to the right or tap the checkmark to complete it.',
+    onbShort2aTitle: 'Zoom in\nand out',
+    onbShort2aMobile: 'Spread your fingers to zoom in, pinch to zoom out.',
+    onbShort2aDesktop: 'Hold Ctrl (Windows) or ⌘ (Mac) and scroll. On a trackpad, pinch.',
+    onbShort2bTitle: 'Swipe —\ndone',
+    onbShort2bMobile: 'Swipe a card left to right — the task is done.',
+    onbShort2bDesktop: 'Drag a card to the right or tap the checkmark — the task is done.',
     onbShort3t: 'Your tasks stay on your device',
-    onbShort3b:
-      'Tasks and wishes are stored locally on this device, not on a server. To avoid losing data when you change phones, make a backup in Settings → Data.',
+    onbShort3bMobile:
+      'TiLi works on both your phone and your computer.\n\nTasks stay on this device, not on a server.\n\nTo keep them or move them to another device, make a backup in Settings → New phone.',
+    onbShort3bDesktop:
+      'TiLi works on both your phone and your computer.\n\nTasks stay in this browser, not on a server.\n\nTo keep them or move them to another device, make a backup in Settings → New phone.',
     onbStart: 'Get started',
     onb0t: 'Welcome to TiLi',
     onb0b: 'Time by the hour,\nWishes step by step.\n\nTiLi is your time calendar.\nLumi is your wishes calendar.\n\nSwitch between them at the bottom. The green plus quickly adds a task or a wish.',

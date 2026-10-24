@@ -4,6 +4,8 @@ import mascotHour from '../../assets/onboarding/mascot-hour.png';
 import mascotColors from '../../assets/onboarding/mascot-colors.png';
 import mascotComplete from '../../assets/onboarding/mascot-complete.png';
 import mascotDevice from '../../assets/onboarding/mascot-device.png';
+import devicesBackup from '../../assets/onboarding/devices-backup.svg';
+import mascotCloud from '../../assets/onboarding/mascot-cloud.png';
 
 const base = `${import.meta.env.BASE_URL}onboarding/`;
 
@@ -21,4 +23,6 @@ export const ONBOARDING_MASCOTS = {
 export const ONBOARDING_IMAGES = {
   colorsWeekDesktop: `${base}colors-week-desktop.jpg`,
   swipeCardComplete: `${base}swipe-card-complete.jpg`,
+  devicesBackup,
+  mascotCloud,
 } as const;

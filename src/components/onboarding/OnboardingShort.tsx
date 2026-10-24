@@ -4,6 +4,7 @@ import { useI18n } from '../../i18n/useI18n';
 import { useLayoutMode } from '../../hooks/useLayoutMode';
 import type { MascotPose } from './mascotTypes';
 import { OnboardingMascot } from './OnboardingMascot';
+import { ONBOARDING_IMAGES } from './onboardingAssets';
 import './Onboarding.css';
 
 const SHORT_POSES: MascotPose[] = ['welcome', 'pinch', 'device'];
@@ -22,11 +23,11 @@ export function OnboardingShort() {
     },
     {
       title: t('onbShort2t'),
-      body: isDesktopLayout ? t('onbShort2bDesktop') : t('onbShort2bMobile'),
+      body: '',
     },
     {
       title: t('onbShort3t'),
-      body: t('onbShort3b'),
+      body: isDesktopLayout ? t('onbShort3bDesktop') : t('onbShort3bMobile'),
     },
   ], [t, isDesktopLayout]);
 
@@ -62,9 +63,65 @@ export function OnboardingShort() {
 
         <div className="onboarding__main">
           <div className="onboarding__content">
-            <OnboardingMascot pose={SHORT_POSES[step] ?? 'welcome'} />
             <h1 className="onboarding__title">{current.title}</h1>
-            <p className="onboarding__body">{current.body}</p>
+            {step === 1 ? (
+              <div className="onboarding__gestures">
+                <section className="onboarding__gesture">
+                  <OnboardingMascot pose="pinch" />
+                  <div className="onboarding__gesture-copy">
+                    <h2 className="onboarding__gesture-title">{t('onbShort2aTitle')}</h2>
+                    <p className="onboarding__body">{isDesktopLayout ? t('onbShort2aDesktop') : t('onbShort2aMobile')}</p>
+                  </div>
+                </section>
+                <section className="onboarding__gesture onboarding__gesture--flip">
+                  <OnboardingMascot pose="swipe" />
+                  <div className="onboarding__gesture-copy">
+                    <h2 className="onboarding__gesture-title">{t('onbShort2bTitle')}</h2>
+                    <p className="onboarding__body">{isDesktopLayout ? t('onbShort2bDesktop') : t('onbShort2bMobile')}</p>
+                  </div>
+                </section>
+              </div>
+            ) : step === 2 ? (
+              <div className="onboarding__devices">
+                <OnboardingMascot pose="device" />
+                <div className="onboarding__devices-scene">
+                  <img
+                    className="onboarding__devices-cloud"
+                    src={ONBOARDING_IMAGES.mascotCloud}
+                    alt=""
+                    decoding="async"
+                    draggable={false}
+                  />
+                  <img
+                    className="onboarding__devices-art"
+                    src={ONBOARDING_IMAGES.devicesBackup}
+                    alt=""
+                    decoding="async"
+                    draggable={false}
+                  />
+                </div>
+              </div>
+            ) : (
+              <OnboardingMascot pose={SHORT_POSES[step] ?? 'welcome'} />
+            )}
+            {step === 0 && <p className="onboarding__lead">{t('onbShort1lead')}</p>}
+            {step !== 1 && <p className="onboarding__body">{current.body}</p>}
+            {step === 0 && (
+              <ul className="onboarding__palette" aria-label={t('onb3t')}>
+                <li className="onboarding__palette-item onboarding__palette-item--work">
+                  <span className="onboarding__palette-dot" aria-hidden />
+                  <span className="onboarding__palette-label">{t('onbShortWork')}</span>
+                </li>
+                <li className="onboarding__palette-item onboarding__palette-item--personal">
+                  <span className="onboarding__palette-dot" aria-hidden />
+                  <span className="onboarding__palette-label">{t('onbShortPersonal')}</span>
+                </li>
+                <li className="onboarding__palette-item onboarding__palette-item--family">
+                  <span className="onboarding__palette-dot" aria-hidden />
+                  <span className="onboarding__palette-label">{t('onbShortFamily')}</span>
+                </li>
+              </ul>
+            )}
           </div>
         </div>
       </div>
