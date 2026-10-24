@@ -1395,6 +1395,15 @@
     border-bottom-width: 0.25px;
     border-bottom-color: var(--week-center-grid);
   }
+
+  /* Черта у часов — как линия под днями недели, не как тонкая сетка в центре. */
+  .week-view__time-col {
+    box-shadow: inset -0.5px 0 0 var(--grid);
+  }
+
+  .week-view__grid-scroll .week-view__time-col + .week-view__col {
+    border-left-color: transparent;
+  }
 }
 
 .is-pinching .week-view__grid-scroll,
