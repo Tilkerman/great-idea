@@ -108,6 +108,30 @@
       prin2t: 'Не превращать желания в бесконечный список', prin2d: 'Желание важно не количеством задач, а тем, что ты к нему возвращаешься и двигаешься маленькими шагами.',
       prin3t: 'Давать важному место', prin3d: 'Если что-то действительно важно, для этого стоит найти не только место в мыслях, но и место в реальном времени.',
       philClose: 'Не заполняй время. Наполняй его смыслом.',
+      meetKicker: 'О том, что важно',
+      meetH: 'Когда желание встречается со временем',
+      meetLead: 'Время нельзя увеличить.\nНо можно решить, на что его потратить.',
+      meet1t: 'Желание', meet1d: 'Ты знаешь, чего хочешь',
+      meet2t: 'Маленький шаг', meet2d: 'Выбери то, что можно сделать сейчас',
+      meet3t: 'Время', meet3d: 'Найди место для этого в своём дне',
+      meet4t: 'Действие', meet4d: 'Сделай шаг и двигайся дальше',
+      meetN1: 'Не заполняй всё время делами.',
+      meetN2: 'Не превращай желания в бесконечный список.',
+      meetN3: 'Давай важному место.',
+      meetClose: 'Не заполняй время. Наполняй его смыслом.',
+      meetMascot: 'Поднять пазл',
+      startKicker: 'Начни сейчас',
+      startH: 'Твоё время.\nТвои желания.\nТвоя жизнь.',
+      startLead: 'TiLi помогает увидеть свой день.\nLumi — не забывать о том, чего ты хочешь.',
+      startBellT: 'Напоминания', startBellD: 'TiLi вовремя напомнит о важном деле.',
+      startWishT: 'Желания и действия', startWishD: 'Lumi помогает связать желания с реальными шагами.',
+      startCta: 'Попробовать бесплатно',
+      startBrowser: 'Работает в браузере',
+      startHome: 'Можно добавить на главный экран',
+      accountH: 'Один аккаунт — телефон и компьютер',
+      accountIn: 'Войди — и дела',
+      accountOut: 'подтянутся сами.',
+      accountNote: 'Без аккаунта они остаются на твоём устройстве.',
       philTime: 'Время',
       philWish: 'Желания',
       philTogether: 'Вместе',
@@ -222,6 +246,30 @@
       prin2t: 'Don’t turn wishes into an endless list', prin2d: 'A wish matters not by the number of tasks, but by coming back to it and moving in small steps.',
       prin3t: 'Give what matters a place', prin3d: 'If something truly matters, it deserves a place in your thoughts and a place in real time.',
       philClose: 'Don’t fill your time. Fill it with meaning.',
+      meetKicker: 'What matters',
+      meetH: 'When a wish meets time',
+      meetLead: 'You can’t make more time.\nYou can decide what to spend it on.',
+      meet1t: 'Wish', meet1d: 'You know what you want',
+      meet2t: 'Small step', meet2d: 'Choose something you can do now',
+      meet3t: 'Time', meet3d: 'Find a place for it in your day',
+      meet4t: 'Action', meet4d: 'Take the step and keep going',
+      meetN1: 'Don’t fill every hour with tasks.',
+      meetN2: 'Don’t turn wishes into an endless list.',
+      meetN3: 'Give what matters a place.',
+      meetClose: 'Don’t fill your time. Fill it with meaning.',
+      meetMascot: 'Lift the puzzle',
+      startKicker: 'Start now',
+      startH: 'Your time.\nYour wishes.\nYour life.',
+      startLead: 'TiLi helps you see your day.\nLumi helps you remember what you want.',
+      startBellT: 'Reminders', startBellD: 'TiLi reminds you of an important task in time.',
+      startWishT: 'Wishes and actions', startWishD: 'Lumi connects wishes with real steps.',
+      startCta: 'Try it free',
+      startBrowser: 'Works in the browser',
+      startHome: 'Add it to your home screen',
+      accountH: 'One account — phone and computer',
+      accountIn: 'Sign in — and tasks',
+      accountOut: 'sync on their own.',
+      accountNote: 'Without an account they stay on your device.',
       philTime: 'Time', philWish: 'Wishes', philTogether: 'Together',
       philT1: 'What am I doing?', philT2: 'When am I doing it?', philT3: 'How much time do I have?',
       philL1: 'What do I want?', philL2: 'Why does it matter?', philL3: 'What do I feel?', philL4: 'What small step can I take?',
@@ -334,6 +382,30 @@
       prin2t: 'No convertir los deseos en una lista infinita', prin2d: 'Un deseo importa no por la cantidad de tareas, sino por volver a él y avanzar con pasos pequeños.',
       prin3t: 'Dar un lugar a lo importante', prin3d: 'Si algo importa de verdad, merece un lugar en tus pensamientos y un lugar en el tiempo real.',
       philClose: 'No llenes el tiempo. Llénalo de sentido.',
+      meetKicker: 'Lo que importa',
+      meetH: 'Cuando un deseo se encuentra con el tiempo',
+      meetLead: 'No puedes tener más tiempo.\nPuedes decidir en qué usarlo.',
+      meet1t: 'Deseo', meet1d: 'Sabes lo que quieres',
+      meet2t: 'Paso pequeño', meet2d: 'Elige lo que puedes hacer ahora',
+      meet3t: 'Tiempo', meet3d: 'Busca un lugar para eso en tu día',
+      meet4t: 'Acción', meet4d: 'Da el paso y sigue adelante',
+      meetN1: 'No llenes todo el tiempo de tareas.',
+      meetN2: 'No conviertas los deseos en una lista infinita.',
+      meetN3: 'Dale un lugar a lo importante.',
+      meetClose: 'No llenes el tiempo. Llénalo de sentido.',
+      meetMascot: 'Levantar el puzzle',
+      startKicker: 'Empieza ahora',
+      startH: 'Tu tiempo.\nTus deseos.\nTu vida.',
+      startLead: 'TiLi te ayuda a ver tu día.\nLumi, a no olvidar lo que quieres.',
+      startBellT: 'Recordatorios', startBellD: 'TiLi te avisa a tiempo de lo importante.',
+      startWishT: 'Deseos y acciones', startWishD: 'Lumi une los deseos con pasos reales.',
+      startCta: 'Probar gratis',
+      startBrowser: 'Funciona en el navegador',
+      startHome: 'Puedes añadirlo a la pantalla de inicio',
+      accountH: 'Una cuenta — teléfono y ordenador',
+      accountIn: 'Entra — y las tareas',
+      accountOut: 'se sincronizan solas.',
+      accountNote: 'Sin cuenta se quedan en tu dispositivo.',
       philTime: 'Tiempo', philWish: 'Deseos', philTogether: 'Juntos',
       philT1: '¿Qué hago?', philT2: '¿Cuándo?', philT3: '¿Cuánto tiempo tengo?',
       philL1: '¿Qué quiero?', philL2: '¿Por qué importa?', philL3: '¿Qué siento?', philL4: '¿Qué paso pequeño puedo dar?',
@@ -683,6 +755,67 @@
     update();
   }
 
+  function initMeetMascot() {
+    const block = document.querySelector('#philosophy');
+    const btn = block && block.querySelector('.meet-mascot');
+    if (!block || !btn) return;
+    let busy = false;
+    const play = () => {
+      if (busy) return;
+      busy = true;
+      btn.classList.add('is-lift');
+      window.setTimeout(() => {
+        btn.classList.remove('is-lift');
+        busy = false;
+      }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 700 : 1250);
+    };
+    block.addEventListener('click', play);
+    const observer = new IntersectionObserver((entries) => {
+      const fullyVisible = entries.some((entry) => entry.intersectionRatio >= 0.99);
+      if (!fullyVisible) return;
+      observer.disconnect();
+      play();
+    }, { threshold: [0.99] });
+    observer.observe(btn);
+  }
+
+  function initAccountScene() {
+    const block = document.querySelector('#finish');
+    const card = block && block.querySelector('.account-card');
+    const icon = card && card.querySelector('.account-sync');
+    if (!block || !card || !icon) return;
+    let busy = false;
+    const play = () => {
+      if (busy) return;
+      busy = true;
+      card.classList.add('is-play');
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        card.classList.remove('is-play');
+        busy = false;
+      };
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        window.setTimeout(finish, 700);
+        return;
+      }
+      icon.addEventListener('animationend', finish, { once: true });
+      window.setTimeout(finish, 1500);
+    };
+    block.addEventListener('click', (event) => {
+      if (event.target.closest('a')) return;
+      play();
+    });
+    const observer = new IntersectionObserver((entries) => {
+      const fullyVisible = entries.some((entry) => entry.intersectionRatio >= 0.99);
+      if (!fullyVisible) return;
+      observer.disconnect();
+      play();
+    }, { threshold: [0.99] });
+    observer.observe(card);
+  }
+
   persistUtm();
   applyLang(detectLang());
   initShots();
@@ -693,6 +826,8 @@
   initMenu();
   initTiliMascot();
   initMascot();
+  initMeetMascot();
+  initAccountScene();
   initPrinciples();
 
   const langSelect = document.getElementById('lang-select');
