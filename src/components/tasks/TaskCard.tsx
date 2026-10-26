@@ -54,7 +54,9 @@ export function TaskCard({
   const canSwipeComplete = Boolean(swipeComplete && onComplete && !completed);
   const canSwipeRestore = Boolean(swipeComplete && onRestore && completed);
   const canSwipe = canSwipeComplete || canSwipeRestore;
-  const showDesc = showDescProp && showTitle && !slot && !compact;
+  const showSecondary = Boolean(showTitle && showDescProp && (slot || !compact));
+  const showDesc = showSecondary && !slot && Boolean(task.description);
+  const showLumiMeta = showSecondary && Boolean(task.lumiDesireId);
   const showMark = showBadge || completed;
 
   const cardRef = useRef<HTMLDivElement>(null);
@@ -346,7 +348,7 @@ export function TaskCard({
             {showDesc && task.description && (
               <p className="task-card__desc">{task.description}</p>
             )}
-            {task.lumiDesireId && (
+            {showLumiMeta && (
               <span className="task-card__lumi">
                 ✦ {task.lumiDesireTitle?.trim() || 'Lumi'}
               </span>

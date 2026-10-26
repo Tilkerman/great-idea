@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
 import { WEEK_TIME_COL_WIDTH } from '../../constants/weekLayout';
@@ -29,7 +29,8 @@ import {
 import type { Task } from '../../types';
 import { useNow } from '../../hooks/useNow';
 import { useLayoutMode } from '../../hooks/useLayoutMode';
-import { nowInHourGrid } from '../../utils/nowIndicator';
+import { nowInHourGrid, nowWithinHour } from '../../utils/nowIndicator';
+import { clearDesktopWeekHourHeights, syncDesktopWeekHourHeights } from '../../utils/weekDesktopRows';
 import { NowIndicator } from './NowIndicator';
 import './CalendarViews.css';
 
@@ -99,9 +100,7 @@ export function WeekView({
   const swipeComplete = !pick;
   const titlesOnly = !isDesktopLayout
     && showSlotTitle && zoomPct <= Math.round(WEEK_ZOOM_TITLE_ONLY_MAX * 100);
-  const showSlotDesc = isDesktopLayout
-    ? zoomPct >= 10
-    : weekZoomAtLeast(weekZoom, WEEK_ZOOM_DESC_MIN);
+  const showSlotDesc = weekZoomAtLeast(weekZoom, WEEK_ZOOM_DESC_MIN);
 
   const days = useMemo(
     () => getWeekDays(focusDate, settings.weekStartsOn),
@@ -117,6 +116,10 @@ export function WeekView({
     () => getHoursRange(settings.dayStartHour, settings.dayEndHour),
     [settings.dayStartHour, settings.dayEndHour],
   );
+  const nowAnchor = useMemo(() => {
+    if (zoom === 'day' && !isToday(focusDate)) return null;
+    return nowWithinHour(now, settings.dayStartHour, settings.dayEndHour);
+  }, [zoom, focusDate, now, settings.dayStartHour, settings.dayEndHour]);
 
   const tasksBySlot = useMemo(() => {
     const map = new Map<string, Task[]>();
@@ -160,6 +163,50 @@ export function WeekView({
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
   }, []);
 
+  const readNowTop = useCallback((grid: HTMLElement | null) => {
+    const anchor = nowWithinHour(new Date(), settings.dayStartHour, settings.dayEndHour);
+    if (!anchor || !grid) return null;
+    const col = grid.querySelector<HTMLElement>('.week-view__col--today');
+    const slot = col?.querySelectorAll<HTMLElement>(':scope > .week-view__slot')[anchor.index];
+    if (!col || !slot) return null;
+    return col.offsetTop + slot.offsetTop + slot.offsetHeight * anchor.frac;
+  }, [settings.dayStartHour, settings.dayEndHour]);
+
+  useLayoutEffect(() => {
+    const grid = gridInnerRef.current;
+    if (!grid) return;
+    if (!isDesktopLayout || pinching) {
+      clearDesktopWeekHourHeights(grid);
+      return;
+    }
+    syncDesktopWeekHourHeights(grid, rowHeight);
+  }, [
+    isDesktopLayout,
+    pinching,
+    rowHeight,
+    tasks,
+    hours.length,
+    displayDays.length,
+    viewportWidth,
+    weekZoom,
+    zoom,
+    undoSwipeTick,
+  ]);
+
+  useEffect(() => {
+    if (!isDesktopLayout) return;
+    const grid = gridInnerRef.current;
+    const scroll = gridScrollRef.current;
+    if (!grid || !scroll) return;
+    const apply = () => {
+      if (pinching) return;
+      syncDesktopWeekHourHeights(grid, metricsHold.current.rowHeight);
+    };
+    const ro = new ResizeObserver(apply);
+    ro.observe(scroll);
+    return () => ro.disconnect();
+  }, [isDesktopLayout, pinching, tasks, hours.length]);
+
   useEffect(() => {
     if (zoom !== 'day' || pinching) return;
     const grid = gridScrollRef.current;
@@ -169,7 +216,8 @@ export function WeekView({
     const pos = nowInHourGrid(new Date(), firstHour, settings.dayEndHour);
     const viewH = grid.clientHeight;
     const gridH = gridInnerRef.current?.offsetHeight ?? hours.length * rowHeight;
-    const nowY = pos ? pos.ratio * gridH : 0;
+    const measured = readNowTop(gridInnerRef.current);
+    const nowY = measured ?? (pos ? pos.ratio * gridH : 0);
     const top = pos && isToday(focusDate)
       ? Math.max(0, nowY - viewH / 3)
       : 0;
@@ -190,6 +238,7 @@ export function WeekView({
     settings.dayStartHour,
     settings.dayEndHour,
     pinching,
+    readNowTop,
   ]);
 
   layoutRef.current = { viewportWidth, dayCount: displayDays.length, hourCount: hours.length };
@@ -230,7 +279,8 @@ export function WeekView({
     const apply = () => {
       if (done || grid.clientHeight < 48) return;
       const gridH = gridInnerRef.current?.offsetHeight ?? hours.length * rowHeight;
-      const nowY = pos.ratio * gridH;
+      const measured = readNowTop(gridInnerRef.current);
+      const nowY = measured ?? pos.ratio * gridH;
       const top = Math.max(0, nowY - grid.clientHeight / 3);
       grid.scrollTop = top;
       done = true;
@@ -247,7 +297,7 @@ export function WeekView({
     };
     // rowHeight из замыкания: щипок не должен снова прыгать к «сейчас».
     // pinching не в deps — иначе после жеста снова прыгнем к «сейчас».
-  }, [zoom, focusDate, days, hours.length, settings.dayStartHour, settings.dayEndHour]);
+  }, [zoom, focusDate, days, hours.length, settings.dayStartHour, settings.dayEndHour, readNowTop]);
 
   const finishCopy = (clip: ReturnType<typeof copyWeekClipboard>) => {
     setGridClipboard(clip);
@@ -541,6 +591,15 @@ export function WeekView({
                         showAddStrip={showSlotAdd && !pick}
                         onAdd={openDraft}
                       />
+                      {when === 'today' && nowAnchor && hours[nowAnchor.index] === h && (
+                        <NowIndicator
+                          now={now}
+                          dayStartHour={settings.dayStartHour}
+                          dayEndHour={settings.dayEndHour}
+                          showLabel
+                          withinHourFrac={nowAnchor.frac}
+                        />
+                      )}
                       {pickHour && (
                         <button
                           type="button"
@@ -552,14 +611,6 @@ export function WeekView({
                     </div>
                   );
                 })}
-                {when === 'today' && (zoom !== 'day' || isToday(focusDate)) && (
-                  <NowIndicator
-                    now={now}
-                    dayStartHour={settings.dayStartHour}
-                    dayEndHour={settings.dayEndHour}
-                    showLabel
-                  />
-                )}
               </div>
               );
             })}

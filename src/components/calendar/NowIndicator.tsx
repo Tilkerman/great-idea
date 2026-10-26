@@ -5,15 +5,19 @@ export function NowIndicator({
   dayStartHour,
   dayEndHour,
   showLabel,
+  withinHourFrac = null,
 }: {
   now: Date;
   dayStartHour: number;
   dayEndHour: number;
   showLabel: boolean;
+  /** Доля текущего часа. Черта лежит внутри этого часа, а не всей колонки. */
+  withinHourFrac?: number | null;
 }) {
   const pos = nowInHourGrid(now, dayStartHour, dayEndHour);
   if (!pos) return null;
-  const top = pos.ratio >= 1 ? 'calc(100% - 1px)' : `${pos.ratio * 100}%`;
+  const frac = withinHourFrac != null ? withinHourFrac : pos.ratio;
+  const top = frac >= 1 ? 'calc(100% - 1px)' : `${frac * 100}%`;
 
   return (
     <div

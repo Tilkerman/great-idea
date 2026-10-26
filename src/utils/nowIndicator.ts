@@ -23,6 +23,19 @@ export function nowInHourGrid(now: Date, dayStartHour: number, dayEndHour: numbe
   };
 }
 
+/** Час сетки, в котором сейчас черта, и доля этого часа (0 — начало, 1 — конец). */
+export function nowWithinHour(now: Date, dayStartHour: number, dayEndHour: number) {
+  const pos = nowInHourGrid(now, dayStartHour, dayEndHour);
+  if (!pos) return null;
+  const span = (pos.endMin - pos.startMin) / 60;
+  if (span <= 0) return null;
+  const clamped = Math.min(Math.max(pos.nowMin, pos.startMin), pos.endMin);
+  const fromStart = (clamped - pos.startMin) / 60;
+  if (fromStart >= span) return { index: span - 1, frac: 1 };
+  const index = Math.floor(fromStart);
+  return { index, frac: fromStart - index };
+}
+
 export function nowLineTopPx(
   now: Date,
   dayStartHour: number,
