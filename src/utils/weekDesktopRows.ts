@@ -41,8 +41,11 @@ export function syncDesktopWeekHourHeights(grid: HTMLElement, minRowPx: number) 
   const sum = heights.reduce((a, b) => a + b, 0);
   const extra = viewH > sum + 1 ? (viewH - sum) / labels.length : 0;
 
+  let totalPx = 0;
   heights.forEach((h, i) => {
-    const px = `${Math.round(h + extra)}px`;
+    const rowPx = Math.round(h + extra);
+    totalPx += rowPx;
+    const px = `${rowPx}px`;
     const apply = (el: HTMLElement | undefined) => {
       if (!el || el.style.height === px) return;
       el.style.flex = '0 0 auto';
@@ -51,9 +54,13 @@ export function syncDesktopWeekHourHeights(grid: HTMLElement, minRowPx: number) 
     apply(labels[i]);
     for (const row of slotRows) apply(row[i]);
   });
+
+  const minH = `${totalPx}px`;
+  if (grid.style.minHeight !== minH) grid.style.minHeight = minH;
 }
 
 export function clearDesktopWeekHourHeights(grid: HTMLElement) {
+  grid.style.minHeight = '';
   grid.querySelectorAll<HTMLElement>('.week-view__time-label, .week-view__slot').forEach((el) => {
     el.style.height = '';
     el.style.flex = '';

@@ -1092,8 +1092,8 @@
   }
 
   .week-view__grid {
-    flex: 1 1 auto;
-    min-height: 100%;
+    flex: 0 0 auto;
+    min-height: auto;
     align-items: stretch;
   }
 
@@ -1101,7 +1101,7 @@
   .week-view__col {
     display: flex;
     flex-direction: column;
-    min-height: 100%;
+    min-height: 0;
   }
 
   .week-view__time-label,
@@ -1113,6 +1113,15 @@
 
   .week-view__time-col {
     align-self: stretch;
+  }
+
+  /* Вертикаль на каждой ячейке — иначе ниже «схлопывания» колонки линии пропадают. */
+  .week-view__grid-scroll .week-view__col {
+    border-left: none;
+  }
+
+  .week-view__grid-scroll .week-view__slot {
+    border-left: 0.5px solid var(--grid);
   }
 }
 
@@ -1226,7 +1235,7 @@
   z-index: 6;
   width: 50px;
   flex-shrink: 0;
-  align-self: flex-start;
+  align-self: stretch;
   background: var(--surface);
   touch-action: pan-y;
 }
@@ -1387,6 +1396,10 @@
 
 /* Телефоны: сетка в центре еле заметна; часы слева и шапка дней — как были */
 @media (max-width: 1023px) {
+  .week-view__time-col {
+    align-self: flex-start;
+  }
+
   .week-view {
     --week-center-grid: color-mix(in srgb, var(--grid) 16%, transparent);
   }
