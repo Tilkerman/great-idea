@@ -1088,13 +1088,6 @@
     min-height: 0;
   }
 
-  .week-view__time-label,
-  .week-view__slot {
-    flex: 1 1 0;
-    min-height: var(--week-row-height, 72px);
-    height: auto;
-  }
-
   .week-view__time-col {
     align-self: stretch;
   }
@@ -1120,6 +1113,17 @@
   /* Один шов: слева — тень у часов, не вторая линия у понедельника */
   .week-view__grid-scroll .week-view__time-col + .week-view__col > .week-view__slot {
     border-left-color: transparent;
+  }
+}
+
+/* После базовых .week-view__time-label — иначе flex-shrink:0 ломает высоту строк на десктопе */
+@media (min-width: 1024px) {
+  .week-view__grid-scroll .week-view__time-label,
+  .week-view__grid-scroll .week-view__slot {
+    box-sizing: border-box;
+    min-height: var(--week-row-height, 72px);
+    height: auto;
+    flex: 0 0 auto;
   }
 }
 
@@ -1243,14 +1247,12 @@
 }
 
 .week-view__time-label {
-  height: var(--week-row-height, 96px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0;
   box-sizing: border-box;
-  flex-shrink: 0;
   border-bottom: 0.5px solid var(--grid);
   padding: 0 2px;
   font-family: var(--font);
@@ -1385,7 +1387,6 @@
 
 .week-view__slot {
   position: relative;
-  height: var(--week-row-height, 96px);
   border-bottom: 0.5px solid var(--grid);
   padding: 0;
   box-sizing: border-box;
@@ -1396,6 +1397,12 @@
 @media (max-width: 1023px) {
   .week-view__time-col {
     align-self: flex-start;
+  }
+
+  .week-view__time-label,
+  .week-view__slot {
+    height: var(--week-row-height, 96px);
+    flex-shrink: 0;
   }
 
   .week-view {
