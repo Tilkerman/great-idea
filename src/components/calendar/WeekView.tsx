@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type MutableRefObject, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useI18n } from '../../i18n/useI18n';
 import { WEEK_TIME_COL_WIDTH } from '../../constants/weekLayout';
@@ -30,7 +30,6 @@ import type { Task } from '../../types';
 import { useNow } from '../../hooks/useNow';
 import { useLayoutMode } from '../../hooks/useLayoutMode';
 import { nowInHourGrid, nowWithinHour } from '../../utils/nowIndicator';
-import { clearDesktopWeekHourHeights, syncDesktopWeekHourHeights } from '../../utils/weekDesktopRows';
 import { NowIndicator } from './NowIndicator';
 import './CalendarViews.css';
 
@@ -171,41 +170,6 @@ export function WeekView({
     if (!col || !slot) return null;
     return col.offsetTop + slot.offsetTop + slot.offsetHeight * anchor.frac;
   }, [settings.dayStartHour, settings.dayEndHour]);
-
-  useLayoutEffect(() => {
-    const grid = gridInnerRef.current;
-    if (!grid) return;
-    if (!isDesktopLayout || pinching) {
-      clearDesktopWeekHourHeights(grid);
-      return;
-    }
-    syncDesktopWeekHourHeights(grid, rowHeight);
-  }, [
-    isDesktopLayout,
-    pinching,
-    rowHeight,
-    tasks,
-    hours.length,
-    displayDays.length,
-    viewportWidth,
-    weekZoom,
-    zoom,
-    undoSwipeTick,
-  ]);
-
-  useEffect(() => {
-    if (!isDesktopLayout) return;
-    const grid = gridInnerRef.current;
-    const scroll = gridScrollRef.current;
-    if (!grid || !scroll) return;
-    const apply = () => {
-      if (pinching) return;
-      syncDesktopWeekHourHeights(grid, metricsHold.current.rowHeight);
-    };
-    const ro = new ResizeObserver(apply);
-    ro.observe(scroll);
-    return () => ro.disconnect();
-  }, [isDesktopLayout, pinching, tasks, hours.length]);
 
   useEffect(() => {
     if (zoom !== 'day' || pinching) return;
@@ -447,6 +411,8 @@ export function WeekView({
   const style = {
     '--week-col-width': `${layoutCol}px`,
     '--week-row-height': `${layoutRow}px`,
+    '--week-hour-count': String(hours.length),
+    '--week-day-count': String(displayDays.length),
   } as CSSProperties;
 
   return (
