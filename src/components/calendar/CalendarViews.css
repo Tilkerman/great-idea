@@ -1114,36 +1114,6 @@
   .week-view__time-col {
     align-self: stretch;
   }
-
-  /* В шапке — чёрные линии; в теле были 0.5px var(--grid), их не видно и карточки перебивают. */
-  .week-view__grid-scroll .week-view__col {
-    border-left: none;
-  }
-
-  .week-view__grid-scroll .week-view__col + .week-view__col::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 1px;
-    background: #000;
-    z-index: 25;
-    pointer-events: none;
-  }
-
-  [data-theme='dark'] .week-view__grid-scroll .week-view__col + .week-view__col::before {
-    background: #f2f3f5;
-  }
-
-  .week-view__grid-scroll .week-view__slot {
-    border-bottom-width: 1px;
-    border-bottom-color: #000;
-  }
-
-  [data-theme='dark'] .week-view__grid-scroll .week-view__slot {
-    border-bottom-color: #f2f3f5;
-  }
 }
 
 .week-view__day-num {
