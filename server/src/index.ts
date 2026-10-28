@@ -142,8 +142,8 @@ app.post('/v1/auth/register', async (request, reply) => {
       displayName: input.data.displayName,
       password: input.data.password,
     });
-    await sendVerificationEmail(user, bodyMailLocale(request, input.data.locale));
-    return reply.code(201).send({ user, emailVerificationRequired: true });
+    const emailSent = await sendVerificationEmail(user, bodyMailLocale(request, input.data.locale));
+    return reply.code(201).send({ user, emailVerificationRequired: true, emailSent });
   } catch (error) {
     const failure = authFailure(error);
     return reply.code(failure.statusCode).send({ error: failure.code });
@@ -236,23 +236,26 @@ function pageLocale(request: FastifyRequest, bodyLocale?: unknown): MailLocale {
   });
 }
 
-async function deliver(message: Parameters<typeof sendMail>[1], logLabel: string) {
+async function deliver(message: Parameters<typeof sendMail>[1], logLabel: string): Promise<boolean> {
   try {
     const result = await sendMail(config, message);
     if (result === 'skipped') {
       app.log.info(`${logLabel} was not sent because Unisender is not configured`);
+      return false;
     }
+    return true;
   } catch (error) {
-    app.log.error({ error }, `${logLabel} could not be sent`);
+    app.log.error({ err: error }, `${logLabel} could not be sent`);
+    return false;
   }
 }
 
-async function sendVerificationEmail(user: SessionUser, locale: MailLocale) {
-  if (user.emailVerified) return;
+async function sendVerificationEmail(user: SessionUser, locale: MailLocale): Promise<boolean> {
+  if (user.emailVerified) return true;
   const t = mailCopy(locale);
   const token = await issueEmailToken(db, user.id, 'verify-email', 24);
   const link = actionLink('/v1/auth/verify-email/confirm', token, locale);
-  await deliver({
+  return deliver({
     to: user.email,
     subject: t.verifySubject,
     language: locale,
@@ -324,7 +327,10 @@ app.post('/v1/auth/verify-email/request', async (request, reply) => {
   if (tooManyRequests(`verify:${request.ip}:${input.data.email}`)) return reply.code(429).send({ error: 'too_many_requests' });
 
   const user = await findActiveUserByEmail(db, input.data.email);
-  if (user && !user.emailVerified) await sendVerificationEmail(user, bodyMailLocale(request, input.data.locale));
+  if (user && !user.emailVerified) {
+    const emailSent = await sendVerificationEmail(user, bodyMailLocale(request, input.data.locale));
+    if (!emailSent) return reply.code(502).send({ error: 'mail_failed' });
+  }
   return reply.code(202).send({ ok: true });
 });
 

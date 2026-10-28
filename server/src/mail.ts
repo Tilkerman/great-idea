@@ -39,9 +39,11 @@ export async function sendMail(config: AppConfig, message: OutboundMail): Promis
     code?: number;
   };
   if (!response.ok || payload.status === 'error') {
-    throw new Error(
+    const err = new Error(
       `Unisender rejected the message (${response.status}${payload.code ? `/${payload.code}` : ''}): ${payload.message ?? 'unknown error'}`,
     );
+    (err as Error & { unisenderCode?: number }).unisenderCode = payload.code;
+    throw err;
   }
   return 'sent';
 }

@@ -613,6 +613,7 @@ export const en: typeof ru = {
     authDoneHello: 'All set, {name}',
     authDoneBody: 'The account is saved on this phone. The calendar already works. Name, email and password can be changed in settings.',
     authDoneCloudBody: 'We sent a confirmation email. Open it (check Spam), then sign in to TiLi. This phone keeps its local calendar until you sync.',
+    authDoneCloudMailFail: 'The account is created, but the confirmation email did not send. Tap “Send the email again” or write to us. Do not register twice — this email is already taken.',
     authEmailNotVerified: 'Confirm your email using the link we sent. Check Spam if you do not see it.',
     authResendVerify: 'Send the email again',
     authResendVerifyBusy: 'Sending…',

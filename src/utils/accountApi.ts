@@ -15,6 +15,7 @@ export type AccountApiErrorCode =
   | 'invalid_registration'
   | 'invalid_email'
   | 'too_many_requests'
+  | 'mail_failed'
   | 'network';
 
 export class AccountApiError extends Error {
@@ -132,7 +133,8 @@ async function apiFetch<T>(
 
   if (!response.ok) {
     if (code === 'email_taken' || code === 'invalid_credentials' || code === 'email_not_verified'
-      || code === 'invalid_registration' || code === 'invalid_email' || code === 'too_many_requests') {
+      || code === 'invalid_registration' || code === 'invalid_email' || code === 'too_many_requests'
+      || code === 'mail_failed') {
       throw new AccountApiError(code);
     }
     throw new AccountApiError('network');
@@ -160,8 +162,8 @@ export async function registerCloudAccount(input: {
   email: string;
   password: string;
   locale: Locale;
-}): Promise<ApiUser> {
-  const data = await apiFetch<{ user: ApiUser }>('/v1/auth/register', {
+}): Promise<{ user: ApiUser; emailSent: boolean }> {
+  const data = await apiFetch<{ user: ApiUser; emailSent?: boolean }>('/v1/auth/register', {
     method: 'POST',
     json: {
       displayName: input.displayName,
@@ -170,7 +172,7 @@ export async function registerCloudAccount(input: {
       locale: mailLocale(input.locale),
     },
   });
-  return data.user;
+  return { user: data.user, emailSent: data.emailSent !== false };
 }
 
 export async function loginCloudAccount(email: string, password: string): Promise<UserSession> {

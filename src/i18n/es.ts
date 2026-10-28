@@ -609,6 +609,7 @@ export const es: typeof ru = {
     authDoneHello: 'Listo, {name}',
     authDoneBody: 'La cuenta quedó en este teléfono. El calendario ya funciona. Nombre, email y contraseña se cambian en ajustes.',
     authDoneCloudBody: 'Enviamos un correo de confirmación. Ábrelo (revisa Spam) e inicia sesión en TiLi. Este teléfono sigue con el calendario local hasta que sincronices.',
+    authDoneCloudMailFail: 'La cuenta está creada, pero el correo de confirmación no salió. Pulsa «Enviar el correo otra vez» o escríbenos. No te registres otra vez: este email ya está ocupado.',
     authEmailNotVerified: 'Confirma el correo con el enlace que enviamos. Revisa Spam si no lo ves.',
     authResendVerify: 'Enviar el correo otra vez',
     authResendVerifyBusy: 'Enviando…',

@@ -34,16 +34,16 @@ export async function registerAccount(input: {
   email: string;
   password: string;
   locale: Locale;
-}): Promise<{ session?: UserSession; cloudPendingVerification?: boolean }> {
+}): Promise<{ session?: UserSession; cloudPendingVerification?: boolean; emailSent?: boolean }> {
   if (isCloudAccountEnabled()) {
-    await registerCloudAccount({
+    const registered = await registerCloudAccount({
       displayName: input.name,
       email: input.email,
       password: input.password,
       locale: input.locale,
     });
     markPendingCloudUpload(input.email);
-    return { cloudPendingVerification: true };
+    return { cloudPendingVerification: true, emailSent: registered.emailSent };
   }
   const account = await createAccount(input);
   return { session: sessionFromAccount(account) };

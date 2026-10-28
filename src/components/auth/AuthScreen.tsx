@@ -49,6 +49,7 @@ export function AuthScreen() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [registeredViaCloud, setRegisteredViaCloud] = useState(false);
+  const [verifyMailSent, setVerifyMailSent] = useState(true);
   const [loginAwaitingVerify, setLoginAwaitingVerify] = useState(false);
   const [verifyResent, setVerifyResent] = useState(false);
   const [resendBusy, setResendBusy] = useState(false);
@@ -72,6 +73,7 @@ export function AuthScreen() {
     setVerifyResent(false);
     try {
       await resendVerificationEmail(email, locale);
+      setVerifyMailSent(true);
       setVerifyResent(true);
     } catch (e) {
       if (e instanceof AccountApiError && e.code === 'too_many_requests') {
@@ -141,6 +143,7 @@ export function AuthScreen() {
       });
       if (result.session) setSession(result.session);
       setRegisteredViaCloud(Boolean(result.cloudPendingVerification));
+      setVerifyMailSent(result.emailSent !== false);
       setPassword('');
       setPassword2('');
       trackSignupLocal(settings.analyticsEnabled);
@@ -346,7 +349,9 @@ export function AuthScreen() {
           <>
             <h2 className="auth-form__title">{t('authDoneHello', { name: session.name ?? '' })}</h2>
             <p className="auth-form__intro">
-              {registeredViaCloud ? t('authDoneCloudBody') : t('authDoneBody')}
+              {registeredViaCloud
+                ? t(verifyMailSent ? 'authDoneCloudBody' : 'authDoneCloudMailFail')
+                : t('authDoneBody')}
             </p>
             {showVerifyResend && verifyResent && (
               <p className="auth-form__success" role="status">
