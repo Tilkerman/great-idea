@@ -1,3 +1,27 @@
+.auth-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.auth-consent input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.auth-consent a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .auth-form__intro {
   font-size: 14px;
   color: var(--text-secondary);

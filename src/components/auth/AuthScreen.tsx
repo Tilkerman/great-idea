@@ -52,6 +52,8 @@ export function AuthScreen() {
   const [loginAwaitingVerify, setLoginAwaitingVerify] = useState(false);
   const [verifyResent, setVerifyResent] = useState(false);
   const [resendBusy, setResendBusy] = useState(false);
+  const [privacyConsent, setPrivacyConsent] = useState(false);
+  const privacyHref = `${import.meta.env.BASE_URL}privacy.html`;
 
   const backToApp = () => setScreen(authBackScreen === 'auth' ? 'calendar' : authBackScreen);
 
@@ -123,6 +125,10 @@ export function AuthScreen() {
     }
     if (password !== password2) {
       setError(t('passwordMismatch'));
+      return;
+    }
+    if (!privacyConsent) {
+      setError(t('authPrivacyNeed'));
       return;
     }
     setBusy(true);
@@ -261,7 +267,7 @@ export function AuthScreen() {
         {step === 'register-email' && (
           <>
             <h2 className="auth-form__title">{t('email')}</h2>
-            <p className="auth-form__intro">{t('authEmailDevice')}</p>
+            <p className="auth-form__intro">{t(isCloudAccountEnabled() ? 'authEmailCloud' : 'authEmailDevice')}</p>
             <label className="settings-field">
               {t('email')}
               <input
@@ -308,7 +314,29 @@ export function AuthScreen() {
               onToggle={() => setShowPassword((v) => !v)}
               autoComplete="new-password"
             />
-            <button type="button" className="btn btn--primary settings-full" disabled={busy} onClick={() => { void submitRegister(); }}>
+            <label className="auth-consent">
+              <input
+                type="checkbox"
+                checked={privacyConsent}
+                onChange={(e) => {
+                  setPrivacyConsent(e.target.checked);
+                  if (e.target.checked) setError('');
+                }}
+              />
+              <span>
+                {t('authPrivacyConsent')}
+                {' — '}
+                <a
+                  href={privacyHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {t('analyticsPrivacyLink')}
+                </a>
+              </span>
+            </label>
+            <button type="button" className="btn btn--primary settings-full" disabled={busy || !privacyConsent} onClick={() => { void submitRegister(); }}>
               {t('onbRegister')}
             </button>
           </>
