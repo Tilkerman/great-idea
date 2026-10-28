@@ -498,6 +498,20 @@ a { color: inherit; text-decoration: none; }
 .split--tili {
   position: relative;
   align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "copy"
+    "shots";
+}
+.split--tili > .tili-copy { grid-area: copy; }
+.split--tili > .tili-shots { grid-area: shots; }
+@media (min-width: 768px) {
+  .split--tili {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "copy"
+      "shots";
+  }
 }
 @media (min-width: 900px) {
   .split--tili {
@@ -510,6 +524,7 @@ a { color: inherit; text-decoration: none; }
     align-items: stretch;
     gap: clamp(2rem, 5vw, 3.75rem);
     grid-template-columns: minmax(0, 42%) minmax(0, 58%);
+    grid-template-areas: "copy shots";
   }
   .split--tili > .tili-copy {
     min-width: 0;
@@ -1341,12 +1356,17 @@ a { color: inherit; text-decoration: none; }
   .site-footer { padding: 1.55rem 0 1.25rem; }
   .site-footer .brand img { height: 72px; }
   .footer-inner {
-    grid-template-columns: 1fr 1fr;
-    gap: 1.05rem 1.35rem;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.85rem 0.65rem;
   }
   .footer-inner .brand { grid-column: 1 / -1; }
-  .footer-col h4 { margin-bottom: 0.45rem; }
-  .footer-col li { margin-bottom: 0.28rem; }
+  .footer-col h4 {
+    margin-bottom: 0.4rem;
+    font-size: 0.64rem;
+    letter-spacing: 0.04em;
+  }
+  .footer-col ul { font-size: 0.78rem; }
+  .footer-col li { margin-bottom: 0.22rem; }
   .footer-bottom {
     margin-top: 1.1rem;
     padding-top: 0.9rem;
@@ -1506,10 +1526,13 @@ a { color: inherit; text-decoration: none; }
   text-decoration-skip-ink: none;
 }
 .tili-mascot {
-  position: absolute;
-  right: clamp(0.5rem, 4vw, 2rem);
-  bottom: 0;
+  grid-area: mascot;
+  position: relative;
+  align-self: end;
+  right: auto;
+  left: auto;
   top: auto;
+  bottom: auto;
   z-index: 6;
   display: flex;
   flex-direction: column;
@@ -1563,12 +1586,17 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 767px) {
   .tili-mascot {
+    grid-area: copy;
+    position: absolute;
+    align-self: auto;
     right: -0.15rem;
-    bottom: auto;
-    top: calc(1.85rem + 8%);
+    left: auto;
+    top: auto;
+    bottom: 2.05rem;
+    margin: 0;
   }
   .tili-mascot__figure {
-    width: 4.55rem;
+    width: 5.5rem;
   }
   .tili-mascot__thumb {
     transform: scaleX(-1) scale(0.96);
@@ -1580,13 +1608,28 @@ a { color: inherit; text-decoration: none; }
     display: none;
   }
 }
+@media (min-width: 768px) {
+  .tili-mascot {
+    grid-area: shots;
+    position: absolute;
+    align-self: auto;
+    right: clamp(0.5rem, 4vw, 2rem);
+    left: auto;
+    top: auto;
+    bottom: 0;
+    margin: 0;
+  }
+}
 @media (min-width: 1024px) {
   .tili-mascot {
+    grid-area: shots;
+    position: absolute;
     right: auto;
     left: -0.85rem;
     top: auto;
     bottom: 3%;
     z-index: 6;
+    margin: 0;
   }
   .tili-mascot__figure {
     width: clamp(9.5rem, 16vw, 12rem);
@@ -2174,7 +2217,7 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   justify-self: end;
   align-self: center;
-  width: min(128px, 36vw);
+  width: min(15.5rem, 54vw);
   margin: 0;
   padding: 0;
   border: 0;
@@ -2382,6 +2425,23 @@ a { color: inherit; text-decoration: none; }
   font-size: 0.78rem;
   font-weight: 500;
   line-height: 1.3;
+}
+@media (max-width: 767px) {
+  .account-card__line {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "in sync"
+      "out sync";
+    justify-content: center;
+    align-items: center;
+    column-gap: 0.45rem;
+    row-gap: 0.12rem;
+    text-align: left;
+  }
+  .account-card__in { grid-area: in; }
+  .account-card__out { grid-area: out; }
+  .account-card__line .account-sync { grid-area: sync; }
 }
 .account-sync {
   width: 34px;
