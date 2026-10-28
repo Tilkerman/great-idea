@@ -166,7 +166,9 @@
       addBody: 'Добавь задачу на ходу и продолжай свой день.',
       addPh: 'Новая задача...',
       footProd: 'Продукт', footAbout: 'О проекте', footDocs: 'Документы', footPrivacy: 'Конфиденциальность',
-      footData: 'Без облачного sync задач. Резерв — JSON в настройках.',
+      footData: 'Гость хранит дела на устройстве. Аккаунт синхронизирует календарь. Подробности — в политике.',
+      cookieBar: 'Сайт использует куки и Яндекс Метрику.',
+      cookieBarOk: 'Понятно',
     },
     en: {
       pageTitle: 'TiLi and Lumi — online calendar and wishes',
@@ -308,7 +310,9 @@
       addBody: 'Add a task on the go and get on with your day.',
       addPh: 'New task...',
       footProd: 'Product', footAbout: 'About', footDocs: 'Legal', footPrivacy: 'Privacy',
-      footData: 'No cloud task sync. Backup via JSON in settings.',
+      footData: 'Guest data stays on the device. An account syncs the calendar. Details in the privacy policy.',
+      cookieBar: 'This site uses cookies and Yandex Metrica.',
+      cookieBarOk: 'OK',
     },
     es: {
       pageTitle: 'TiLi y Lumi — calendario online y deseos',
@@ -450,7 +454,9 @@
       addBody: 'Añade una tarea al momento y sigue con tu día.',
       addPh: 'Nueva tarea...',
       footProd: 'Producto', footAbout: 'Proyecto', footDocs: 'Documentos', footPrivacy: 'Privacidad',
-      footData: 'Sin sync en la nube. Copia JSON en ajustes.',
+      footData: 'El invitado guarda los datos en el dispositivo. La cuenta sincroniza el calendario. Detalles en la política.',
+      cookieBar: 'Este sitio usa cookies y Yandex Metrica.',
+      cookieBarOk: 'Entendido',
     },
   };
 
@@ -837,8 +843,22 @@
     observer.observe(card);
   }
 
+  function initCookieBar() {
+    var bar = document.getElementById('cookie-bar');
+    var ok = document.getElementById('cookie-bar-ok');
+    if (!bar || !ok) return;
+    var seen = false;
+    try { seen = localStorage.getItem('tili-cookie-notice') === '1'; } catch (_) {}
+    if (!seen) bar.hidden = false;
+    ok.addEventListener('click', function () {
+      bar.hidden = true;
+      try { localStorage.setItem('tili-cookie-notice', '1'); } catch (_) {}
+    });
+  }
+
   persistUtm();
   applyLang(detectLang());
+  initCookieBar();
   initShots();
   initTiliCarousel();
   initReveal();
