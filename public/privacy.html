@@ -2,38 +2,532 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>TiLi и Lumi — конфиденциальность</title>
-  <meta name="description" content="Как TiLi и Lumi хранят календарь и желания: дела остаются в браузере, без облачной синхронизации." />
+  <meta name="description" content="Как TiLi и Lumi обрабатывают данные: гость на устройстве, аккаунт в Германии, напоминания в РФ, аналитика и голос." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://tili.su/privacy.html" />
+  <link rel="alternate" hreflang="ru" href="https://tili.su/privacy.html?lang=ru" />
+  <link rel="alternate" hreflang="en" href="https://tili.su/privacy.html?lang=en" />
+  <link rel="alternate" hreflang="es" href="https://tili.su/privacy.html?lang=es" />
+  <link rel="alternate" hreflang="x-default" href="https://tili.su/privacy.html" />
+  <link rel="icon" href="./favicon.png" />
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 0 auto; padding: 1.25rem; line-height: 1.5; color: #1a1a1a; }
-    h1 { font-size: 1.35rem; }
-    h2 { font-size: 1.05rem; margin-top: 1.5rem; }
+    :root {
+      --bg: #f7f8fa;
+      --surface: #fff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --tili: #5f9f72;
+      --border: rgba(31, 41, 55, 0.08);
+      --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: 1rem;
+      line-height: 1.55;
+      color: var(--text);
+      background: var(--bg);
+    }
+    .wrap { max-width: 42rem; margin: 0 auto; padding: 1rem 1.15rem 3rem; }
+    header.top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .brand {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+    .lang-wrap { display: flex; align-items: center; gap: 0.35rem; }
+    .lang-select {
+      appearance: none;
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.4rem 1.6rem 0.4rem 0.55rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' stroke='%236b7280' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 0.45rem center;
+      cursor: pointer;
+    }
+    h1 { font-size: 1.4rem; line-height: 1.25; margin: 0 0 0.4rem; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 1.25rem; }
+    h2 { font-size: 1.08rem; margin: 1.6rem 0 0.5rem; }
+    h3 { font-size: 1rem; margin: 1.1rem 0 0.4rem; }
     p, li { font-size: 0.95rem; }
+    ul { padding-left: 1.2rem; }
+    li { margin: 0.28rem 0; }
     a { color: #2563eb; }
+    article[hidden] { display: none; }
+    .back { margin-top: 2rem; }
   </style>
 </head>
 <body>
-  <h1>TiLi Calendar — конфиденциальность</h1>
-  <p><em>Privacy summary (EN below)</em></p>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="./">TiLi и Lumi</a>
+      <div class="lang-wrap">
+        <label class="visually-hidden" for="lang-select" style="position:absolute;left:-9999px">Language</label>
+        <select class="lang-select" id="lang-select" aria-label="Language">
+          <option value="ru">RU</option>
+          <option value="en">EN</option>
+          <option value="es">ES</option>
+        </select>
+      </div>
+    </header>
 
-  <h2>Данные на телефоне</h2>
-  <p>Задачи, желания Lumi и настройки хранятся в браузере (IndexedDB). Мы не получаем тексты ваших дел и желаний на сервер.</p>
+    <article id="policy-ru" lang="ru">
+      <h1>TiLi / Lumi — политика конфиденциальности</h1>
+      <p class="meta">Версия 1.0 · 28 октября 2026 · Сайт: <a href="https://tili.su/">https://tili.su/</a> · Приложение: <a href="https://tili.su/app/">https://tili.su/app/</a><br />Оператор сервиса: TiLi / Lumi. Контакт: <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a></p>
 
-  <h2>Сайт tili.su</h2>
-  <p>На публичном лендинге стоит Яндекс Метрика (счётчик 113253680): посещения, карта кликов и вебвизор. Тексты дел туда не уходят. На сайте нет кнопки «выключить Метрику» — счётчик работает у посетителей лендинга. Статистику <em>приложения</em> можно выключить в Настройки → Данные.</p>
+      <h2>1. О чём этот документ</h2>
+      <p>Эта политика описывает, какие данные обрабатывают сайт https://tili.su/ (лендинг) и приложение «TiLi Calendar» с вкладкой «Lumi» (PWA, https://tili.su/app/). Мы разделяем два контура: сайт (лендинг) и приложение (PWA).</p>
 
-  <h2>Анонимная статистика приложения (по желанию)</h2>
-  <p>Если вы включите «Анонимная статистика» в Настройки → Данные, приложение отправляет события без содержимого задач: открытие, создание дела, push, шаги Lumi и т.п. Используется случайный id на устройстве. Сервис: PostHog (EU), если настроен в сборке.</p>
+      <h2>2. Главное правило</h2>
+      <p>У TiLi два режима. В режиме «Гость» (по умолчанию) всё живёт на вашем устройстве. Если вы создаёте аккаунт, календарь и желания синхронизируются с нашим сервером, чтобы телефон и компьютер видели одно и то же. Остальные передачи данных перечислены в разделе 4 и носят точечный характер.</p>
 
-  <h2>Push-уведомления</h2>
-  <p>Для напоминаний подписка устройства может храниться на сервере (Yandex Cloud). Это технические данные для доставки баннеров, не тексты задач для маркетинга.</p>
+      <h2>3. Гость и аккаунт: где живут данные</h2>
+      <h3>3.1. Режим «Гость»</h3>
+      <p>Регистрация не нужна. Календарь и Lumi хранятся только в IndexedDB и localStorage этого браузера: задачи (текст, дата, час, категория, длительность, напоминание, заметки), желания Lumi (тексты, фото, шаги, колесо жизни, ритуал) и настройки. На другой телефон они сами не переедут. Резервную копию вы делаете сами, экспортируя файл JSON; он остаётся у вас.</p>
+      <p>Без аккаунта при очистке данных сайта, удалении PWA или смене устройства календарь и желания пропадут безвозвратно. Делайте экспорт заранее или заведите аккаунт.</p>
 
-  <h2>English</h2>
-  <p>The public website uses Yandex Metrica (visits, click map, session replay). There is no in-page switch to turn that off. The app keeps tasks on your device. Optional app analytics (Settings → Data) can be turned off. Push uses a cloud endpoint for delivery.</p>
+      <h3>3.2. Регистрация</h3>
+      <p>При регистрации на наш сервер сразу уходят:</p>
+      <ul>
+        <li>email, имя и хеш пароля (сам пароль открытым текстом мы не храним);</li>
+        <li>cookie сессии <code>tili_session</code> (HttpOnly; при HTTPS дополнительно Secure и SameSite=None);</li>
+        <li>в серверной сессии могут сохраняться User-Agent и IP-адрес;</li>
+        <li>письмо с подтверждением email через Unisender (ссылка действует 24 часа). Через Unisender также могут уходить письма для сброса пароля.</li>
+      </ul>
+      <p>Пока email не подтверждён, дела на сервер не загружаются, календарь на телефоне остаётся локальным, а вход с другого устройства облако не откроет.</p>
 
-  <p><a href="./">Open TiLi Calendar</a></p>
+      <h3>3.3. Облачная синхронизация</h3>
+      <p>После подтверждения email и входа включается автосинхронизация: приложение примерно каждые 25 секунд забирает данные с сервера, а через ~2,5 секунды после ваших правок отправляет их туда. Запасной путь: ручные кнопки в Настройки → перенос.</p>
+      <p>На сервер (PostgreSQL аккаунтного API) уходит полный снимок, а не только идентификаторы:</p>
+      <ul>
+        <li>все задачи: заголовок, описание, дата и час, категория, статус, напоминание, связь с шагом Lumi;</li>
+        <li>желания Lumi: тексты, шаги, контакты, колесо жизни, локальная обратная связь Lumi;</li>
+        <li>фото желаний: они входят в данные как base64 или ссылки, то есть изображения тоже хранятся в облачном JSON.</li>
+      </ul>
+      <p>Настройки приложения (тема, часы дня, переключатель статистики) в снимок не входят и остаются на устройстве.</p>
+
+      <h3>3.4. Вход, выход, смена аккаунта, удаление</h3>
+      <ul>
+        <li>Первая регистрация с телефона, где уже были гостевые дела: локальные данные загружаются в пустой облачный аккаунт.</li>
+        <li>Вход под тем же email на втором устройстве: источником становится сервер, календарь и желания подтягиваются на устройство.</li>
+        <li>Смена аккаунта A → B на одном телефоне подгружает данные B и не смешивает их с данными A.</li>
+        <li>Выход из аккаунта не удаляет локальные задачи. Если устройством пользуются другие люди, очистите данные сайта.</li>
+        <li>Удаление аккаунта: Настройки → Профиль → Удалить аккаунт (нужен пароль). Вход закрывается, сессии завершаются. Данные на сервере стираются по письму на <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>; до этого они могут оставаться на диске. Локальные копии на устройствах остаются, пока вы их не удалите.</li>
+      </ul>
+      <p>Облачные данные хранятся без сквозного шифрования, поэтому технически доступны оператору сервиса. Регулярное резервное копирование базы пока не настроено и отдельного хранилища копий нет, поэтому при потере или повреждении диска сервера восстановить облачные данные может быть невозможно. Рекомендуем периодически делать экспорт JSON. Административный доступ к серверу имеют владелец сервиса, разработчик и хостинг-провайдер AdminVPS в рамках услуги.</p>
+      <p>Аккаунтный API и база работают на VPS (<code>tili.su</code>, <code>api.tili.su</code>) у хостинг-провайдера AdminVPS в Германии. Это не GitHub Pages и не хранилище push-уведомлений. Синхронизация не заменяет push: уведомления работают отдельно (см. 4.3). Город внутри Германии в этой редакции не указываем: провайдер назвал страну, не населённый пункт.</p>
+
+      <h2>4. Что уходит наружу</h2>
+      <h3>4.1. Сайт (лендинг)</h3>
+      <p>Яндекс Метрика (счётчик 113253680, РФ): визиты, устройство, адрес страницы, источник перехода, карта кликов, вебвизор (запись действий на странице). Тексты дел не передаются: на лендинге их нет. Отдельного выключателя Метрики на сайте нет; вы можете отключить её средствами браузера или блокировщика. Приложение /app/ этим счётчиком не измеряется.</p>
+      <p>PostHog (ЕС): события лендинга (открытие PWA, клик по кнопке, просмотр разделов). Без текстов календаря.</p>
+      <p>localStorage лендинга: выбранный язык (ru / en / es).</p>
+      <p>Хостинг GitHub Pages и Cloudflare, как любой CDN, могут вести обычные веб-логи (IP-адрес, User-Agent). Это их журналы, не наш кабинет аналитики.</p>
+
+      <h3>4.2. Анонимная статистика приложения</h3>
+      <p>По умолчанию включена. Выключить: Настройки → Данные. Мы используем случайный идентификатор устройства (<code>tili-analytics-id</code>), не связанный с email или именем, и отправляем в PostHog (ЕС, eu.i.posthog.com) события без текста дел: открытие приложения, создание дела, категория, включение push, шаги Lumi, UTM-метки из ссылки. Если статистика выключена, приложение эти события не отправляет.</p>
+
+      <h3>4.3. Push-напоминания</h3>
+      <p>Работают только если вы дали разрешение на уведомления и включили их в настройках. На iPhone нужно добавить PWA на экран «Домой». На сервер в Яндекс Облаке (регион ru-central1, Object Storage, РФ) передаётся:</p>
+      <ul>
+        <li>техническая Web Push-подписка (адрес браузера и ключи) и случайный идентификатор устройства;</li>
+        <li>слоты напоминаний: идентификатор задачи, время срабатывания и название задачи (оно нужно, чтобы показать баннер); тело баннера шаблонное;</li>
+        <li>ежедневное напоминание Lumi: стандартный текст, не текст желания;</li>
+        <li>техническая диагностика: идентификатор устройства, режим PWA, сокращённый User-Agent.</li>
+      </ul>
+      <p>Пока напоминание активно, название дела хранится на сервере в РФ. Полный календарь, заметки, желания и фото не передаются. Данные нужны только для отправки уведомления, не для маркетинга. Нерабочие подписки удаляются автоматически.</p>
+      <p>Push работает независимо от аккаунта и синхронизации: названия дел с напоминанием уходят в Яндекс Облако и у гостей, и у зарегистрированных пользователей.</p>
+
+      <h3>4.4. Голосовая постановка задач (по желанию)</h3>
+      <p>По умолчанию выключена, включается отдельно в настройках. Распознавание речи выполняет ваш браузер (Web Speech) на устройстве, аудио мы не получаем. Далее текст фразы, язык, часовой пояс, границы дня и идентификатор устройства уходят в функцию в Яндекс Облаке, которая передаёт текст в сервис Groq (США) и возвращает черновик задачи. В календарь он попадает только после вашего нажатия «Сохранить». Lumi в этот процесс не входит.</p>
+
+      <h3>4.5. Обратная связь</h3>
+      <p>Если вы отправили форму, мы получаем текст сообщения, контакт (если указали) и язык. Календарь и желания не прикладываются.</p>
+
+      <h3>4.6. Счётчик установки</h3>
+      <p>При нажатии кнопки установки PWA на стороннем сервисе CountAPI (api.countapi.xyz) увеличивается общий счётчик. Передаётся только факт клика, без задач.</p>
+
+      <h3>4.7. Почта</h3>
+      <p>Через Unisender отправляются письма подтверждения email и сброса пароля. Для этого передаются ваш адрес и служебный текст письма. Тексты дел в письма не попадают.</p>
+
+      <h3>4.8. Донат</h3>
+      <p>Мы показываем публичный адрес Telegram Wallet. TiLi не принимает и не хранит деньги и данные карт.</p>
+
+      <h2>5. Чего мы не делаем</h2>
+      <p>Нет рекламных сетей и пикселей Meta или Google. Мы не продаём данные третьим лицам. Аккаунт необязателен: гость работает сразу и локально. Мы не принимаем деньги и данные карт. Настройки приложения в облако не отправляются.</p>
+
+      <h2>6. Где обрабатываются данные</h2>
+      <ul>
+        <li>Гость: календарь, Lumi и настройки только на вашем устройстве.</li>
+        <li>Аккаунт и синхронизация (email, имя, хеш пароля, сессия, снимок календаря и Lumi вместе с фото): наш VPS, Германия (AdminVPS).</li>
+        <li>Письма: Unisender.</li>
+        <li>Метрика лендинга: Яндекс, РФ.</li>
+        <li>Статистика приложения (если включена): PostHog, ЕС.</li>
+        <li>Push-подписка и названия дел с напоминанием: Yandex Cloud Object Storage, РФ.</li>
+        <li>Текст голосовой фразы: Яндекс Облако (РФ) → Groq (США).</li>
+        <li>Страницы сайта: GitHub / Cloudflare (в том числе США).</li>
+        <li>Счётчик установки: CountAPI (сторонний сервис).</li>
+      </ul>
+      <p>Используя эти функции, вы понимаете, что данные могут передаваться в страны с иным уровнем защиты, чем в вашей. При применении GDPR или UK GDPR основания такие: согласие (голос, уведомления), исполнение договора об использовании сервиса (аккаунт, синхронизация, напоминания) и законный интерес (статистика приложения, аналитика лендинга, безопасность; против статистики приложения можно возразить, отключив её в Настройки → Данные). Эта политика не утверждает, что стандартные договорные условия передачи (SCC) уже оформлены.</p>
+
+      <h2>7. Сроки хранения</h2>
+      <p>Данные аккаунта и снимок синхронизации хранятся, пока существует аккаунт; после удаления вход закрыт, а данные стираются с сервера по письму на <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>. Сессии хранятся до выхода или истечения срока — 30 дней. Push-слоты хранятся, пока напоминание актуально и устройство активно; недействительные подписки удаляются. Данные Метрики и PostHog хранятся по их правилам. Обратная связь хранится, пока нужна для ответа. Данные на устройстве хранятся, пока вы их не удалите. Отдельного срока хранения резервных копий базы нет: регулярные копии не настроены.</p>
+
+      <h2>8. Как отозвать согласие и удалить данные</h2>
+      <ul>
+        <li>Аккаунт и облачные данные: Настройки → Профиль → Удалить аккаунт, затем напишите на <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>, чтобы данные стёрли с сервера.</li>
+        <li>Статистика приложения: Настройки → Данные.</li>
+        <li>Уведомления: отключите в настройках приложения и системы, удалите напоминание в карточке дела.</li>
+        <li>Голос: отключите в настройках.</li>
+        <li>Всё на устройстве: удалите PWA или очистите данные сайта.</li>
+        <li>Данные на сервере (push, обратная связь): напишите на <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a> и, если знаете, укажите идентификатор устройства.</li>
+      </ul>
+
+      <h2>9. Ваши права</h2>
+      <p>Вы вправе получить доступ к данным, исправить, удалить их, ограничить обработку, возразить против неё, отозвать согласие и подать жалобу в надзорный орган (в РФ: Роскомнадзор; в ЕС и Великобритании: орган по защите данных вашей страны). Обращайтесь: <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>. Мы ответим в срок, установленный применимым законом.</p>
+
+      <h2>10. Cookies и локальное хранилище</h2>
+      <p>Яндекс Метрика устанавливает собственные cookies. Приложение использует localStorage и IndexedDB для работы, а не для рекламы. Для аккаунта сервер устанавливает необходимый cookie сессии <code>tili_session</code> (HttpOnly; при HTTPS Secure и SameSite=None).</p>
+
+      <h2>11. Дети</h2>
+      <p>Сервис не предназначен для лиц младше 16 лет, и мы сознательно не собираем их данные.</p>
+
+      <h2>12. Безопасность</h2>
+      <p>Передача данных идёт по HTTPS. Закрытые ключи и служебные доступы не публикуются. Данные на вашем устройстве защищены настолько, насколько защищено само устройство. Регулярных отдельных копий PostgreSQL сейчас нет.</p>
+
+      <h2>13. Изменения</h2>
+      <p>Мы обновим дату и версию в начале документа при изменении политики.</p>
+
+      <h2>14. Контакты</h2>
+      <p><a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a> · <a href="https://tili.su/">https://tili.su/</a></p>
+    </article>
+
+    <article id="policy-en" lang="en" hidden>
+      <h1>TiLi / Lumi — Privacy Policy</h1>
+      <p class="meta">Version 1.0 · 28 October 2026 · Website: <a href="https://tili.su/">https://tili.su/</a> · App: <a href="https://tili.su/app/">https://tili.su/app/</a><br />Controller: TiLi / Lumi. Contact: <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a></p>
+
+      <h2>1. About this policy</h2>
+      <p>This policy explains what data is processed by the website https://tili.su/ (the landing page) and the app “TiLi Calendar” with its “Lumi” tab (a PWA at https://tili.su/app/). We separate two areas: the website (landing page) and the app (PWA).</p>
+
+      <h2>2. The core rule</h2>
+      <p>TiLi has two modes. In Guest mode (the default) everything lives on your device. If you create an account, your calendar and wishes sync with our server so your phone and computer show the same thing. Other data flows are listed in section 4 and are specific and limited.</p>
+
+      <h2>3. Guest and account: where your data lives</h2>
+      <h3>3.1. Guest mode</h3>
+      <p>No registration is needed. Calendar and Lumi are stored only in IndexedDB and localStorage of this browser: tasks (text, date, hour, category, duration, reminder, notes), Lumi wishes (text, photos, steps, life wheel, ritual) and settings. They do not move to another phone by themselves. Backups are made by you by exporting a JSON file, which stays with you.</p>
+      <p>Without an account, if you clear the site’s data, uninstall the PWA or change device, your calendar and wishes are permanently lost. Export a backup first or create an account.</p>
+
+      <h3>3.2. Registration</h3>
+      <p>When you register, the following goes to our server immediately:</p>
+      <ul>
+        <li>your email, name and a password hash (we do not store your password in plain text);</li>
+        <li>the session cookie <code>tili_session</code> (HttpOnly; on HTTPS also Secure and SameSite=None);</li>
+        <li>the server-side session may keep your User-Agent and IP address;</li>
+        <li>a confirmation email sent through Unisender (the link is valid for 24 hours). Unisender may also send password-reset emails.</li>
+      </ul>
+      <p>Until your email is confirmed, no tasks are uploaded, the calendar on your phone stays local, and signing in on another device will not open the cloud.</p>
+
+      <h3>3.3. Cloud sync</h3>
+      <p>After email confirmation and sign-in, automatic sync turns on: the app pulls from the server about every 25 seconds and pushes about 2.5 seconds after your edits. Manual buttons in Settings → transfer are a fallback.</p>
+      <p>The server (PostgreSQL behind our account API) receives a full snapshot, not just IDs:</p>
+      <ul>
+        <li>all tasks: title, description, date and hour, category, status, reminder, link to a Lumi step;</li>
+        <li>Lumi wishes: texts, steps, contacts, life wheel, local Lumi feedback;</li>
+        <li>wish photos: they are part of the data as base64 or URLs, so images are stored in the cloud JSON too.</li>
+      </ul>
+      <p>App settings (theme, day hours, the analytics switch) are not part of the snapshot and stay on your device.</p>
+
+      <h3>3.4. Sign-in, sign-out, switching accounts, deletion</h3>
+      <ul>
+        <li>First registration from a phone that already holds guest tasks: the local data is uploaded into the new, empty cloud account.</li>
+        <li>Signing in with the same email on a second device: the server is the source, and your calendar and wishes are pulled onto that device.</li>
+        <li>Switching account A → B on one phone loads B’s data and does not mix it with A’s.</li>
+        <li>Signing out does not delete local tasks. If others use the device, clear the site’s data.</li>
+        <li>Account deletion: Settings → Profile → Delete account (password required). Sign-in is closed and sessions end. Server data is erased on request at <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>; until then it may remain on disk. Local copies on your devices remain until you delete them.</li>
+      </ul>
+      <p>Cloud data is not end-to-end encrypted, so it is technically accessible to the service operator. Regular database backups are not currently configured and there is no separate backup storage, so if the server disk is lost or damaged, cloud data may not be recoverable. We recommend exporting a JSON copy from time to time. Administrative access to the server is held by the service owner, the developer and the hosting provider AdminVPS as part of its service.</p>
+      <p>The account API and database run on a VPS (<code>tili.su</code>, <code>api.tili.su</code>) at AdminVPS in Germany. This is not GitHub Pages and not the push-notification storage. Sync does not replace push: notifications work separately (see 4.3). We do not name a city in Germany: the provider stated the country, not a locality.</p>
+
+      <h2>4. What leaves your device</h2>
+      <h3>4.1. Website (landing page)</h3>
+      <p>Yandex Metrica (counter 113253680, Russia): visits, device, page URL, referrer, click map and Webvisor (recording of your session on the page). No task text is sent because the landing page has none. There is no on-page switch for Metrica; you can block it with your browser or an ad blocker. The app at /app/ is not measured by this counter.</p>
+      <p>PostHog (EU): landing-page events (opening the PWA, CTA clicks, section views). No calendar text.</p>
+      <p>Landing-page localStorage: your chosen language (ru / en / es).</p>
+      <p>Hosting: GitHub Pages and Cloudflare may keep ordinary web logs (IP address, User-Agent), as any CDN does. These are their logs, not our analytics account.</p>
+
+      <h3>4.2. Anonymous app analytics</h3>
+      <p>On by default. Turn off under Settings → Data. We use a random device ID (<code>tili-analytics-id</code>), not linked to your email or name, and send PostHog (EU, eu.i.posthog.com) events without task text: app opened, task created, category, push enabled, Lumi steps, UTM parameters from the link. When switched off, the app does not send these events.</p>
+
+      <h3>4.3. Push reminders</h3>
+      <p>These work only if you grant notification permission and enable them in app settings. On iPhone, add the PWA to the Home Screen. The following is sent to Yandex Cloud (region ru-central1, Object Storage, Russia):</p>
+      <ul>
+        <li>a technical Web Push subscription (browser endpoint and keys) and a random device ID;</li>
+        <li>reminder slots: task ID, trigger time and the task title (needed to display the banner); the banner body is a fixed template;</li>
+        <li>the daily Lumi reminder: a standard text, not your wish text;</li>
+        <li>technical diagnostics: device ID, PWA mode, shortened User-Agent.</li>
+      </ul>
+      <p>While a reminder is active, the task title is stored on a server in Russia. Your full calendar, notes, wishes and photos are not sent. This data is used only to deliver the notification, never for marketing. Dead subscriptions are deleted automatically.</p>
+      <p>Push works independently of your account and sync: reminder titles go to Yandex Cloud for guests and registered users alike.</p>
+
+      <h3>4.4. Voice-to-task (optional)</h3>
+      <p>Off by default and enabled separately in settings. Speech-to-text is done by your browser on your device (Web Speech); we do not receive audio. The transcribed phrase, language, time zone, day boundaries and device ID go to a function at Yandex Cloud, which forwards the text to Groq (USA) and returns a draft task. It enters your calendar only after you tap “Save”. Lumi is not part of this flow.</p>
+
+      <h3>4.5. Feedback</h3>
+      <p>If you submit the form, we receive your message, your contact (if given) and language. Your calendar and wishes are not attached.</p>
+
+      <h3>4.6. Install counter</h3>
+      <p>When you tap the install button, a counter on CountAPI (api.countapi.xyz) is incremented by one. Only the click is sent, no tasks.</p>
+
+      <h3>4.7. Email</h3>
+      <p>Through Unisender we send email-confirmation and password-reset messages. Your address and the technical text of the email are passed on for this. Task content is never included.</p>
+
+      <h3>4.8. Donations</h3>
+      <p>We display a public Telegram Wallet address. TiLi does not accept or store money or card details.</p>
+
+      <h2>5. What we do not do</h2>
+      <p>No advertising networks or Meta/Google pixels. We do not sell data to third parties. An account is optional: guest mode works immediately and locally. We do not accept money or card details. App settings are not sent to the cloud.</p>
+
+      <h2>6. Where data is processed</h2>
+      <ul>
+        <li>Guest: calendar, Lumi and settings only on your device.</li>
+        <li>Account and sync (email, name, password hash, session, calendar and Lumi snapshot including photos): our VPS, Germany (AdminVPS).</li>
+        <li>Emails: Unisender.</li>
+        <li>Landing-page Metrica: Yandex, Russia.</li>
+        <li>App analytics (if on): PostHog, EU.</li>
+        <li>Push subscription and reminder titles: Yandex Cloud Object Storage, Russia.</li>
+        <li>Voice phrase text: Yandex Cloud (Russia) → Groq (USA).</li>
+        <li>Site pages: GitHub / Cloudflare (including the USA).</li>
+        <li>Install counter: CountAPI (third party).</li>
+      </ul>
+      <p>By using these features you understand that data may be transferred to countries whose protection level differs from that of your country. Where the GDPR or UK GDPR applies, the legal bases are: consent (voice, notifications), performance of the service contract (account, sync, reminders) and legitimate interest (app analytics, landing-page analytics, security; you can object to app analytics by turning it off in Settings → Data). This policy does not claim that standard contractual clauses (SCCs) are already in place.</p>
+
+      <h2>7. Retention</h2>
+      <p>Account data and the sync snapshot are kept while the account exists; after deletion sign-in is closed and data is erased from the server on request at <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>. Sessions last until you sign out or they expire — 30 days. Push slots are kept while the reminder is relevant and the device is active; invalid subscriptions are deleted. Metrica and PostHog data follow their own rules. Feedback is kept as long as needed to reply. Data on your device stays until you delete it. There is no separate backup-retention period because regular PostgreSQL backups are not configured.</p>
+
+      <h2>8. Withdrawing consent and deleting data</h2>
+      <ul>
+        <li>Account and cloud data: Settings → Profile → Delete account, then email <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a> to have server data erased.</li>
+        <li>Analytics: Settings → Data.</li>
+        <li>Notifications: turn off in app and system settings; delete the reminder on the task card.</li>
+        <li>Voice: turn off in settings.</li>
+        <li>Everything on the device: uninstall the PWA or clear site data.</li>
+        <li>Server-side data (push, feedback): email <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>, with your device ID if you know it.</li>
+      </ul>
+
+      <h2>9. Your rights</h2>
+      <p>You may request access, correction, deletion, restriction, objection, portability, withdraw consent, and lodge a complaint with a supervisory authority (in Russia: Roskomnadzor; in the EU/UK: the authority in your country). Contact: <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>. We will reply within the period required by applicable law.</p>
+
+      <h2>10. Cookies and local storage</h2>
+      <p>Yandex Metrica sets its own cookies. The app mainly uses localStorage and IndexedDB to function, not advertising cookies. For accounts, the server sets a necessary session cookie, <code>tili_session</code> (HttpOnly; on HTTPS Secure and SameSite=None).</p>
+
+      <h2>11. Children</h2>
+      <p>The service is not intended for people under 16 and we do not knowingly collect their data.</p>
+
+      <h2>12. Security</h2>
+      <p>Data is transmitted over HTTPS. Secret keys and service credentials are never published. Data on your device is only as secure as the device itself. Separate regular PostgreSQL backups are not currently configured.</p>
+
+      <h2>13. Changes</h2>
+      <p>We will update the date and version at the top when this policy changes.</p>
+
+      <h2>14. Contact</h2>
+      <p><a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a> · <a href="https://tili.su/">https://tili.su/</a></p>
+    </article>
+
+    <article id="policy-es" lang="es" hidden>
+      <h1>TiLi / Lumi — Política de privacidad</h1>
+      <p class="meta">Versión 1.0 · 28 de octubre de 2026 · Sitio: <a href="https://tili.su/">https://tili.su/</a> · Aplicación: <a href="https://tili.su/app/">https://tili.su/app/</a><br />Responsable: TiLi / Lumi. Contacto: <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a></p>
+
+      <h2>1. Sobre esta política</h2>
+      <p>Esta política explica qué datos trata el sitio web https://tili.su/ (la página de inicio) y la aplicación «TiLi Calendar» con su pestaña «Lumi» (una PWA en https://tili.su/app/). Distinguimos dos ámbitos: el sitio web (landing) y la aplicación (PWA).</p>
+
+      <h2>2. La regla principal</h2>
+      <p>TiLi tiene dos modos. En el modo Invitado (por defecto) todo vive en tu dispositivo. Si creas una cuenta, tu calendario y tus deseos se sincronizan con nuestro servidor para que el teléfono y el ordenador muestren lo mismo. Los demás envíos de datos se detallan en la sección 4 y son puntuales.</p>
+
+      <h2>3. Invitado y cuenta: dónde viven tus datos</h2>
+      <h3>3.1. Modo Invitado</h3>
+      <p>No hace falta registrarse. El calendario y Lumi se guardan solo en IndexedDB y localStorage de este navegador: tareas (texto, fecha, hora, categoría, duración, recordatorio, notas), deseos de Lumi (textos, fotos, pasos, rueda de la vida, ritual) y ajustes. No pasan solos a otro teléfono. La copia de seguridad la haces tú exportando un archivo JSON, que queda contigo.</p>
+      <p>Sin cuenta, si borras los datos del sitio, desinstalas la PWA o cambias de dispositivo, tu calendario y tus deseos se pierden de forma permanente. Exporta una copia antes o crea una cuenta.</p>
+
+      <h3>3.2. Registro</h3>
+      <p>Al registrarte, esto llega de inmediato a nuestro servidor:</p>
+      <ul>
+        <li>tu email, nombre y un hash de la contraseña (no guardamos la contraseña en texto plano);</li>
+        <li>la cookie de sesión <code>tili_session</code> (HttpOnly; con HTTPS además Secure y SameSite=None);</li>
+        <li>la sesión en el servidor puede conservar tu User-Agent y dirección IP;</li>
+        <li>un correo de confirmación enviado mediante Unisender (el enlace es válido 24 horas). Unisender también puede enviar correos para restablecer la contraseña.</li>
+      </ul>
+      <p>Mientras no confirmes el email, no se suben tareas, el calendario del teléfono sigue siendo local y iniciar sesión en otro dispositivo no abrirá la nube.</p>
+
+      <h3>3.3. Sincronización en la nube</h3>
+      <p>Tras confirmar el email e iniciar sesión se activa la sincronización automática: la app descarga del servidor aproximadamente cada 25 segundos y envía unos 2,5 segundos después de tus cambios. Los botones manuales en Ajustes → transferencia son una vía de respaldo.</p>
+      <p>El servidor (PostgreSQL de nuestra API de cuentas) recibe una instantánea completa, no solo identificadores:</p>
+      <ul>
+        <li>todas las tareas: título, descripción, fecha y hora, categoría, estado, recordatorio, vínculo con un paso de Lumi;</li>
+        <li>deseos de Lumi: textos, pasos, contactos, rueda de la vida, comentarios locales de Lumi;</li>
+        <li>fotos de los deseos: forman parte de los datos como base64 o URL, así que las imágenes también se guardan en el JSON de la nube.</li>
+      </ul>
+      <p>Los ajustes de la app (tema, horas del día, el interruptor de estadísticas) no forman parte de la instantánea y permanecen en tu dispositivo.</p>
+
+      <h3>3.4. Inicio y cierre de sesión, cambio de cuenta, eliminación</h3>
+      <ul>
+        <li>Primer registro desde un teléfono que ya tenía tareas de invitado: los datos locales se suben a la cuenta nueva y vacía.</li>
+        <li>Iniciar sesión con el mismo email en un segundo dispositivo: el servidor es la fuente y el calendario y los deseos se descargan al dispositivo.</li>
+        <li>Cambiar de la cuenta A a la B en un teléfono carga los datos de B y no los mezcla con los de A.</li>
+        <li>Cerrar sesión no borra las tareas locales. Si otras personas usan el dispositivo, borra los datos del sitio.</li>
+        <li>Eliminar la cuenta: Ajustes → Perfil → Eliminar cuenta (hace falta la contraseña). Se cierra el acceso y terminan las sesiones. Los datos del servidor se borran previa solicitud a <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>; hasta entonces pueden permanecer en el disco. Las copias locales en tus dispositivos permanecen hasta que las borres.</li>
+      </ul>
+      <p>Los datos en la nube no tienen cifrado de extremo a extremo, por lo que son técnicamente accesibles para el operador del servicio. Actualmente no hay copias de seguridad periódicas de la base de datos ni almacenamiento separado de copias, por lo que, si el disco del servidor se pierde o se daña, los datos de la nube pueden no ser recuperables. Recomendamos exportar de vez en cuando una copia en JSON. El acceso administrativo al servidor lo tienen el titular del servicio, el desarrollador y el proveedor de alojamiento AdminVPS en el marco de su servicio.</p>
+      <p>La API de cuentas y la base de datos funcionan en un VPS (<code>tili.su</code>, <code>api.tili.su</code>) con AdminVPS en Alemania. No es GitHub Pages ni el almacenamiento de notificaciones push. La sincronización no sustituye al push: las notificaciones funcionan por separado (véase 4.3). No indicamos una ciudad en Alemania: el proveedor indicó el país, no la localidad.</p>
+
+      <h2>4. Qué sale de tu dispositivo</h2>
+      <h3>4.1. Sitio web (landing)</h3>
+      <p>Yandex Metrica (contador 113253680, Rusia): visitas, dispositivo, URL, referente, mapa de clics y Webvisor (grabación de tu sesión en la página). No se envía texto de tareas porque la landing no tiene. No hay un interruptor de Metrica en la página; puedes bloquearla con tu navegador o un bloqueador de anuncios. La aplicación en /app/ no se mide con este contador.</p>
+      <p>PostHog (UE): eventos de la landing (apertura de la PWA, clics en botones, secciones vistas). Sin texto del calendario.</p>
+      <p>localStorage de la landing: el idioma elegido (ru / en / es).</p>
+      <p>Alojamiento: GitHub Pages y Cloudflare pueden guardar registros web habituales (dirección IP, User-Agent), como cualquier CDN. Son sus registros, no nuestra cuenta de analítica.</p>
+
+      <h3>4.2. Analítica anónima de la aplicación</h3>
+      <p>Activada por defecto. Para desactivarla: Ajustes → Datos. Usamos un identificador aleatorio de dispositivo (<code>tili-analytics-id</code>), no vinculado a tu email ni nombre, y enviamos a PostHog (UE, eu.i.posthog.com) eventos sin texto de tareas: apertura de la app, creación de tarea, categoría, activación de push, pasos de Lumi, parámetros UTM del enlace. Si está desactivada, la app no envía estos eventos.</p>
+
+      <h3>4.3. Recordatorios push</h3>
+      <p>Funcionan solo si concedes el permiso de notificaciones y las activas en los ajustes de la app. En iPhone hay que añadir la PWA a la pantalla de inicio. Se envía a Yandex Cloud (región ru-central1, Object Storage, Rusia):</p>
+      <ul>
+        <li>una suscripción técnica Web Push (dirección del navegador y claves) y un identificador aleatorio de dispositivo;</li>
+        <li>franjas de recordatorio: ID de la tarea, hora de disparo y el título de la tarea (necesario para mostrar el aviso); el cuerpo del aviso es una plantilla fija;</li>
+        <li>el recordatorio diario de Lumi: texto estándar, no el texto de tu deseo;</li>
+        <li>diagnóstico técnico: identificador de dispositivo, modo PWA, User-Agent abreviado.</li>
+      </ul>
+      <p>Mientras un recordatorio está activo, el título de la tarea se guarda en un servidor en Rusia. No se envían tu calendario completo, notas, deseos ni fotos. Estos datos sirven solo para entregar la notificación, nunca para marketing. Las suscripciones inválidas se eliminan automáticamente.</p>
+      <p>El push funciona con independencia de tu cuenta y la sincronización: los títulos de los recordatorios van a Yandex Cloud tanto para invitados como para usuarios registrados.</p>
+
+      <h3>4.4. Voz a tarea (opcional)</h3>
+      <p>Desactivada por defecto y se activa por separado en los ajustes. La conversión de voz a texto la hace tu navegador en tu dispositivo (Web Speech); no recibimos el audio. La frase transcrita, el idioma, la zona horaria, los límites del día y el identificador de dispositivo van a una función en Yandex Cloud, que reenvía el texto a Groq (EE. UU.) y devuelve un borrador de tarea. Solo entra en tu calendario cuando pulsas «Guardar». Lumi no forma parte de este flujo.</p>
+
+      <h3>4.5. Comentarios</h3>
+      <p>Si envías el formulario, recibimos tu mensaje, tu contacto (si lo indicas) y el idioma. No se adjuntan tu calendario ni tus deseos.</p>
+
+      <h3>4.6. Contador de instalaciones</h3>
+      <p>Al pulsar el botón de instalación, un contador en CountAPI (api.countapi.xyz) suma uno. Solo se envía el clic, sin tareas.</p>
+
+      <h3>4.7. Correo electrónico</h3>
+      <p>A través de Unisender enviamos correos de confirmación de email y de restablecimiento de contraseña. Para ello se transmiten tu dirección y el texto técnico del correo. Nunca incluyen el contenido de tus tareas.</p>
+
+      <h3>4.8. Donaciones</h3>
+      <p>Mostramos una dirección pública de Telegram Wallet. TiLi no recibe ni guarda dinero ni datos de tarjetas.</p>
+
+      <h2>5. Lo que no hacemos</h2>
+      <p>Sin redes publicitarias ni píxeles de Meta o Google. No vendemos datos a terceros. La cuenta es opcional: el modo invitado funciona al instante y en local. No recibimos dinero ni datos de tarjetas. Los ajustes de la app no se envían a la nube.</p>
+
+      <h2>6. Dónde se tratan los datos</h2>
+      <ul>
+        <li>Invitado: calendario, Lumi y ajustes solo en tu dispositivo.</li>
+        <li>Cuenta y sincronización (email, nombre, hash de contraseña, sesión, instantánea de calendario y Lumi con fotos): nuestro VPS, Alemania (AdminVPS).</li>
+        <li>Correos: Unisender.</li>
+        <li>Metrica de la landing: Yandex, Rusia.</li>
+        <li>Analítica de la app (si está activa): PostHog, UE.</li>
+        <li>Suscripción push y títulos de recordatorios: Yandex Cloud Object Storage, Rusia.</li>
+        <li>Texto de la frase de voz: Yandex Cloud (Rusia) → Groq (EE. UU.).</li>
+        <li>Páginas del sitio: GitHub / Cloudflare (incluido EE. UU.).</li>
+        <li>Contador de instalaciones: CountAPI (tercero).</li>
+      </ul>
+      <p>Al usar estas funciones entiendes que los datos pueden transferirse a países con un nivel de protección distinto al de tu país. Cuando se aplica el RGPD o el RGPD del Reino Unido, las bases jurídicas son: consentimiento (voz, notificaciones), ejecución del contrato del servicio (cuenta, sincronización, recordatorios) e interés legítimo (analítica de la app, analítica de la landing, seguridad; puedes oponerte a la analítica de la app desactivándola en Ajustes → Datos). Esta política no afirma que ya existan cláusulas contractuales tipo (SCC).</p>
+
+      <h2>7. Conservación</h2>
+      <p>Los datos de la cuenta y la instantánea de sincronización se conservan mientras exista la cuenta; tras eliminarla, el acceso queda cerrado y los datos se borran del servidor previa solicitud a <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>. Las sesiones duran hasta que cierres sesión o caduquen: 30 días. Las franjas push se conservan mientras el recordatorio esté vigente y el dispositivo activo; las suscripciones inválidas se borran. Los datos de Metrica y PostHog siguen sus propias reglas. Los comentarios se guardan el tiempo necesario para responder. Los datos en tu dispositivo permanecen hasta que los borres. No hay un plazo independiente de copias de seguridad porque no están configuradas copias periódicas de PostgreSQL.</p>
+
+      <h2>8. Retirar el consentimiento y borrar datos</h2>
+      <ul>
+        <li>Cuenta y datos en la nube: Ajustes → Perfil → Eliminar cuenta, luego escribe a <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a> para que se borren los datos del servidor.</li>
+        <li>Analítica: Ajustes → Datos.</li>
+        <li>Notificaciones: desactívalas en los ajustes de la app y del sistema; elimina el recordatorio en la tarjeta de la tarea.</li>
+        <li>Voz: desactívala en los ajustes.</li>
+        <li>Todo lo del dispositivo: desinstala la PWA o borra los datos del sitio.</li>
+        <li>Datos en el servidor (push, comentarios): escribe a <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>, con tu identificador de dispositivo si lo conoces.</li>
+      </ul>
+
+      <h2>9. Tus derechos</h2>
+      <p>Puedes solicitar acceso, rectificación, supresión, limitación, oposición, portabilidad, retirar el consentimiento y presentar una reclamación ante una autoridad de control (en Rusia: Roskomnadzor; en la UE/Reino Unido: la autoridad de tu país; en España: la AEPD). Contacto: <a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a>. Responderemos en el plazo que exija la ley aplicable.</p>
+
+      <h2>10. Cookies y almacenamiento local</h2>
+      <p>Yandex Metrica instala sus propias cookies. La aplicación usa principalmente localStorage e IndexedDB para funcionar, no cookies publicitarias. Para las cuentas, el servidor instala una cookie de sesión necesaria, <code>tili_session</code> (HttpOnly; con HTTPS Secure y SameSite=None).</p>
+
+      <h2>11. Menores</h2>
+      <p>El servicio no está dirigido a menores de 16 años y no recopilamos sus datos de forma consciente.</p>
+
+      <h2>12. Seguridad</h2>
+      <p>Los datos viajan por HTTPS. Las claves secretas y credenciales de servicio no se publican. Los datos en tu dispositivo están tan protegidos como el propio dispositivo. Actualmente no hay copias periódicas independientes de PostgreSQL.</p>
+
+      <h2>13. Cambios</h2>
+      <p>Actualizaremos la fecha y la versión al inicio cuando cambie esta política.</p>
+
+      <h2>14. Contacto</h2>
+      <p><a href="mailto:vasil.ev81@mail.ru">vasil.ev81@mail.ru</a> · <a href="https://tili.su/">https://tili.su/</a></p>
+    </article>
+
+    <p class="back"><a href="./" id="back-home">← TiLi</a></p>
+  </div>
+  <script>
+    (function () {
+      var STORAGE = 'tili-landing-lang';
+      var titles = {
+        ru: 'TiLi и Lumi — конфиденциальность',
+        en: 'TiLi and Lumi — Privacy Policy',
+        es: 'TiLi y Lumi — Política de privacidad'
+      };
+      var back = {
+        ru: '← TiLi',
+        en: '← TiLi',
+        es: '← TiLi'
+      };
+      function detect() {
+        try {
+          var q = new URLSearchParams(location.search).get('lang');
+          if (q && titles[q]) return q;
+        } catch (e) {}
+        try {
+          var saved = localStorage.getItem(STORAGE);
+          if (saved && titles[saved]) return saved;
+        } catch (e2) {}
+        var nav = (navigator.language || 'ru').slice(0, 2).toLowerCase();
+        return titles[nav] ? nav : 'ru';
+      }
+      function apply(lang) {
+        if (!titles[lang]) lang = 'ru';
+        document.documentElement.lang = lang;
+        document.title = titles[lang];
+        ['ru', 'en', 'es'].forEach(function (code) {
+          var el = document.getElementById('policy-' + code);
+          if (el) el.hidden = code !== lang;
+        });
+        var select = document.getElementById('lang-select');
+        if (select) select.value = lang;
+        var home = document.getElementById('back-home');
+        if (home) home.textContent = back[lang];
+        try { localStorage.setItem(STORAGE, lang); } catch (e3) {}
+        try {
+          var u = new URL(location.href);
+          u.searchParams.set('lang', lang);
+          history.replaceState({}, '', u.pathname + u.search);
+        } catch (e4) {}
+      }
+      var select = document.getElementById('lang-select');
+      if (select) {
+        select.addEventListener('change', function () { apply(select.value); });
+      }
+      apply(detect());
+    })();
+  </script>
 </body>
 </html>
