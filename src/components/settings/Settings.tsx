@@ -205,7 +205,7 @@ export function SettingsProfile() {
       <div className="settings-form">
         <div className="settings-profile-card">
           <span className="settings-profile-card__badge">
-            {session.isGuest ? t('guest') : t('accountOnPhone')}
+            {session.isGuest ? t('guest') : t(isCloudAccountEnabled() ? 'accountCloud' : 'accountOnPhone')}
           </span>
           <p className="settings-profile-card__hint">
             {session.isGuest
@@ -256,7 +256,7 @@ export function SettingsProfile() {
               {t('deleteAccount')}
             </button>
             <p className="settings-note">
-              {t('logoutNote')}
+              {t(isCloudAccountEnabled() ? 'logoutNoteCloud' : 'logoutNote')}
             </p>
           </>
         )}
@@ -265,7 +265,7 @@ export function SettingsProfile() {
       {confirmExit && (
         <ConfirmDialog
           title={t('logoutTitle')}
-          message={t('logoutMsg')}
+          message={t(isCloudAccountEnabled() ? 'logoutMsgCloud' : 'logoutMsg')}
           confirmLabel={t('logout')}
           cancelLabel={t('cancel')}
           onCancel={() => setConfirmExit(false)}
@@ -292,7 +292,7 @@ export function SettingsProfile() {
       {confirmDelete && session.email && (
         <ConfirmDialog
           title={t('deleteAccountTitle')}
-          message={t('deleteAccountMsg')}
+          message={t(isCloudAccountEnabled() ? 'deleteAccountMsgCloud' : 'deleteAccountMsg')}
           confirmLabel={t('delete')}
           cancelLabel={t('cancel')}
           onCancel={() => {
@@ -368,7 +368,7 @@ export function SettingsPassword() {
       <SettingsTopBar title={t('password')} onBack={() => setScreen('settings-profile')} />
       <div className="settings-form">
         <p className="settings-note">
-          {t('passwordLocalNote')}
+          {t(isCloudAccountEnabled() ? 'passwordCloudNote' : 'passwordLocalNote')}
         </p>
         <label className="settings-field">
           {t('currentPassword')}
@@ -593,7 +593,9 @@ export function SettingsTransfer() {
           </button>
         </section>
 
-        <p className="settings-note settings-transfer__hint">{t('transferHint')}</p>
+        <p className="settings-note settings-transfer__hint">
+          {cloudAccountReady ? t('transferHintCloud') : t('transferHint')}
+        </p>
 
         {status && (
           <p
