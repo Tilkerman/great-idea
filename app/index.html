@@ -41,9 +41,15 @@
           if (ios) root.classList.add('is-ios-standalone');
           if (android) root.classList.add('is-android-standalone');
         }
-        if (standalone && ios && Math.max(screen.width, screen.height) >= 812) {
-          root.classList.add('ios-safe-top');
-          if (Math.max(screen.width, screen.height) >= 852) root.classList.add('ios-dynamic-island');
+        if (ios) {
+          var long = Math.max(screen.width, screen.height);
+          var viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+          var alreadyInset = long - viewH >= 44;
+          if (alreadyInset) root.classList.add('ios-top-already-inset');
+          else if (standalone && long >= 812) {
+            root.classList.add('ios-safe-top');
+            if (long >= 852) root.classList.add('ios-dynamic-island');
+          }
         }
       })();
     </script>
@@ -64,6 +70,9 @@
       }
       html.ios-safe-top.ios-dynamic-island {
         --safe-top: max(env(safe-area-inset-top, 0px), 59px);
+      }
+      html.ios-top-already-inset {
+        --safe-top: 0px;
       }
       html.is-ios-standalone .app-viewport {
         padding-bottom: var(--bottom-nav-h);
@@ -117,8 +126,8 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-B4x3ROvB.js"></script>
-    <link rel="stylesheet" crossorigin href="/app/assets/index-BN-ZSi2X.css">
+    <script type="module" crossorigin src="/app/assets/index-B5LI28xJ.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/index-4f-2inPC.css">
       <link rel="apple-touch-icon-precomposed" href="https://tili.su/app/apple-touch-icon-v8.png" />
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
