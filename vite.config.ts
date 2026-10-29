@@ -48,7 +48,7 @@ export default defineConfig(({ command }) => {
       srcDir: 'src',
       filename: 'sw.ts',
       injectManifest: {
-        globPatterns: [],
+        globPatterns: ['index.html', 'assets/*.js', 'assets/*.css'],
       },
       includeAssets: [
         'favicon.png',

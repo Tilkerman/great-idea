@@ -49,3 +49,17 @@ if [[ -n "${css_path}" ]]; then
 fi
 
 echo "OK: ${js_path} (${js_code}), manifest ${manifest_code}"
+
+ASSETS_DIR="$(cd "$(dirname "$0")/.." && pwd)/dist/app/assets"
+if [[ -d "${ASSETS_DIR}" ]]; then
+  echo "→ Kept hashed bundles still reachable..."
+  while IFS= read -r -d '' file; do
+    name="$(basename "${file}")"
+    code="$(curl -fsS -o /dev/null -w "%{http_code}" "${ORIGIN}/app/assets/${name}")"
+    if [[ "${code}" != "200" ]]; then
+      echo "FAIL: kept bundle ${name} → HTTP ${code}"
+      exit 1
+    fi
+    echo "   ${name} ${code}"
+  done < <(find "${ASSETS_DIR}" -maxdepth 1 \( -name 'index-*.js' -o -name 'index-*.css' \) -print0)
+fi
