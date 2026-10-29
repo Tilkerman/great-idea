@@ -67,26 +67,31 @@ export function hasIosHomeIndicator() {
   return Math.max(window.screen.width, window.screen.height) >= 812;
 }
 
+/** 14 Pro / 15 / 16 family — Dynamic Island. 13 and non-Pro 14 stay on the notch floor. */
+export function iosHasDynamicIsland() {
+  if (typeof window === 'undefined') return false;
+  return Math.max(window.screen.width, window.screen.height) >= 852;
+}
+
 /**
- * Floor safe-area-inset-top when the webview is edge-to-edge.
- * On recent iPhones env(safe-area-inset-top) is often 0 in the PWA, so the
- * calendar/Lumi headers sit under the Dynamic Island and look “cut off”.
+ * Floor safe-area-inset-top only in the installed iPhone PWA.
+ * Safari already insets (or env() works). A floor there stacks on the status bar
+ * and leaves a tall empty band above the header.
  */
 export function iosNeedsTopSafeFloor() {
   if (typeof window === 'undefined') return false;
   if (!isAppleMobile() || !hasIosHomeIndicator()) return false;
-  if (isIosStandalonePwa()) return true;
-  const viewH = window.visualViewport?.height ?? window.innerHeight;
-  const long = Math.max(window.screen.width, window.screen.height);
-  return viewH >= long - 110;
+  return isIosStandalonePwa();
 }
 
 export function applyPwaRootClasses(root: HTMLElement = document.documentElement) {
   const standalone = isStandaloneApp();
+  const safeTop = iosNeedsTopSafeFloor();
   root.classList.toggle('is-standalone', standalone);
   root.classList.toggle('is-ios-standalone', isIosStandalonePwa());
   root.classList.toggle('is-android-standalone', isAndroidStandalonePwa());
-  root.classList.toggle('ios-safe-top', iosNeedsTopSafeFloor());
+  root.classList.toggle('ios-safe-top', safeTop);
+  root.classList.toggle('ios-dynamic-island', safeTop && iosHasDynamicIsland());
 }
 
 export function canWebShare() {

@@ -41,10 +41,9 @@
           if (ios) root.classList.add('is-ios-standalone');
           if (android) root.classList.add('is-android-standalone');
         }
-        if (ios && Math.max(screen.width, screen.height) >= 812) {
-          var viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-          var long = Math.max(screen.width, screen.height);
-          if (standalone || viewH >= long - 110) root.classList.add('ios-safe-top');
+        if (standalone && ios && Math.max(screen.width, screen.height) >= 812) {
+          root.classList.add('ios-safe-top');
+          if (Math.max(screen.width, screen.height) >= 852) root.classList.add('ios-dynamic-island');
         }
       })();
     </script>
@@ -61,6 +60,9 @@
         --bottom-nav-h: calc(68px + var(--ios-nav-safe));
       }
       html.ios-safe-top {
+        --safe-top: max(env(safe-area-inset-top, 0px), 47px);
+      }
+      html.ios-safe-top.ios-dynamic-island {
         --safe-top: max(env(safe-area-inset-top, 0px), 59px);
       }
       html.is-ios-standalone .app-viewport {

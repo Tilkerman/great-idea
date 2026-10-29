@@ -570,13 +570,29 @@
   flex: 1;
   min-width: 0;
   height: 100%;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.week-view__days-clip::-webkit-scrollbar {
+  display: none;
+}
+
+.week-view__days-clip--snap {
+  scroll-snap-type: x mandatory;
+}
+
+.week-view__days-clip--snap .week-view__day-head {
+  scroll-snap-align: start;
 }
 
 .week-view__days-track {
   display: flex;
   height: 100%;
-  will-change: transform;
 }
 
 .week-view__time-head {
@@ -995,6 +1011,7 @@
   box-sizing: border-box;
   border-left: 0.5px solid var(--grid);
   transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  touch-action: pan-x;
 }
 
 .week-view__day-name {
@@ -1113,6 +1130,25 @@
     min-height: var(--week-row-height, 72px);
     flex: none;
     border-bottom: 0.5px solid var(--grid);
+  }
+
+  /* Start of the hour sits on the grid line, above the now stripe. */
+  .week-view__grid-scroll .week-view__time-label {
+    justify-content: space-between;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+
+  .week-view__grid-scroll .week-view__time-dash {
+    flex: 1 1 auto;
+    width: auto;
+    height: auto;
+    min-height: 0;
+  }
+
+  .week-view__days-clip {
+    overflow-x: hidden;
+    touch-action: auto;
   }
 
   .week-view__grid-scroll .week-view__col {
@@ -1454,6 +1490,7 @@
 }
 
 .is-pinching .week-view__grid-scroll,
+.is-pinching .week-view__days-clip,
 .is-pinching .day-view {
   touch-action: none;
   -webkit-overflow-scrolling: auto;

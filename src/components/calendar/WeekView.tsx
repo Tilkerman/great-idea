@@ -57,7 +57,9 @@ export function WeekView({
   const { isDesktopLayout } = useLayoutMode();
 
   const gridScrollRef = useRef<HTMLDivElement>(null);
+  const daysClipRef = useRef<HTMLDivElement>(null);
   const daysTrackRef = useRef<HTMLDivElement>(null);
+  const scrollSyncLock = useRef<'grid' | 'days' | null>(null);
   const weekRootRef = useRef<HTMLDivElement>(null);
   const gridInnerRef = useRef<HTMLDivElement>(null);
   const pinchOriginRef = useRef<{ col: number; row: number } | null>(null);
@@ -174,7 +176,6 @@ export function WeekView({
   useEffect(() => {
     if (zoom !== 'day' || pinching) return;
     const grid = gridScrollRef.current;
-    const daysTrack = daysTrackRef.current;
     if (!grid) return;
     const firstHour = settings.dayStartHour;
     const pos = nowInHourGrid(new Date(), firstHour, settings.dayEndHour);
@@ -188,7 +189,7 @@ export function WeekView({
     const apply = () => {
       grid.scrollLeft = 0;
       grid.scrollTop = top;
-      if (daysTrack) daysTrack.style.transform = 'translate3d(0,0,0)';
+      if (daysClipRef.current) daysClipRef.current.scrollLeft = 0;
     };
     apply();
     const frame = requestAnimationFrame(apply);
@@ -216,6 +217,7 @@ export function WeekView({
         root,
         grid,
         daysTrack: daysTrackRef.current,
+        daysClip: daysClipRef.current,
         gridInner: gridInnerRef.current,
         viewportWidth: vw,
         dayCount,
@@ -368,12 +370,25 @@ export function WeekView({
 
   const syncScroll = useCallback(() => {
     const grid = gridScrollRef.current;
-    const daysTrack = daysTrackRef.current;
-    if (!grid) return;
-    if (daysTrack && horizontalScrollRef.current !== grid.scrollLeft) {
-      horizontalScrollRef.current = grid.scrollLeft;
-      daysTrack.style.transform = `translate3d(${-grid.scrollLeft}px,0,0)`;
+    const clip = daysClipRef.current;
+    if (!grid || scrollSyncLock.current === 'days') return;
+    horizontalScrollRef.current = grid.scrollLeft;
+    if (clip && Math.abs(clip.scrollLeft - grid.scrollLeft) > 0.5) {
+      scrollSyncLock.current = 'grid';
+      clip.scrollLeft = grid.scrollLeft;
+      scrollSyncLock.current = null;
     }
+  }, []);
+
+  const syncDaysClipScroll = useCallback(() => {
+    const grid = gridScrollRef.current;
+    const clip = daysClipRef.current;
+    if (!grid || !clip || scrollSyncLock.current === 'grid') return;
+    if (Math.abs(grid.scrollLeft - clip.scrollLeft) <= 0.5) return;
+    scrollSyncLock.current = 'days';
+    grid.scrollLeft = clip.scrollLeft;
+    horizontalScrollRef.current = clip.scrollLeft;
+    scrollSyncLock.current = null;
   }, []);
 
   const showFullWeekday = isDesktopLayout
@@ -456,7 +471,11 @@ export function WeekView({
             </svg>
           </button>
         </div>
-        <div className="week-view__days-clip">
+        <div
+          className={`week-view__days-clip ${weekZoom > 0.45 && !pinching ? 'week-view__days-clip--snap' : ''}`}
+          ref={daysClipRef}
+          onScroll={syncDaysClipScroll}
+        >
           <div
             className="week-view__days-track"
             ref={daysTrackRef}

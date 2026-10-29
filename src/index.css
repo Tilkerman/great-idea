@@ -33,10 +33,12 @@
 
 /*
   env(safe-area-inset-top) is often 0px on iPhone PWA (fallback never runs).
-  Floor at 59px — Dynamic Island — so the header is not hidden under the status bar.
-  Do not change the bottom nav.
+  Notch floor 47px; Dynamic Island 59px. Do not change the bottom nav.
 */
 html.ios-safe-top {
+  --safe-top: max(env(safe-area-inset-top, 0px), 47px);
+}
+html.ios-safe-top.ios-dynamic-island {
   --safe-top: max(env(safe-area-inset-top, 0px), 59px);
 }
 

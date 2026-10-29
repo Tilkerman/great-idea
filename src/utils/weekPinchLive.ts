@@ -18,6 +18,7 @@ export function applyLiveWeekPinch(args: {
   grid: HTMLElement;
   time?: HTMLElement | null;
   daysTrack: HTMLElement | null;
+  daysClip?: HTMLElement | null;
   gridInner: HTMLElement | null;
   viewportWidth: number;
   dayCount: number;
@@ -49,8 +50,6 @@ export function applyLiveWeekPinch(args: {
   const maxTop = Math.max(0, rowHeight * args.hourCount - args.grid.clientHeight);
   args.grid.scrollLeft = keepPinchByOrigin(origin.col, colWidth, dayViewX, maxLeft);
   args.grid.scrollTop = keepPinchByOrigin(origin.row, rowHeight, viewY, maxTop);
-  if (args.daysTrack) {
-    args.daysTrack.style.transform = `translate3d(${-args.grid.scrollLeft}px,0,0)`;
-  }
+  if (args.daysClip) args.daysClip.scrollLeft = args.grid.scrollLeft;
   return origin;
 }
