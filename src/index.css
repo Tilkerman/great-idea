@@ -26,8 +26,18 @@
   --app-height: 100dvh;
   --bottom-nav-bar-h: 56px;
   /* bar + vertical padding (6+6) + safe inset */
+  --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --bottom-nav-h: calc(var(--bottom-nav-bar-h) + 12px + var(--safe-bottom));
+}
+
+/*
+  env(safe-area-inset-top) is often 0px on iPhone PWA (fallback never runs).
+  Floor at 59px — Dynamic Island — so the header is not hidden under the status bar.
+  Do not change the bottom nav.
+*/
+html.ios-safe-top {
+  --safe-top: max(env(safe-area-inset-top, 0px), 59px);
 }
 
 /* iOS Home: one safe inset; --bottom-nav-h must match .bottom-nav outer height (border-box). */
@@ -290,6 +300,11 @@ select {
   overscroll-behavior-y: contain;
 }
 
+/* iPhone Home: tab bar is position:fixed over the overlay — pad content, do not move the bar. */
+html.is-ios-standalone .settings-overlay {
+  padding-bottom: var(--bottom-nav-h);
+}
+
 .app-shell__main {
   flex: 1;
   min-height: 0;
@@ -407,5 +422,6 @@ button,
 
   .settings-overlay {
     bottom: 0;
+    padding-bottom: 0;
   }
 }

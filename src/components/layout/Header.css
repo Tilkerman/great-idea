@@ -4,13 +4,13 @@
   justify-content: space-between;
   gap: 8px;
   padding: 10px 12px;
-  padding-top: calc(10px + env(safe-area-inset-top));
+  padding-top: calc(10px + var(--safe-top, env(safe-area-inset-top, 0px)));
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 50;
-  min-height: calc(48px + env(safe-area-inset-top));
+  min-height: calc(48px + var(--safe-top, env(safe-area-inset-top, 0px)));
 }
 
 .app-header__brand {
@@ -25,6 +25,18 @@
   width: auto;
   object-fit: contain;
   flex-shrink: 0;
+  display: block;
+}
+
+.app-header__logo--dark {
+  display: none;
+}
+
+[data-theme='dark'] .app-header__logo--light {
+  display: none;
+}
+
+[data-theme='dark'] .app-header__logo--dark {
   display: block;
 }
 
@@ -83,9 +95,24 @@
 
   /* img must stay display:block — Safari hides replaced elements with display:flex */
   .app-header__logo {
-    display: block;
     visibility: visible;
     opacity: 1;
     height: 36px;
+  }
+
+  .app-header__logo--light {
+    display: block;
+  }
+
+  .app-header__logo--dark {
+    display: none;
+  }
+
+  [data-theme='dark'] .app-header__logo--light {
+    display: none;
+  }
+
+  [data-theme='dark'] .app-header__logo--dark {
+    display: block;
   }
 }

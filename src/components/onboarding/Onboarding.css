@@ -7,7 +7,7 @@
   justify-content: space-between;
   box-sizing: border-box;
   padding: 16px 20px;
-  padding-top: calc(12px + env(safe-area-inset-top));
+  padding-top: calc(12px + var(--safe-top, env(safe-area-inset-top, 0px)));
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
   background: #fff;
   color: #1e293b;
@@ -94,7 +94,7 @@
 
 /* Короткое введение: контент выше, точки всегда над кнопками */
 .onboarding--short {
-  padding-top: calc(8px + env(safe-area-inset-top));
+  padding-top: calc(8px + var(--safe-top, env(safe-area-inset-top, 0px)));
 }
 
 .onboarding--short .onboarding__step-num {

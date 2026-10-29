@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from '../../context/AppContext';
 import { CATEGORY_LABEL_KEY, REMINDER_OFFSET_OPTIONS } from '../../constants/categories';
@@ -191,6 +191,11 @@ export function TaskSheet() {
     close();
   };
 
+  const onSubmitSheet = (e: FormEvent) => {
+    e.preventDefault();
+    void saveToSlot();
+  };
+
   const del = () => {
     requestDelete(editingTask);
   };
@@ -233,7 +238,11 @@ export function TaskSheet() {
     : t('sheetWhenMissing');
 
   const sheetBody = (
-      <div className={`task-sheet${isDesktopLayout ? ' task-sheet--dock' : ''}`} onClick={(e) => e.stopPropagation()}>
+      <form
+        className={`task-sheet${isDesktopLayout ? ' task-sheet--dock' : ''}`}
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={onSubmitSheet}
+      >
         <div className="task-sheet__header">
           <span className="task-sheet__time">{whenLabel || t('sheetWhenFallback')}</span>
           <div className="task-sheet__tools">
@@ -320,6 +329,11 @@ export function TaskSheet() {
           placeholder={t('sheetTitlePh')}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key !== 'Enter' || e.nativeEvent.isComposing) return;
+            e.preventDefault();
+            void saveToSlot();
+          }}
           autoFocus
         />
         <textarea
@@ -398,10 +412,9 @@ export function TaskSheet() {
 
         <div className="task-sheet__actions">
           <button
-            type="button"
+            type="submit"
             className="btn btn--primary"
             disabled={!title.trim() || !slotPicked || blockedPast}
-            onClick={() => { void saveToSlot(); }}
           >
             {isNew ? t('create') : t('save')}
           </button>
@@ -417,7 +430,7 @@ export function TaskSheet() {
             </div>
           )}
         </div>
-      </div>
+      </form>
   );
 
   return (

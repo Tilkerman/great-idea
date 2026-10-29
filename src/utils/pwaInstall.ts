@@ -61,11 +61,32 @@ export function isAndroidStandalonePwa() {
   return /Android/i.test(navigator.userAgent);
 }
 
+/** iPhone X+ / recent iPad (notch or Dynamic Island). SE/8 are shorter. */
+export function hasIosHomeIndicator() {
+  if (typeof window === 'undefined') return false;
+  return Math.max(window.screen.width, window.screen.height) >= 812;
+}
+
+/**
+ * Floor safe-area-inset-top when the webview is edge-to-edge.
+ * On recent iPhones env(safe-area-inset-top) is often 0 in the PWA, so the
+ * calendar/Lumi headers sit under the Dynamic Island and look “cut off”.
+ */
+export function iosNeedsTopSafeFloor() {
+  if (typeof window === 'undefined') return false;
+  if (!isAppleMobile() || !hasIosHomeIndicator()) return false;
+  if (isIosStandalonePwa()) return true;
+  const viewH = window.visualViewport?.height ?? window.innerHeight;
+  const long = Math.max(window.screen.width, window.screen.height);
+  return viewH >= long - 110;
+}
+
 export function applyPwaRootClasses(root: HTMLElement = document.documentElement) {
   const standalone = isStandaloneApp();
   root.classList.toggle('is-standalone', standalone);
   root.classList.toggle('is-ios-standalone', isIosStandalonePwa());
   root.classList.toggle('is-android-standalone', isAndroidStandalonePwa());
+  root.classList.toggle('ios-safe-top', iosNeedsTopSafeFloor());
 }
 
 export function canWebShare() {

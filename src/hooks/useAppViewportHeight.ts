@@ -13,6 +13,15 @@ export function useAppViewportHeight() {
     apply();
     const mq = window.matchMedia('(display-mode: standalone)');
     mq.addEventListener('change', apply);
-    return () => mq.removeEventListener('change', apply);
+    window.addEventListener('resize', apply);
+    window.addEventListener('orientationchange', apply);
+    const vv = window.visualViewport;
+    vv?.addEventListener('resize', apply);
+    return () => {
+      mq.removeEventListener('change', apply);
+      window.removeEventListener('resize', apply);
+      window.removeEventListener('orientationchange', apply);
+      vv?.removeEventListener('resize', apply);
+    };
   }, []);
 }

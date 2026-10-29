@@ -21,7 +21,6 @@ import {
   normalizeBackup,
 } from '../../utils/fullBackup';
 import { saveLastBackupDate } from '../../lumi/utils/backupReminder';
-import { SHOW_INTRO_SHORT_PREVIEW_IN_SETTINGS } from '../../constants/onboarding';
 import './Settings.css';
 
 type HubItem = { id: string; label: string; sub: string };
@@ -625,7 +624,7 @@ export function SettingsTransfer() {
 }
 
 export function SettingsData() {
-  const { setScreen, settings, updateSettings, loadDemoThreeWeeks } = useApp();
+  const { setScreen, settings, updateSettings } = useApp();
   const { t } = useI18n();
 
   const onAnalyticsToggle = (enabled: boolean) => {
@@ -651,12 +650,6 @@ export function SettingsData() {
     await db.feedbacks.clear();
     await db.actionItems.clear();
     window.location.reload();
-  };
-
-  const loadDemo = async () => {
-    if (!confirm(t('demoThreeWeeksConfirm'))) return;
-    await loadDemoThreeWeeks();
-    alert(t('demoThreeWeeksDone'));
   };
 
   return (
@@ -689,10 +682,6 @@ export function SettingsData() {
         >
           {t('analyticsPrivacyLink')}
         </a>
-        <button type="button" className="btn btn--secondary settings-full" onClick={() => { void loadDemo(); }}>
-          {t('demoThreeWeeks')}
-        </button>
-        <p className="settings-note">{t('demoThreeWeeksHint')}</p>
         <button type="button" className="btn btn--danger settings-full" onClick={clearData}>
           {t('clearAll')}
         </button>
@@ -755,20 +744,10 @@ export function SettingsAbout() {
         <button
           type="button"
           className="btn btn--ghost settings-full"
-          onClick={() => openOnboarding('legacy', 'settings-about')}
+          onClick={() => openOnboarding('short', 'settings-about')}
         >
           {t('showIntro')}
         </button>
-
-        {SHOW_INTRO_SHORT_PREVIEW_IN_SETTINGS && (
-          <button
-            type="button"
-            className="btn btn--ghost settings-full"
-            onClick={() => openOnboarding('short', 'settings-about')}
-          >
-            {t('showIntro2')}
-          </button>
-        )}
 
         <button type="button" className="btn btn--ghost settings-full" onClick={() => setScreen('settings-support')}>
           {t('supportTitle')}

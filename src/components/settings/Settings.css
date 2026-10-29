@@ -1,8 +1,19 @@
 .settings-page {
   min-height: 100%;
   background: var(--bg);
-  /* Nav sits in the viewport padding band, below this overlay. */
-  padding-bottom: 16px;
+  /* Last row must sit above the tab bar (do not move the bar). */
+  padding-bottom: calc(24px + var(--bottom-nav-h));
+}
+
+/* iPhone Home: overlay already pads --bottom-nav-h for the fixed tab bar. */
+html.is-ios-standalone .settings-page {
+  padding-bottom: 24px;
+}
+
+@media (min-width: 1024px) {
+  .settings-page {
+    padding-bottom: 24px;
+  }
 }
 
 .settings-topbar {
@@ -13,7 +24,7 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 12px 16px;
-  padding-top: calc(12px + env(safe-area-inset-top));
+  padding-top: calc(12px + var(--safe-top, env(safe-area-inset-top, 0px)));
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   font-weight: 600;
@@ -312,18 +323,6 @@
   font-weight: 600;
 }
 
-.settings-diag {
-  margin: 12px 0 0;
-  padding: 12px;
-  font-size: 12px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-break: break-all;
-  background: var(--surface-muted, #f4f6f5);
-  border-radius: 10px;
-  color: var(--text-primary);
-}
-
 .settings-full {
   width: 100%;
 }
@@ -352,7 +351,7 @@
 .support-banner {
   margin: 0;
   padding: 14px 16px;
-  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+  padding-top: calc(14px + var(--safe-top, env(safe-area-inset-top, 0px)));
   background: var(--surface-2);
   border-bottom: 2px solid var(--border);
   position: sticky;

@@ -18,6 +18,7 @@
   --s3: 12px;
   --s4: 16px;
   --s5: 24px;
+  margin: 0;
   width: 100%;
   max-width: 480px;
   background: var(--surface);

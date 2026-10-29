@@ -9,7 +9,7 @@ import {
 } from '../../utils/notifications';
 import { isAppleMobile, isStandaloneApp, TILI_PUBLIC_URL } from '../../utils/pwaInstall';
 import { enablePushFromGesture } from '../../utils/enablePush';
-import { pingPushHello, runPushDiagnostics, sendTestPush, type PushDiagnostics } from '../../utils/webPush';
+import { pingPushHello, sendTestPush } from '../../utils/webPush';
 import { trackPushEnabledOnce } from '../../utils/productAnalytics';
 import './Settings.css';
 
@@ -18,8 +18,6 @@ export function SettingsNotifications() {
   const { t, locale } = useI18n();
   const [perm, setPerm] = useState(() => notificationPermission());
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [diag, setDiag] = useState<PushDiagnostics | null>(null);
-  const [diagBusy, setDiagBusy] = useState(false);
   const blocked = useMemo(() => notificationsBlockedReason(locale), [locale]);
   const ios = useMemo(() => isAppleMobile(), []);
   const installed = useMemo(() => isStandaloneApp(), []);
@@ -69,27 +67,6 @@ export function SettingsNotifications() {
       }
     })();
   };
-
-  const onDiag = () => {
-    setDiagBusy(true);
-    setDiag(null);
-    setFeedback(t('notifDiagRunning'));
-    void (async () => {
-      try {
-        const result = await runPushDiagnostics();
-        setDiag(result);
-        setFeedback(null);
-      } catch {
-        setFeedback(t('notifNoNetwork'));
-      } finally {
-        setDiagBusy(false);
-      }
-    })();
-  };
-
-  const diagMark = (v: 'ok' | 'fail' | 'skip') => (
-    v === 'ok' ? t('notifDiagOk') : v === 'fail' ? t('notifDiagFail') : t('notifDiagSkip')
-  );
 
   const onTest = () => {
     if (notificationPermission() !== 'granted') {
@@ -165,34 +142,6 @@ export function SettingsNotifications() {
         >
           {t('notifTest')}
         </button>
-
-        <h2 className="settings-section-title">{t('notifDiagTitle')}</h2>
-        <p className="settings-note">{t('notifDiagHint')}</p>
-        <button
-          type="button"
-          className="btn btn--ghost settings-full"
-          disabled={diagBusy}
-          onClick={onDiag}
-        >
-          {t('notifDiagRun')}
-        </button>
-        {diag && (
-          <pre className="settings-diag" aria-live="polite">
-            {installed ? t('notifDiagStandalone') : t('notifDiagSafari')}
-            {'\n'}
-            {t('notifDiagPerm')}: {diag.permission}
-            {'\n'}
-            {t('notifDiagDevice')}: {diag.deviceId.slice(0, 8)}…
-            {'\n'}
-            {t('notifDiagSameSite')}: {diagMark(diag.apiSameSite)}
-            {'\n'}
-            {t('notifDiagApi')}: {diagMark(diag.apiPrimary)}
-            {'\n'}
-            {t('notifDiagYandex')}: {diagMark(diag.apiFallback)}
-            {'\n'}
-            {t('notifDiagPush')}: {diag.subscribe}
-          </pre>
-        )}
 
         {feedback && <p className="settings-note" role="status">{feedback}</p>}
       </div>
