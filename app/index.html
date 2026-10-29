@@ -32,14 +32,20 @@
       (function () {
         var n = window.navigator;
         var standalone = window.matchMedia('(display-mode: standalone)').matches || n.standalone;
-        if (!standalone) return;
         var root = document.documentElement;
         var ua = n.userAgent || '';
         var ios = /iPhone|iPad|iPod/.test(ua) || n.standalone;
         var android = /Android/i.test(ua) && !ios;
-        root.classList.add('is-standalone');
-        if (ios) root.classList.add('is-ios-standalone');
-        if (android) root.classList.add('is-android-standalone');
+        if (standalone) {
+          root.classList.add('is-standalone');
+          if (ios) root.classList.add('is-ios-standalone');
+          if (android) root.classList.add('is-android-standalone');
+        }
+        if (ios && Math.max(screen.width, screen.height) >= 812) {
+          var viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+          var long = Math.max(screen.width, screen.height);
+          if (standalone || viewH >= long - 110) root.classList.add('ios-safe-top');
+        }
       })();
     </script>
     <style>
@@ -53,6 +59,9 @@
         --ios-nav-safe: env(safe-area-inset-bottom, 34px);
         --safe-bottom: var(--ios-nav-safe);
         --bottom-nav-h: calc(68px + var(--ios-nav-safe));
+      }
+      html.ios-safe-top {
+        --safe-top: max(env(safe-area-inset-top, 0px), 59px);
       }
       html.is-ios-standalone .app-viewport {
         padding-bottom: var(--bottom-nav-h);
@@ -106,8 +115,8 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-D3xKqgRa.js"></script>
-    <link rel="stylesheet" crossorigin href="/app/assets/index-GfVkqGhJ.css">
+    <script type="module" crossorigin src="/app/assets/index-BUlSzpzk.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/index-DBt0NUb0.css">
       <link rel="apple-touch-icon-precomposed" href="https://tili.su/app/apple-touch-icon-v8.png" />
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
