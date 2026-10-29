@@ -41,6 +41,10 @@ html.ios-safe-top {
 html.ios-safe-top.ios-dynamic-island {
   --safe-top: max(env(safe-area-inset-top, 0px), 59px);
 }
+/* Webview already sits below the status bar — do not pad again. */
+html.ios-top-already-inset {
+  --safe-top: 0px;
+}
 
 /* iOS Home: one safe inset; --bottom-nav-h must match .bottom-nav outer height (border-box). */
 html.is-ios-standalone {
