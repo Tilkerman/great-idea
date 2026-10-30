@@ -311,6 +311,11 @@ html.is-ios-standalone .settings-overlay {
   padding-bottom: var(--bottom-nav-h);
 }
 
+html.is-ios-standalone .week-view__grid-scroll,
+html.is-ios-standalone .day-view {
+  padding-bottom: calc(16px + var(--bottom-nav-h));
+}
+
 .app-shell__main {
   flex: 1;
   min-height: 0;
