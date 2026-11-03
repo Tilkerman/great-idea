@@ -307,6 +307,11 @@ html.is-ios-standalone .settings-overlay {
   padding-bottom: var(--bottom-nav-h);
 }
 
+/* Home PWA: tab bar is position:fixed over the grid. Pad by the visible bar, not the home indicator. */
+html.is-ios-standalone .week-view__grid-scroll {
+  padding-bottom: calc(var(--bottom-nav-bar-h) + 12px);
+}
+
 .app-shell__main {
   flex: 1;
   min-height: 0;

@@ -44,14 +44,12 @@ export function WeekView({
   viewportWidth,
   pinching = false,
   weekPinchLive,
-  chromeSlim = false,
   onHoursScroll,
 }: {
   viewportWidth: number;
   pinching?: boolean;
   weekPinchLive?: MutableRefObject<WeekPinchLive>;
-  chromeSlim?: boolean;
-  onHoursScroll?: (grid: { scrollTop: number; clientHeight: number; scrollHeight: number }) => void;
+  onHoursScroll?: (grid: HTMLElement, fromUser: boolean) => void;
 }) {
   const {
     focusDate, tasks, settings, weekZoom, zoom, setEditingTask, setSheetOpen,
@@ -61,6 +59,7 @@ export function WeekView({
   const { isDesktopLayout } = useLayoutMode();
 
   const gridScrollRef = useRef<HTMLDivElement>(null);
+  const hoursTouchRef = useRef(false);
   const daysClipRef = useRef<HTMLDivElement>(null);
   const daysTrackRef = useRef<HTMLDivElement>(null);
   const scrollSyncLock = useRef<'grid' | 'days' | null>(null);
@@ -442,7 +441,6 @@ export function WeekView({
         titlesOnly && 'week-view--sm-title',
         pickDay && 'week-view--pick-day',
         pickHour && 'week-view--pick-hour',
-        chromeSlim && 'week-view--slim',
       ].filter(Boolean).join(' ')}
       style={style}
     >
@@ -531,10 +529,15 @@ export function WeekView({
         <div
           className={`week-view__grid-scroll ${weekZoom > 0.45 && !pinching ? 'week-view__grid-scroll--snap' : ''}`}
           ref={gridScrollRef}
+          onPointerDown={() => { hoursTouchRef.current = true; }}
+          onPointerUp={() => { window.setTimeout(() => { hoursTouchRef.current = false; }, 400); }}
+          onPointerCancel={() => { hoursTouchRef.current = false; }}
+          onTouchStart={() => { hoursTouchRef.current = true; }}
+          onTouchEnd={() => { window.setTimeout(() => { hoursTouchRef.current = false; }, 400); }}
           onScroll={() => {
             syncScroll();
             const grid = gridScrollRef.current;
-            if (grid) onHoursScroll?.(grid);
+            if (grid) onHoursScroll?.(grid, hoursTouchRef.current);
           }}
         >
           <div

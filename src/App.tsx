@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { LumiHostProvider } from './lumi/LumiHost';
 import { Onboarding } from './components/onboarding/Onboarding';
@@ -91,6 +91,7 @@ function AppRouter() {
   const { ready, screen, settings, sheetOpen } = useApp();
   const { isDesktopLayout } = useLayoutMode();
   const settingsOverlayRef = useRef<HTMLDivElement>(null);
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
   useTaskReminders();
   useOpenTaskFromNotification();
 
@@ -153,10 +154,14 @@ function AppRouter() {
       <SideNav />
       <div className="app-viewport__main">
         {showCalendar && (
-          <div className={`app-shell${screen === 'calendar' ? '' : ' app-shell--off'}`}>
+          <div className={[
+            'app-shell',
+            screen === 'calendar' ? '' : 'app-shell--off',
+            headerCollapsed && 'app-shell--header-collapsed',
+          ].filter(Boolean).join(' ')}>
             <Header />
             <main className="app-shell__main">
-              <CalendarCanvas />
+              <CalendarCanvas onHeaderCollapsed={setHeaderCollapsed} />
             </main>
           </div>
         )}
