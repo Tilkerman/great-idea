@@ -41,12 +41,10 @@
           if (ios) root.classList.add('is-ios-standalone');
           if (android) root.classList.add('is-android-standalone');
         }
-        if (ios) {
+        if (ios && standalone) {
           var long = Math.max(screen.width, screen.height);
-          var viewH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-          var alreadyInset = long - viewH >= 44;
-          if (alreadyInset) root.classList.add('ios-top-already-inset');
-          else if (standalone && long >= 812) {
+          var alreadyInset = long - window.innerHeight >= 44;
+          if (!alreadyInset && long >= 812) {
             root.classList.add('ios-safe-top');
             if (long >= 852) root.classList.add('ios-dynamic-island');
           }
@@ -70,9 +68,6 @@
       }
       html.ios-safe-top.ios-dynamic-island {
         --safe-top: max(env(safe-area-inset-top, 0px), 59px);
-      }
-      html.ios-top-already-inset {
-        --safe-top: 0px;
       }
       html.is-ios-standalone .app-viewport {
         padding-bottom: var(--bottom-nav-h);

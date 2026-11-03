@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { YearView } from './YearView';
 import { MonthView } from './MonthView';
@@ -12,6 +12,8 @@ import type { ZoomLevel } from '../../types';
 import './CalendarViews.css';
 
 const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
+const CHROME_SLIM_ENTER_PX = 16;
+const CHROME_SLIM_LEAVE_PX = 96;
 
 export function CalendarCanvas() {
   const { zoom, setZoom, setFocusDate } = useApp();
@@ -26,6 +28,8 @@ export function CalendarCanvas() {
   const prevZoom = useRef(zoom);
   const [enterKind, setEnterKind] = useState<'rubber-in' | 'rubber-out' | 'fade' | 'none'>('none');
   const [stageKey, setStageKey] = useState(0);
+  const [chromeSlim, setChromeSlim] = useState(false);
+  const chromeSlimRef = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -37,6 +41,8 @@ export function CalendarCanvas() {
   }, [ref]);
 
   useEffect(() => {
+    chromeSlimRef.current = false;
+    setChromeSlim(false);
     const prev = ZOOM_ORDER.indexOf(prevZoom.current);
     const next = ZOOM_ORDER.indexOf(zoom);
     if (prev !== next) {
@@ -60,15 +66,29 @@ export function CalendarCanvas() {
     }
   }, [zoom]);
 
+  const onHoursScroll = useCallback((grid: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
+    if (pinching || isDesktopLayout) return;
+    const max = Math.max(0, grid.scrollHeight - grid.clientHeight);
+    if (max <= 8) return;
+    const fromEnd = max - grid.scrollTop;
+    const slim = chromeSlimRef.current
+      ? fromEnd < CHROME_SLIM_LEAVE_PX
+      : fromEnd <= CHROME_SLIM_ENTER_PX;
+    if (chromeSlimRef.current === slim) return;
+    chromeSlimRef.current = slim;
+    setChromeSlim(slim);
+  }, [pinching, isDesktopLayout]);
+
   return (
     <div
       className={[
         'calendar-canvas',
         pinching && 'is-pinching',
+        chromeSlim && 'calendar-canvas--chrome-slim',
       ].filter(Boolean).join(' ')}
       ref={ref}
     >
-      <div className="zoom-tabs">
+      <div className="zoom-tabs" aria-hidden={chromeSlim || undefined}>
         {ZOOM_ORDER.map((z) => (
           <button
             key={z}
@@ -104,6 +124,8 @@ export function CalendarCanvas() {
               viewportWidth={viewportWidth}
               pinching={pinching}
               weekPinchLive={weekPinchLive}
+              chromeSlim={chromeSlim}
+              onHoursScroll={onHoursScroll}
             />
           )}
         </div>

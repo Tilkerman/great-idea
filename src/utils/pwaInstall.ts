@@ -74,20 +74,21 @@ export function iosHasDynamicIsland() {
 }
 
 /**
- * True when iOS already took the status bar out of the webview.
- * Adding env(safe-area-inset-top) or a CSS floor on top of that leaves a tall
- * empty band above the TiLi header (iPhone 13 Home Screen with default status bar).
+ * True when the iOS layout viewport is already shorter than the screen by a
+ * status-bar amount. Use innerHeight (not visualViewport): visualViewport also
+ * shrinks for the home indicator and wrongly treats edge-to-edge PWA as inset,
+ * which hid the logo header under the Island.
  */
 export function iosWebviewAlreadyHasTopInset() {
   if (typeof window === 'undefined') return false;
-  const viewH = window.visualViewport?.height ?? window.innerHeight;
   const long = Math.max(window.screen.width, window.screen.height);
-  return long - viewH >= 44;
+  return long - window.innerHeight >= 44;
 }
 
 /**
  * Floor safe-area-inset-top only in the installed iPhone PWA when the webview
  * is edge-to-edge (env() is often 0 and the header would sit under the Island).
+ * Never floor in Safari — the tab already sits below the status bar.
  */
 export function iosNeedsTopSafeFloor() {
   if (typeof window === 'undefined') return false;
@@ -99,12 +100,11 @@ export function iosNeedsTopSafeFloor() {
 
 export function applyPwaRootClasses(root: HTMLElement = document.documentElement) {
   const standalone = isStandaloneApp();
-  const alreadyInset = isAppleMobile() && iosWebviewAlreadyHasTopInset();
   const safeTop = iosNeedsTopSafeFloor();
   root.classList.toggle('is-standalone', standalone);
   root.classList.toggle('is-ios-standalone', isIosStandalonePwa());
   root.classList.toggle('is-android-standalone', isAndroidStandalonePwa());
-  root.classList.toggle('ios-top-already-inset', alreadyInset);
+  root.classList.remove('ios-top-already-inset');
   root.classList.toggle('ios-safe-top', safeTop);
   root.classList.toggle('ios-dynamic-island', safeTop && iosHasDynamicIsland());
 }

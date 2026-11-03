@@ -44,10 +44,14 @@ export function WeekView({
   viewportWidth,
   pinching = false,
   weekPinchLive,
+  chromeSlim = false,
+  onHoursScroll,
 }: {
   viewportWidth: number;
   pinching?: boolean;
   weekPinchLive?: MutableRefObject<WeekPinchLive>;
+  chromeSlim?: boolean;
+  onHoursScroll?: (grid: { scrollTop: number; clientHeight: number; scrollHeight: number }) => void;
 }) {
   const {
     focusDate, tasks, settings, weekZoom, zoom, setEditingTask, setSheetOpen,
@@ -438,6 +442,7 @@ export function WeekView({
         titlesOnly && 'week-view--sm-title',
         pickDay && 'week-view--pick-day',
         pickHour && 'week-view--pick-hour',
+        chromeSlim && 'week-view--slim',
       ].filter(Boolean).join(' ')}
       style={style}
     >
@@ -528,6 +533,8 @@ export function WeekView({
           ref={gridScrollRef}
           onScroll={() => {
             syncScroll();
+            const grid = gridScrollRef.current;
+            if (grid) onHoursScroll?.(grid);
           }}
         >
           <div

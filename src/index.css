@@ -41,10 +41,6 @@ html.ios-safe-top {
 html.ios-safe-top.ios-dynamic-island {
   --safe-top: max(env(safe-area-inset-top, 0px), 59px);
 }
-/* Webview already sits below the status bar — do not pad again. */
-html.ios-top-already-inset {
-  --safe-top: 0px;
-}
 
 /* iOS Home: one safe inset; --bottom-nav-h must match .bottom-nav outer height (border-box). */
 html.is-ios-standalone {
@@ -309,11 +305,6 @@ select {
 /* iPhone Home: tab bar is position:fixed over the overlay — pad content, do not move the bar. */
 html.is-ios-standalone .settings-overlay {
   padding-bottom: var(--bottom-nav-h);
-}
-
-html.is-ios-standalone .week-view__grid-scroll,
-html.is-ios-standalone .day-view {
-  padding-bottom: calc(16px + var(--bottom-nav-h));
 }
 
 .app-shell__main {
