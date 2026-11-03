@@ -12,23 +12,6 @@
   z-index: 50;
   min-height: 48px;
   flex-shrink: 0;
-  overflow: hidden;
-  transition: min-height 0.2s ease, padding 0.2s ease, border-width 0.2s ease, opacity 0.2s ease;
-}
-
-.app-shell--header-collapsed .app-header {
-  min-height: 0;
-  padding-top: var(--safe-top, env(safe-area-inset-top, 0px));
-  padding-bottom: 0;
-  border-bottom-width: 0;
-  pointer-events: none;
-}
-
-.app-shell--header-collapsed .app-header__brand,
-.app-shell--header-collapsed .app-header__nav {
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
 }
 
 .app-header__brand {

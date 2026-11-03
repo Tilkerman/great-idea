@@ -541,6 +541,7 @@
 .week-view__head-float {
   position: absolute;
   top: var(--chrome-stack-h, var(--chrome-overlay-h, 48px));
+  transition: height 0.2s ease, top 0.2s ease;
   left: 0;
   right: 0;
   z-index: 30;
@@ -550,7 +551,6 @@
   height: var(--week-day-head-h, 60px);
   background: var(--surface);
   border-bottom: 0.5px solid var(--grid);
-  transition: height 0.2s ease;
 }
 
 .week-view__body {
@@ -1290,6 +1290,18 @@
 
 .calendar-canvas--chrome-slim .week-view {
   padding-top: 0;
+}
+
+.calendar-canvas--chrome-slim .week-view__head-float {
+  top: 0;
+}
+
+.calendar-canvas--chrome-slim .week-view__body {
+  padding-top: var(--week-day-head-h, 60px);
+}
+
+.calendar-canvas--chrome-slim .week-view__clip-menu {
+  top: calc(var(--week-day-head-h, 60px) - 2px);
 }
 
 .week-view__time-col {

@@ -12,14 +12,10 @@ import type { ZoomLevel } from '../../types';
 import './CalendarViews.css';
 
 const ZOOM_ORDER: ZoomLevel[] = ['year', 'month', 'week', 'day'];
-const HEADER_SHOW_TOP_PX = 16;
-const HEADER_DIR_PX = 6;
+const ZOOM_TABS_SHOW_TOP_PX = 16;
+const ZOOM_TABS_DIR_PX = 10;
 
-export function CalendarCanvas({
-  onHeaderCollapsed,
-}: {
-  onHeaderCollapsed?: (collapsed: boolean) => void;
-}) {
+export function CalendarCanvas() {
   const { zoom, setZoom, setFocusDate } = useApp();
   const { t } = useI18n();
   const { isDesktopLayout } = useLayoutMode();
@@ -32,8 +28,8 @@ export function CalendarCanvas({
   const prevZoom = useRef(zoom);
   const [enterKind, setEnterKind] = useState<'rubber-in' | 'rubber-out' | 'fade' | 'none'>('none');
   const [stageKey, setStageKey] = useState(0);
-  const headerCollapsedRef = useRef(false);
-  const lastScrollTopRef = useRef(0);
+  const chromeSlimRef = useRef(false);
+  const lastHoursTop = useRef(0);
 
   useEffect(() => {
     const el = ref.current;
@@ -45,10 +41,10 @@ export function CalendarCanvas({
   }, [ref]);
 
   useEffect(() => {
-    headerCollapsedRef.current = false;
-    lastScrollTopRef.current = 0;
-    onHeaderCollapsed?.(false);
-  }, [zoom, onHeaderCollapsed]);
+    chromeSlimRef.current = false;
+    lastHoursTop.current = 0;
+    ref.current?.classList.remove('calendar-canvas--chrome-slim');
+  }, [zoom, ref]);
 
   useEffect(() => {
     const prev = ZOOM_ORDER.indexOf(prevZoom.current);
@@ -74,32 +70,28 @@ export function CalendarCanvas({
     }
   }, [zoom]);
 
-  const setCollapsed = useCallback((collapsed: boolean) => {
-    if (headerCollapsedRef.current === collapsed) return;
-    headerCollapsedRef.current = collapsed;
-    onHeaderCollapsed?.(collapsed);
-  }, [onHeaderCollapsed]);
+  const applyChromeSlim = useCallback((slim: boolean) => {
+    if (chromeSlimRef.current === slim) return;
+    chromeSlimRef.current = slim;
+    ref.current?.classList.toggle('calendar-canvas--chrome-slim', slim);
+  }, [ref]);
 
   const onHoursScroll = useCallback((grid: HTMLElement, fromUser: boolean) => {
     if (pinching || isDesktopLayout) {
-      setCollapsed(false);
+      applyChromeSlim(false);
       return;
     }
     const scrollTop = grid.scrollTop;
-    if (scrollTop <= HEADER_SHOW_TOP_PX) {
-      lastScrollTopRef.current = scrollTop;
-      setCollapsed(false);
+    const dy = scrollTop - lastHoursTop.current;
+    lastHoursTop.current = scrollTop;
+    if (scrollTop <= ZOOM_TABS_SHOW_TOP_PX) {
+      applyChromeSlim(false);
       return;
     }
-    if (!fromUser) {
-      lastScrollTopRef.current = scrollTop;
-      return;
-    }
-    const delta = scrollTop - lastScrollTopRef.current;
-    lastScrollTopRef.current = scrollTop;
-    if (delta > HEADER_DIR_PX) setCollapsed(true);
-    else if (delta < -HEADER_DIR_PX) setCollapsed(false);
-  }, [pinching, isDesktopLayout, setCollapsed]);
+    if (!fromUser) return;
+    if (dy > ZOOM_TABS_DIR_PX) applyChromeSlim(true);
+    else if (dy < -ZOOM_TABS_DIR_PX) applyChromeSlim(false);
+  }, [pinching, isDesktopLayout, applyChromeSlim]);
 
   return (
     <div

@@ -1,0 +1,16 @@
+---
+description: Низ недели над таббаром — не трогать
+alwaysApply: true
+---
+
+# Низ недели — зафиксирован
+
+Последний час (21:00) на телефоне уже садится над нижним меню. **Не менять** отступы, высоту и позицию таббара.
+
+Не трогать:
+
+- `html.is-ios-standalone .week-view__grid-scroll { padding-bottom: calc(var(--bottom-nav-bar-h) + 12px); }` в `src/index.css`
+- `--bottom-nav-bar-h`, `--bottom-nav-h`, `.bottom-nav` position/height
+- лишний `padding-bottom` на `.week-view__grid-scroll` / `.day-view`
+
+Шапка сверху (логотип, вкладки Год/Месяц/Неделя/День) — отдельно. Правки верха не должны двигать низ.
