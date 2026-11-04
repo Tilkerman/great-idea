@@ -318,14 +318,19 @@ html.is-ios-standalone .week-view__grid-scroll {
   padding-bottom: calc(var(--bottom-nav-bar-h) + 12px);
 }
 
-/* Home indicator sits in the white nav. Extra room on the grid (not the scroller)
-   so 21:00 can rest fully above the tabs. */
+/* Home indicator + remaining half of 21:00 still under the tabs.
+   Extra room on the last hour (not the frozen scroller pad). */
+html.is-ios-standalone .week-view__time-label:last-child,
+html.is-ios-standalone .week-view__slot:last-child {
+  margin-bottom: calc(max(var(--ios-nav-safe, 34px), 34px) + var(--week-row-height, 72px) / 2);
+}
+
 html.is-ios-standalone .week-view__grid {
-  padding-bottom: var(--ios-nav-safe, 34px);
+  padding-bottom: 0;
 }
 
 html.is-ios-standalone .day-view__row:last-child {
-  margin-bottom: var(--ios-nav-safe, 34px);
+  margin-bottom: calc(max(var(--ios-nav-safe, 34px), 34px) + var(--week-row-height, 72px) / 2);
 }
 
 .app-shell__main {
@@ -448,6 +453,8 @@ button,
     padding-bottom: 0;
   }
 
+  html.is-ios-standalone .week-view__time-label:last-child,
+  html.is-ios-standalone .week-view__slot:last-child,
   html.is-ios-standalone .day-view__row:last-child {
     margin-bottom: 0;
   }
