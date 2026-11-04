@@ -43,8 +43,7 @@
         }
         if (ios && standalone) {
           var long = Math.max(screen.width, screen.height);
-          var alreadyInset = long - window.innerHeight >= 44;
-          if (!alreadyInset && long >= 812) {
+          if (long >= 812) {
             root.classList.add('ios-safe-top');
             if (long >= 852) root.classList.add('ios-dynamic-island');
           }
@@ -70,7 +69,9 @@
         --safe-top: max(env(safe-area-inset-top, 0px), 59px);
       }
       html.is-ios-standalone .app-viewport {
-        padding-bottom: var(--bottom-nav-h);
+        /* Nav is position:fixed over the grid. Last-hour gap is only the frozen
+           week-view__grid-scroll pad — do not also reserve --bottom-nav-h here. */
+        padding-bottom: 0;
       }
       html.is-ios-standalone .bottom-nav,
       html.is-ios-standalone .app-viewport__main > .bottom-nav {

@@ -74,27 +74,15 @@ export function iosHasDynamicIsland() {
 }
 
 /**
- * True when the iOS layout viewport is already shorter than the screen by a
- * status-bar amount. Use innerHeight (not visualViewport): visualViewport also
- * shrinks for the home indicator and wrongly treats edge-to-edge PWA as inset,
- * which hid the logo header under the Island.
- */
-export function iosWebviewAlreadyHasTopInset() {
-  if (typeof window === 'undefined') return false;
-  const long = Math.max(window.screen.width, window.screen.height);
-  return long - window.innerHeight >= 44;
-}
-
-/**
- * Floor safe-area-inset-top only in the installed iPhone PWA when the webview
- * is edge-to-edge (env() is often 0 and the header would sit under the Island).
- * Never floor in Safari — the tab already sits below the status bar.
+ * Floor safe-area-inset-top in the installed iPhone PWA (env() is often 0 and
+ * the logo header sits under the Island). Never floor in Safari — the tab
+ * already sits below the status bar. Do not skip this via innerHeight: that
+ * heuristic treated edge-to-edge Home Screen as “already inset” and hid the logo.
  */
 export function iosNeedsTopSafeFloor() {
   if (typeof window === 'undefined') return false;
   if (!isAppleMobile() || !hasIosHomeIndicator()) return false;
   if (!isIosStandalonePwa()) return false;
-  if (iosWebviewAlreadyHasTopInset()) return false;
   return true;
 }
 

@@ -151,6 +151,12 @@ html.is-onboarding {
   padding-bottom: var(--bottom-nav-h);
 }
 
+/* iPhone Home: tab bar is fixed over the grid. Do not add a second band or
+   the last hour hangs high above the menu. Frozen pad stays on the week grid. */
+html.is-ios-standalone .app-viewport {
+  padding-bottom: 0;
+}
+
 .app-viewport__main {
   position: relative;
   flex: 1 1 auto;
