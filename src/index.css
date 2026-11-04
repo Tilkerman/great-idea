@@ -318,6 +318,16 @@ html.is-ios-standalone .week-view__grid-scroll {
   padding-bottom: calc(var(--bottom-nav-bar-h) + 12px);
 }
 
+/* Home indicator sits in the white nav. Extra room on the grid (not the scroller)
+   so 21:00 can rest fully above the tabs. */
+html.is-ios-standalone .week-view__grid {
+  padding-bottom: var(--ios-nav-safe, 34px);
+}
+
+html.is-ios-standalone .day-view__row:last-child {
+  margin-bottom: var(--ios-nav-safe, 34px);
+}
+
 .app-shell__main {
   flex: 1;
   min-height: 0;
@@ -432,6 +442,14 @@ button,
   /* Side nav replaces the tab bar — do not keep the iPhone last-hour band. */
   html.is-ios-standalone .week-view__grid-scroll {
     padding-bottom: 0;
+  }
+
+  html.is-ios-standalone .week-view__grid {
+    padding-bottom: 0;
+  }
+
+  html.is-ios-standalone .day-view__row:last-child {
+    margin-bottom: 0;
   }
 
   .settings-page {
