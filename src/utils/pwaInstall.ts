@@ -81,16 +81,13 @@ export function iosHasDynamicIsland() {
 }
 
 /**
- * Floor safe-area-inset-top in the installed iPhone PWA (env() is often 0 and
- * the logo header sits under the Island). Never floor in Safari — the tab
- * already sits below the status bar. Do not skip this via innerHeight: that
- * heuristic treated edge-to-edge Home Screen as “already inset” and hid the logo.
+ * Do not floor --safe-top on the Home Screen PWA.
+ * apple-mobile-web-app-status-bar-style is `default`, so iOS already keeps
+ * the webview below the Island. The 47/59px floor added a second band
+ * (~one hour row): empty space above the logo, and 21:00 under the tab bar.
  */
 export function iosNeedsTopSafeFloor() {
-  if (typeof window === 'undefined') return false;
-  if (!isAppleMobile() || !hasIosHomeIndicator()) return false;
-  if (!isIosStandalonePwa()) return false;
-  return true;
+  return false;
 }
 
 export function applyPwaRootClasses(root: HTMLElement = document.documentElement) {

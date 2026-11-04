@@ -42,13 +42,8 @@
           if (ios) root.classList.add('is-ios-standalone');
           if (android) root.classList.add('is-android-standalone');
         }
-        if (ios && standalone) {
-          var long = Math.max(screen.width, screen.height);
-          if (long >= 812) {
-            root.classList.add('ios-safe-top');
-            if (long >= 852) root.classList.add('ios-dynamic-island');
-          }
-        }
+        /* Status bar is `default`: iOS already insets below the Island.
+           Do not add ios-safe-top — that second band hid 21:00 under the tabs. */
       })();
     </script>
     <style>
