@@ -429,6 +429,11 @@ button,
     display: none !important;
   }
 
+  /* Side nav replaces the tab bar — do not keep the iPhone last-hour band. */
+  html.is-ios-standalone .week-view__grid-scroll {
+    padding-bottom: 0;
+  }
+
   .settings-page {
     padding-bottom: 24px;
   }

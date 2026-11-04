@@ -546,7 +546,7 @@ export function WeekView({
             style={{
               width: gridInnerWidth,
               gridTemplateColumns: `${WEEK_TIME_COL_WIDTH}px repeat(${displayDays.length}, var(--week-col-width))`,
-              gridTemplateRows: `repeat(${hours.length}, minmax(var(--week-row-height), auto))`,
+              gridTemplateRows: `repeat(${hours.length}, minmax(var(--week-row-height), 1fr))`,
             }}
           >
             <div className="week-view__time-col">

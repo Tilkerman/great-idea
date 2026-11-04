@@ -19,6 +19,13 @@ export function isAppleMobile() {
   return /iPhone|iPad|iPod/.test(navigator.userAgent);
 }
 
+/** iPadOS 13+ may send a Macintosh UA; a real Mac has no touch points. */
+export function isIpadOs() {
+  if (typeof navigator === 'undefined') return false;
+  if (/iPad/.test(navigator.userAgent)) return true;
+  return navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+}
+
 /** Built-in browser (Telegram, Instagram, …) — «На экран Домой» there does nothing useful. */
 export function isIosInAppBrowser() {
   if (!isAppleMobile()) return false;
@@ -47,11 +54,11 @@ export function isIosSafariBrowser() {
   return /Safari/i.test(ua) && /Version\/[\d.]+/i.test(ua);
 }
 
-/** Installed from iOS Home / iPad; needs home-indicator padding when env() is 0. */
+/** Installed from iOS Home / iPad; needs home-indicator padding when env() is 0.
+ *  Mac Dock web apps also set navigator.standalone — do not treat those as iPhone. */
 export function isIosStandalonePwa() {
   if (!isStandaloneApp()) return false;
-  const nav = window.navigator as Navigator & { standalone?: boolean };
-  return isAppleMobile() || nav.standalone === true;
+  return isAppleMobile() || isIpadOs();
 }
 
 /** Installed Android WebAPK / shortcut; use env(safe-area) only, no iOS floor. */

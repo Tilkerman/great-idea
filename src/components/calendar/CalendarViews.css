@@ -1094,9 +1094,9 @@
 
   .week-view__grid-scroll .week-view__grid {
     display: grid;
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     min-width: max-content;
-    min-height: 0;
+    min-height: 100%;
     align-items: stretch;
     /* template-columns/rows — inline: Safari не принимает repeat(var(--n)). */
   }
@@ -1385,6 +1385,12 @@
   padding-bottom: 8px;
   box-sizing: border-box;
   background: var(--surface);
+}
+
+@media (min-width: 1024px) {
+  .week-view__grid-scroll {
+    padding-bottom: 0;
+  }
 }
 
 .week-view__grid-scroll--snap {
