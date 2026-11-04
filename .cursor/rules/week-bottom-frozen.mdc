@@ -1,16 +1,41 @@
 ---
-description: Низ недели над таббаром — не трогать
+description: iPhone Home — шапка и 21:00 над табами зафиксированы
 alwaysApply: true
 ---
 
-# Низ недели — зафиксирован
+# iPhone Home — шапка и низ недели зафиксированы
 
-Последний час (21:00) на телефоне уже садится над нижним меню. **Не менять** отступы, высоту и позицию таббара.
+Проверено на PWA с Домой (ноябрь 2026). **Не откатывать** и не «улучшать» отступами наугад. Двойной pad или пол острова снова прячут логотип или 21:00.
+
+## Верх
+
+Статусбар `default`: iOS уже держит webview под островом.
+
+- **Не** вешать `ios-safe-top` / `ios-dynamic-island` в `index.html` и `iosNeedsTopSafeFloor()` = **false**
+- `html.is-ios-standalone .app-header { padding-top: 10px; }`
+- Не возвращать пол `--safe-top` 47px / 59px — это пустой ряд над логотипом и сдвиг 21:00 под меню
+
+## Низ
+
+Таббар `position: fixed`. Скроллер пад **только** видимая полоса, не home indicator.
 
 Не трогать:
 
-- `html.is-ios-standalone .week-view__grid-scroll { padding-bottom: calc(var(--bottom-nav-bar-h) + 12px); }` в `src/index.css`
+- `html.is-ios-standalone .week-view__grid-scroll { padding-bottom: calc(var(--bottom-nav-bar-h) + 12px); }`
 - `--bottom-nav-bar-h`, `--bottom-nav-h`, `.bottom-nav` position/height
 - лишний `padding-bottom` на `.week-view__grid-scroll` / `.day-view`
+- `html.is-ios-standalone .app-viewport { padding-bottom: 0; }` — второй `--bottom-nav-h` поднимает сетку над меню
 
-Шапка сверху (логотип, вкладки Год/Месяц/Неделя/День) — отдельно. Правки верха не должны двигать низ.
+Доскролл 21:00–22:00 **целиком** над табами (подобрано с владельцем, +2px финал):
+
+```css
+html.is-ios-standalone .week-view__time-label:last-child,
+html.is-ios-standalone .week-view__slot:last-child,
+html.is-ios-standalone .day-view__row:last-child {
+  margin-bottom: calc(max(var(--ios-nav-safe, 34px), 34px) + var(--week-row-height, 72px) * 0.6 + 2px);
+}
+```
+
+На десктопе (≥1024px) эти margin/pad = 0. Mac Dock **не** `is-ios-standalone`.
+
+Правки верха (логотип, вкладки) не должны сбрасывать эти числа.
