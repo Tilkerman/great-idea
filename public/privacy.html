@@ -67,6 +67,9 @@
     a { color: #2563eb; }
     article[hidden] { display: none; }
     .back { margin-top: 2rem; }
+    html.is-embed header.top,
+    html.is-embed .back { display: none; }
+    html.is-embed .wrap { padding-top: 0.5rem; }
   </style>
 </head>
 <body>
@@ -491,6 +494,9 @@
         en: '← TiLi',
         es: '← TiLi'
       };
+      var embed = false;
+      try { embed = new URLSearchParams(location.search).get('embed') === '1'; } catch (e0) {}
+      if (embed) document.documentElement.classList.add('is-embed');
       function detect() {
         try {
           var q = new URLSearchParams(location.search).get('lang');
@@ -515,10 +521,13 @@
         if (select) select.value = lang;
         var home = document.getElementById('back-home');
         if (home) home.textContent = back[lang];
-        try { localStorage.setItem(STORAGE, lang); } catch (e3) {}
+        if (!embed) {
+          try { localStorage.setItem(STORAGE, lang); } catch (e3) {}
+        }
         try {
           var u = new URL(location.href);
           u.searchParams.set('lang', lang);
+          if (embed) u.searchParams.set('embed', '1');
           history.replaceState({}, '', u.pathname + u.search);
         } catch (e4) {}
       }

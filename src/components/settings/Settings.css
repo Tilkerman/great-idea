@@ -138,6 +138,12 @@ html.is-ios-standalone .settings-page {
 .settings-note.settings-link {
   display: inline-block;
   margin-top: -8px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
   color: var(--accent);
   text-decoration: none;
 }
@@ -158,6 +164,14 @@ html.is-ios-standalone .settings-page {
   font-size: 15px;
   line-height: 1.45;
   color: var(--text-primary);
+}
+
+.settings-transfer__lead p {
+  margin: 0;
+}
+
+.settings-transfer__lead p + p {
+  margin-top: 10px;
 }
 
 .settings-transfer__step {
@@ -435,6 +449,33 @@ html.is-ios-standalone .settings-page {
 
 .settings-overlay .settings-page--support {
   min-height: 100%;
+}
+
+.settings-overlay:has(.settings-privacy-page) {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-privacy-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  padding-bottom: 0;
+}
+
+html.is-ios-standalone .settings-privacy-page {
+  padding-bottom: 0;
+}
+
+.settings-privacy__frame {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  background: var(--bg);
 }
 
 .support-wallet-link {
@@ -1110,6 +1151,31 @@ html.is-ios-standalone .settings-page {
   color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.5;
+}
+
+.settings-feedback__consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.settings-feedback__consent input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.settings-feedback__consent a {
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .settings-feedback__field {

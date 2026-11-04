@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { MIN_PASSWORD_LENGTH } from '../../constants/auth';
 import { useApp } from '../../context/AppContext';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
@@ -82,10 +82,13 @@ export function SettingsHub() {
 
   const commonItems: HubItem[] = [
     { id: 'settings-feedback', label: t('feedbackMenuTitle'), sub: t('feedbackMenuSub') },
-    { id: 'settings-transfer', label: t('settingsTransfer'), sub: t('settingsTransferSub') },
+    ...(session.isGuest
+      ? [{ id: 'settings-transfer', label: t('settingsTransfer'), sub: t('settingsTransferSub') }]
+      : []),
     { id: 'settings-appearance', label: t('settingsAppearance'), sub: t('settingsAppearanceSub') },
     { id: 'settings-install', label: t('settingsInstall'), sub: t('settingsInstallSub') },
     { id: 'settings-data', label: t('settingsData'), sub: t('settingsDataSub') },
+    { id: 'settings-privacy', label: t('settingsPrivacy'), sub: t('settingsPrivacySub') },
     { id: 'settings-support', label: t('supportTitle'), sub: t('supportSub') },
   ];
 
@@ -94,7 +97,6 @@ export function SettingsHub() {
     { id: 'lumi-settings', label: t('settingsLumiPrefs'), sub: t('settingsLumiPrefsSub') },
     { id: 'lumi-statistics', label: t('settingsLumiStats'), sub: t('settingsLumiStatsSub') },
     { id: 'lumi-completed', label: t('settingsLumiDone'), sub: t('settingsLumiDoneSub') },
-    { id: 'lumi-feedback', label: t('settingsLumiFeedback'), sub: t('settingsLumiFeedbackSub') },
     { id: 'lumi-about', label: t('settingsLumiAboutPage'), sub: t('settingsLumiAboutSub') },
   ];
 
@@ -490,7 +492,7 @@ export function SettingsAppearance() {
 }
 
 export function SettingsTransfer() {
-  const { setScreen, session } = useApp();
+  const { setScreen, session, openAuth } = useApp();
   const { t } = useI18n();
   const fileRef = useRef<HTMLInputElement>(null);
   const [exportBusy, setExportBusy] = useState(false);
@@ -499,9 +501,11 @@ export function SettingsTransfer() {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [status, setStatus] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
 
-  const cloudAccountReady = isCloudAccountEnabled()
-    && !session.isGuest
-    && session.emailVerified;
+  useEffect(() => {
+    if (!session.isGuest) setScreen('settings');
+  }, [session.isGuest, setScreen]);
+
+  if (!session.isGuest) return null;
 
   const onExport = async () => {
     setStatus(null);
@@ -551,8 +555,15 @@ export function SettingsTransfer() {
       <SettingsTopBar title={t('settingsTransfer')} onBack={() => setScreen('settings')} />
       <div className="settings-form settings-transfer">
         <p className="settings-transfer__lead">
-          {cloudAccountReady ? t('transferLeadCloud') : t('transferLead')}
+          {t('transferLead')}
         </p>
+        <button
+          type="button"
+          className="btn btn--ghost settings-full"
+          onClick={() => openAuth('register', 'settings-transfer')}
+        >
+          {t('transferRegisterCta')}
+        </button>
 
         <section className="settings-transfer__step">
           <h2 className="settings-transfer__step-title">{t('transferStep1Title')}</h2>
@@ -593,7 +604,7 @@ export function SettingsTransfer() {
         </section>
 
         <p className="settings-note settings-transfer__hint">
-          {cloudAccountReady ? t('transferHintCloud') : t('transferHint')}
+          {t('transferHint')}
         </p>
 
         {status && (
@@ -674,14 +685,13 @@ export function SettingsData() {
           {t('analyticsSettingsLabel')}
         </label>
         <p className="settings-note">{t('analyticsSettingsHint')}</p>
-        <a
+        <button
+          type="button"
           className="settings-note settings-link"
-          href={`${import.meta.env.BASE_URL}privacy.html`}
-          target="_blank"
-          rel="noopener noreferrer"
+          onClick={() => setScreen('settings-privacy')}
         >
           {t('analyticsPrivacyLink')}
-        </a>
+        </button>
         <button type="button" className="btn btn--danger settings-full" onClick={clearData}>
           {t('clearAll')}
         </button>
@@ -692,6 +702,23 @@ export function SettingsData() {
           {t('clearWishesNote')}
         </p>
       </div>
+    </div>
+  );
+}
+
+export function SettingsPrivacy() {
+  const { setScreen, settings } = useApp();
+  const { t } = useI18n();
+  const src = `${import.meta.env.BASE_URL}privacy.html?lang=${settings.locale}&embed=1`;
+
+  return (
+    <div className="settings-page settings-privacy-page">
+      <SettingsTopBar title={t('settingsPrivacy')} onBack={() => setScreen('settings')} />
+      <iframe
+        className="settings-privacy__frame"
+        title={t('analyticsPrivacyLink')}
+        src={src}
+      />
     </div>
   );
 }
@@ -711,6 +738,8 @@ export function SettingsAbout() {
         <p>{t('aboutLead2')}</p>
 
         <h2 className="settings-about__h">{t('aboutWhatTitle')}</h2>
+        <h3 className="settings-about__h2">{t('aboutFeatureNoPayTitle')}</h3>
+        <p>{t('aboutFeatureNoPay')}</p>
         <h3 className="settings-about__h2">{t('aboutFeatureTimeTitle')}</h3>
         <p>{t('aboutFeatureTime')}</p>
         <h3 className="settings-about__h2">{t('aboutFeatureFreeTitle')}</h3>

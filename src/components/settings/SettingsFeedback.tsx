@@ -9,12 +9,14 @@ export function SettingsFeedback() {
   const { t, locale } = useI18n();
   const [message, setMessage] = useState('');
   const [contact, setContact] = useState('');
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error' | 'limited'>('idle');
+  const privacyHref = `${import.meta.env.BASE_URL}privacy.html`;
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const text = message.trim();
-    if (text.length < 10 || status === 'sending') return;
+    if (text.length < 10 || !privacyConsent || status === 'sending') return;
 
     setStatus('sending');
     try {
@@ -72,6 +74,26 @@ export function SettingsFeedback() {
 
         <p className="settings-feedback__privacy">{t('feedbackPrivacy')}</p>
 
+        <label className="settings-feedback__consent">
+          <input
+            type="checkbox"
+            checked={privacyConsent}
+            onChange={(event) => setPrivacyConsent(event.target.checked)}
+          />
+          <span>
+            {t('feedbackPrivacyConsent')}
+            {' — '}
+            <a
+              href={privacyHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(event) => event.stopPropagation()}
+            >
+              {t('analyticsPrivacyLink')}
+            </a>
+          </span>
+        </label>
+
         {status === 'sent' && <p className="settings-feedback__status settings-feedback__status--ok" role="status">{t('feedbackSent')}</p>}
         {status === 'error' && <p className="settings-feedback__status settings-feedback__status--error" role="alert">{t('feedbackError')}</p>}
         {status === 'limited' && <p className="settings-feedback__status settings-feedback__status--error" role="alert">{t('feedbackLimited')}</p>}
@@ -79,7 +101,7 @@ export function SettingsFeedback() {
         <button
           type="submit"
           className="btn btn--primary settings-full"
-          disabled={message.trim().length < 10 || status === 'sending'}
+          disabled={message.trim().length < 10 || !privacyConsent || status === 'sending'}
         >
           {status === 'sending' ? t('feedbackSending') : t('feedbackSend')}
         </button>

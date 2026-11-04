@@ -13,7 +13,6 @@ export type LumiSettingsPage =
   | 'tutorial'
   | 'install'
   | 'settings'
-  | 'feedback'
   | 'statistics'
   | 'completed';
 

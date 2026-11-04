@@ -24,6 +24,8 @@ export default function AboutPage({ onBack }: AboutPageProps) {
               <p className="settings-about__logo">{t('settings.about.headline')}</p>
               <p className="settings-about__tagline">{t('settings.about.lead')}</p>
             </div>
+            <h2 className="settings-about__h">{t('settings.about.freeTitle')}</h2>
+            <p>{t('settings.about.free')}</p>
             <p>{t('settings.about.noGrid')}</p>
             <p>{t('settings.about.notTask')}</p>
             <p>{t('settings.about.image')}</p>

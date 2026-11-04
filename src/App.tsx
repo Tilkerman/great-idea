@@ -15,6 +15,7 @@ import {
   SettingsCalendar,
   SettingsAppearance,
   SettingsData,
+  SettingsPrivacy,
   SettingsTransfer,
   SettingsAbout,
 } from './components/settings/Settings';
@@ -68,6 +69,8 @@ function SettingsScreens({ screen }: { screen: string }) {
       return <SettingsAppearance />;
     case 'settings-data':
       return <SettingsData />;
+    case 'settings-privacy':
+      return <SettingsPrivacy />;
     case 'settings-transfer':
       return <SettingsTransfer />;
     case 'settings-stats':

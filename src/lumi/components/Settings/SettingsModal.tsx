@@ -14,7 +14,6 @@ const getIconColor = (id: string): string => {
     tutorial: '#9B59B6',   // Фиолетовый
     install: '#27AE60',    // Зеленый
     settings: '#E67E22',   // Оранжевый
-    feedback: '#E74C3C',   // Красный
     statistics: '#3498DB',  // Голубой
     completed: '#F39C12',  // Желтый/золотой
   };
@@ -82,16 +81,6 @@ export default function SettingsModal({ isOpen, onClose, onMenuItemClick }: Sett
         </svg>
       ), 
       label: t('settings.menu.settings') 
-    },
-    { 
-      id: 'feedback', 
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M8 9h8M8 13h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      ), 
-      label: t('settings.menu.feedback') 
     },
     { 
       id: 'statistics', 

@@ -12,7 +12,6 @@ import AboutPage from './components/Settings/AboutPage';
 import TutorialPage from './components/Settings/TutorialPage';
 import InstallPage from './components/Settings/InstallPage';
 import SettingsPage from './components/Settings/SettingsPage';
-import FeedbackPage from './components/Settings/FeedbackPage';
 import StatisticsPage from './components/Settings/StatisticsPage';
 import WelcomeScreen from './components/WelcomeScreen/WelcomeScreen';
 import IntroScreen from './components/IntroScreen/IntroScreen';
@@ -33,7 +32,6 @@ type View =
   | 'tutorial'
   | 'install'
   | 'settings'
-  | 'feedback'
   | 'statistics'
   | 'completed';
 
@@ -241,9 +239,6 @@ function App() {
         break;
       case 'settings':
         setCurrentView('settings');
-        break;
-      case 'feedback':
-        setCurrentView('feedback');
         break;
       case 'statistics':
         setCurrentView('statistics');
@@ -519,19 +514,6 @@ function App() {
     return (
       <>
         <SettingsPage onBack={handleBackFromSettings} onSettingsClick={handleSettingsClick} onGoHome={handleGoHome} />
-        <SettingsModal
-          isOpen={isSettingsModalOpen}
-          onClose={() => setIsSettingsModalOpen(false)}
-          onMenuItemClick={handleSettingsMenuItemClick}
-        />
-      </>
-    );
-  }
-
-  if (currentView === 'feedback') {
-    return (
-      <>
-        <FeedbackPage onBack={handleBackFromSettings} onSettingsClick={handleSettingsClick} onGoHome={handleGoHome} />
         <SettingsModal
           isOpen={isSettingsModalOpen}
           onClose={() => setIsSettingsModalOpen(false)}
