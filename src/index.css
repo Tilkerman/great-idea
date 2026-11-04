@@ -322,7 +322,7 @@ html.is-ios-standalone .week-view__grid-scroll {
    Extra room on the last hour (not the frozen scroller pad). */
 html.is-ios-standalone .week-view__time-label:last-child,
 html.is-ios-standalone .week-view__slot:last-child {
-  margin-bottom: calc(max(var(--ios-nav-safe, 34px), 34px) + var(--week-row-height, 72px) / 2);
+  margin-bottom: calc(max(var(--ios-nav-safe, 34px), 34px) + var(--week-row-height, 72px) * 0.6);
 }
 
 html.is-ios-standalone .week-view__grid {
@@ -330,7 +330,7 @@ html.is-ios-standalone .week-view__grid {
 }
 
 html.is-ios-standalone .day-view__row:last-child {
-  margin-bottom: calc(max(var(--ios-nav-safe, 34px), 34px) + var(--week-row-height, 72px) / 2);
+  margin-bottom: calc(max(var(--ios-nav-safe, 34px), 34px) + var(--week-row-height, 72px) * 0.6);
 }
 
 .app-shell__main {
