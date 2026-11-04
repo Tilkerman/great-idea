@@ -532,6 +532,7 @@
   --week-desc-size: calc(var(--week-title-size) * 0.82);
   --week-badge-size: calc(var(--week-title-size) * 1.15);
   --week-day-head-h: 60px;
+  --week-center-grid: color-mix(in srgb, var(--grid) 16%, transparent);
 }
 
 .week-view--sm-title {
@@ -1129,7 +1130,14 @@
     height: auto;
     min-height: var(--week-row-height, 72px);
     flex: none;
+  }
+
+  .week-view__grid-scroll .week-view__time-label {
     border-bottom: 0.5px solid var(--grid);
+  }
+
+  .week-view__grid-scroll .week-view__slot {
+    border-bottom: 0.25px solid var(--week-center-grid);
   }
 
   /* Compact 16:00 — 17:00 pair in the middle of the hour. Do not pin times to the cell edges. */
@@ -1167,7 +1175,7 @@
 
   .week-view__grid-scroll .week-view__slot {
     overflow: hidden;
-    border-left: 0.5px solid var(--grid);
+    border-left: 0.25px solid var(--week-center-grid);
   }
 
   .week-view__grid-scroll .week-view__time-col + .week-view__col > .week-view__slot {
@@ -1482,10 +1490,6 @@
   .week-view__slot {
     height: var(--week-row-height, 96px);
     flex-shrink: 0;
-  }
-
-  .week-view {
-    --week-center-grid: color-mix(in srgb, var(--grid) 16%, transparent);
   }
 
   .week-view__grid-scroll .week-view__col {
