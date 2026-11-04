@@ -34,7 +34,8 @@
         var standalone = window.matchMedia('(display-mode: standalone)').matches || n.standalone;
         var root = document.documentElement;
         var ua = n.userAgent || '';
-        var ios = /iPhone|iPad|iPod/.test(ua) || n.standalone;
+        var ios = /iPhone|iPad|iPod/.test(ua)
+          || (n.platform === 'MacIntel' && n.maxTouchPoints > 1);
         var android = /Android/i.test(ua) && !ios;
         if (standalone) {
           root.classList.add('is-standalone');
@@ -122,8 +123,8 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/app/assets/index-C-QBNWDQ.js"></script>
-    <link rel="stylesheet" crossorigin href="/app/assets/index-DfzYWz6q.css">
+    <script type="module" crossorigin src="/app/assets/index-BINIuSwj.js"></script>
+    <link rel="stylesheet" crossorigin href="/app/assets/index-DN4Sg5Sy.css">
       <link rel="apple-touch-icon-precomposed" href="https://tili.su/app/apple-touch-icon-v8.png" />
   <link rel="manifest" href="/app/manifest.webmanifest"></head>
   <body>
