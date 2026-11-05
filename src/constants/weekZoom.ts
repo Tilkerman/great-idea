@@ -20,7 +20,7 @@ export const WEEK_ZOOM_TITLE_ONLY_MAX = 0.15;
 export const WEEK_ZOOM_COMPLETE_MIN = 0.15;
 /** С этого масштаба на карточках появляется описание */
 export const WEEK_ZOOM_DESC_MIN = 0.25;
-/** С этого масштаба в неполном часе видна полоска «добавить» */
+/** С этого масштаба в неполном часе видна полоска «добавить» (на телефоне; десктоп/Mac — сразу) */
 export const WEEK_ZOOM_ADD_MIN = 0.2;
 /** С этого масштаба в шапке недели полное имя дня */
 export const WEEK_ZOOM_WEEKDAY_FULL_MIN = 0.65;

@@ -100,7 +100,8 @@ export function WeekView({
   const showSlotBadge = weekZoomAtLeast(weekZoom, WEEK_ZOOM_BADGE_MIN);
   const zoomPct = weekZoomPercent(weekZoom);
   const showSlotTitle = isDesktopLayout || weekZoomAtLeast(weekZoom, WEEK_ZOOM_TITLE_MIN);
-  const showSlotAdd = weekZoomAtLeast(weekZoom, WEEK_ZOOM_ADD_MIN);
+  /** На телефоне полоска «+» в неполном часе с ~20%; на десктопе/Mac — сразу, даже на всей неделе */
+  const showSlotAdd = isDesktopLayout || weekZoomAtLeast(weekZoom, WEEK_ZOOM_ADD_MIN);
   const swipeComplete = !pick;
   const titlesOnly = !isDesktopLayout
     && showSlotTitle && zoomPct <= Math.round(WEEK_ZOOM_TITLE_ONLY_MAX * 100);
