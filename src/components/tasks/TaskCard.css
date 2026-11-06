@@ -139,6 +139,14 @@
   padding-right: 22px;
 }
 
+.task-card--slot.task-card--has-marks:not(.task-card--no-delete) .task-card__swipe-inner {
+  padding-right: 36px;
+}
+
+.task-card--slot.task-card--has-marks.task-card--no-delete .task-card__swipe-inner {
+  padding-right: 16px;
+}
+
 .task-card--slot .task-card__row {
   padding-right: 0;
 }
@@ -361,10 +369,47 @@
   cursor: pointer;
 }
 
+.task-card__marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-left: 1px;
+}
+
+.task-card--slot-triple .task-card__marks,
+.task-card--slot-quad .task-card__marks {
+  align-self: center;
+}
+
 .task-card__important {
   color: var(--danger);
   font-weight: 800;
   font-size: 14px;
+}
+
+.task-card__reminder {
+  display: inline-flex;
+  width: 12px;
+  height: 12px;
+  color: var(--task-text);
+  opacity: 0.88;
+}
+
+.task-card__reminder svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hour-slot--compact .task-card__important {
+  font-size: 11px;
+}
+
+.hour-slot--compact .task-card__reminder {
+  width: 10px;
+  height: 10px;
 }
 
 .category-dot {

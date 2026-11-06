@@ -562,6 +562,44 @@ html.is-ios-standalone .settings-privacy-page {
   line-height: 1.35;
 }
 
+.settings-about__cats {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-about__cat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.settings-about__cat-dot {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(31, 41, 55, 0.12);
+}
+
+.settings-about__cat--work .settings-about__cat-dot {
+  background: var(--cat-work);
+}
+
+.settings-about__cat--personal .settings-about__cat-dot {
+  background: var(--cat-personal);
+}
+
+.settings-about__cat--family .settings-about__cat-dot {
+  background: var(--cat-family);
+}
+
 .settings-about__list {
   margin: 0;
   padding-left: 1.25em;

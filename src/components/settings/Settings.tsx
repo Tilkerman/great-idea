@@ -752,6 +752,20 @@ export function SettingsAbout() {
         <p>{t('aboutFeatureReminder')}</p>
         <h3 className="settings-about__h2">{t('aboutFeatureCategoriesTitle')}</h3>
         <p>{t('aboutFeatureCategories')}</p>
+        <ul className="settings-about__cats">
+          <li className="settings-about__cat settings-about__cat--work">
+            <span className="settings-about__cat-dot" aria-hidden />
+            {t('aboutHow3Work')}
+          </li>
+          <li className="settings-about__cat settings-about__cat--personal">
+            <span className="settings-about__cat-dot" aria-hidden />
+            {t('aboutHow3Personal')}
+          </li>
+          <li className="settings-about__cat settings-about__cat--family">
+            <span className="settings-about__cat-dot" aria-hidden />
+            {t('aboutHow3Family')}
+          </li>
+        </ul>
 
         <h2 className="settings-about__h">{t('aboutGuideTitle')}</h2>
         <h3 className="settings-about__h2">{t('aboutGuide1Title')}</h3>

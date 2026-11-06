@@ -419,8 +419,12 @@
   opacity: 0.45;
 }
 
+.month-calendar__day--past:not(.month-calendar__day--today) {
+  opacity: 0.42;
+}
+
 .month-calendar__day--past:not(.month-calendar__day--today) .month-calendar__day-num {
-  opacity: 0.55;
+  opacity: 0.7;
 }
 
 .month-calendar__day--today {
@@ -1228,7 +1232,7 @@
 
 .week-view__day-head--past,
 .week-view__col--past {
-  opacity: 0.68;
+  opacity: 0.42;
 }
 
 .week-dot-col--today {
@@ -1236,7 +1240,7 @@
 }
 
 .week-dot-col--past {
-  opacity: 0.65;
+  opacity: 0.4;
 }
 
 .mini-month-grid__cell--today {
@@ -1257,7 +1261,7 @@
 }
 
 .day-view--past {
-  opacity: 0.7;
+  opacity: 0.42;
 }
 
 .week-view--slim {

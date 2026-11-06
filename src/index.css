@@ -12,15 +12,15 @@
   --danger: #c17b7b;
   --now: #e24b4a;
   --now-on: #ffffff;
-  --cat-work: #c9a9a6;
-  --cat-work-soft: #e8d5d3;
-  --cat-work-text: #4a3533;
-  --cat-personal: #a3b8c9;
-  --cat-personal-soft: #d4e0e8;
-  --cat-personal-text: #2f4454;
-  --cat-family: #a8bfa8;
-  --cat-family-soft: #d6e4d6;
-  --cat-family-text: #2f432f;
+  --cat-work: #a9c9e8;
+  --cat-work-soft: #d4e4f4;
+  --cat-work-text: #2a4058;
+  --cat-personal: #b9d3bd;
+  --cat-personal-soft: #d6e8da;
+  --cat-personal-text: #2a4030;
+  --cat-family: #d8b8b5;
+  --cat-family-soft: #ead8d6;
+  --cat-family-text: #4a3230;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   /* Browser tab: dynamic viewport. Installed iOS PWA: 100vh — 100dvh/svh omit the home indicator. */
   --app-height: 100dvh;
@@ -70,15 +70,15 @@ html.is-android-standalone {
   --danger: #c17b7b;
   --now: #ff6b6a;
   --now-on: #1a1010;
-  --cat-work: #8f736f;
-  --cat-work-soft: #3a2e2e;
-  --cat-work-text: #f0e4e2;
-  --cat-personal: #6e8799;
-  --cat-personal-soft: #2a333c;
-  --cat-personal-text: #e4eef4;
-  --cat-family: #739173;
-  --cat-family-soft: #2c362c;
-  --cat-family-text: #e4eee4;
+  --cat-work: #5e82a8;
+  --cat-work-soft: #2a3848;
+  --cat-work-text: #e4eef8;
+  --cat-personal: #6f8f76;
+  --cat-personal-soft: #2c3a30;
+  --cat-personal-text: #e4eee6;
+  --cat-family: #a07d7a;
+  --cat-family-soft: #3a2e2e;
+  --cat-family-text: #f4e8e6;
 }
 
 *,

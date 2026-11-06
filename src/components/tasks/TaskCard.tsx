@@ -58,6 +58,8 @@ export function TaskCard({
   const showDesc = showSecondary && !slot && Boolean(task.description);
   const showLumiMeta = showSecondary && Boolean(task.lumiDesireId);
   const showMark = showBadge || completed;
+  const hasReminder = task.reminderOffsetMinutes != null;
+  const hasMarks = task.important || hasReminder;
 
   const cardRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ id: number; x: number; y: number } | null>(null);
@@ -281,6 +283,7 @@ export function TaskCard({
         slot && !showMark && 'task-card--no-badge',
         slot && !showTitle && 'task-card--no-title',
         slot && !onDelete && 'task-card--no-delete',
+        hasMarks && 'task-card--has-marks',
         canSwipe && 'task-card--swipeable',
         armed && 'task-card--armed',
         (armed || dx !== 0) && settle === 'none' && 'task-card--swiping',
@@ -380,7 +383,21 @@ export function TaskCard({
               ✓
             </button>
           )}
-          {task.important && <span className="task-card__important">!</span>}
+          {hasMarks && (
+            <span className="task-card__marks">
+              {task.important && <span className="task-card__important">!</span>}
+              {hasReminder && (
+                <span className="task-card__reminder" aria-label={t('reminderFallback')}>
+                  <svg viewBox="0 0 24 24" aria-hidden>
+                    <path
+                      fill="currentColor"
+                      d="M12 3a6 6 0 0 0-6 6v3.2L4.4 15a1 1 0 0 0 .8 1.6h13.6a1 1 0 0 0 .8-1.6L18 12.2V9a6 6 0 0 0-6-6Zm0 18a2.4 2.4 0 0 0 2.3-1.8H9.7A2.4 2.4 0 0 0 12 21Z"
+                    />
+                  </svg>
+                </span>
+              )}
+            </span>
+          )}
         </div>
       </div>
     </div>
