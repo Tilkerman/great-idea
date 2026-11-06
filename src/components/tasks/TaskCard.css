@@ -115,6 +115,7 @@
 
 /* Слот внутри часа */
 .task-card--slot {
+  --delete-size: 18px;
   flex: 1;
   min-height: 0;
   margin-bottom: 0;
@@ -136,14 +137,14 @@
 }
 
 .task-card--slot:not(.task-card--no-delete) .task-card__swipe-inner {
-  padding-right: 22px;
+  padding-right: calc(var(--delete-size) + 6px);
 }
 
-.task-card--slot.task-card--has-marks:not(.task-card--no-delete) .task-card__swipe-inner {
-  padding-right: 36px;
+.task-card--slot.task-card--has-marks:not(.task-card--no-delete):not(.task-card--no-title) .task-card__swipe-inner {
+  padding-right: calc(var(--delete-size) + 16px);
 }
 
-.task-card--slot.task-card--has-marks.task-card--no-delete .task-card__swipe-inner {
+.task-card--slot.task-card--has-marks.task-card--no-delete:not(.task-card--no-title) .task-card__swipe-inner {
   padding-right: 16px;
 }
 
@@ -269,6 +270,7 @@
   transform: translateY(-0.08em);
 }
 
+.hour-slot--compact .task-card--slot,
 .hour-slot--compact .task-card__delete {
   --delete-size: clamp(12px, calc(var(--week-row-height, 72px) * 0.18), 16px);
 }
@@ -378,9 +380,26 @@
   margin-left: 1px;
 }
 
-.task-card--slot-triple .task-card__marks,
-.task-card--slot-quad .task-card__marks {
-  align-self: center;
+.task-card--slot .task-card__marks {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: 2;
+  margin: 0;
+  pointer-events: none;
+}
+
+.task-card--slot:not(.task-card--no-delete) .task-card__marks {
+  right: calc(var(--delete-size) + 5px);
+}
+
+.task-card--slot.task-card--no-title .task-card__marks {
+  top: 2px;
+  right: 2px;
+}
+
+.task-card--slot.task-card--no-title:not(.task-card--no-delete) .task-card__marks {
+  right: calc(var(--delete-size) + 4px);
 }
 
 .task-card__important {
