@@ -55,7 +55,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (isAppDocument(event.request, url)) {
-    event.respondWith(networkFirstDocument(event.request));
+    event.respondWith(cacheFirstDocument(event.request));
     return;
   }
 
@@ -93,19 +93,29 @@ function manifestUrls(): string[] {
   });
 }
 
+function isCriticalShellUrl(href: string) {
+  const path = new URL(href).pathname;
+  if (path === '/app' || path === '/app/' || path.endsWith('/index.html')) return true;
+  if (path === '/' || path === '') return true;
+  return /\.(js|css)$/.test(path);
+}
+
 async function precacheShell() {
   const cache = await caches.open(SHELL_CACHE);
   const urls = new Set(manifestUrls());
   urls.add(new URL('index.html', self.registration.scope).href);
   urls.add(self.registration.scope);
+  const toPut: Array<{ url: string; res: Response }> = [];
   await Promise.all([...urls].map(async (url) => {
     try {
       const res = await fetch(url, { cache: 'reload' });
-      if (res.ok) await cache.put(url, res.clone());
-    } catch {
-      /* one missing file must not block install */
+      if (!res.ok) throw new Error(`precache ${url} ${res.status}`);
+      toPut.push({ url, res });
+    } catch (err) {
+      if (isCriticalShellUrl(url)) throw err;
     }
   }));
+  await Promise.all(toPut.map(({ url, res }) => cache.put(url, res)));
 }
 
 async function matchInPrecaches(request: Request) {
@@ -137,24 +147,23 @@ async function cacheFirstHashed(request: Request) {
   }
 }
 
-async function networkFirstDocument(request: Request) {
-  try {
-    const res = await fetch(request, { cache: 'no-store' });
-    if (res.ok) {
-      const cache = await caches.open(SHELL_CACHE);
-      void cache.put(request, res.clone());
-      void cache.put(shellIndexRequest(), res.clone());
-      return res;
-    }
-    const cached = await matchInPrecaches(request)
-      || await caches.match(shellIndexRequest(), { ignoreSearch: true });
-    return cached ?? res;
-  } catch {
-    const cached = await matchInPrecaches(request)
-      || await caches.match(shellIndexRequest(), { ignoreSearch: true });
-    if (cached) return cached;
-    throw new Error('app document fetch failed');
+async function matchAppDocument(request: Request) {
+  return await matchInPrecaches(request)
+    || await caches.match(shellIndexRequest(), { ignoreSearch: true })
+    || await caches.match(new Request(self.registration.scope), { ignoreSearch: true });
+}
+
+async function cacheFirstDocument(request: Request) {
+  const cached = await matchAppDocument(request);
+  if (cached) return cached;
+  const res = await fetch(request, { cache: 'no-store' });
+  if (res.ok) {
+    const cache = await caches.open(SHELL_CACHE);
+    await cache.put(request, res.clone());
+    await cache.put(shellIndexRequest(), res.clone());
+    await cache.put(new Request(self.registration.scope), res.clone());
   }
+  return res;
 }
 
 async function networkFirstMedia(request: Request) {

@@ -90,6 +90,15 @@ export function iosNeedsTopSafeFloor() {
   return false;
 }
 
+/** Ask iOS/Android not to evict the installed PWA shell while storage is tight. */
+export function requestPersistentStorage() {
+  if (typeof navigator === 'undefined') return;
+  if (!isStandaloneApp()) return;
+  const persist = navigator.storage?.persist;
+  if (typeof persist !== 'function') return;
+  void persist.call(navigator.storage).catch(() => {});
+}
+
 export function applyPwaRootClasses(root: HTMLElement = document.documentElement) {
   const standalone = isStandaloneApp();
   const safeTop = iosNeedsTopSafeFloor();

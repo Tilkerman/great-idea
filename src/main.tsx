@@ -3,10 +3,11 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { AppErrorBoundary } from './components/ui/AppErrorBoundary';
 import './index.css';
-import { isAppleMobile, isStandaloneApp } from './utils/pwaInstall';
+import { isAppleMobile, isStandaloneApp, requestPersistentStorage } from './utils/pwaInstall';
 import { reloadIfAppBuildChanged } from './utils/appUpdate';
 
 reloadIfAppBuildChanged();
+requestPersistentStorage();
 
 window.addEventListener('vite:preloadError', () => {
   window.location.reload();
@@ -74,9 +75,11 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator && !iosSafariTab) {
         reg.addEventListener('updatefound', () => activateWaitingWorker(reg));
       }
       window.setInterval(() => { void reg.update(); }, 5 * 60 * 1000);
+      window.addEventListener('online', () => { void reg.update(); });
     });
   };
-  if (gentleSw) {
+  const iosStandalone = isAppleMobile() && isStandaloneApp();
+  if (gentleSw && !iosStandalone) {
     if (document.readyState === 'complete') registerSw();
     else window.addEventListener('load', registerSw, { once: true });
   } else {
