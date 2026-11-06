@@ -289,6 +289,14 @@
   --mark-size: 20px;
 }
 
+@media (max-width: 1023px) {
+  .hour-slot--compact .task-card--slot,
+  .hour-slot--compact .task-card--slot-triple,
+  .hour-slot--compact .task-card--slot-quad {
+    --mark-size: clamp(8px, calc(var(--week-row-height, 72px) * 0.105), 11px);
+  }
+}
+
 .hour-slot--compact .task-card__title {
   font-size: var(--week-title-size, 10px);
   line-height: 1.2;
