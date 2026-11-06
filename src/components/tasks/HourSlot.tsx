@@ -66,7 +66,7 @@ export function HourSlot({
         onClick={addDraft}
         aria-label={t('addTask')}
       >
-        <span className="hour-slot__add-icon">+</span>
+        <span className="hour-slot__add-icon" aria-hidden />
       </button>
     );
   }

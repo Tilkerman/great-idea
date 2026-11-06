@@ -17,6 +17,31 @@ function clearTextSelection() {
   window.getSelection()?.removeAllRanges();
 }
 
+function ImportantIcon() {
+  return (
+    <svg className="task-card__mark-svg" viewBox="0 0 24 24" aria-hidden>
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <rect x="11" y="6.2" width="2" height="7.6" rx="1" fill="#fff" />
+      <circle cx="12" cy="16.9" r="1.25" fill="#fff" />
+    </svg>
+  );
+}
+
+function ReminderIcon() {
+  return (
+    <svg className="task-card__mark-svg" viewBox="0 0 24 24" aria-hidden>
+      <path
+        fill="currentColor"
+        d="M12 3.2c.6 0 1.1.5 1.1 1.1v.42c3.12.72 5.2 3.28 5.2 6.38v3.05l1.42 2.14a1.05 1.05 0 0 1-.87 1.66H5.15a1.05 1.05 0 0 1-.87-1.66L5.7 14.15V11.1c0-3.1 2.08-5.66 5.2-6.38V4.3c0-.6.5-1.1 1.1-1.1Z"
+      />
+      <path
+        fill="currentColor"
+        d="M9.45 18.55a2.55 2.55 0 0 0 5.1 0H9.45Z"
+      />
+    </svg>
+  );
+}
+
 interface TaskCardProps {
   task: Task;
   compact?: boolean;
@@ -385,15 +410,14 @@ export function TaskCard({
           )}
           {hasMarks && (
             <span className="task-card__marks">
-              {task.important && <span className="task-card__important">!</span>}
+              {task.important && (
+                <span className="task-card__important">
+                  <ImportantIcon />
+                </span>
+              )}
               {hasReminder && (
                 <span className="task-card__reminder" aria-label={t('reminderFallback')}>
-                  <svg viewBox="0 0 24 24" aria-hidden>
-                    <path
-                      fill="currentColor"
-                      d="M12 3a6 6 0 0 0-6 6v3.2L4.4 15a1 1 0 0 0 .8 1.6h13.6a1 1 0 0 0 .8-1.6L18 12.2V9a6 6 0 0 0-6-6Zm0 18a2.4 2.4 0 0 0 2.3-1.8H9.7A2.4 2.4 0 0 0 12 21Z"
-                    />
-                  </svg>
+                  <ReminderIcon />
                 </span>
               )}
             </span>

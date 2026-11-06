@@ -1545,6 +1545,12 @@
   flex-direction: column;
 }
 
+.day-view__slot > .hour-slot {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+
 /* Day */
 .day-view {
   padding: 8px 12px 24px;
