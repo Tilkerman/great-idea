@@ -11,8 +11,9 @@ function keep working while this service is built and tested.
   sessions, and per-device Web Push subscriptions;
 - API groundwork for registration, password login, cookie sessions, logout, and
   reading the current session;
-- email confirmation and password-reset links, sent through Unisender only when
-  `UNISENDER_API_KEY` is present;
+- email confirmation and password-reset links, sent through SMTP when
+  `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` are set, otherwise through Unisender
+  when `UNISENDER_API_KEY` is present;
 - CORS restricted by an explicit environment variable;
 - standard PostgreSQL and Docker, so the same service can run on Yandex Cloud,
   a VPS, or another provider.

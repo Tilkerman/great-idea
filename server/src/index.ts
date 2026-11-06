@@ -20,7 +20,7 @@ import {
 } from './auth.js';
 import { readConfig } from './config.js';
 import { createPool } from './db.js';
-import { sendMail } from './mail.js';
+import { resolveMailTransport, sendMail } from './mail.js';
 import {
   handlePushRequest,
   startPushTicker,
@@ -240,9 +240,10 @@ async function deliver(message: Parameters<typeof sendMail>[1], logLabel: string
   try {
     const result = await sendMail(config, message);
     if (result === 'skipped') {
-      app.log.info(`${logLabel} was not sent because Unisender is not configured`);
+      app.log.info(`${logLabel} was not sent because mail is not configured`);
       return false;
     }
+    app.log.info(`${logLabel} sent via ${resolveMailTransport(config)}`);
     return true;
   } catch (error) {
     app.log.error({ err: error }, `${logLabel} could not be sent`);
@@ -581,4 +582,12 @@ app.post('/v1/voice', async (request, reply) => {
 });
 
 await app.listen({ host: '0.0.0.0', port: config.PORT });
+app.log.info(
+  {
+    mail: resolveMailTransport(config),
+    smtpHost: config.SMTP_HOST || undefined,
+    smtpUser: config.SMTP_USER || undefined,
+  },
+  'mail transport',
+);
 startPushTicker(db, config, app.log);
