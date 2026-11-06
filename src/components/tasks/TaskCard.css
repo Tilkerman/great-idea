@@ -208,6 +208,7 @@
 
 .task-card--slot-triple,
 .task-card--slot-quad {
+  --mark-size: var(--delete-size);
   justify-content: center;
   padding-top: 2px;
   padding-bottom: 2px;
@@ -225,9 +226,7 @@
 }
 
 .task-card--slot-triple .task-card__delete,
-.task-card--slot-quad .task-card__delete,
-.task-card--slot-triple .task-card__marks,
-.task-card--slot-quad .task-card__marks {
+.task-card--slot-quad .task-card__delete {
   top: 50%;
   transform: translateY(-50%);
 }
@@ -278,6 +277,11 @@
 .hour-slot--compact .task-card__delete {
   --delete-size: clamp(12px, calc(var(--week-row-height, 72px) * 0.155), 22px);
   --mark-size: clamp(11px, calc(var(--week-row-height, 72px) * 0.145), 22px);
+}
+
+.hour-slot--compact .task-card--slot-triple,
+.hour-slot--compact .task-card--slot-quad {
+  --mark-size: var(--delete-size);
 }
 
 .day-view .task-card--slot {
@@ -412,6 +416,15 @@
 
 .task-card--slot.task-card--no-title:not(.task-card--no-delete) .task-card__marks {
   right: calc(var(--delete-size) + 6px);
+}
+
+.task-card--slot.task-card--slot-triple .task-card__marks,
+.task-card--slot.task-card--slot-quad .task-card__marks,
+.task-card--slot.task-card--slot-triple.task-card--no-title .task-card__marks,
+.task-card--slot.task-card--slot-quad.task-card--no-title .task-card__marks {
+  top: 50%;
+  transform: translateY(-50%);
+  height: var(--delete-size);
 }
 
 .task-card__important,
