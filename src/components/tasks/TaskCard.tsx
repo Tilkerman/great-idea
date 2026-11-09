@@ -18,25 +18,26 @@ function clearTextSelection() {
 }
 
 function ImportantIcon() {
-  return (
-    <svg className="task-card__mark-svg" viewBox="0 0 24 24" aria-hidden>
-      <circle cx="12" cy="12" r="10" fill="currentColor" />
-      <rect x="11" y="6.2" width="2" height="7.6" rx="1" fill="#fff" />
-      <circle cx="12" cy="16.9" r="1.25" fill="#fff" />
-    </svg>
-  );
+  return <span className="task-card__important-dot" aria-hidden />;
 }
 
 function ReminderIcon() {
   return (
     <svg className="task-card__mark-svg" viewBox="0 0 24 24" aria-hidden>
       <path
-        fill="currentColor"
-        d="M12 3.2c.6 0 1.1.5 1.1 1.1v.42c3.12.72 5.2 3.28 5.2 6.38v3.05l1.42 2.14a1.05 1.05 0 0 1-.87 1.66H5.15a1.05 1.05 0 0 1-.87-1.66L5.7 14.15V11.1c0-3.1 2.08-5.66 5.2-6.38V4.3c0-.6.5-1.1 1.1-1.1Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        d="M6.2 16.8h11.6c.55 0 .85-.62.5-1.07l-1.35-1.75V11c0-2.55-1.7-4.72-4.15-5.4V4.55a1.8 1.8 0 0 0-3.6 0v1.05C6.75 6.28 5.05 8.45 5.05 11v2.98L3.7 15.73c-.35.45-.05 1.07.5 1.07Z"
       />
       <path
-        fill="currentColor"
-        d="M9.45 18.55a2.55 2.55 0 0 0 5.1 0H9.45Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        d="M10 19.15a2 2 0 0 0 4 0"
       />
     </svg>
   );

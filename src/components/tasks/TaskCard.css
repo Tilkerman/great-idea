@@ -208,7 +208,7 @@
 
 .task-card--slot-triple,
 .task-card--slot-quad {
-  --mark-size: var(--delete-size);
+  --mark-size: calc(var(--delete-size) * 0.78);
   justify-content: center;
   padding-top: 2px;
   padding-bottom: 2px;
@@ -281,7 +281,7 @@
 
 .hour-slot--compact .task-card--slot-triple,
 .hour-slot--compact .task-card--slot-quad {
-  --mark-size: var(--delete-size);
+  --mark-size: calc(var(--delete-size) * 0.78);
 }
 
 .day-view .task-card--slot {
@@ -409,6 +409,7 @@
   z-index: 2;
   margin: 0;
   height: var(--delete-size, var(--mark-size));
+  overflow: visible;
   pointer-events: none;
 }
 
@@ -445,6 +446,18 @@
 
 .task-card__important {
   color: var(--danger);
+  align-items: center;
+  justify-content: center;
+}
+
+.task-card__important-dot {
+  display: block;
+  width: 38%;
+  height: 38%;
+  min-width: 5px;
+  min-height: 5px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .task-card__reminder {
@@ -455,6 +468,7 @@
   display: block;
   width: 100%;
   height: 100%;
+  overflow: visible;
 }
 
 .category-dot {
