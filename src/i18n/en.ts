@@ -88,6 +88,11 @@ export const en: typeof ru = {
     sheetNotifyBlocked: 'Notifications are not available right now.',
     sheetNotifyDenied: 'The phone blocked banners. Turn them on in system settings: Notifications → TiLi.',
     sheetRemind: 'Remind',
+    sheetRepeat: 'Repeat',
+    sheetRepeatNone: 'Does not repeat',
+    sheetRepeatWeekdays: 'Weekdays',
+    sheetRepeatDone: 'Done',
+    sheetRepeatPickDays: 'Pick the days it repeats',
     firstReminderHintTitle: 'Reminder saved',
     firstReminderHintBody:
       'The banner will work after you turn on notifications in TiLi settings (Settings → Notifications) and allow them on your phone. Until then, we still save the reminder time on this task.',

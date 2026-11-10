@@ -86,6 +86,11 @@ export const ru = {
     sheetNotifyBlocked: 'Уведомления сейчас недоступны.',
     sheetNotifyDenied: 'Телефон запретил баннеры. Включи их в настройках системы: Уведомления → TiLi.',
     sheetRemind: 'Напомнить',
+    sheetRepeat: 'Повтор',
+    sheetRepeatNone: 'Не повторять',
+    sheetRepeatWeekdays: 'Будни дни',
+    sheetRepeatDone: 'Готово',
+    sheetRepeatPickDays: 'Выберите дни повтора',
     firstReminderHintTitle: 'Напоминание сохранится',
     firstReminderHintBody:
       'Баннер сработает, когда вы включите уведомления в настройках TiLi (Настройки → Уведомления) и разрешите их на телефоне. До этого время напоминания мы уже запомним за вами.',

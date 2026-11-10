@@ -17,6 +17,10 @@ export interface Task {
   important: boolean;
   /** Minutes before start. null = don't remind. Not delivered yet. */
   reminderOffsetMinutes: number | null;
+  /** JS getDay(): 0 = вс … 6 = сб. Пусто / null = не повторять. */
+  repeatWeekdays?: number[] | null;
+  /** Общий id серии. Если снять повтор в любой карточке — серия гаснет. */
+  repeatSeriesId?: string | null;
   order: number;
   createdAt: string;
   updatedAt: string;
@@ -33,6 +37,7 @@ export interface TaskClipboard {
   category: TaskCategory;
   important: boolean;
   reminderOffsetMinutes: number | null;
+  repeatWeekdays?: number[] | null;
 }
 
 export type GridClipKind = 'week' | 'day' | 'hour';

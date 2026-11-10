@@ -88,6 +88,11 @@ export const es: typeof ru = {
     sheetNotifyBlocked: 'Las notificaciones no están disponibles ahora.',
     sheetNotifyDenied: 'El teléfono bloqueó los avisos. Actívalos en Ajustes del sistema: Notificaciones → TiLi.',
     sheetRemind: 'Recordar',
+    sheetRepeat: 'Repetir',
+    sheetRepeatNone: 'No se repite',
+    sheetRepeatWeekdays: 'Días laborables',
+    sheetRepeatDone: 'Listo',
+    sheetRepeatPickDays: 'Elige los días de repetición',
     firstReminderHintTitle: 'Recordatorio guardado',
     firstReminderHintBody:
       'El aviso funcionará cuando actives las notificaciones en TiLi (Ajustes → Notificaciones) y las permitas en el teléfono. Hasta entonces, ya guardamos la hora en esta tarea.',

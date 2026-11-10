@@ -30,6 +30,7 @@ import {
   rebalanceHourTasks,
 } from '../utils/hourSlot';
 import { getWeekDays, isLockedCreateDay, toLocalDateString } from '../utils/date';
+import { planRepeatSeries } from '../utils/taskRepeat';
 import {
   buildPastedTasks,
   idsInDay,
@@ -111,6 +112,12 @@ interface AppContextValue {
   upsertTask: (task: Task) => Promise<void>;
   saveHourSlot: (day: Date, hour: number, slotTasks: Task[]) => Promise<void>;
   placeTask: (task: Task, day: Date, hour: number) => Promise<'ok' | 'full' | 'past'>;
+  placeTaskWithRepeat: (
+    task: Task,
+    day: Date,
+    hour: number,
+    weekdays?: number[] | null,
+  ) => Promise<'ok' | 'full' | 'past'>;
   deleteTaskInHour: (task: Task) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
   settings: UserSettings;
@@ -360,6 +367,83 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return 'ok';
   }, [refreshTasks, settings.analyticsEnabled]);
 
+  const placeTaskWithRepeat = useCallback(async (
+    task: Task,
+    day: Date,
+    hour: number,
+    weekdays?: number[] | null,
+  ): Promise<'ok' | 'full' | 'past'> => {
+    const all = await getAllTasks();
+    const newDateStr = toLocalDateString(day);
+    const existing = all.find((t) => t.id === task.id);
+    if (isLockedCreateDay(day) && (!existing || getDateStrFromTask(existing) !== newDateStr)) {
+      return 'past';
+    }
+    const same = Boolean(
+      existing
+      && getDateStrFromTask(existing) === newDateStr
+      && getHourFromTask(existing) === hour,
+    );
+    const others = getTasksInHour(all, newDateStr, hour).filter((t) => t.id !== task.id);
+    if (!same && others.length >= MAX_TASKS_PER_HOUR) return 'full';
+
+    const start = new Date(day);
+    start.setHours(hour, 0, 0, 0);
+    const origin: Task = {
+      ...task,
+      startAt: start.toISOString(),
+      endAt: new Date(start.getTime() + 60 * 60 * 1000).toISOString(),
+    };
+    const plan = planRepeatSeries({
+      tasks: all,
+      origin,
+      hour,
+      weekdays: weekdays ?? task.repeatWeekdays,
+    });
+    const deleteSet = new Set(plan.deleteIds);
+    const upsertById = new Map(plan.upsert.map((row) => [row.id, row]));
+    const working = [
+      ...all.filter((row) => !deleteSet.has(row.id)).map((row) => upsertById.get(row.id) ?? row),
+      ...plan.upsert.filter((row) => !all.some((x) => x.id === row.id) && !deleteSet.has(row.id)),
+    ];
+
+    const hoursToSave = new Map<string, { day: Date; hour: number }>();
+    const mark = (row: Task | undefined) => {
+      if (!row?.startAt) return;
+      const slotDay = new Date(row.startAt);
+      const slotHour = slotDay.getHours();
+      slotDay.setHours(0, 0, 0, 0);
+      hoursToSave.set(`${toLocalDateString(slotDay)}-${slotHour}`, { day: slotDay, hour: slotHour });
+    };
+    mark(origin);
+    if (existing) mark(existing);
+    for (const row of plan.upsert) mark(row);
+    for (const id of plan.deleteIds) mark(all.find((row) => row.id === id));
+
+    const toSave: Task[] = [];
+    for (const slot of hoursToSave.values()) {
+      const dateStr = toLocalDateString(slot.day);
+      toSave.push(...rebalanceHourTasks(slot.day, slot.hour, getTasksInHour(working, dateStr, slot.hour)));
+    }
+
+    if (plan.deleteIds.length > 0) {
+      const removed = all.filter((row) => deleteSet.has(row.id));
+      await deleteTasks(plan.deleteIds);
+      for (const row of removed) await afterTaskDeleted(row);
+    }
+    if (toSave.length > 0) await saveTasks(toSave);
+    const written = toSave.find((row) => row.id === task.id) ?? origin;
+    await afterTaskWritten(written);
+    await refreshTasks();
+    trackCalendarTask(settings.analyticsEnabled, {
+      isNew: !existing,
+      completed: task.status === 'completed',
+      category: task.category,
+    });
+    notifyCalendarCloudDirty();
+    return 'ok';
+  }, [refreshTasks, settings.analyticsEnabled]);
+
   const deleteTaskInHour = useCallback(async (task: Task) => {
     const day = new Date(task.startAt);
     const hour = getHourFromTask(task);
@@ -537,6 +621,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       upsertTask,
       saveHourSlot,
       placeTask,
+      placeTaskWithRepeat,
       deleteTaskInHour,
       removeTask,
       settings,
@@ -568,7 +653,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [
       ready, screen, mainTab, setScreen, zoom, zoomIn, zoomOut, weekZoom, setWeekZoom, weekZoomIn, weekZoomOut,
       focusDate, selectedDay, tasks,
-      refreshTasks, upsertTask, saveHourSlot, placeTask, deleteTaskInHour, removeTask, settings, updateSettings,
+      refreshTasks, upsertTask, saveHourSlot, placeTask, placeTaskWithRepeat, deleteTaskInHour, removeTask, settings, updateSettings,
       session, authStart, authBackScreen, editingTask, sheetOpen, pendingDelete, requestDelete, cancelDelete, confirmDelete, completeOnboarding, onboardingFlow, openOnboarding, openAuth, taskClipboard, copyTaskToClipboard, gridClipboard, pasteGridClipboard, loadDemoThreeWeeks,
     ],
   );

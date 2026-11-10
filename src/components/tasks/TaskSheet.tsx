@@ -22,7 +22,47 @@ import { taskHasLumiLink } from '../../utils/wishTaskBridge';
 import { useLayoutMode } from '../../hooks/useLayoutMode';
 import { enablePushFromGesture } from '../../utils/enablePush';
 import { refreshCloudReminders } from '../../utils/webPush';
+import {
+  REPEAT_WEEKDAY_ORDER,
+  REPEAT_WEEKDAYS_MON_FRI,
+  formatRepeatDaysLabel,
+  isRepeatOn,
+  isWeekdaysMonFri,
+  normalizeRepeatWeekdays,
+  toggleRepeatWeekday,
+} from '../../utils/taskRepeat';
 import './TaskSheet.css';
+
+function BellRowIcon() {
+  return (
+    <svg className="task-sheet__choice-svg" viewBox="0 0 24 24" aria-hidden>
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        d="M6.2 16.8h11.6c.55 0 .85-.62.5-1.07l-1.35-1.75V11c0-2.55-1.7-4.72-4.15-5.4V4.55a1.8 1.8 0 0 0-3.6 0v1.05C6.75 6.28 5.05 8.45 5.05 11v2.98L3.7 15.73c-.35.45-.05 1.07.5 1.07Z"
+      />
+      <path fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" d="M10 19.15a2 2 0 0 0 4 0" />
+    </svg>
+  );
+}
+
+function RepeatRowIcon() {
+  return (
+    <svg className="task-sheet__choice-svg" viewBox="0 0 24 24" aria-hidden>
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17 1v4h-4M7 23v-4h4M20.5 8.5A8 8 0 0 0 7.2 5.1L7 5M3.5 15.5A8 8 0 0 0 16.8 18.9L17 19"
+      />
+    </svg>
+  );
+}
 
 function parseLocalDate(value: string): Date {
   const [y, m, d] = value.split('-').map(Number);
@@ -43,10 +83,10 @@ function formatSheetWhen(
 export function TaskSheet() {
   const {
     sheetOpen, setSheetOpen, editingTask, setEditingTask,
-    tasks, placeTask, requestDelete, settings, updateSettings,
+    tasks, placeTaskWithRepeat, requestDelete, settings, updateSettings,
     taskClipboard, copyTaskToClipboard, setScreen,
   } = useApp();
-  const { t, dateTag } = useI18n();
+  const { t, dateTag, weekdaysShort } = useI18n();
   const { requestOpenDesire } = useLumiHost();
   const { isDesktopLayout } = useLayoutMode();
 
@@ -59,9 +99,15 @@ export function TaskSheet() {
   const [slotHour, setSlotHour] = useState<number | null>(null);
   const [whenOpen, setWhenOpen] = useState(false);
   const [error, setError] = useState('');
+  const [repeatWeekdays, setRepeatWeekdays] = useState<number[]>([]);
+  const [repeatOpen, setRepeatOpen] = useState(false);
+  const [repeatDraft, setRepeatDraft] = useState<number[]>([]);
+  const [remindOpen, setRemindOpen] = useState(false);
+  const [remindDraft, setRemindDraft] = useState<number | null>(null);
   const [reminderHintOpen, setReminderHintOpen] = useState(false);
   const [copyHint, setCopyHint] = useState('');
   const descRef = useRef<HTMLTextAreaElement>(null);
+  const popOpenedAt = useRef(0);
 
   useEffect(() => {
     if (editingTask) {
@@ -70,6 +116,9 @@ export function TaskSheet() {
       setCategory(editingTask.category);
       setImportant(editingTask.important);
       setReminderOffset(editingTask.reminderOffsetMinutes ?? null);
+      setRepeatWeekdays(normalizeRepeatWeekdays(editingTask.repeatWeekdays));
+      setRepeatOpen(false);
+      setRemindOpen(false);
       if (isUnscheduledTask(editingTask)) {
         setSlotDate('');
         setSlotHour(null);
@@ -103,14 +152,18 @@ export function TaskSheet() {
   useEffect(() => {
     if (!sheetOpen || !isDesktopLayout) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setSheetOpen(false);
-        setEditingTask(null);
+      if (e.key !== 'Escape') return;
+      if (repeatOpen || remindOpen) {
+        setRepeatOpen(false);
+        setRemindOpen(false);
+        return;
       }
+      setSheetOpen(false);
+      setEditingTask(null);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [sheetOpen, isDesktopLayout, setEditingTask, setSheetOpen]);
+  }, [sheetOpen, isDesktopLayout, repeatOpen, remindOpen, setEditingTask, setSheetOpen]);
 
   const hourOptions = useMemo(() => {
     const hours = getHoursRange(settings.dayStartHour, settings.dayEndHour);
@@ -141,6 +194,8 @@ export function TaskSheet() {
   );
 
   const close = () => {
+    setRepeatOpen(false);
+    setRemindOpen(false);
     setSheetOpen(false);
     setEditingTask(null);
   };
@@ -152,6 +207,7 @@ export function TaskSheet() {
     category,
     important,
     reminderOffsetMinutes: reminderOffset,
+    repeatWeekdays: isRepeatOn(repeatWeekdays) ? repeatWeekdays : null,
   });
 
   const saveToSlot = async (status?: 'completed') => {
@@ -170,7 +226,12 @@ export function TaskSheet() {
       return;
     }
     const updated = status ? { ...buildUpdated(), status } : buildUpdated();
-    const result = await placeTask(updated, parseLocalDate(slotDate), slotHour);
+    const result = await placeTaskWithRepeat(
+      updated,
+      parseLocalDate(slotDate),
+      slotHour,
+      isRepeatOn(repeatWeekdays) ? repeatWeekdays : [],
+    );
     if (result === 'full') {
       setError(t('sheetHourFull'));
       return;
@@ -209,6 +270,7 @@ export function TaskSheet() {
       category: data.category,
       important: data.important,
       reminderOffsetMinutes: data.reminderOffsetMinutes ?? null,
+      repeatWeekdays: data.repeatWeekdays ?? null,
     });
     setCopyHint(t('sheetCopied'));
     window.setTimeout(() => setCopyHint(''), 1600);
@@ -221,6 +283,7 @@ export function TaskSheet() {
     setCategory(taskClipboard.category);
     setImportant(taskClipboard.important);
     setReminderOffset(taskClipboard.reminderOffsetMinutes);
+    setRepeatWeekdays(normalizeRepeatWeekdays(taskClipboard.repeatWeekdays));
     setError('');
   };
 
@@ -236,6 +299,46 @@ export function TaskSheet() {
   const whenLabel = slotPicked && slotHour !== null
     ? formatSheetWhen(slotDate, slotHour, dateTag)
     : t('sheetWhenMissing');
+
+  const reminderValueLabel = REMINDER_OFFSET_OPTIONS.find((opt) => opt.value === reminderOffset);
+  const repeatValueLabel = isRepeatOn(repeatWeekdays)
+    ? formatRepeatDaysLabel(repeatWeekdays, weekdaysShort)
+    : t('sheetRepeatNone');
+
+  const openRepeatPop = () => {
+    setRemindOpen(false);
+    setRepeatDraft(repeatWeekdays);
+    popOpenedAt.current = Date.now();
+    setRepeatOpen(true);
+  };
+
+  const commitRepeatPop = () => {
+    setRepeatWeekdays(normalizeRepeatWeekdays(repeatDraft));
+    setRepeatOpen(false);
+  };
+
+  const openRemindPop = () => {
+    setRepeatOpen(false);
+    setRemindDraft(reminderOffset);
+    popOpenedAt.current = Date.now();
+    setRemindOpen(true);
+  };
+
+  const commitRemindPop = () => {
+    setReminderOffset(remindDraft);
+    setRemindOpen(false);
+    if (remindDraft === null) return;
+    if (shouldShowFirstReminderHint(settings, remindDraft)) {
+      markFirstReminderHintSeen();
+      setReminderHintOpen(true);
+    }
+  };
+
+  const closePops = () => {
+    if (Date.now() - popOpenedAt.current < 400) return;
+    setRepeatOpen(false);
+    setRemindOpen(false);
+  };
 
   const sheetBody = (
       <form
@@ -360,31 +463,25 @@ export function TaskSheet() {
           ))}
         </div>
 
-        <label className="task-sheet__field">
-          {t('sheetRemind')}
-          <span className="select-wrap">
-            <select
-              className="task-sheet__select"
-              value={reminderOffset === null ? '' : String(reminderOffset)}
-              onChange={(e) => {
-                const v = e.target.value;
-                const next = v === '' ? null : Number(v);
-                setReminderOffset(next);
-                if (next === null) return;
-                if (shouldShowFirstReminderHint(settings, next)) {
-                  markFirstReminderHintSeen();
-                  setReminderHintOpen(true);
-                }
-              }}
-            >
-              {REMINDER_OFFSET_OPTIONS.map((opt) => (
-                <option key={String(opt.value)} value={opt.value === null ? '' : String(opt.value)}>
-                  {t(opt.labelKey)}
-                </option>
-              ))}
-            </select>
-          </span>
-        </label>
+        <button
+          type="button"
+          className="task-sheet__choice"
+          onClick={openRemindPop}
+        >
+          <span className="task-sheet__choice-icon"><BellRowIcon /></span>
+          <span className="task-sheet__choice-label">{t('sheetRemind')}</span>
+          <span className="task-sheet__choice-value">{reminderValueLabel ? t(reminderValueLabel.labelKey) : t('reminderNone')}</span>
+        </button>
+
+        <button
+          type="button"
+          className="task-sheet__choice"
+          onClick={openRepeatPop}
+        >
+          <span className="task-sheet__choice-icon"><RepeatRowIcon /></span>
+          <span className="task-sheet__choice-label">{t('sheetRepeat')}</span>
+          <span className="task-sheet__choice-value">{repeatValueLabel}</span>
+        </button>
 
         <label className="task-sheet__check">
           <input type="checkbox" checked={important} onChange={(e) => setImportant(e.target.checked)} />
@@ -447,6 +544,105 @@ export function TaskSheet() {
           document.body,
         )
       )}
+      {repeatOpen &&
+        createPortal(
+          <div
+            className="repeat-pop-overlay"
+            role="presentation"
+            onClick={closePops}
+          >
+            <div
+              className="repeat-pop"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="repeat-pop-title"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="repeat-pop__head">
+                <h2 id="repeat-pop-title" className="repeat-pop__title">{t('sheetRepeat')}</h2>
+                <button
+                  type="button"
+                  className={`repeat-pop__weekdays${isWeekdaysMonFri(repeatDraft) ? ' is-on' : ''}`}
+                  onClick={() => setRepeatDraft([...REPEAT_WEEKDAYS_MON_FRI])}
+                >
+                  {t('sheetRepeatWeekdays')}
+                </button>
+              </div>
+              <div className="repeat-pop__days" role="group" aria-label={t('sheetRepeatPickDays')}>
+                {REPEAT_WEEKDAY_ORDER.map((day, i) => {
+                  const on = repeatDraft.includes(day);
+                  const raw = weekdaysShort[i] ?? '';
+                  const label = raw ? raw.charAt(0) + raw.slice(1).toLowerCase() : '';
+                  return (
+                    <button
+                      key={day}
+                      type="button"
+                      className={`repeat-pop__day${on ? ' is-on' : ''}`}
+                      aria-pressed={on}
+                      onClick={() => setRepeatDraft(toggleRepeatWeekday(repeatDraft, day))}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="repeat-pop__actions">
+                <button type="button" className="btn btn--ghost" onClick={() => setRepeatOpen(false)}>
+                  {t('cancel')}
+                </button>
+                <button type="button" className="btn btn--primary" onClick={commitRepeatPop}>
+                  {t('sheetRepeatDone')}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
+      {remindOpen &&
+        createPortal(
+          <div
+            className="repeat-pop-overlay"
+            role="presentation"
+            onClick={closePops}
+          >
+            <div
+              className="repeat-pop"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="remind-pop-title"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="repeat-pop__head">
+                <h2 id="remind-pop-title" className="repeat-pop__title">{t('sheetRemind')}</h2>
+              </div>
+              <div className="repeat-pop__opts" role="group" aria-label={t('sheetRemind')}>
+                {REMINDER_OFFSET_OPTIONS.map((opt) => {
+                  const on = opt.value === remindDraft;
+                  return (
+                    <button
+                      key={String(opt.value)}
+                      type="button"
+                      aria-pressed={on}
+                      className={`repeat-pop__opt${on ? ' is-on' : ''}`}
+                      onClick={() => setRemindDraft(opt.value)}
+                    >
+                      {t(opt.labelKey)}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="repeat-pop__actions">
+                <button type="button" className="btn btn--ghost" onClick={() => setRemindOpen(false)}>
+                  {t('cancel')}
+                </button>
+                <button type="button" className="btn btn--primary" onClick={commitRemindPop}>
+                  {t('sheetRepeatDone')}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
       {reminderHintOpen &&
         createPortal(
           <ConfirmDialog
