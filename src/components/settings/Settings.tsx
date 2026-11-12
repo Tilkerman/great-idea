@@ -733,13 +733,12 @@ export function SettingsAbout() {
       <article className="settings-about">
         <div className="settings-about__intro">
           <p className="settings-about__logo">{t('aboutHeadline')}</p>
-          <p className="settings-about__tagline">{t('aboutLead')}</p>
         </div>
+        <p>{t('aboutLead')}</p>
         <p>{t('aboutLead2')}</p>
+        <p>{t('aboutLead3')}</p>
 
         <h2 className="settings-about__h">{t('aboutWhatTitle')}</h2>
-        <h3 className="settings-about__h2">{t('aboutFeatureNoPayTitle')}</h3>
-        <p>{t('aboutFeatureNoPay')}</p>
         <h3 className="settings-about__h2">{t('aboutFeatureTimeTitle')}</h3>
         <p>{t('aboutFeatureTime')}</p>
         <h3 className="settings-about__h2">{t('aboutFeatureFreeTitle')}</h3>
@@ -750,6 +749,8 @@ export function SettingsAbout() {
         <p>{t('aboutFeatureFast')}</p>
         <h3 className="settings-about__h2">{t('aboutFeatureReminderTitle')}</h3>
         <p>{t('aboutFeatureReminder')}</p>
+        <h3 className="settings-about__h2">{t('aboutFeatureRepeatTitle')}</h3>
+        <p>{t('aboutFeatureRepeat')}</p>
         <h3 className="settings-about__h2">{t('aboutFeatureCategoriesTitle')}</h3>
         <p>{t('aboutFeatureCategories')}</p>
         <ul className="settings-about__cats">
@@ -766,6 +767,8 @@ export function SettingsAbout() {
             {t('aboutHow3Family')}
           </li>
         </ul>
+        <h3 className="settings-about__h2">{t('aboutFeatureCopyTitle')}</h3>
+        <p>{t('aboutFeatureCopy')}</p>
 
         <h2 className="settings-about__h">{t('aboutGuideTitle')}</h2>
         <h3 className="settings-about__h2">{t('aboutGuide1Title')}</h3>
@@ -776,13 +779,10 @@ export function SettingsAbout() {
         <p>{t('aboutGuide3')}</p>
         <h3 className="settings-about__h2">{t('aboutGuide4Title')}</h3>
         <p>{t('aboutGuide4')}</p>
-        <h3 className="settings-about__h2">{t('aboutGuide5Title')}</h3>
-        <p>{t('aboutGuide5')}</p>
-        <h3 className="settings-about__h2">{t('aboutGuide6Title')}</h3>
-        <p>{t('aboutGuide6')}</p>
 
         <h2 className="settings-about__h">{t('aboutMainTitle')}</h2>
         <p>{t('aboutMain')}</p>
+        <p className="settings-about__quote">{t('aboutMainClose')}</p>
 
         <button
           type="button"

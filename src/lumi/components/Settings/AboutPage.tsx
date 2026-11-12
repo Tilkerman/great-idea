@@ -22,11 +22,12 @@ export default function AboutPage({ onBack }: AboutPageProps) {
           <article className="settings-about settings-about--lumi">
             <div className="settings-about__intro">
               <p className="settings-about__logo">{t('settings.about.headline')}</p>
-              <p className="settings-about__tagline">{t('settings.about.lead')}</p>
             </div>
+            <p>{t('settings.about.lead')}</p>
+            <p>{t('settings.about.lead2')}</p>
+
             <h2 className="settings-about__h">{t('settings.about.freeTitle')}</h2>
             <p>{t('settings.about.free')}</p>
-            <p>{t('settings.about.noGrid')}</p>
             <p>{t('settings.about.notTask')}</p>
             <p>{t('settings.about.image')}</p>
             <p className="settings-about__inspiration">{t('settings.about.inspiration')}</p>
@@ -50,7 +51,6 @@ export default function AboutPage({ onBack }: AboutPageProps) {
             <p>{t('settings.about.how2a')}</p>
             <p>{t('settings.about.how2b')}</p>
             <p>{t('settings.about.how2c')}</p>
-            <p>{t('settings.about.how2d')}</p>
 
             <h3 className="settings-about__h2">{t('settings.about.how3Title')}</h3>
             <p>{t('settings.about.how3a')}</p>
@@ -67,13 +67,14 @@ export default function AboutPage({ onBack }: AboutPageProps) {
             </ul>
             <p>{t('settings.about.how3c')}</p>
 
-            <h3 className="settings-about__h2">{t('settings.about.bridgeTitle')}</h3>
+            <h3 className="settings-about__h2">{t('settings.about.how4TimeTitle')}</h3>
             <p>{t('settings.about.bridgeLead')}</p>
+            <p>{t('settings.about.bridgeLead2')}</p>
+            <p>{t('settings.about.bridgeAfter')}</p>
             <p className="settings-about__quote">{t('settings.about.bridgeNote')}</p>
 
-            <h3 className="settings-about__h2">{t('settings.about.how4Title')}</h3>
+            <h2 className="settings-about__h">{t('settings.about.how4Title')}</h2>
             <p>{t('settings.about.how4a')}</p>
-            <p>{t('settings.about.how4b')}</p>
             <p>{t('settings.about.how4c')}</p>
             <ul className="settings-about__list">
               <li>{t('settings.about.hasWheel')}</li>
@@ -90,6 +91,8 @@ export default function AboutPage({ onBack }: AboutPageProps) {
             <p>{t('settings.about.remindOne')}</p>
             <p>{t('settings.about.remindPause')}</p>
             <p className="settings-about__quote">{t('settings.about.remindAsk')}</p>
+            <p>{t('settings.about.remindSmall')}</p>
+            <p className="settings-about__quote">{t('settings.about.remindClose')}</p>
           </article>
         </div>
       </div>
