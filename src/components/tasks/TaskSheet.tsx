@@ -146,6 +146,11 @@ export function TaskSheet() {
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = prev;
+      const active = document.activeElement;
+      if (active instanceof HTMLElement) active.blur();
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     };
   }, [sheetOpen, editingTask, isDesktopLayout]);
 

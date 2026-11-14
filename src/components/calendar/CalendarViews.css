@@ -994,6 +994,11 @@
   touch-action: manipulation;
 }
 
+.week-view__pick-hit--col {
+  z-index: 4;
+  border-radius: 0;
+}
+
 .week-view__header-scroll {
   flex: 1;
   overflow: hidden;

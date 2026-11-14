@@ -7,8 +7,7 @@
   padding-top: max(10px, var(--safe-top, env(safe-area-inset-top, 0px)));
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 50;
   min-height: 48px;
   flex-shrink: 0;

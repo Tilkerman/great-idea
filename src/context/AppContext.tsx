@@ -148,7 +148,7 @@ interface AppContextValue {
       | { kind: 'week'; focusDate: Date }
       | { kind: 'day'; day: Date }
       | { kind: 'hour'; day: Date; hour: number },
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   loadDemoThreeWeeks: () => Promise<void>;
 }
 
@@ -524,39 +524,47 @@ export function AppProvider({ children }: { children: ReactNode }) {
       | { kind: 'week'; focusDate: Date }
       | { kind: 'day'; day: Date }
       | { kind: 'hour'; day: Date; hour: number },
-  ) => {
-    if (!gridClipboard || gridClipboard.kind !== target.kind) return;
-    if ((target.kind === 'day' || target.kind === 'hour') && isLockedCreateDay(target.day)) return;
-    const all = await getAllTasks();
-    if (target.kind === 'week') {
-      const days = getWeekDays(target.focusDate, settings.weekStartsOn);
-      const liveDates = new Set(days.filter((d) => !isLockedCreateDay(d)).map(toLocalDateString));
-      if (liveDates.size === 0) return;
-      const removeRows = all.filter((task) => liveDates.has(toLocalDateString(new Date(task.startAt))));
-      const removeIds = removeRows.map((task) => task.id);
+  ): Promise<boolean> => {
+    if (!gridClipboard || gridClipboard.items.length === 0) return false;
+    const weekStartsOn = settings.weekStartsOn;
+    try {
+      if (target.kind === 'week') {
+        const days = getWeekDays(target.focusDate, weekStartsOn);
+        const liveDates = new Set(days.filter((d) => !isLockedCreateDay(d)).map(toLocalDateString));
+        if (liveDates.size === 0) return false;
+        const incoming = buildPastedTasks(
+          gridClipboard,
+          { kind: 'week', focusDate: target.focusDate, weekStartsOn },
+        ).filter((task) => liveDates.has(toLocalDateString(new Date(task.startAt))));
+        if (incoming.length === 0) return false;
+        const all = await getAllTasks();
+        const removeRows = all.filter((task) => liveDates.has(toLocalDateString(new Date(task.startAt))));
+        const removeIds = removeRows.map((task) => task.id);
+        for (const row of removeRows) await afterTaskDeleted(row);
+        await deleteTasks(removeIds);
+        await saveTasks(incoming);
+        await refreshTasks();
+        notifyCalendarCloudDirty();
+        return true;
+      }
+      if (isLockedCreateDay(target.day)) return false;
+      const incoming = buildPastedTasks(gridClipboard, { ...target, weekStartsOn });
+      if (incoming.length === 0) return false;
+      const all = await getAllTasks();
+      const removeIds = target.kind === 'day'
+        ? idsInDay(all, target.day)
+        : idsInHour(all, target.day, target.hour);
+      const removeRows = all.filter((task) => removeIds.includes(task.id));
       for (const row of removeRows) await afterTaskDeleted(row);
       await deleteTasks(removeIds);
-      const incoming = buildPastedTasks(
-        gridClipboard,
-        { kind: 'week', focusDate: target.focusDate, weekStartsOn: settings.weekStartsOn },
-      ).filter((task) => liveDates.has(toLocalDateString(new Date(task.startAt))));
       await saveTasks(incoming);
       await refreshTasks();
       notifyCalendarCloudDirty();
-      return;
+      return true;
+    } catch (err) {
+      console.warn('[paste]', err);
+      return false;
     }
-    const removeRows = all.filter((task) => (target.kind === 'day'
-      ? idsInDay(all, target.day).includes(task.id)
-      : idsInHour(all, target.day, target.hour).includes(task.id)));
-    const removeIds = target.kind === 'day'
-      ? idsInDay(all, target.day)
-      : idsInHour(all, target.day, target.hour);
-    for (const row of removeRows) await afterTaskDeleted(row);
-    await deleteTasks(removeIds);
-    const incoming = buildPastedTasks(gridClipboard, target);
-    await saveTasks(incoming);
-    await refreshTasks();
-    notifyCalendarCloudDirty();
   }, [gridClipboard, refreshTasks, settings.weekStartsOn]);
 
   const loadDemoThreeWeeks = useCallback(async () => {

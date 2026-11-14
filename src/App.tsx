@@ -110,6 +110,15 @@ function AppRouter() {
   }, [ready, screen]);
 
   useEffect(() => {
+    if (sheetOpen) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && active !== document.body) active.blur();
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [sheetOpen]);
+
+  useEffect(() => {
     if (!ready) return;
     persistUtmFromUrl();
     void pingPushHello();

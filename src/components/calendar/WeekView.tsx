@@ -8,7 +8,6 @@ import { HourSlot } from '../tasks/HourSlot';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 import {
   addDays,
-  formatWeekHeaderTitle,
   getHoursRange,
   getWeekDays,
   hourRangeLabels,
@@ -291,6 +290,13 @@ export function WeekView({
     finishCopy(clip);
   };
 
+  const runPaste = async (target: PendingPaste) => {
+    const ok = await pasteGridClipboard(
+      target.kind === 'week' ? { kind: 'week', focusDate } : target,
+    );
+    if (ok) showToast(t('pasted'));
+  };
+
   const requestPaste = (target: PendingPaste, count: number) => {
     setMenuOpen(false);
     setPick(null);
@@ -310,8 +316,7 @@ export function WeekView({
       }
     }
     if (count === 0) {
-      void pasteGridClipboard(target.kind === 'week' ? { kind: 'week', focusDate } : target);
-      showToast(t('pasted'));
+      void runPaste(target);
       return;
     }
     setPendingPaste(target);
@@ -321,8 +326,7 @@ export function WeekView({
     if (!pendingPaste) return;
     const target = pendingPaste;
     setPendingPaste(null);
-    await pasteGridClipboard(target.kind === 'week' ? { kind: 'week', focusDate } : target);
-    showToast(t('pasted'));
+    await runPaste(target);
   };
 
   const overwriteCount = pendingPaste
@@ -406,14 +410,11 @@ export function WeekView({
 
   const clipStatusMeta = useMemo(() => {
     if (!gridClipboard) return '';
-    if (gridClipboard.kind === 'week') {
-      const range = formatWeekHeaderTitle(focusDate, settings.weekStartsOn, dateTag, monthsGen);
-      return `${t('kindWeekCap')} · ${range}`;
-    }
     const source = clipboardSourceLabel(gridClipboard, settings.weekStartsOn, dateTag, monthsGen, locale);
     const n = gridClipboard.items.length;
+    if (gridClipboard.kind === 'week') return `${t('kindWeekCap')} · ${source}`;
     return `${source} · ${n} ${taskWord(n)}`;
-  }, [gridClipboard, focusDate, settings.weekStartsOn, dateTag, monthsGen, locale, t, taskWord]);
+  }, [gridClipboard, settings.weekStartsOn, dateTag, monthsGen, locale, t, taskWord]);
 
   const onPasteFromMenu = () => {
     if (!gridClipboard) return;
@@ -569,6 +570,14 @@ export function WeekView({
                 key={day.toISOString()}
                 className={['week-view__col', when && `week-view__col--${when}`].filter(Boolean).join(' ')}
               >
+                {pickDay && (
+                  <button
+                    type="button"
+                    className="week-view__pick-hit week-view__pick-hit--col"
+                    aria-label={toLocalDateString(day)}
+                    onClick={() => onPickDay(day)}
+                  />
+                )}
                 {hours.map((h) => {
                   const key = `${toLocalDateString(day)}-${h}`;
                   const slotTasks = tasksBySlot.get(key) ?? [];
