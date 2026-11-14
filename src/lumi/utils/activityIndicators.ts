@@ -26,7 +26,52 @@ export function getActivityLevel(avgActivityPerDay: number): ActivityLevel {
  */
 export function getActivityIndicator(avgActivityPerDay: number, locale: 'ru' | 'en' | 'es'): ActivityIndicator {
   const level = getActivityLevel(avgActivityPerDay);
-  
+
+  if (locale === 'es') {
+    switch (level) {
+      case 'very-high':
+        return {
+          level,
+          label: 'Actividad muy alta',
+          icon: '🔥',
+          color: '#ff6b35',
+          frequency: `~${avgActivityPerDay.toFixed(1)} contactos al día`,
+          recommendation: '¡Excelente! Vuelves a este deseo con regularidad.',
+        };
+      case 'high':
+        return {
+          level,
+          label: 'Actividad alta',
+          icon: '⭐',
+          color: '#4caf50',
+          frequency: `~${avgActivityPerDay.toFixed(1)} contactos al día`,
+          recommendation: 'Buena constancia. Sigue así.',
+        };
+      case 'medium':
+        return {
+          level,
+          label: 'Actividad media',
+          icon: '📊',
+          color: '#ffa726',
+          frequency: avgActivityPerDay < 1
+            ? `Contactos cada ${Math.round(1 / avgActivityPerDay)} días`
+            : `~${avgActivityPerDay.toFixed(1)} contactos al día`,
+          recommendation: 'Intenta volver a este deseo más a menudo.',
+        };
+      case 'low':
+        return {
+          level,
+          label: 'Actividad baja',
+          icon: '🐌',
+          color: '#9e9e9e',
+          frequency: avgActivityPerDay > 0
+            ? `Contactos cada ${Math.round(1 / avgActivityPerDay)} días`
+            : 'Aún no hay contactos',
+          recommendation: 'Dale más atención a este deseo. La constancia es la clave.',
+        };
+    }
+  }
+
   if (locale === 'ru') {
     switch (level) {
       case 'very-high':

@@ -48,6 +48,7 @@ import {
   setRuntimeLocale,
 } from '../utils/appLocale';
 import { setAnalyticsConsent, trackCalendarTask, trackOnboardingComplete } from '../utils/productAnalytics';
+import { tLocale } from '../i18n/catalog';
 import type { OnboardingFlowId } from '../constants/onboarding';
 
 const ONBOARDING_KEY = 'tili-onboarding-done';
@@ -588,6 +589,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       root.style.colorScheme = 'light';
       if (meta) meta.setAttribute('content', '#ffffff');
       root.lang = settings.locale;
+      document.title = tLocale(settings.locale, 'headerLogoAlt');
       setRuntimeLocale(settings.locale);
       return;
     }
@@ -603,6 +605,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     if (meta) meta.setAttribute('content', root.dataset.theme === 'dark' ? '#0f1117' : '#ffffff');
     root.lang = settings.locale;
+    document.title = tLocale(settings.locale, 'headerLogoAlt');
     setRuntimeLocale(settings.locale);
   }, [ready, screen, settings.theme, settings.locale]);
 

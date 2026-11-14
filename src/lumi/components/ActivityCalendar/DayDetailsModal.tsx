@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useI18n } from '../../i18n';
+import { formatLongDate } from '../../utils/date';
 import type { Contact } from '../../types';
 import './ActivityCalendarModal.css';
 
@@ -43,12 +44,7 @@ export default function DayDetailsModal({
   const hasStep = !!contactsByType.step;
 
   const formatDateLabel = (dateStr: string): string => {
-    const date = new Date(dateStr + 'T00:00:00');
-    const monthNames = locale === 'ru'
-      ? ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
-      : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    return `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+    return formatLongDate(new Date(dateStr + 'T00:00:00'), locale);
   };
 
   const truncateText = (text: string | null, maxLength: number = 60): string => {

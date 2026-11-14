@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
 import type { Locale } from '../../types';
 import { en, type TranslationKey } from './en';
+import { es } from './es';
 import { ru } from './ru';
 
 export type { Locale };
@@ -15,13 +16,10 @@ function interpolate(template: string, vars?: TranslateVars): string {
   });
 }
 
-function dictLocale(locale: Locale): 'ru' | 'en' {
-  // Lumi screens are still ru/en only; Spanish follows English copy until es exists.
-  return locale === 'ru' ? 'ru' : 'en';
-}
-
 function getDict(locale: Locale) {
-  return dictLocale(locale) === 'ru' ? ru : en;
+  if (locale === 'ru') return ru;
+  if (locale === 'es') return es;
+  return en;
 }
 
 function getRussianNounForm(count: number): 'one' | 'few' | 'many' | 'other' {
@@ -34,11 +32,12 @@ function getRussianNounForm(count: number): 'one' | 'few' | 'many' | 'other' {
 }
 
 export function getWishNoun(count: number, locale: Locale): string {
+  const dict = getDict(locale);
   if (locale === 'ru') {
     const form = getRussianNounForm(count);
-    return ru[`desires.noun.${form}` as TranslationKey];
+    return dict[`desires.noun.${form}` as TranslationKey];
   }
-  return count === 1 ? en['desires.noun.one'] : en['desires.noun.other'];
+  return count === 1 ? dict['desires.noun.one'] : dict['desires.noun.other'];
 }
 
 type I18nContextValue = {

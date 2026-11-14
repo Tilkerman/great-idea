@@ -30,7 +30,7 @@ interface DesireStatistics extends Desire {
 
 export default function StatisticsPage({ onBack, onDesireClick }: StatisticsPageProps) {
   const { t, locale } = useI18n();
-  const statLocale = locale === 'ru' ? 'ru' : 'en';
+  const statLocale = locale;
   const [desires, setDesires] = useState<DesireStatistics[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activityCalendarOpen, setActivityCalendarOpen] = useState(false);

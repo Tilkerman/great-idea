@@ -45,7 +45,7 @@ export function Header() {
         <img
           className="app-header__logo app-header__logo--light"
           src={tiliHeaderLogo}
-          alt="TiLi Calendar"
+          alt={t('headerLogoAlt')}
           width={189}
           height={93}
           onError={(event) => {

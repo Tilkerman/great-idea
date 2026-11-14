@@ -141,7 +141,7 @@ export async function shareAppLink(locale: Locale = 'ru') {
   const url = getAppShareUrl();
   if (canWebShare()) {
     await navigator.share({
-      title: 'TiLi Calendar',
+      title: tLocale(locale, 'shareTitle'),
       text: tLocale(locale, 'shareText'),
       url,
     });

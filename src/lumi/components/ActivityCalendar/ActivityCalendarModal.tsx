@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { contactService, desireService } from '../../services/db';
 import { useI18n } from '../../i18n';
-import { toLocalDateString } from '../../utils/date';
+import { formatLongDate, formatMonthYear, toLocalDateString, weekDaysShort } from '../../utils/date';
 import type { Contact } from '../../types';
 import DayDetailsModal from './DayDetailsModal';
 import './ActivityCalendarModal.css';
@@ -205,27 +205,15 @@ export default function ActivityCalendarModal({
     return days;
   }, [currentMonth, contacts, desireCreatedAt]);
 
-  // Название месяца и года
-  const monthYearLabel = useMemo(() => {
-    const monthNames = locale === 'ru' 
-      ? ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-      : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return `${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
-  }, [currentMonth, locale]);
+  const monthYearLabel = useMemo(
+    () => formatMonthYear(currentMonth, locale),
+    [currentMonth, locale],
+  );
 
-  // Дни недели
-  const weekDays = locale === 'ru' 
-    ? ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС']
-    : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const weekDays = weekDaysShort(locale);
 
-  // Форматирование даты для отображения
   const formatDateLabel = (dateStr: string): string => {
-    const date = new Date(dateStr + 'T00:00:00');
-    const monthNames = locale === 'ru'
-      ? ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
-      : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    
-    return `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+    return formatLongDate(new Date(dateStr + 'T00:00:00'), locale);
   };
 
   const handlePrevMonth = () => {

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import type { Desire, Contact, DesireImage, ActionItem } from '../../types';
 import { desireService, contactService, actionItemService } from '../../services/db';
 import ImageGallery from '../ImageGallery/ImageGallery';
-import { formatDate, getTodayDateString } from '../../utils/date';
+import { formatDate, getDateLocale, getTodayDateString } from '../../utils/date';
 import './DesireDetail.css';
 import { useI18n } from '../../i18n';
 import Header from '../Header/Header';
@@ -454,7 +454,7 @@ export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailP
                 ? tasks.find((row) => row.id === item.linkedTaskId)
                 : undefined;
               const when = linkedTask?.startAt
-                ? new Date(linkedTask.startAt).toLocaleString(locale === 'ru' ? 'ru-RU' : 'en-US', {
+                ? new Date(linkedTask.startAt).toLocaleString(getDateLocale(locale), {
                     weekday: 'short',
                     day: 'numeric',
                     month: 'short',
@@ -545,7 +545,7 @@ export default function DesireDetail({ desireId, onBack, onEdit }: DesireDetailP
           <div className="desire-detail-section">
             <h2 className="desire-detail-section-title">{t('detail.timeHint.title')}</h2>
             <p className="desire-detail-deadline">
-              {new Date(desire.deadline).toLocaleDateString(locale === 'ru' ? 'ru-RU' : 'en-US', {
+              {new Date(desire.deadline).toLocaleDateString(getDateLocale(locale), {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',

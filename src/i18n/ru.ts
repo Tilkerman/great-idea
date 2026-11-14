@@ -9,6 +9,7 @@ export const ru = {
   weekdaysShort: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'],
   msg: {
     loading: 'Загрузка TiLi…',
+    headerLogoAlt: 'TiLi — календарь',
     back: '‹ Назад',
     cancel: 'Отмена',
     close: 'Закрыть',
@@ -459,6 +460,7 @@ export const ru = {
     showHow: 'Как установить',
     hideHow: 'Скрыть инструкцию',
     shareText: 'Календарь TiLi на телефон — PWA, работает офлайн',
+    shareTitle: 'Календарь TiLi',
     stats: 'Статистика',
     periodDay: 'День',
     periodWeek: 'Неделя',

@@ -11,6 +11,7 @@ export const en: typeof ru = {
   weekdaysShort: ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'],
   msg: {
     loading: 'Loading TiLi…',
+    headerLogoAlt: 'TiLi Calendar',
     back: '‹ Back',
     cancel: 'Cancel',
     close: 'Close',
@@ -461,6 +462,7 @@ export const en: typeof ru = {
     showHow: 'How to install',
     hideHow: 'Hide instructions',
     shareText: 'TiLi Calendar on your phone — a PWA that works offline',
+    shareTitle: 'TiLi Calendar',
     stats: 'Statistics',
     periodDay: 'Day',
     periodWeek: 'Week',
