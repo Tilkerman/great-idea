@@ -198,9 +198,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let finished = false;
+
+    const openLocalScreen = () => {
+      const onboardingDone = hasCompletedOnboardingForLayout();
+      setScreen(onboardingDone ? readMainTab() : 'onboarding');
+    };
+
     const watchdog = window.setTimeout(() => {
       if (!finished) {
         console.warn('TiLi init exceeded deadline — showing UI anyway');
+        // Without this, a hung cloud session left the initial screen = onboarding
+        // and users saw the welcome tour again whenever the API was offline.
+        openLocalScreen();
         setReady(true);
       }
     }, 12_000);
@@ -256,7 +265,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       setSettingsState(s);
       await refreshTasks();
-      const onboardingDone = hasCompletedOnboardingForLayout();
       const savedSession = localStorage.getItem(SESSION_KEY);
       if (savedSession) {
         try {
@@ -265,14 +273,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
           /* ignore */
         }
       }
+      // Decide calendar vs tour from localStorage BEFORE waiting on the API.
+      // cloudFetch tries several hosts × 8s; a dead VPS used to outrun the
+      // watchdog and leave the welcome screen up as if onboarding never finished.
+      openLocalScreen();
+      finished = true;
+      window.clearTimeout(watchdog);
+      setReady(true);
       if (isCloudAccountEnabled()) {
-        const cloudSession = await fetchCloudSession();
-        if (cloudSession) setSession(cloudSession);
+        void fetchCloudSession().then((cloudSession) => {
+          if (cloudSession) setSession(cloudSession);
+        });
       }
-      setScreen(onboardingDone ? readMainTab() : 'onboarding');
       } catch (err) {
         console.error('TiLi init failed', err);
-      } finally {
+        openLocalScreen();
         finished = true;
         window.clearTimeout(watchdog);
         setReady(true);

@@ -36,6 +36,7 @@ import { useLayoutMode } from './hooks/useLayoutMode';
 import { SideNav } from './components/layout/SideNav';
 import { IosInstallBanner } from './components/pwa/IosInstallBanner';
 import { CalendarCloudSyncBridge } from './components/sync/CalendarCloudSyncBridge';
+import logoMark from './assets/logo-tili-header.png';
 
 function DeleteConfirm() {
   const { pendingDelete, cancelDelete, confirmDelete } = useApp();
@@ -131,7 +132,9 @@ function AppRouter() {
   if (!ready) {
     return (
       <div className="app-viewport app-viewport--center">
-        <div className="app-loading">{t('loading')}</div>
+        <div className="app-loading" role="status" aria-label={t('loading')}>
+          <img className="app-loading__logo" src={logoMark} alt="" draggable={false} />
+        </div>
       </div>
     );
   }

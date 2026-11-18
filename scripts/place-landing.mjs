@@ -60,6 +60,7 @@ const files = [
   'icon-tili-512.png',
   'og-tili-lumi.png',
   'privacy.html',
+  'status.html',
   'sitemap.xml',
   'robots.txt',
   'yandex_56d4f4676a9b372b.html',

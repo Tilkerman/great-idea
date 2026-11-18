@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#5f9f72" />
+  <title>TiLi — статус</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --card: #fff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --ok: #3d8a55;
+      --ok-bg: #e8f6ec;
+      --bad: #b4534a;
+      --bad-bg: #fdecea;
+      --wait: #9a7b2f;
+      --wait-bg: #f8f1d8;
+      --border: #e5e7eb;
+      --accent: #5f9f72;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.45 var(--font);
+      color: var(--text);
+      background: var(--bg);
+      padding: 20px 16px 48px;
+    }
+    main { max-width: 720px; margin: 0 auto; }
+    h1 { font-size: 1.4rem; margin: 0 0 4px; }
+    .sub { color: var(--muted); margin: 0 0 20px; font-size: 0.95rem; }
+    .banner {
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      font-weight: 650;
+    }
+    .banner.ok { background: var(--ok-bg); color: var(--ok); }
+    .banner.bad { background: var(--bad-bg); color: var(--bad); }
+    .banner.wait { background: var(--wait-bg); color: var(--wait); }
+    .grid { display: grid; gap: 10px; }
+    article {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+    .row { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .name { font-weight: 650; }
+    .meta { color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+    .do { margin: 10px 0 0; font-size: 0.92rem; }
+    .do a { color: var(--accent); }
+    .pill {
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+    .pill.ok { background: var(--ok-bg); color: var(--ok); }
+    .pill.bad { background: var(--bad-bg); color: var(--bad); }
+    .pill.wait { background: var(--wait-bg); color: var(--wait); }
+    .pill.manual { background: #eef0f4; color: #4b5563; }
+    h2 { font-size: 1.05rem; margin: 22px 0 10px; }
+    button {
+      appearance: none;
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-weight: 650;
+      padding: 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+    @media (max-width: 520px) {
+      .top { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="top">
+      <div>
+        <h1>Статус TiLi</h1>
+        <p class="sub" id="stamp">Проверяю…</p>
+      </div>
+      <button type="button" id="reload">Проверить снова</button>
+    </div>
+    <div class="banner wait" id="banner">Сейчас сниму показания.</div>
+    <div class="grid" id="live"></div>
+    <h2>Оплаты и кабинеты — открыть руками</h2>
+    <p class="sub">Автоматом баланс AdminVPS и Яндекса отсюда не видно. Красное ниже — чеклист, что открыть.</p>
+    <div class="grid" id="manual"></div>
+  </main>
+  <script>
+    const TIMEOUT_MS = 7000;
+
+    const liveChecks = [
+      {
+        id: 'app',
+        name: 'Приложение',
+        hint: 'https://tili.su/app/',
+        do: 'Гость и календарь. Если красное — GitHub Pages или Cloudflare.',
+        href: 'https://tili.su/app/',
+        run: () => ping('https://tili.su/app/', { expectOk: true }),
+      },
+      {
+        id: 'landing',
+        name: 'Лендинг',
+        hint: 'https://tili.su/',
+        do: 'Сайт-визитка. Если красное — тот же GitHub Pages.',
+        href: 'https://tili.su/',
+        run: () => ping('https://tili.su/', { expectOk: true }),
+      },
+      {
+        id: 'api',
+        name: 'Сервер аккаунтов',
+        hint: 'api.tili.su/healthz',
+        do: 'Регистрация, вход, облако. Красное → AdminVPS, сервер «В сети», тикет #173103.',
+        href: 'https://my.adminvps.ru/',
+        run: () => pingJson('https://api.tili.su/healthz', (data, status) => status === 200 && data && data.ok === true),
+      },
+      {
+        id: 'auth',
+        name: 'Вход API',
+        hint: 'tili.su/v1/auth/session',
+        do: '401 без сессии — это норма, сервер живой. Таймаут — тот же VPS.',
+        href: 'https://tili.su/app/',
+        run: () => pingStatus('https://tili.su/v1/auth/session', (status) => status === 401 || status === 200),
+      },
+      {
+        id: 'push',
+        name: 'Напоминания (push)',
+        hint: 'tili.su/v1/push',
+        do: 'Баннеры на телефон. Красное при живом API → Яндекс Cloud Function и грант.',
+        href: 'https://console.cloud.yandex.ru/',
+        run: () => pingJson('https://tili.su/v1/push?action=health', (data, status) => status === 200 && data && data.ok === true),
+      },
+    ];
+
+    const manualChecks = [
+      {
+        name: 'AdminVPS',
+        hint: 'Сервер, баланс, счета',
+        do: 'Кабинет → сервер 251345.com: «В сети»? Счета оплачены? Баланс не 0 перед концом периода. Тикет #173103.',
+        href: 'https://my.adminvps.ru/',
+      },
+      {
+        name: 'Unisender Go',
+        hint: 'Письма подтверждения',
+        do: 'Домен tili.su зелёный, есть исходящие. Если регистрация есть, а письма нет — смотри график отправок.',
+        href: 'https://go.unisender.com/',
+      },
+      {
+        name: 'Yandex Cloud',
+        hint: 'Push и голос',
+        do: 'Биллинг: грант/баланс не 0 ₽. Функции tili-push и tili-voice должны быть запущены.',
+        href: 'https://console.cloud.yandex.ru/',
+      },
+    ];
+
+    function pill(kind, text) {
+      return '<span class="pill ' + kind + '">' + text + '</span>';
+    }
+
+    function card(item, state) {
+      return (
+        '<article>' +
+          '<div class="row">' +
+            '<div><div class="name">' + item.name + '</div>' +
+            '<div class="meta">' + item.hint + (state.detail ? ' · ' + state.detail : '') + '</div></div>' +
+            pill(state.kind, state.label) +
+          '</div>' +
+          '<p class="do">' + item.do + (item.href ? ' <a href="' + item.href + '" target="_blank" rel="noopener">Открыть</a>' : '') + '</p>' +
+        '</article>'
+      );
+    }
+
+    async function withTimeout(url, opts) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+      try {
+        return await fetch(url, { ...opts, signal: ctrl.signal, cache: 'no-store', credentials: 'omit' });
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    async function ping(url, { expectOk }) {
+      try {
+        const res = await withTimeout(url, { method: 'GET' });
+        if (expectOk && res.ok) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
+        if (res.ok) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
+        return { kind: 'bad', label: 'Ошибка', detail: String(res.status) };
+      } catch {
+        return { kind: 'bad', label: 'Молчит', detail: 'таймаут' };
+      }
+    }
+
+    async function pingStatus(url, okFn) {
+      try {
+        const res = await withTimeout(url, { method: 'GET' });
+        if (okFn(res.status)) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
+        return { kind: 'bad', label: 'Ошибка', detail: String(res.status) };
+      } catch {
+        return { kind: 'bad', label: 'Молчит', detail: 'таймаут' };
+      }
+    }
+
+    async function pingJson(url, okFn) {
+      try {
+        const res = await withTimeout(url, { method: 'GET' });
+        let data = null;
+        try { data = await res.json(); } catch { data = null; }
+        if (okFn(data, res.status)) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
+        return { kind: 'bad', label: 'Ошибка', detail: String(res.status) };
+      } catch {
+        return { kind: 'bad', label: 'Молчит', detail: 'таймаут' };
+      }
+    }
+
+    async function run() {
+      const stamp = document.getElementById('stamp');
+      const banner = document.getElementById('banner');
+      const live = document.getElementById('live');
+      stamp.textContent = 'Проверяю…';
+      banner.className = 'banner wait';
+      banner.textContent = 'Сейчас сниму показания.';
+      live.innerHTML = liveChecks.map((item) => card(item, { kind: 'wait', label: '…' })).join('');
+
+      const states = [];
+      for (const item of liveChecks) {
+        const state = await item.run();
+        states.push(state);
+        const idx = liveChecks.indexOf(item);
+        const nodes = live.querySelectorAll('article');
+        if (nodes[idx]) nodes[idx].outerHTML = card(item, state);
+      }
+
+      const bad = states.filter((s) => s.kind === 'bad').length;
+      const now = new Date();
+      stamp.textContent = 'Обновлено ' + now.toLocaleString('ru-RU') + ' · каждые 30 с';
+      if (bad === 0) {
+        banner.className = 'banner ok';
+        banner.textContent = 'Всё, что умеем проверить сами, отвечает.';
+      } else {
+        banner.className = 'banner bad';
+        banner.textContent = bad + ' красных. Сначала сервер аккаунтов, если он молчит — регистрация не работает.';
+      }
+    }
+
+    document.getElementById('manual').innerHTML = manualChecks.map((item) =>
+      card(item, { kind: 'manual', label: 'Вручную' })
+    ).join('');
+
+    document.getElementById('reload').addEventListener('click', () => { void run(); });
+    void run();
+    setInterval(() => { void run(); }, 30000);
+  </script>
+</body>
+</html>
