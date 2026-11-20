@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#5f9f72" />
+  <title>TiLi — админка</title>
+  <style>
+    :root {
+      --bg: #f3f5f2;
+      --card: #fff;
+      --text: #1c2430;
+      --muted: #6b7280;
+      --ok: #2f7a45;
+      --ok-bg: #e5f5ea;
+      --warn: #9a6b12;
+      --warn-bg: #f8efd4;
+      --bad: #b03d36;
+      --bad-bg: #fde8e6;
+      --idle: #5b6472;
+      --idle-bg: #eef0f3;
+      --border: #e2e6ea;
+      --accent: #5f9f72;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.45 var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(900px 420px at 10% -10%, #d9eadc 0%, transparent 55%),
+        radial-gradient(700px 360px at 100% 0%, #e7eef8 0%, transparent 50%),
+        var(--bg);
+      min-height: 100dvh;
+      padding: 18px 14px 56px;
+    }
+    main { max-width: 860px; margin: 0 auto; }
+    h1 { margin: 0 0 4px; font-size: 1.45rem; letter-spacing: -0.02em; }
+    h2 { margin: 26px 0 10px; font-size: 1.08rem; }
+    .sub { color: var(--muted); margin: 0 0 16px; }
+    .gate, .panel { display: none; }
+    .gate.show, .panel.show { display: block; }
+    .gate-card {
+      max-width: 420px;
+      margin: 12vh auto 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 18px;
+      box-shadow: 0 12px 40px rgba(28, 36, 48, 0.06);
+    }
+    .gate-card p { color: var(--muted); margin: 0 0 14px; }
+    label { display: block; font-size: 0.85rem; font-weight: 650; margin: 0 0 6px; }
+    input[type="password"], input[type="date"], input[type="number"], select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font: inherit;
+      background: #fff;
+    }
+    button, .btn {
+      appearance: none;
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      padding: 11px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    button.ghost, .btn.ghost {
+      background: #eef2ef;
+      color: var(--text);
+    }
+    .gate-actions { display: grid; gap: 8px; margin-top: 12px; }
+    .gate-err { color: var(--bad); font-size: 0.9rem; min-height: 1.2em; margin-top: 8px; }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .banner {
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+    .banner.ok { background: var(--ok-bg); color: var(--ok); }
+    .banner.warn { background: var(--warn-bg); color: var(--warn); }
+    .banner.bad { background: var(--bad-bg); color: var(--bad); }
+    .banner.idle { background: var(--idle-bg); color: var(--idle); }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    @media (max-width: 640px) {
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat b { display: block; font-size: 1.55rem; line-height: 1.1; }
+    .stat span { color: var(--muted); font-size: 0.82rem; }
+    .grid { display: grid; gap: 12px; }
+    article {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 15px 15px;
+      box-shadow: 0 1px 0 rgba(28, 36, 48, 0.03);
+    }
+    article.tone-ok { border-color: #c9e6d1; }
+    article.tone-warn { border-color: #ead9a2; }
+    article.tone-bad { border-color: #f0c4bf; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .name { font-weight: 750; font-size: 1.02rem; }
+    .meta { color: var(--muted); font-size: 0.86rem; margin-top: 2px; }
+    .pill {
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      padding: 5px 9px;
+      border-radius: 999px;
+    }
+    .pill.ok { background: var(--ok-bg); color: var(--ok); }
+    .pill.warn { background: var(--warn-bg); color: var(--warn); }
+    .pill.bad { background: var(--bad-bg); color: var(--bad); }
+    .pill.idle { background: var(--idle-bg); color: var(--idle); }
+    .pill.wait { background: var(--idle-bg); color: var(--idle); }
+    .do {
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f7faf7;
+      font-size: 0.92rem;
+    }
+    .do strong { display: block; margin-bottom: 2px; }
+    .do a { color: var(--accent); font-weight: 650; }
+    .facts {
+      margin: 10px 0 0;
+      display: grid;
+      gap: 4px;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+    .pay {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      display: grid;
+      gap: 8px;
+    }
+    .pay-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 8px;
+    }
+    @media (max-width: 560px) {
+      .pay-grid { grid-template-columns: 1fr; }
+    }
+    .pay-out {
+      font-size: 0.9rem;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: var(--idle-bg);
+    }
+    .pay-out.ok { background: var(--ok-bg); color: var(--ok); }
+    .pay-out.warn { background: var(--warn-bg); color: var(--warn); }
+    .pay-out.bad { background: var(--bad-bg); color: var(--bad); }
+    .hint { font-size: 0.82rem; color: var(--muted); }
+    .pass-box {
+      margin-top: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .pass-box .row-inline {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      align-items: end;
+    }
+    @media (max-width: 640px) {
+      .pass-box .row-inline { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="gate" id="gate">
+      <div class="gate-card">
+        <h1>Админка TiLi</h1>
+        <p>Только для владельца. Здесь оплаты, живые проверки и «что сделать».</p>
+        <label for="pass">Пароль</label>
+        <input id="pass" type="password" autocomplete="current-password" />
+        <div class="gate-actions">
+          <button type="button" id="enter">Войти</button>
+        </div>
+        <div class="gate-err" id="gateErr"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel">
+      <div class="top">
+        <div>
+          <h1>Админка TiLi</h1>
+          <p class="sub" id="stamp">Открываю…</p>
+        </div>
+        <div class="top-actions">
+          <button type="button" class="ghost" id="reload">Проверить снова</button>
+          <button type="button" class="ghost" id="logout">Выйти</button>
+        </div>
+      </div>
+
+      <div class="banner idle" id="banner">Сейчас сниму показания.</div>
+      <div class="summary" id="summary"></div>
+
+      <h2>Живые проверки</h2>
+      <p class="sub">Сами пингуем сайт и API. Красное = чинить сейчас.</p>
+      <div class="grid" id="live"></div>
+
+      <h2>Сервисы, оплаты и куда зайти</h2>
+      <p class="sub">Вся таблица TiLi в одном месте. Дату оплаты вводишь ты — конец периода считается сам. Данные дат живут в этом браузере.</p>
+      <div class="grid" id="services"></div>
+
+      <div class="pass-box">
+        <h2 style="margin-top:0">Сменить пароль админки</h2>
+        <p class="hint">Хранится только на этом устройстве (хэш в браузере). Не путай с паролем GitHub или AdminVPS.</p>
+        <div class="row-inline">
+          <div>
+            <label for="newPass">Новый пароль</label>
+            <input id="newPass" type="password" autocomplete="new-password" />
+          </div>
+          <div>
+            <label for="newPass2">Ещё раз</label>
+            <input id="newPass2" type="password" autocomplete="new-password" />
+          </div>
+          <button type="button" id="savePass">Сохранить</button>
+        </div>
+        <div class="gate-err" id="passMsg"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const TIMEOUT_MS = 7000;
+    const AUTH_KEY = 'tili-admin-auth-v1';
+    const PASS_KEY = 'tili-admin-pass-hash-v1';
+    const BILL_KEY = 'tili-admin-billing-v1';
+    // Default gate (change after login). Password itself is not stored in the page.
+    const DEFAULT_PASS_SHA256 = 'f9aab623c30d17b0fb69ee81afdb3d64553e4391cc59e3281b80faba33e5a09c';
+
+    const liveChecks = [
+      {
+        id: 'app',
+        name: 'Приложение',
+        hint: 'tili.su/app',
+        doTitle: 'Если красное',
+        doBody: 'Сломался GitHub Pages или Cloudflare Worker. Деплой / кэш.',
+        href: 'https://tili.su/app/',
+        run: () => pingOk('https://tili.su/app/'),
+      },
+      {
+        id: 'landing',
+        name: 'Лендинг',
+        hint: 'tili.su',
+        doTitle: 'Если красное',
+        doBody: 'Тот же GitHub Pages. Проверь gh-pages и CNAME.',
+        href: 'https://tili.su/',
+        run: () => pingOk('https://tili.su/'),
+      },
+      {
+        id: 'api',
+        name: 'Сервер аккаунтов',
+        hint: 'api.tili.su/healthz',
+        doTitle: 'Если красное',
+        doBody: 'Регистрация и sync не работают. AdminVPS → сервер «В сети», тикет #173103. Или переезд на Яндекс.',
+        href: 'https://my.adminvps.ru/',
+        run: () => pingJson('https://api.tili.su/healthz', (d, s) => s === 200 && d && d.ok === true),
+      },
+      {
+        id: 'auth',
+        name: 'Вход API',
+        hint: 'tili.su/v1/auth/session',
+        doTitle: 'Если красное',
+        doBody: '401 без сессии — норма (сервер жив). Таймаут = тот же мёртвый VPS.',
+        href: 'https://tili.su/app/',
+        run: () => pingStatus('https://tili.su/v1/auth/session', (s) => s === 401 || s === 200),
+      },
+      {
+        id: 'push',
+        name: 'Пуши (через сайт)',
+        hint: 'tili.su/v1/push',
+        doTitle: 'Если красное',
+        doBody: 'Часто падает вместе с API. Смотри ещё прямую проверку Яндекс-функции ниже.',
+        href: 'https://console.cloud.yandex.ru/',
+        run: () => pingJson('https://tili.su/v1/push?action=health', (d, s) => s === 200 && d && d.ok === true),
+      },
+      {
+        id: 'pushY',
+        name: 'Пуши (Яндекс напрямую)',
+        hint: 'functions…/d4eps3rpvttu70fnqs21',
+        doTitle: 'Если красное',
+        doBody: 'Баланс/грант Яндекса или сама Cloud Function. Кабинет → биллинг.',
+        href: 'https://console.cloud.yandex.ru/',
+        run: () => pingJson('https://functions.yandexcloud.net/d4eps3rpvttu70fnqs21?action=health', (d, s) => s === 200),
+      },
+    ];
+
+    /** Catalog from docs/third-party-services.md + known ops notes. */
+    const serviceCatalog = [
+      {
+        id: 'pages',
+        name: 'Сайт и приложение',
+        why: 'Страницы tili.su и PWA /app/',
+        where: 'GitHub Pages + Cloudflare',
+        cabinet: 'https://github.com/Tilkerman/great-idea',
+        cabinetLabel: 'Открыть GitHub',
+        passwordHint: 'Логин GitHub Tilkerman. Пароль только у владельца.',
+        note: 'Это не наш VPS. Деплой: rsync → build → gh-pages.',
+        billable: false,
+        liveId: 'app',
+      },
+      {
+        id: 'domain',
+        name: 'Домен tili.su',
+        why: 'Имя сайта',
+        where: 'reg.ru',
+        cabinet: 'https://www.reg.ru/user/',
+        cabinetLabel: 'Открыть reg.ru',
+        passwordHint: 'Пароль кабинета reg.ru',
+        note: 'DNS: Pages + Cloudflare. Продление домена обычно раз в год.',
+        billable: true,
+        periodMonths: 12,
+        examplePaidOn: '2025-06-01',
+        doIfDue: 'Зайди в reg.ru → домен tili.su → продли на год.',
+      },
+      {
+        id: 'adminvps',
+        name: 'Сервер аккаунтов (AdminVPS)',
+        why: 'Регистрация, вход, sync календаря и Lumi',
+        where: 'AdminVPS, Германия, 251345.com / 194.147.215.110',
+        cabinet: 'https://my.adminvps.ru/',
+        cabinetLabel: 'Открыть AdminVPS',
+        passwordHint: 'Кабинет AdminVPS. SSH-ключ на Mac, пароль root не в чат.',
+        note: 'Счёт #1632587: 13.11–12.12.2026, 544 ₽, оплачен 15.11. Тикет #173103 — сервер «Не в сети». План B: Яндекс Compute.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-15',
+        doIfDue: 'Оплати счёт в AdminVPS. Если «Не в сети» после оплаты — пиши в тикет, не плоди новые.',
+        liveId: 'api',
+      },
+      {
+        id: 'yandex-push',
+        name: 'Напоминания (push)',
+        why: 'Баннеры на телефон',
+        where: 'Yandex Cloud Function d4eps3rpvttu70fnqs21 + бакет tili-push-box',
+        cabinet: 'https://console.cloud.yandex.ru/',
+        cabinetLabel: 'Открыть Yandex Cloud',
+        passwordHint: 'Яндекс ID. Секреты VAPID/S3 только в Function.',
+        note: 'Оплата = биллинг/грант облака. Следи, чтобы баланс не ушёл в 0 ₽.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'console.cloud.yandex.ru → Биллинг → пополни. Проверь функцию tili-push.',
+        liveId: 'pushY',
+      },
+      {
+        id: 'yandex-voice',
+        name: 'Голос → задача',
+        why: 'Фраза становится делом (Groq через Яндекс)',
+        where: 'Yandex Cloud Function d4e0ljde6hqc9emkrbq5',
+        cabinet: 'https://console.cloud.yandex.ru/',
+        cabinetLabel: 'Открыть Yandex Cloud',
+        passwordHint: 'Тот же Яндекс ID. GROQ_API_KEY только в Function.',
+        note: 'Тот же биллинг, что у пушей. Отдельной «подписки голоса» нет.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'Тот же Яндекс-биллинг. Если пуши живы, а голос нет — смотри Function tili-voice.',
+      },
+      {
+        id: 'mail',
+        name: 'Письма (регистрация)',
+        why: 'Подтверждение почты и сброс пароля',
+        where: 'Unisender Go и/или SMTP на api.tili.su',
+        cabinet: 'https://go.unisender.com/',
+        cabinetLabel: 'Открыть Unisender',
+        passwordHint: 'UNISENDER_API_KEY / SMTP_* только на сервере, не в git.',
+        note: 'Бесплатный Unisender часто не шлёт на Gmail. Постоянный путь — Yandex Postbox. Пока API мёртв — письма тоже.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'Проверь тариф Unisender или Postbox. Без живого api.tili.su письма не уйдут.',
+        liveId: 'api',
+      },
+      {
+        id: 'posthog',
+        name: 'Статистика приложения',
+        why: 'События, если человек включил в Настройках',
+        where: 'PostHog EU, project 287824',
+        cabinet: 'https://eu.posthog.com',
+        cabinetLabel: 'Открыть PostHog',
+        passwordHint: 'Пароль кабинета PostHog. Токен phc_ в .env.production',
+        note: 'Бесплатный tier обычно хватает на старте.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'eu.posthog.com → billing. Если бесплатный лимит — можно оставить как есть.',
+      },
+      {
+        id: 'metrika',
+        name: 'Статистика сайта',
+        why: 'Визиты лендинга tili.su',
+        where: 'Яндекс Метрика, счётчик 113253680',
+        cabinet: 'https://metrika.yandex.ru',
+        cabinetLabel: 'Открыть Метрику',
+        passwordHint: 'Яндекс ID',
+        note: 'Приложение /app/ этим счётчиком не меряется.',
+        billable: false,
+      },
+      {
+        id: 'countapi',
+        name: 'Счётчик «На Домой»',
+        why: 'Сколько нажали установить',
+        where: 'CountAPI tili-great-idea / install-button',
+        cabinet: 'https://api.countapi.xyz/get/tili-great-idea/install-button',
+        cabinetLabel: 'Смотреть число',
+        passwordHint: 'Пароля нет',
+        note: 'Опционально. Можно заменить своим VITE_INSTALL_TRACKING_URL.',
+        billable: false,
+      },
+      {
+        id: 'donate',
+        name: 'Донат',
+        why: 'Поддержать автора',
+        where: 'Telegram Wallet',
+        cabinet: 'https://t.me/wallet',
+        cabinetLabel: 'Открыть Wallet',
+        passwordHint: 'Публичный адрес в приложении, не секрет сервера',
+        note: 'Не API TiLi.',
+        billable: false,
+      },
+      {
+        id: 'cloudflare',
+        name: 'Cloudflare',
+        why: 'Домен tili.su → Worker → /app и API-прокси',
+        where: 'Cloudflare + wrangler',
+        cabinet: 'https://dash.cloudflare.com/',
+        cabinetLabel: 'Открыть Cloudflare',
+        passwordHint: 'Логин владельца Cloudflare',
+        note: '/app отдаётся через jsDelivr @gh-pages-commit.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'Обычно бесплатный план. Если красный сайт при живом Pages — смотри Worker.',
+        liveId: 'landing',
+      },
+      {
+        id: 'device',
+        name: 'Телефон / браузер',
+        why: 'Задачи и желания гостя',
+        where: 'IndexedDB на устройстве',
+        cabinet: 'https://tili.su/app/',
+        cabinetLabel: 'Открыть приложение',
+        passwordHint: 'У гостя данные никуда не уходят',
+        note: 'После входа снимок уходит на api.tili.su. Без API sync между Mac и телефоном не работает.',
+        billable: false,
+      },
+    ];
+
+    async function sha256(text) {
+      const data = new TextEncoder().encode(text);
+      const buf = await crypto.subtle.digest('SHA-256', data);
+      return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function expectedPassHash() {
+      try {
+        return localStorage.getItem(PASS_KEY) || DEFAULT_PASS_SHA256;
+      } catch {
+        return DEFAULT_PASS_SHA256;
+      }
+    }
+
+    function isAuthed() {
+      try {
+        return sessionStorage.getItem(AUTH_KEY) === '1';
+      } catch {
+        return false;
+      }
+    }
+
+    function setAuthed(on) {
+      try {
+        if (on) sessionStorage.setItem(AUTH_KEY, '1');
+        else sessionStorage.removeItem(AUTH_KEY);
+      } catch { /* private mode */ }
+    }
+
+    function readBilling() {
+      try {
+        return JSON.parse(localStorage.getItem(BILL_KEY) || '{}') || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function writeBilling(map) {
+      try {
+        localStorage.setItem(BILL_KEY, JSON.stringify(map));
+      } catch { /* private mode */ }
+    }
+
+    function addMonths(isoDate, months) {
+      const [y, m, d] = isoDate.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      dt.setMonth(dt.getMonth() + months);
+      const yy = dt.getFullYear();
+      const mm = String(dt.getMonth() + 1).padStart(2, '0');
+      const dd = String(dt.getDate()).padStart(2, '0');
+      return `${yy}-${mm}-${dd}`;
+    }
+
+    function daysUntil(isoDate) {
+      const end = new Date(isoDate + 'T23:59:59');
+      const now = new Date();
+      return Math.ceil((end - now) / 86400000);
+    }
+
+    function fmtRu(iso) {
+      if (!iso) return '—';
+      const [y, m, d] = iso.split('-');
+      return `${d}.${m}.${y}`;
+    }
+
+    function payTone(days) {
+      if (days == null) return 'idle';
+      if (days < 0) return 'bad';
+      if (days <= 7) return 'bad';
+      if (days <= 14) return 'warn';
+      return 'ok';
+    }
+
+    function payLabel(days) {
+      if (days == null) return 'Дата не задана';
+      if (days < 0) return 'Просрочено на ' + Math.abs(days) + ' дн.';
+      if (days === 0) return 'Кончается сегодня';
+      if (days === 1) return 'Остался 1 день';
+      return 'Осталось ' + days + ' дн.';
+    }
+
+    function pill(kind, text) {
+      return '<span class="pill ' + kind + '">' + text + '</span>';
+    }
+
+    async function withTimeout(url, opts) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+      try {
+        return await fetch(url, { ...opts, signal: ctrl.signal, cache: 'no-store', credentials: 'omit', mode: 'cors' });
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    async function pingOk(url) {
+      try {
+        const res = await withTimeout(url, { method: 'GET' });
+        if (res.ok) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
+        return { kind: 'bad', label: 'Ошибка', detail: String(res.status) };
+      } catch {
+        return { kind: 'bad', label: 'Молчит', detail: 'таймаут' };
+      }
+    }
+
+    async function pingStatus(url, okFn) {
+      try {
+        const res = await withTimeout(url, { method: 'GET' });
+        if (okFn(res.status)) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
+        return { kind: 'bad', label: 'Ошибка', detail: String(res.status) };
+      } catch {
+        return { kind: 'bad', label: 'Молчит', detail: 'таймаут' };
+      }
+    }
+
+    async function pingJson(url, okFn) {
+      try {
+        const res = await withTimeout(url, { method: 'GET' });
+        let data = null;
+        try { data = await res.json(); } catch { data = null; }
+        if (okFn(data, res.status)) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
+        // CORS/opaque-ish failures still useful: 200 without JSON counts as reachable for Yandex health
+        if (res.ok) return { kind: 'ok', label: 'Ответил', detail: String(res.status) };
+        return { kind: 'bad', label: 'Ошибка', detail: String(res.status) };
+      } catch {
+        return { kind: 'bad', label: 'Молчит', detail: 'таймаут' };
+      }
+    }
+
+    function liveCard(item, state) {
+      return (
+        '<article class="tone-' + (state.kind === 'wait' ? 'idle' : state.kind) + '">' +
+          '<div class="row">' +
+            '<div><div class="name">' + item.name + '</div>' +
+            '<div class="meta">' + item.hint + (state.detail ? ' · ' + state.detail : '') + '</div></div>' +
+            pill(state.kind, state.label) +
+          '</div>' +
+          '<div class="do"><strong>' + item.doTitle + '</strong>' + item.doBody +
+            (item.href ? ' <a href="' + item.href + '" target="_blank" rel="noopener">Открыть</a>' : '') +
+          '</div>' +
+        '</article>'
+      );
+    }
+
+    function serviceCard(svc, liveMap) {
+      const billing = readBilling();
+      const saved = billing[svc.id] || {};
+      const paidOn = saved.paidOn || '';
+      const months = Number(saved.months || svc.periodMonths || 1);
+      const example = !paidOn && svc.examplePaidOn;
+      const effectivePaid = paidOn || (example ? svc.examplePaidOn : '');
+      const end = effectivePaid ? addMonths(effectivePaid, months) : '';
+      const days = end ? daysUntil(end) : null;
+      const tone = svc.billable ? payTone(days) : 'idle';
+
+      let live = null;
+      if (svc.liveId && liveMap[svc.liveId]) live = liveMap[svc.liveId];
+
+      let statusKind = 'idle';
+      let statusLabel = 'Справочник';
+      if (live) {
+        statusKind = live.kind;
+        statusLabel = live.label;
+      } else if (svc.billable && days != null) {
+        statusKind = tone;
+        statusLabel = days < 0 ? 'Оплата' : 'Оплата ок';
+      }
+
+      const articleTone = statusKind === 'bad' || tone === 'bad' ? 'bad'
+        : statusKind === 'warn' || tone === 'warn' ? 'warn'
+        : statusKind === 'ok' ? 'ok' : 'idle';
+
+      let payHtml = '';
+      if (svc.billable) {
+        payHtml =
+          '<div class="pay">' +
+            '<div class="hint">Дата оплаты → конец периода сам. ' +
+              (example && !paidOn ? 'Сейчас пример для картинки — впиши свою дату.' : 'Сохраняется в этом браузере.') +
+            '</div>' +
+            '<div class="pay-grid">' +
+              '<div><label>Оплатил(а)</label>' +
+                '<input type="date" data-bill-paid="' + svc.id + '" value="' + (paidOn || '') + '" />' +
+              '</div>' +
+              '<div><label>На сколько месяцев</label>' +
+                '<input type="number" min="1" max="36" data-bill-months="' + svc.id + '" value="' + months + '" />' +
+              '</div>' +
+            '</div>' +
+            '<div class="pay-out ' + tone + '">' +
+              (effectivePaid
+                ? ('Конец: <b>' + fmtRu(end) + '</b> · ' + payLabel(days) +
+                   (example && !paidOn ? ' · пример' : ''))
+                : 'Введи дату оплаты — покажу, когда кончится.') +
+            '</div>' +
+            (svc.doIfDue ? '<div class="hint"><b>Если кончается:</b> ' + svc.doIfDue + '</div>' : '') +
+          '</div>';
+      }
+
+      return (
+        '<article class="tone-' + articleTone + '" data-svc="' + svc.id + '">' +
+          '<div class="row">' +
+            '<div><div class="name">' + svc.name + '</div>' +
+            '<div class="meta">' + svc.why + '</div></div>' +
+            pill(statusKind, statusLabel) +
+          '</div>' +
+          '<div class="facts">' +
+            '<div>Где: ' + svc.where + '</div>' +
+            '<div>Пароль/код: ' + svc.passwordHint + '</div>' +
+            (svc.note ? '<div>' + svc.note + '</div>' : '') +
+          '</div>' +
+          '<div class="do"><strong>Что делать</strong>' +
+            (live && live.kind === 'bad'
+              ? 'Сейчас не отвечает. '
+              : (tone === 'bad' ? 'Срок оплаты горит. ' : 'Открой кабинет, если нужно проверить. ')) +
+            '<a href="' + svc.cabinet + '" target="_blank" rel="noopener">' + svc.cabinetLabel + '</a>' +
+          '</div>' +
+          payHtml +
+        '</article>'
+      );
+    }
+
+    function renderSummary(liveStates, billingTones) {
+      const liveBad = liveStates.filter((s) => s.kind === 'bad').length;
+      const liveOk = liveStates.filter((s) => s.kind === 'ok').length;
+      const payBad = billingTones.filter((t) => t === 'bad').length;
+      const payWarn = billingTones.filter((t) => t === 'warn').length;
+      document.getElementById('summary').innerHTML =
+        '<div class="stat"><b style="color:var(--ok)">' + liveOk + '</b><span>живых проверок</span></div>' +
+        '<div class="stat"><b style="color:var(--bad)">' + liveBad + '</b><span>молчит сейчас</span></div>' +
+        '<div class="stat"><b style="color:var(--warn)">' + payWarn + '</b><span>оплата скоро</span></div>' +
+        '<div class="stat"><b style="color:var(--bad)">' + payBad + '</b><span>оплата горит</span></div>';
+
+      const banner = document.getElementById('banner');
+      if (liveBad > 0 || payBad > 0) {
+        banner.className = 'banner bad';
+        banner.textContent = 'Есть красное. Сначала почини «молчит», потом закинь оплату где горит срок.';
+      } else if (payWarn > 0) {
+        banner.className = 'banner warn';
+        banner.textContent = 'Всё отвечает, но скоро кончается оплата — загляни в жёлтые карточки.';
+      } else {
+        banner.className = 'banner ok';
+        banner.textContent = 'Пока спокойно: проверки зелёные, сроки оплаты не горят.';
+      }
+    }
+
+    function bindBillingInputs() {
+      document.querySelectorAll('[data-bill-paid], [data-bill-months]').forEach((el) => {
+        el.addEventListener('change', () => {
+          const map = readBilling();
+          const id = el.getAttribute('data-bill-paid') || el.getAttribute('data-bill-months');
+          const paidEl = document.querySelector('[data-bill-paid="' + id + '"]');
+          const monthsEl = document.querySelector('[data-bill-months="' + id + '"]');
+          map[id] = {
+            paidOn: paidEl && paidEl.value ? paidEl.value : '',
+            months: Math.max(1, Number(monthsEl && monthsEl.value ? monthsEl.value : 1)),
+          };
+          writeBilling(map);
+          void refreshServicesOnly();
+        });
+      });
+    }
+
+    let lastLiveMap = {};
+
+    function refreshServicesOnly() {
+      const billingTones = [];
+      const html = serviceCatalog.map((svc) => {
+        if (svc.billable) {
+          const saved = readBilling()[svc.id] || {};
+          const paidOn = saved.paidOn || svc.examplePaidOn || '';
+          const months = Number(saved.months || svc.periodMonths || 1);
+          if (paidOn) billingTones.push(payTone(daysUntil(addMonths(paidOn, months))));
+        }
+        return serviceCard(svc, lastLiveMap);
+      }).join('');
+      document.getElementById('services').innerHTML = html;
+      bindBillingInputs();
+      const liveStates = Object.values(lastLiveMap);
+      renderSummary(liveStates, billingTones);
+    }
+
+    async function runChecks() {
+      const stamp = document.getElementById('stamp');
+      const live = document.getElementById('live');
+      stamp.textContent = 'Проверяю…';
+      live.innerHTML = liveChecks.map((item) => liveCard(item, { kind: 'wait', label: '…' })).join('');
+
+      const states = [];
+      lastLiveMap = {};
+      for (const item of liveChecks) {
+        const state = await item.run();
+        states.push(state);
+        lastLiveMap[item.id] = state;
+        const idx = liveChecks.indexOf(item);
+        const nodes = live.querySelectorAll('article');
+        if (nodes[idx]) nodes[idx].outerHTML = liveCard(item, state);
+      }
+
+      refreshServicesOnly();
+      stamp.textContent = 'Обновлено ' + new Date().toLocaleString('ru-RU') + ' · авто каждые 60 с';
+    }
+
+    function showApp() {
+      document.getElementById('gate').classList.remove('show');
+      document.getElementById('panel').classList.add('show');
+      void runChecks();
+    }
+
+    function showGate() {
+      document.getElementById('panel').classList.remove('show');
+      document.getElementById('gate').classList.add('show');
+    }
+
+    document.getElementById('enter').addEventListener('click', async () => {
+      const err = document.getElementById('gateErr');
+      err.textContent = '';
+      const value = document.getElementById('pass').value || '';
+      const hash = await sha256(value);
+      if (hash !== expectedPassHash()) {
+        err.textContent = 'Неверный пароль.';
+        return;
+      }
+      setAuthed(true);
+      showApp();
+    });
+
+    document.getElementById('pass').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('enter').click();
+    });
+
+    document.getElementById('logout').addEventListener('click', () => {
+      setAuthed(false);
+      showGate();
+    });
+
+    document.getElementById('reload').addEventListener('click', () => { void runChecks(); });
+
+    document.getElementById('savePass').addEventListener('click', async () => {
+      const msg = document.getElementById('passMsg');
+      const a = document.getElementById('newPass').value || '';
+      const b = document.getElementById('newPass2').value || '';
+      if (a.length < 6) {
+        msg.textContent = 'Минимум 6 символов.';
+        return;
+      }
+      if (a !== b) {
+        msg.textContent = 'Пароли не совпали.';
+        return;
+      }
+      try {
+        localStorage.setItem(PASS_KEY, await sha256(a));
+        msg.style.color = 'var(--ok)';
+        msg.textContent = 'Пароль обновлён на этом устройстве.';
+        document.getElementById('newPass').value = '';
+        document.getElementById('newPass2').value = '';
+      } catch {
+        msg.style.color = 'var(--bad)';
+        msg.textContent = 'Не удалось сохранить (приватный режим?).';
+      }
+    });
+
+    if (isAuthed()) showApp();
+    else showGate();
+    setInterval(() => {
+      if (isAuthed()) void runChecks();
+    }, 60000);
+  </script>
+</body>
+</html>
