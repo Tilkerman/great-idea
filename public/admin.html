@@ -8,38 +8,42 @@
   <title>TiLi — админка</title>
   <style>
     :root {
-      --bg: #f3f5f2;
+      --bg: #f6f6f8;
       --card: #fff;
-      --text: #1c2430;
-      --muted: #6b7280;
-      --ok: #2f7a45;
-      --ok-bg: #e5f5ea;
-      --warn: #9a6b12;
-      --warn-bg: #f8efd4;
-      --bad: #b03d36;
-      --bad-bg: #fde8e6;
-      --idle: #5b6472;
-      --idle-bg: #eef0f3;
-      --border: #e2e6ea;
-      --accent: #5f9f72;
-      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --text: #000;
+      --muted: #7f8285;
+      --ok: #00945e;
+      --ok-bg: #e8f7f0;
+      --warn: #c47f00;
+      --warn-bg: #fff4d6;
+      --bad: #e00000;
+      --bad-bg: #ffe8e8;
+      --idle: #6d7175;
+      --idle-bg: #f0f1f3;
+      --border: #e6e6e8;
+      --accent: #fc0;
+      --accent-text: #1a1a1a;
+      --font: 'YS Text', 'Helvetica Neue', Arial, sans-serif;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font: 16px/1.45 var(--font);
+      font: 15px/1.5 var(--font);
       color: var(--text);
-      background:
-        radial-gradient(900px 420px at 10% -10%, #d9eadc 0%, transparent 55%),
-        radial-gradient(700px 360px at 100% 0%, #e7eef8 0%, transparent 50%),
-        var(--bg);
+      background: var(--bg);
       min-height: 100dvh;
-      padding: 18px 14px 56px;
+      padding: 0 0 48px;
     }
-    main { max-width: 860px; margin: 0 auto; }
-    h1 { margin: 0 0 4px; font-size: 1.45rem; letter-spacing: -0.02em; }
-    h2 { margin: 26px 0 10px; font-size: 1.08rem; }
-    .sub { color: var(--muted); margin: 0 0 16px; }
+    main { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    h1 { margin: 0; font-size: 1.35rem; font-weight: 500; letter-spacing: -0.01em; }
+    .sect {
+      margin: 28px 0 12px;
+      font-size: 1.15rem;
+      font-weight: 500;
+    }
+    .sect-sub { color: var(--muted); margin: -6px 0 14px; font-size: 0.92rem; }
+    .sub { color: var(--muted); margin: 4px 0 0; font-size: 0.88rem; }
     .gate, .panel { display: none; }
     .gate.show, .panel.show { display: block; }
     .gate-card {
@@ -65,16 +69,34 @@
       appearance: none;
       border: 0;
       background: var(--accent);
-      color: #fff;
+      color: var(--accent-text);
       font: inherit;
-      font-weight: 700;
-      padding: 11px 16px;
-      border-radius: 12px;
+      font-weight: 500;
+      padding: 9px 14px;
+      border-radius: 8px;
       cursor: pointer;
     }
     button.ghost, .btn.ghost {
-      background: #eef2ef;
+      background: var(--card);
       color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .bar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      margin-bottom: 20px;
+    }
+    .bar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
     .gate-actions { display: grid; gap: 8px; margin-top: 12px; }
     .gate-err { color: var(--bad); font-size: 0.9rem; min-height: 1.2em; margin-top: 8px; }
@@ -88,60 +110,67 @@
     }
     .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .banner {
-      border-radius: 16px;
+      border-radius: 12px;
       padding: 14px 16px;
-      margin-bottom: 14px;
-      font-weight: 700;
+      margin-bottom: 16px;
+      font-weight: 500;
+      font-size: 0.95rem;
     }
-    .banner.ok { background: var(--ok-bg); color: var(--ok); }
-    .banner.warn { background: var(--warn-bg); color: var(--warn); }
-    .banner.bad { background: var(--bad-bg); color: var(--bad); }
+    .banner.ok { background: var(--ok-bg); color: #006b42; }
+    .banner.warn { background: var(--warn-bg); color: #8a5a00; }
+    .banner.bad { background: var(--bad-bg); color: #a80000; }
     .banner.idle { background: var(--idle-bg); color: var(--idle); }
     .summary {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
-      margin-bottom: 8px;
+      gap: 12px;
+      margin-bottom: 4px;
     }
-    @media (max-width: 640px) {
+    @media (max-width: 720px) {
       .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     .stat {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      text-align: center;
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
     }
-    .stat b { display: block; font-size: 1.55rem; line-height: 1.1; }
-    .stat span { color: var(--muted); font-size: 0.82rem; }
+    .stat b { display: block; font-size: 1.75rem; line-height: 1.1; font-weight: 500; }
+    .stat span { color: var(--muted); font-size: 0.84rem; }
+  .cards-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 720px) {
+      .cards-2 { grid-template-columns: 1fr; }
+    }
     .grid { display: grid; gap: 12px; }
     article {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px 15px 15px;
-      box-shadow: 0 1px 0 rgba(28, 36, 48, 0.03);
+      border-radius: 12px;
+      padding: 16px 18px 18px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--border);
     }
-    article.tone-ok { border-color: #c9e6d1; }
-    article.tone-warn { border-color: #ead9a2; }
-    article.tone-bad { border-color: #f0c4bf; }
+    article.tone-ok { border-left-color: var(--ok); }
+    article.tone-warn { border-left-color: var(--warn); }
+    article.tone-bad { border-left-color: var(--bad); }
+    article.tone-idle { border-left-color: #c4c7cc; }
     .row {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       align-items: flex-start;
     }
-    .name { font-weight: 750; font-size: 1.02rem; }
-    .meta { color: var(--muted); font-size: 0.86rem; margin-top: 2px; }
+    .name { font-weight: 500; font-size: 1.05rem; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-top: 4px; line-height: 1.4; }
     .pill {
       flex-shrink: 0;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      padding: 5px 9px;
-      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 6px;
     }
     .pill.ok { background: var(--ok-bg); color: var(--ok); }
     .pill.warn { background: var(--warn-bg); color: var(--warn); }
@@ -149,21 +178,24 @@
     .pill.idle { background: var(--idle-bg); color: var(--idle); }
     .pill.wait { background: var(--idle-bg); color: var(--idle); }
     .do {
-      margin: 10px 0 0;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: #f7faf7;
+      margin: 12px 0 0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--idle-bg);
       font-size: 0.92rem;
+      line-height: 1.45;
     }
-    .do strong { display: block; margin-bottom: 2px; }
-    .do a { color: var(--accent); font-weight: 650; }
+    .do strong { display: block; margin-bottom: 4px; font-weight: 500; color: var(--text); }
+    .do a, .link { color: #0060d0; font-weight: 500; text-decoration: none; }
+    .do a:hover, .link:hover { text-decoration: underline; }
     .facts {
       margin: 10px 0 0;
       display: grid;
-      gap: 4px;
-      font-size: 0.86rem;
+      gap: 6px;
+      font-size: 0.88rem;
       color: var(--muted);
     }
+    .facts b { color: var(--text); font-weight: 500; }
     .pay {
       margin-top: 12px;
       padding-top: 12px;
@@ -223,27 +255,33 @@
     </section>
 
     <section class="panel" id="panel">
-      <div class="top">
-        <div>
-          <h1>Админка TiLi</h1>
-          <p class="sub" id="stamp">Открываю…</p>
+      <header class="bar">
+        <div class="bar-inner">
+          <div>
+            <h1>Пульт TiLi</h1>
+            <p class="sub" id="stamp">Открываю…</p>
+          </div>
+          <div class="top-actions">
+            <button type="button" class="ghost" id="reload">Обновить</button>
+            <button type="button" class="ghost" id="logout">Выйти</button>
+          </div>
         </div>
-        <div class="top-actions">
-          <button type="button" class="ghost" id="reload">Проверить снова</button>
-          <button type="button" class="ghost" id="logout">Выйти</button>
-        </div>
-      </div>
+      </header>
 
-      <div class="banner idle" id="banner">Сейчас сниму показания.</div>
+      <div class="banner idle" id="banner">Сейчас посмотрю, всё ли в порядке.</div>
       <div class="summary" id="summary"></div>
 
-      <h2>Живые проверки</h2>
-      <p class="sub">Сами пингуем сайт и API. Красное = чинить сейчас.</p>
-      <div class="grid" id="live"></div>
+      <h2 class="sect">1. Деньги и главное</h2>
+      <p class="sect-sub">Сначала то, за что платишь и без чего ломается вход и синхронизация.</p>
+      <div class="cards-2" id="services-pay"></div>
 
-      <h2>Сервисы, оплаты и куда зайти</h2>
-      <p class="sub">Вся таблица TiLi в одном месте. Дату оплаты вводишь ты — конец периода считается сам. Данные дат живут в этом браузере.</p>
-      <div class="grid" id="services"></div>
+      <h2 class="sect">2. Работает ли прямо сейчас</h2>
+      <p class="sect-sub">Зелёное — ок. Красное — иди чинить или пиши в поддержку хостера.</p>
+      <div class="cards-2" id="live"></div>
+
+      <h2 class="sect">3. Остальное</h2>
+      <p class="sect-sub">Сайт, статистика, справка. Оплату здесь обычно не ждут.</p>
+      <div class="cards-2" id="services-other"></div>
 
       <div class="pass-box">
         <h2 style="margin-top:0">Сменить пароль админки</h2>
@@ -274,66 +312,192 @@
 
     const liveChecks = [
       {
-        id: 'app',
-        name: 'Приложение',
-        hint: 'tili.su/app',
-        doTitle: 'Если красное',
-        doBody: 'Сломался GitHub Pages или Cloudflare Worker. Деплой / кэш.',
-        href: 'https://tili.su/app/',
-        run: () => pingOk('https://tili.su/app/'),
-      },
-      {
-        id: 'landing',
-        name: 'Лендинг',
-        hint: 'tili.su',
-        doTitle: 'Если красное',
-        doBody: 'Тот же GitHub Pages. Проверь gh-pages и CNAME.',
-        href: 'https://tili.su/',
-        run: () => pingOk('https://tili.su/'),
-      },
-      {
         id: 'api',
-        name: 'Сервер аккаунтов',
-        hint: 'api.tili.su/healthz',
-        doTitle: 'Если красное',
-        doBody: 'Регистрация и sync не работают. AdminVPS → сервер «В сети», тикет #173103. Или переезд на Яндекс.',
+        name: 'Аккаунты и синхронизация',
+        hint: 'Без этого дела не переезжают между телефоном и компьютером',
+        doTitle: 'Что делать',
+        doBody: 'Зайди в AdminVPS, включи сервер. Тикет #173103. Или переезжай на Яндекс.',
         href: 'https://my.adminvps.ru/',
         run: () => pingJson('https://api.tili.su/healthz', (d, s) => s === 200 && d && d.ok === true),
       },
       {
         id: 'auth',
-        name: 'Вход API',
-        hint: 'tili.su/v1/auth/session',
-        doTitle: 'Если красное',
-        doBody: '401 без сессии — норма (сервер жив). Таймаут = тот же мёртвый VPS.',
+        name: 'Вход в аккаунт',
+        hint: 'Проверка, отвечает ли сервер на вход',
+        doTitle: 'Как понять',
+        doBody: 'Если пишет «401» — сервер жив. Если тишина — тот же сломанный VPS.',
         href: 'https://tili.su/app/',
         run: () => pingStatus('https://tili.su/v1/auth/session', (s) => s === 401 || s === 200),
       },
       {
+        id: 'app',
+        name: 'Приложение на телефоне',
+        hint: 'tili.su/app — календарь и Lumi',
+        doTitle: 'Что делать',
+        doBody: 'Обычно GitHub Pages или кэш Cloudflare. Сделай деплой или подожди 2 минуты.',
+        href: 'https://tili.su/app/',
+        run: () => pingOk('https://tili.su/app/'),
+      },
+      {
+        id: 'pushY',
+        name: 'Напоминания (Яндекс)',
+        hint: 'Баннеры на iPhone',
+        doTitle: 'Что делать',
+        doBody: 'Пополни баланс в Yandex Cloud и проверь функцию push.',
+        href: 'https://console.cloud.yandex.ru/',
+        run: () => pingJson('https://functions.yandexcloud.net/d4eps3rpvttu70fnqs21?action=health', (d, s) => s === 200),
+      },
+      {
         id: 'push',
-        name: 'Пуши (через сайт)',
-        hint: 'tili.su/v1/push',
-        doTitle: 'Если красное',
-        doBody: 'Часто падает вместе с API. Смотри ещё прямую проверку Яндекс-функции ниже.',
+        name: 'Напоминания через сайт',
+        hint: 'Прокси tili.su — часто падает вместе с VPS',
+        doTitle: 'Что делать',
+        doBody: 'Смотри карточку «Яндекс» выше. Если она зелёная — дело в API-сервере.',
         href: 'https://console.cloud.yandex.ru/',
         run: () => pingJson('https://tili.su/v1/push?action=health', (d, s) => s === 200 && d && d.ok === true),
       },
       {
-        id: 'pushY',
-        name: 'Пуши (Яндекс напрямую)',
-        hint: 'functions…/d4eps3rpvttu70fnqs21',
-        doTitle: 'Если красное',
-        doBody: 'Баланс/грант Яндекса или сама Cloud Function. Кабинет → биллинг.',
-        href: 'https://console.cloud.yandex.ru/',
-        run: () => pingJson('https://functions.yandexcloud.net/d4eps3rpvttu70fnqs21?action=health', (d, s) => s === 200),
+        id: 'landing',
+        name: 'Главная страница',
+        hint: 'tili.su — визитка',
+        doTitle: 'Что делать',
+        doBody: 'Тот же хостинг, что и приложение (GitHub Pages).',
+        href: 'https://tili.su/',
+        run: () => pingOk('https://tili.su/'),
       },
     ];
 
     /** Catalog from docs/third-party-services.md + known ops notes. */
     const serviceCatalog = [
       {
+        id: 'adminvps',
+        group: 'pay',
+        priority: 1,
+        name: 'Сервер аккаунтов',
+        plain: 'Вход, регистрация, облако',
+        why: 'Регистрация, вход, sync календаря и Lumi',
+        where: 'AdminVPS, Германия, 251345.com / 194.147.215.110',
+        cabinet: 'https://my.adminvps.ru/',
+        cabinetLabel: 'Кабинет AdminVPS',
+        passwordHint: 'Кабинет AdminVPS. SSH-ключ на Mac.',
+        note: 'Счёт до 12.12.2026, оплачен 15.11. Тикет #173103 — «Не в сети».',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-15',
+        doIfDue: 'Оплати счёт. Если после оплаты не включается — один тикет, не плоди новые.',
+        liveId: 'api',
+      },
+      {
+        id: 'mail',
+        group: 'pay',
+        priority: 2,
+        name: 'Письма при регистрации',
+        plain: 'Подтверждение почты',
+        why: 'Подтверждение почты и сброс пароля',
+        where: 'Unisender Go + сервер api.tili.su',
+        cabinet: 'https://go.unisender.com/',
+        cabinetLabel: 'Кабинет Unisender',
+        passwordHint: 'Ключи только на сервере, не в git.',
+        note: 'Пока VPS мёртв — письма не уйдут. Для Gmail нужен Postbox или платный SMTP.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'Проверь тариф почты. Сервер должен быть включён.',
+        liveId: 'api',
+      },
+      {
+        id: 'domain',
+        group: 'pay',
+        priority: 3,
+        name: 'Домен tili.su',
+        plain: 'Имя сайта, раз в год',
+        why: 'Имя сайта',
+        where: 'reg.ru',
+        cabinet: 'https://www.reg.ru/user/',
+        cabinetLabel: 'Кабинет reg.ru',
+        passwordHint: 'Пароль reg.ru',
+        note: 'Без домена сайт не откроется по красивому адресу.',
+        billable: true,
+        periodMonths: 12,
+        examplePaidOn: '2025-06-01',
+        doIfDue: 'reg.ru → продли домен на год.',
+      },
+      {
+        id: 'yandex-push',
+        group: 'pay',
+        priority: 4,
+        name: 'Пуши на телефон',
+        plain: 'Яндекс Облако',
+        why: 'Баннеры на телефон',
+        where: 'Yandex Cloud, функция push',
+        cabinet: 'https://console.cloud.yandex.ru/',
+        cabinetLabel: 'Биллинг Яндекса',
+        passwordHint: 'Яндекс ID',
+        note: 'Деньги с гранта/баланса. Ноль рублей — пуши встанут.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'Облако → Биллинг → пополнить.',
+        liveId: 'pushY',
+      },
+      {
+        id: 'yandex-voice',
+        group: 'pay',
+        priority: 5,
+        name: 'Голос в задачу',
+        plain: 'Тот же Яндекс',
+        why: 'Фраза становится делом',
+        where: 'Yandex Cloud, функция voice',
+        cabinet: 'https://console.cloud.yandex.ru/',
+        cabinetLabel: 'Облако Яндекса',
+        passwordHint: 'Тот же Яндекс ID',
+        note: 'Оплачивается тем же балансом, что и пуши.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'Тот же биллинг. Если пуши живы — смотри функцию voice.',
+      },
+      {
+        id: 'cloudflare',
+        group: 'pay',
+        priority: 6,
+        name: 'Cloudflare',
+        plain: 'Сайт доходит до людей',
+        why: 'Домен → приложение /app',
+        where: 'Cloudflare Worker',
+        cabinet: 'https://dash.cloudflare.com/',
+        cabinetLabel: 'Cloudflare',
+        passwordHint: 'Логин владельца',
+        note: 'Часто бесплатный план. Платить редко нужно.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'Если сайт красный при живом GitHub — смотри Worker.',
+        liveId: 'landing',
+      },
+      {
+        id: 'posthog',
+        group: 'pay',
+        priority: 7,
+        name: 'Статистика в приложении',
+        plain: 'PostHog, по желанию пользователя',
+        why: 'Если человек сам включил учёт',
+        where: 'PostHog EU',
+        cabinet: 'https://eu.posthog.com',
+        cabinetLabel: 'PostHog',
+        passwordHint: 'Пароль кабинета PostHog',
+        note: 'На старте часто хватает бесплатного.',
+        billable: true,
+        periodMonths: 1,
+        examplePaidOn: '2025-11-01',
+        doIfDue: 'Проверь лимит на eu.posthog.com.',
+      },
+      {
         id: 'pages',
-        name: 'Сайт и приложение',
+        group: 'other',
+        priority: 10,
+        name: 'Хостинг сайта',
+        plain: 'GitHub, бесплатно',
         why: 'Страницы tili.su и PWA /app/',
         where: 'GitHub Pages + Cloudflare',
         cabinet: 'https://github.com/Tilkerman/great-idea',
@@ -344,95 +508,11 @@
         liveId: 'app',
       },
       {
-        id: 'domain',
-        name: 'Домен tili.su',
-        why: 'Имя сайта',
-        where: 'reg.ru',
-        cabinet: 'https://www.reg.ru/user/',
-        cabinetLabel: 'Открыть reg.ru',
-        passwordHint: 'Пароль кабинета reg.ru',
-        note: 'DNS: Pages + Cloudflare. Продление домена обычно раз в год.',
-        billable: true,
-        periodMonths: 12,
-        examplePaidOn: '2025-06-01',
-        doIfDue: 'Зайди в reg.ru → домен tili.su → продли на год.',
-      },
-      {
-        id: 'adminvps',
-        name: 'Сервер аккаунтов (AdminVPS)',
-        why: 'Регистрация, вход, sync календаря и Lumi',
-        where: 'AdminVPS, Германия, 251345.com / 194.147.215.110',
-        cabinet: 'https://my.adminvps.ru/',
-        cabinetLabel: 'Открыть AdminVPS',
-        passwordHint: 'Кабинет AdminVPS. SSH-ключ на Mac, пароль root не в чат.',
-        note: 'Счёт #1632587: 13.11–12.12.2026, 544 ₽, оплачен 15.11. Тикет #173103 — сервер «Не в сети». План B: Яндекс Compute.',
-        billable: true,
-        periodMonths: 1,
-        examplePaidOn: '2025-11-15',
-        doIfDue: 'Оплати счёт в AdminVPS. Если «Не в сети» после оплаты — пиши в тикет, не плоди новые.',
-        liveId: 'api',
-      },
-      {
-        id: 'yandex-push',
-        name: 'Напоминания (push)',
-        why: 'Баннеры на телефон',
-        where: 'Yandex Cloud Function d4eps3rpvttu70fnqs21 + бакет tili-push-box',
-        cabinet: 'https://console.cloud.yandex.ru/',
-        cabinetLabel: 'Открыть Yandex Cloud',
-        passwordHint: 'Яндекс ID. Секреты VAPID/S3 только в Function.',
-        note: 'Оплата = биллинг/грант облака. Следи, чтобы баланс не ушёл в 0 ₽.',
-        billable: true,
-        periodMonths: 1,
-        examplePaidOn: '2025-11-01',
-        doIfDue: 'console.cloud.yandex.ru → Биллинг → пополни. Проверь функцию tili-push.',
-        liveId: 'pushY',
-      },
-      {
-        id: 'yandex-voice',
-        name: 'Голос → задача',
-        why: 'Фраза становится делом (Groq через Яндекс)',
-        where: 'Yandex Cloud Function d4e0ljde6hqc9emkrbq5',
-        cabinet: 'https://console.cloud.yandex.ru/',
-        cabinetLabel: 'Открыть Yandex Cloud',
-        passwordHint: 'Тот же Яндекс ID. GROQ_API_KEY только в Function.',
-        note: 'Тот же биллинг, что у пушей. Отдельной «подписки голоса» нет.',
-        billable: true,
-        periodMonths: 1,
-        examplePaidOn: '2025-11-01',
-        doIfDue: 'Тот же Яндекс-биллинг. Если пуши живы, а голос нет — смотри Function tili-voice.',
-      },
-      {
-        id: 'mail',
-        name: 'Письма (регистрация)',
-        why: 'Подтверждение почты и сброс пароля',
-        where: 'Unisender Go и/или SMTP на api.tili.su',
-        cabinet: 'https://go.unisender.com/',
-        cabinetLabel: 'Открыть Unisender',
-        passwordHint: 'UNISENDER_API_KEY / SMTP_* только на сервере, не в git.',
-        note: 'Бесплатный Unisender часто не шлёт на Gmail. Постоянный путь — Yandex Postbox. Пока API мёртв — письма тоже.',
-        billable: true,
-        periodMonths: 1,
-        examplePaidOn: '2025-11-01',
-        doIfDue: 'Проверь тариф Unisender или Postbox. Без живого api.tili.su письма не уйдут.',
-        liveId: 'api',
-      },
-      {
-        id: 'posthog',
-        name: 'Статистика приложения',
-        why: 'События, если человек включил в Настройках',
-        where: 'PostHog EU, project 287824',
-        cabinet: 'https://eu.posthog.com',
-        cabinetLabel: 'Открыть PostHog',
-        passwordHint: 'Пароль кабинета PostHog. Токен phc_ в .env.production',
-        note: 'Бесплатный tier обычно хватает на старте.',
-        billable: true,
-        periodMonths: 1,
-        examplePaidOn: '2025-11-01',
-        doIfDue: 'eu.posthog.com → billing. Если бесплатный лимит — можно оставить как есть.',
-      },
-      {
         id: 'metrika',
-        name: 'Статистика сайта',
+        group: 'other',
+        priority: 11,
+        name: 'Яндекс Метрика',
+        plain: 'Сколько заходят на сайт',
         why: 'Визиты лендинга tili.su',
         where: 'Яндекс Метрика, счётчик 113253680',
         cabinet: 'https://metrika.yandex.ru',
@@ -443,7 +523,10 @@
       },
       {
         id: 'countapi',
-        name: 'Счётчик «На Домой»',
+        group: 'other',
+        priority: 12,
+        name: 'Кнопка «На Домой»',
+        plain: 'Счётчик установок',
         why: 'Сколько нажали установить',
         where: 'CountAPI tili-great-idea / install-button',
         cabinet: 'https://api.countapi.xyz/get/tili-great-idea/install-button',
@@ -454,7 +537,10 @@
       },
       {
         id: 'donate',
+        group: 'other',
+        priority: 13,
         name: 'Донат',
+        plain: 'Кошелёк в Telegram',
         why: 'Поддержать автора',
         where: 'Telegram Wallet',
         cabinet: 'https://t.me/wallet',
@@ -464,23 +550,11 @@
         billable: false,
       },
       {
-        id: 'cloudflare',
-        name: 'Cloudflare',
-        why: 'Домен tili.su → Worker → /app и API-прокси',
-        where: 'Cloudflare + wrangler',
-        cabinet: 'https://dash.cloudflare.com/',
-        cabinetLabel: 'Открыть Cloudflare',
-        passwordHint: 'Логин владельца Cloudflare',
-        note: '/app отдаётся через jsDelivr @gh-pages-commit.',
-        billable: true,
-        periodMonths: 1,
-        examplePaidOn: '2025-11-01',
-        doIfDue: 'Обычно бесплатный план. Если красный сайт при живом Pages — смотри Worker.',
-        liveId: 'landing',
-      },
-      {
         id: 'device',
-        name: 'Телефон / браузер',
+        group: 'other',
+        priority: 14,
+        name: 'Данные на телефоне',
+        plain: 'Без облака всё только здесь',
         why: 'Задачи и желания гостя',
         where: 'IndexedDB на устройстве',
         cabinet: 'https://tili.su/app/',
@@ -565,11 +639,16 @@
     }
 
     function payLabel(days) {
-      if (days == null) return 'Дата не задана';
-      if (days < 0) return 'Просрочено на ' + Math.abs(days) + ' дн.';
-      if (days === 0) return 'Кончается сегодня';
-      if (days === 1) return 'Остался 1 день';
-      return 'Осталось ' + days + ' дн.';
+      if (days == null) return 'Впиши дату оплаты';
+      if (days < 0) return 'Просрочка ' + Math.abs(days) + ' дн. — оплати';
+      if (days === 0) return 'Сегодня последний день';
+      if (days === 1) return 'Завтра конец';
+      if (days <= 14) return 'Скоро конец — ' + days + ' дн.';
+      return 'До конца ' + days + ' дн.';
+    }
+
+    function sortServices(list) {
+      return [...list].sort((a, b) => (a.priority || 99) - (b.priority || 99));
     }
 
     function pill(kind, text) {
@@ -589,20 +668,20 @@
     async function pingOk(url) {
       try {
         const res = await withTimeout(url, { method: 'GET' });
-        if (res.ok) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
-        return { kind: 'bad', label: 'Ошибка', detail: String(res.status) };
+        if (res.ok) return { kind: 'ok', label: 'Работает', detail: String(res.status) };
+        return { kind: 'bad', label: 'Сбой', detail: String(res.status) };
       } catch {
-        return { kind: 'bad', label: 'Молчит', detail: 'таймаут' };
+        return { kind: 'bad', label: 'Не отвечает', detail: 'таймаут' };
       }
     }
 
     async function pingStatus(url, okFn) {
       try {
         const res = await withTimeout(url, { method: 'GET' });
-        if (okFn(res.status)) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
-        return { kind: 'bad', label: 'Ошибка', detail: String(res.status) };
+        if (okFn(res.status)) return { kind: 'ok', label: 'Работает', detail: String(res.status) };
+        return { kind: 'bad', label: 'Сбой', detail: String(res.status) };
       } catch {
-        return { kind: 'bad', label: 'Молчит', detail: 'таймаут' };
+        return { kind: 'bad', label: 'Не отвечает', detail: 'таймаут' };
       }
     }
 
@@ -611,25 +690,25 @@
         const res = await withTimeout(url, { method: 'GET' });
         let data = null;
         try { data = await res.json(); } catch { data = null; }
-        if (okFn(data, res.status)) return { kind: 'ok', label: 'Живое', detail: String(res.status) };
-        // CORS/opaque-ish failures still useful: 200 without JSON counts as reachable for Yandex health
-        if (res.ok) return { kind: 'ok', label: 'Ответил', detail: String(res.status) };
-        return { kind: 'bad', label: 'Ошибка', detail: String(res.status) };
+        if (okFn(data, res.status)) return { kind: 'ok', label: 'Работает', detail: String(res.status) };
+        if (res.ok) return { kind: 'ok', label: 'Отвечает', detail: String(res.status) };
+        return { kind: 'bad', label: 'Сбой', detail: String(res.status) };
       } catch {
-        return { kind: 'bad', label: 'Молчит', detail: 'таймаут' };
+        return { kind: 'bad', label: 'Не отвечает', detail: 'таймаут' };
       }
     }
 
     function liveCard(item, state) {
+      const tone = state.kind === 'wait' ? 'idle' : state.kind;
       return (
-        '<article class="tone-' + (state.kind === 'wait' ? 'idle' : state.kind) + '">' +
+        '<article class="tone-' + tone + '">' +
           '<div class="row">' +
             '<div><div class="name">' + item.name + '</div>' +
-            '<div class="meta">' + item.hint + (state.detail ? ' · ' + state.detail : '') + '</div></div>' +
-            pill(state.kind, state.label) +
+            '<div class="meta">' + item.hint + (state.detail ? ' · код ' + state.detail : '') + '</div></div>' +
+            pill(state.kind === 'wait' ? 'wait' : state.kind, state.label) +
           '</div>' +
-          '<div class="do"><strong>' + item.doTitle + '</strong>' + item.doBody +
-            (item.href ? ' <a href="' + item.href + '" target="_blank" rel="noopener">Открыть</a>' : '') +
+          '<div class="do"><strong>' + item.doTitle + '</strong> ' + item.doBody +
+            (item.href ? ' <a class="link" href="' + item.href + '" target="_blank" rel="noopener">Открыть кабинет</a>' : '') +
           '</div>' +
         '</article>'
       );
@@ -650,13 +729,24 @@
       if (svc.liveId && liveMap[svc.liveId]) live = liveMap[svc.liveId];
 
       let statusKind = 'idle';
-      let statusLabel = 'Справочник';
+      let statusLabel = 'Справка';
       if (live) {
         statusKind = live.kind;
         statusLabel = live.label;
-      } else if (svc.billable && days != null) {
-        statusKind = tone;
-        statusLabel = days < 0 ? 'Оплата' : 'Оплата ок';
+      } else if (svc.billable) {
+        if (days == null && !paidOn) {
+          statusKind = 'warn';
+          statusLabel = 'Впиши дату';
+        } else if (tone === 'bad') {
+          statusKind = 'bad';
+          statusLabel = 'Пора платить';
+        } else if (tone === 'warn') {
+          statusKind = 'warn';
+          statusLabel = 'Скоро платить';
+        } else {
+          statusKind = 'ok';
+          statusLabel = 'Оплачено';
+        }
       }
 
       const articleTone = statusKind === 'bad' || tone === 'bad' ? 'bad'
@@ -667,24 +757,24 @@
       if (svc.billable) {
         payHtml =
           '<div class="pay">' +
-            '<div class="hint">Дата оплаты → конец периода сам. ' +
-              (example && !paidOn ? 'Сейчас пример для картинки — впиши свою дату.' : 'Сохраняется в этом браузере.') +
+            '<div class="hint">' +
+              (example && !paidOn ? 'Жёлтая дата — только пример. Впиши свою.' : 'Даты хранятся только в этом браузере.') +
             '</div>' +
             '<div class="pay-grid">' +
-              '<div><label>Оплатил(а)</label>' +
+              '<div><label>Когда оплатил</label>' +
                 '<input type="date" data-bill-paid="' + svc.id + '" value="' + (paidOn || '') + '" />' +
               '</div>' +
-              '<div><label>На сколько месяцев</label>' +
+              '<div><label>Срок, месяцев</label>' +
                 '<input type="number" min="1" max="36" data-bill-months="' + svc.id + '" value="' + months + '" />' +
               '</div>' +
             '</div>' +
             '<div class="pay-out ' + tone + '">' +
               (effectivePaid
-                ? ('Конец: <b>' + fmtRu(end) + '</b> · ' + payLabel(days) +
-                   (example && !paidOn ? ' · пример' : ''))
-                : 'Введи дату оплаты — покажу, когда кончится.') +
+                ? ('Оплачено до <b>' + fmtRu(end) + '</b>. ' + payLabel(days) +
+                   (example && !paidOn ? ' (пример)' : ''))
+                : 'Выбери дату — посчитаю, до когда оплачено.') +
             '</div>' +
-            (svc.doIfDue ? '<div class="hint"><b>Если кончается:</b> ' + svc.doIfDue + '</div>' : '') +
+            (svc.doIfDue ? '<div class="hint"><b>Когда срок кончается:</b> ' + svc.doIfDue + '</div>' : '') +
           '</div>';
       }
 
@@ -692,19 +782,20 @@
         '<article class="tone-' + articleTone + '" data-svc="' + svc.id + '">' +
           '<div class="row">' +
             '<div><div class="name">' + svc.name + '</div>' +
-            '<div class="meta">' + svc.why + '</div></div>' +
+            '<div class="meta">' + (svc.plain || svc.why) + '</div></div>' +
             pill(statusKind, statusLabel) +
           '</div>' +
           '<div class="facts">' +
-            '<div>Где: ' + svc.where + '</div>' +
-            '<div>Пароль/код: ' + svc.passwordHint + '</div>' +
-            (svc.note ? '<div>' + svc.note + '</div>' : '') +
+            '<div><b>Зачем:</b> ' + svc.why + '</div>' +
+            '<div><b>Где:</b> ' + svc.where + '</div>' +
+            (svc.note ? '<div><b>Важно:</b> ' + svc.note + '</div>' : '') +
           '</div>' +
-          '<div class="do"><strong>Что делать</strong>' +
+          '<div class="do"><strong>Сейчас</strong> ' +
             (live && live.kind === 'bad'
-              ? 'Сейчас не отвечает. '
-              : (tone === 'bad' ? 'Срок оплаты горит. ' : 'Открой кабинет, если нужно проверить. ')) +
-            '<a href="' + svc.cabinet + '" target="_blank" rel="noopener">' + svc.cabinetLabel + '</a>' +
+              ? 'Не работает — смотри блок «Работает ли». '
+              : (tone === 'bad' ? 'Пора оплатить. '
+                : (tone === 'warn' ? 'Скоро оплата. ' : ''))) +
+            '<a class="link" href="' + svc.cabinet + '" target="_blank" rel="noopener">' + svc.cabinetLabel + '</a>' +
           '</div>' +
           payHtml +
         '</article>'
@@ -717,21 +808,21 @@
       const payBad = billingTones.filter((t) => t === 'bad').length;
       const payWarn = billingTones.filter((t) => t === 'warn').length;
       document.getElementById('summary').innerHTML =
-        '<div class="stat"><b style="color:var(--ok)">' + liveOk + '</b><span>живых проверок</span></div>' +
-        '<div class="stat"><b style="color:var(--bad)">' + liveBad + '</b><span>молчит сейчас</span></div>' +
-        '<div class="stat"><b style="color:var(--warn)">' + payWarn + '</b><span>оплата скоро</span></div>' +
-        '<div class="stat"><b style="color:var(--bad)">' + payBad + '</b><span>оплата горит</span></div>';
+        '<div class="stat"><b style="color:var(--ok)">' + liveOk + '</b><span>работает</span></div>' +
+        '<div class="stat"><b style="color:var(--bad)">' + liveBad + '</b><span>не отвечает</span></div>' +
+        '<div class="stat"><b style="color:var(--warn)">' + payWarn + '</b><span>скоро платить</span></div>' +
+        '<div class="stat"><b style="color:var(--bad)">' + payBad + '</b><span>пора платить</span></div>';
 
       const banner = document.getElementById('banner');
       if (liveBad > 0 || payBad > 0) {
         banner.className = 'banner bad';
-        banner.textContent = 'Есть красное. Сначала почини «молчит», потом закинь оплату где горит срок.';
+        banner.textContent = 'Есть срочное: что-то не отвечает или пора платить. Сверху — деньги, ниже — проверки.';
       } else if (payWarn > 0) {
         banner.className = 'banner warn';
-        banner.textContent = 'Всё отвечает, но скоро кончается оплата — загляни в жёлтые карточки.';
+        banner.textContent = 'Пока всё отвечает, но оплата скоро — загляни в жёлтые карточки.';
       } else {
         banner.className = 'banner ok';
-        banner.textContent = 'Пока спокойно: проверки зелёные, сроки оплаты не горят.';
+        banner.textContent = 'Спокойно: ответы есть, сроки оплаты не горят.';
       }
     }
 
@@ -756,19 +847,23 @@
 
     function refreshServicesOnly() {
       const billingTones = [];
-      const html = serviceCatalog.map((svc) => {
+      const pay = [];
+      const other = [];
+      sortServices(serviceCatalog).forEach((svc) => {
         if (svc.billable) {
           const saved = readBilling()[svc.id] || {};
           const paidOn = saved.paidOn || svc.examplePaidOn || '';
           const months = Number(saved.months || svc.periodMonths || 1);
           if (paidOn) billingTones.push(payTone(daysUntil(addMonths(paidOn, months))));
         }
-        return serviceCard(svc, lastLiveMap);
-      }).join('');
-      document.getElementById('services').innerHTML = html;
+        const html = serviceCard(svc, lastLiveMap);
+        if (svc.group === 'pay' || svc.billable) pay.push(html);
+        else other.push(html);
+      });
+      document.getElementById('services-pay').innerHTML = pay.join('');
+      document.getElementById('services-other').innerHTML = other.join('');
       bindBillingInputs();
-      const liveStates = Object.values(lastLiveMap);
-      renderSummary(liveStates, billingTones);
+      renderSummary(Object.values(lastLiveMap), billingTones);
     }
 
     async function runChecks() {
