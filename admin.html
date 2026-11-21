@@ -4,27 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="theme-color" content="#5f9f72" />
-  <title>TiLi — админка</title>
+  <meta name="theme-color" content="#8B81A8" />
+  <title>TiLi — пульт управления</title>
   <style>
     :root {
-      --bg: #f6f6f8;
-      --card: #fff;
-      --text: #000;
-      --muted: #7f8285;
-      --ok: #00945e;
-      --ok-bg: #e8f7f0;
-      --warn: #c47f00;
-      --warn-bg: #fff4d6;
-      --bad: #e00000;
-      --bad-bg: #ffe8e8;
-      --idle: #6d7175;
-      --idle-bg: #f0f1f3;
-      --border: #e6e6e8;
-      --accent: #fc0;
-      --accent-text: #1a1a1a;
-      --font: 'YS Text', 'Helvetica Neue', Arial, sans-serif;
-      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+      --bg: #F8F9FC;
+      --card: #FFFFFF;
+      --text: #24243B;
+      --muted: #77798C;
+      --accent: #8B81A8;
+      --accent-soft: #EEEBF5;
+      --accent-text: #2E2942;
+      --tint-green: #E9F7EE;
+      --tint-blue: #EAF4FF;
+      --tint-yellow: #FFF8EA;
+      --tint-red: #FFF2F3;
+      --tint-violet: #F3F0FA;
+      --ok: #319E64;
+      --ok-bg: var(--tint-green);
+      --warn: #B8842A;
+      --warn-bg: var(--tint-yellow);
+      --bad: #C4545E;
+      --bad-bg: var(--tint-red);
+      --idle: #77798C;
+      --idle-bg: #F0F1F4;
+      --border: #E8E9EF;
+      --font: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --shadow: 0 2px 8px rgba(36, 36, 59, 0.04);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --ease: 180ms ease;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
     }
     * { box-sizing: border-box; }
     body {
@@ -68,14 +81,17 @@
     button, .btn {
       appearance: none;
       border: 0;
-      background: var(--accent);
+      background: var(--accent-soft);
       color: var(--accent-text);
       font: inherit;
       font-weight: 500;
-      padding: 9px 14px;
-      border-radius: 8px;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
+      transition: background var(--ease), transform var(--ease);
     }
+    button:not(.ghost):hover { background: #E2DCEF; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     button.ghost, .btn.ghost {
       background: var(--card);
       color: var(--text);
@@ -237,6 +253,208 @@
     @media (max-width: 640px) {
       .pass-box .row-inline { grid-template-columns: 1fr; }
     }
+    .dash-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .bar-inner { align-items: center; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand img { height: 36px; width: auto; display: block; }
+    .brand-pill {
+      font-size: 0.82rem;
+      color: var(--muted);
+      background: var(--accent-soft);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .header-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .header-meta .sub { margin: 0; }
+    .reload-busy .icon-spin { animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      background: linear-gradient(135deg, #FAFBFE 0%, #F3F0FA 45%, #EEF6F1 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-art { display: none; }
+    }
+    .hero h2 { margin: 0 0 6px; font-size: 1.45rem; font-weight: 600; color: var(--text); }
+    .hero p { margin: 0; color: var(--muted); max-width: 36em; line-height: 1.5; }
+    .hero-art svg { width: 100%; max-width: 280px; height: auto; display: block; margin-left: auto; opacity: .9; }
+    .summary { margin-bottom: 14px; }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: border-color var(--ease), transform var(--ease);
+      text-align: left;
+    }
+    .kpi:hover { transform: translateY(-1px); }
+    .kpi.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft); }
+    .kpi-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .kpi-icon {
+      width: 32px; height: 32px; border-radius: 10px;
+      display: grid; place-items: center;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .kpi-icon.ok { background: var(--ok-bg); color: var(--ok); }
+    .kpi-icon.bad { background: var(--bad-bg); color: var(--bad); }
+    .kpi-icon.warn { background: var(--warn-bg); color: var(--warn); }
+    .kpi b { font-size: 2rem; line-height: 1; font-weight: 600; display: block; }
+    .kpi span { color: var(--muted); font-size: 0.88rem; }
+    .attention {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+    }
+    .attention h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+    .attention p { margin: 4px 0 0; color: var(--muted); font-size: 0.9rem; }
+    .attention-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .attention.ok { background: var(--ok-bg); border-color: #C5E8D4; }
+    .attention.warn { background: var(--warn-bg); border-color: #EAD4A0; }
+    .attention.bad { background: var(--bad-bg); border-color: #EDB8BD; }
+    .attention.idle { background: var(--idle-bg); }
+    .panel-soft {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+    }
+    .pay-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 640px) { .pay-mini-grid { grid-template-columns: 1fr; } }
+    .pay-mini {
+      background: var(--idle-bg);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+    .pay-mini b { display: block; font-size: 1.1rem; margin-top: 4px; }
+    .pay-mini span { color: var(--muted); font-size: 0.85rem; }
+    .pay-bars { display: grid; gap: 10px; margin-top: 12px; }
+    .pay-bar-row .pay-bar-label {
+      display: flex; justify-content: space-between; gap: 8px;
+      font-size: 0.86rem; margin-bottom: 6px;
+    }
+  .pay-bar-track {
+      height: 8px; background: var(--idle-bg); border-radius: 999px; overflow: hidden;
+    }
+    .pay-bar-fill { height: 100%; border-radius: 999px; transition: width 220ms ease; }
+    .pay-bar-fill.ok { background: var(--ok); }
+    .pay-bar-fill.warn { background: var(--warn); }
+    .pay-bar-fill.bad { background: var(--bad); }
+    article.svc-card, article.live-card {
+      border-left: 0;
+      border: 1px solid var(--border);
+      animation: fadeIn 220ms ease both;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    article.is-filtered-out { display: none !important; }
+    .svc-head { display: flex; gap: 12px; align-items: flex-start; }
+    .ico-bubble {
+      width: 44px; height: 44px; border-radius: 14px;
+      display: grid; place-items: center;
+      flex-shrink: 0; color: var(--accent-text); font-weight: 650; font-size: 0.8rem;
+      background: var(--tint-violet);
+    }
+    .ico-bubble.green { background: var(--tint-green); }
+    .ico-bubble.blue { background: var(--tint-blue); }
+    .ico-bubble.amber { background: var(--tint-yellow); }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .pill.tech { border: 1px solid transparent; }
+    .pill.pay { border: 1px dashed var(--border); }
+    details.tech {
+      margin-top: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+    }
+    details.tech summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 0.88rem;
+      font-weight: 500;
+      list-style: none;
+    }
+    details.tech summary::-webkit-details-marker { display: none; }
+    .btn-row { margin-top: 14px; }
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-soft);
+      color: var(--accent-text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .btn-link:hover { background: #E2DCEF; }
+    .checklist { display: grid; gap: 8px; }
+    .check-item {
+      display: flex; gap: 10px; align-items: center;
+      padding: 10px 12px;
+      background: var(--idle-bg);
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+    }
+    .check-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+      background: var(--idle);
+    }
+    .check-dot.ok { background: var(--ok); }
+    .check-dot.bad { background: var(--bad); }
+    .check-dot.idle { background: #B8BBC6; }
+    .analytics-empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 24px 12px;
+      background: var(--idle-bg);
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+    }
+    .filter-chip {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .filter-chip button {
+      background: transparent;
+      border: 0;
+      color: var(--accent);
+      text-decoration: underline;
+      padding: 0;
+      cursor: pointer;
+    }
+    .hidden { display: none !important; }
+    .dash-body { padding-bottom: 8px; }
+    input[type="number"].amount-field { margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -255,33 +473,84 @@
     </section>
 
     <section class="panel" id="panel">
-      <header class="bar">
+      <header class="dash-header bar">
         <div class="bar-inner">
-          <div>
-            <h1>Пульт TiLi</h1>
-            <p class="sub" id="stamp">Открываю…</p>
+          <div class="brand">
+            <img src="/logo-tili-lumi-lockup.png" alt="TiLi + Lumi" width="140" height="36" />
+            <span class="brand-pill">Пульт управления</span>
           </div>
-          <div class="top-actions">
-            <button type="button" class="ghost" id="reload">Обновить</button>
+          <div class="header-meta">
+            <p class="sub" id="stamp">Открываю…</p>
+            <button type="button" class="ghost" id="reload" title="Обновить проверки">
+              <span class="icon-spin" aria-hidden>↻</span> Обновить
+            </button>
+            <button type="button" class="ghost" id="helpBtn" title="Краткая подсказка">Помощь</button>
             <button type="button" class="ghost" id="logout">Выйти</button>
           </div>
         </div>
       </header>
 
-      <div class="banner idle" id="banner">Сейчас посмотрю, всё ли в порядке.</div>
-      <div class="summary" id="summary"></div>
+      <div class="dash-body">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <h2 id="hero-title">Пульт TiLi</h2>
+            <p>Всё важное о сайте и приложении — в одном месте. Без технарского жаргона.</p>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <svg viewBox="0 0 320 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="40" y="70" width="120" height="72" rx="10" fill="#fff" stroke="#E0D8F0" stroke-width="1.5"/>
+              <rect x="52" y="82" width="96" height="48" rx="6" fill="#EEEBF5"/>
+              <circle cx="160" cy="118" r="14" fill="#8B81A8" opacity=".35"/>
+              <path d="M200 100c20-18 44-18 64 0" stroke="#B9D3BD" stroke-width="8" stroke-linecap="round"/>
+              <ellipse cx="248" cy="112" rx="22" ry="12" fill="#D8B8B5" opacity=".5"/>
+            </svg>
+          </div>
+        </section>
 
-      <h2 class="sect">1. Деньги и главное</h2>
-      <p class="sect-sub">Сначала то, за что платишь и без чего ломается вход и синхронизация.</p>
-      <div class="cards-2" id="services-pay"></div>
+        <div class="summary" id="summary" role="group" aria-label="Главные показатели"></div>
 
-      <h2 class="sect">2. Работает ли прямо сейчас</h2>
-      <p class="sect-sub">Зелёное — ок. Красное — иди чинить или пиши в поддержку хостера.</p>
-      <div class="cards-2" id="live"></div>
+        <div class="attention idle" id="banner">
+          <div>
+            <h3 id="banner-title">Проверяю…</h3>
+            <p id="banner-sub">Подожди пару секунд.</p>
+          </div>
+          <div class="attention-actions">
+            <button type="button" class="ghost" id="showProblems">Показать проблемы</button>
+          </div>
+        </div>
 
-      <h2 class="sect">3. Остальное</h2>
-      <p class="sect-sub">Сайт, статистика, справка. Оплату здесь обычно не ждут.</p>
-      <div class="cards-2" id="services-other"></div>
+        <p class="filter-chip hidden" id="filterChip"></p>
+
+        <section class="panel-soft" aria-labelledby="money-title">
+          <h2 class="sect" id="money-title" style="margin-top:0">Деньги и подписки</h2>
+          <p class="sect-sub">Сроки оплаты и прогресс. Сумму в месяц можно дописать в карточке услуги.</p>
+          <div id="payment-overview"></div>
+        </section>
+
+        <h2 class="sect">Главные сервисы</h2>
+        <p class="sect-sub">Сначала сервер, почта, домен и облако.</p>
+        <div class="cards-2" id="services-pay"></div>
+
+        <h2 class="sect">Работает ли прямо сейчас</h2>
+        <p class="sect-sub">Реальные проверки из интернета. Обновление каждые 60 секунд.</p>
+        <div class="cards-2" id="live"></div>
+
+        <h2 class="sect">Остальное</h2>
+        <p class="sect-sub">Хостинг, статистика, справка.</p>
+        <div class="cards-2" id="services-other"></div>
+
+        <section class="panel-soft" aria-labelledby="check-title">
+          <h2 class="sect" id="check-title" style="margin-top:0">Быстрая проверка проекта</h2>
+          <div class="checklist" id="checklist"></div>
+        </section>
+
+        <section class="panel-soft" aria-labelledby="stats-title">
+          <h2 class="sect" id="stats-title" style="margin-top:0">Использование приложений</h2>
+          <div class="analytics-empty" id="analytics-empty">
+            Статистика пользователей появится, когда подключим PostHog или сервер. Сейчас данных нет — так и показываем.
+          </div>
+        </section>
+      </div>
 
       <div class="pass-box">
         <h2 style="margin-top:0">Сменить пароль админки</h2>
@@ -651,8 +920,174 @@
       return [...list].sort((a, b) => (a.priority || 99) - (b.priority || 99));
     }
 
-    function pill(kind, text) {
-      return '<span class="pill ' + kind + '">' + text + '</span>';
+    function pill(kind, text, extra) {
+      return '<span class="pill ' + kind + (extra ? ' ' + extra : '') + '">' + text + '</span>';
+    }
+
+    let activeFilter = null;
+    let summaryStats = { liveOk: 0, liveBad: 0, payWarn: 0, payBad: 0, waiting: 0 };
+
+    const ICONS = {
+      adminvps: { t: 'API', cls: 'blue' },
+      mail: { t: 'Пч', cls: 'amber' },
+      domain: { t: 'RU', cls: 'green' },
+      'yandex-push': { t: 'Push', cls: 'blue' },
+      'yandex-voice': { t: 'Mic', cls: 'blue' },
+      cloudflare: { t: 'CF', cls: '' },
+      posthog: { t: 'PH', cls: '' },
+      pages: { t: 'GH', cls: 'green' },
+      metrika: { t: 'YM', cls: 'amber' },
+      countapi: { t: '+', cls: '' },
+      donate: { t: '₽', cls: '' },
+      device: { t: 'IDB', cls: 'green' },
+    };
+
+    function iconBubble(id) {
+      const x = ICONS[id] || { t: '·', cls: '' };
+      return '<div class="ico-bubble ' + x.cls + '" aria-hidden>' + x.t + '</div>';
+    }
+
+    function payProgressPct(paidOn, months, days, tone) {
+      if (!paidOn || months <= 0 || days == null) return 0;
+      const total = Math.max(1, months * 30);
+      const left = Math.max(0, days);
+      const elapsed = Math.min(total, total - left);
+      return Math.round((elapsed / total) * 100);
+    }
+
+    function serviceBilling(svc) {
+      const saved = readBilling()[svc.id] || {};
+      const paidOn = saved.paidOn || '';
+      const months = Number(saved.months || svc.periodMonths || 1);
+      const example = !paidOn && svc.examplePaidOn;
+      const effectivePaid = paidOn || (example ? svc.examplePaidOn : '');
+      const end = effectivePaid ? addMonths(effectivePaid, months) : '';
+      const days = end ? daysUntil(end) : null;
+      const tone = svc.billable ? payTone(days) : 'idle';
+      return { saved, paidOn, months, example, effectivePaid, end, days, tone };
+    }
+
+    function matchesFilter(svc, liveMap, bill) {
+      if (!activeFilter) return true;
+      const live = svc.liveId && liveMap[svc.liveId] ? liveMap[svc.liveId] : null;
+      if (activeFilter === 'ok') return live && live.kind === 'ok';
+      if (activeFilter === 'bad') return live && live.kind === 'bad';
+      if (activeFilter === 'pay-warn') return svc.billable && bill.tone === 'warn';
+      if (activeFilter === 'pay-bad') return svc.billable && bill.tone === 'bad';
+      if (activeFilter === 'problems') {
+        return (live && live.kind === 'bad') || (svc.billable && (bill.tone === 'bad' || bill.tone === 'warn'));
+      }
+      return true;
+    }
+
+    function updateFilterChip() {
+      const el = document.getElementById('filterChip');
+      if (!activeFilter) {
+        el.classList.add('hidden');
+        el.innerHTML = '';
+        return;
+      }
+      const labels = {
+        ok: 'работает',
+        bad: 'не отвечает',
+        'pay-warn': 'скоро платить',
+        'pay-bad': 'пора платить',
+        problems: 'проблемы',
+      };
+      el.classList.remove('hidden');
+      el.innerHTML = 'Фильтр: <strong>' + (labels[activeFilter] || activeFilter) + '</strong>. <button type="button" id="clearFilter">Показать всё</button>';
+      document.getElementById('clearFilter')?.addEventListener('click', () => {
+        activeFilter = null;
+        applyFilterClasses();
+        updateFilterChip();
+        document.querySelectorAll('.kpi.is-active').forEach((n) => n.classList.remove('is-active'));
+      });
+    }
+
+    function applyFilterClasses() {
+      document.querySelectorAll('[data-filter-kind]').forEach((node) => {
+        const kind = node.getAttribute('data-filter-kind');
+        const payBad = node.getAttribute('data-pay-bad') === '1';
+        const payWarn = node.getAttribute('data-pay-warn') === '1';
+        const liveBad = node.getAttribute('data-live-bad') === '1';
+        const liveOk = node.getAttribute('data-live-ok') === '1';
+        let show = true;
+        if (activeFilter === 'ok') show = liveOk;
+        else if (activeFilter === 'bad') show = liveBad;
+        else if (activeFilter === 'pay-warn') show = payWarn;
+        else if (activeFilter === 'pay-bad') show = payBad;
+        else if (activeFilter === 'problems') show = liveBad || payBad || payWarn;
+        else if (activeFilter && kind === 'live') {
+          if (activeFilter === 'ok') show = liveOk;
+          else if (activeFilter === 'bad') show = liveBad;
+        }
+        node.classList.toggle('is-filtered-out', !show);
+      });
+    }
+
+    function renderPaymentOverview() {
+      const root = document.getElementById('payment-overview');
+      const items = sortServices(serviceCatalog).filter((s) => s.billable);
+      let overdue = 0;
+      let nearest = null;
+      let monthSum = 0;
+      let hasAmount = false;
+      const bars = [];
+      items.forEach((svc) => {
+        const b = serviceBilling(svc);
+        if (b.days != null && b.effectivePaid) {
+          if (b.days < 0) overdue += 1;
+          else if (!nearest || b.days < nearest.days) nearest = { name: svc.name, days: b.days, end: b.end };
+        }
+        const amount = Number(b.saved.amountRub || 0);
+        if (amount > 0) { monthSum += amount; hasAmount = true; }
+        if (b.effectivePaid) {
+          const pct = payProgressPct(b.effectivePaid, b.months, b.days, b.tone);
+          bars.push(
+            '<div class="pay-bar-row">' +
+              '<div class="pay-bar-label"><span>' + svc.name + '</span><span>' +
+                (b.days != null ? payLabel(b.days) : '—') + '</span></div>' +
+              '<div class="pay-bar-track"><div class="pay-bar-fill ' + b.tone + '" style="width:' + pct + '%"></div></div>' +
+            '</div>'
+          );
+        }
+      });
+      root.innerHTML =
+        '<div class="pay-mini-grid">' +
+          '<div class="pay-mini"><span>Ближайший платёж</span><b>' +
+            (nearest ? (nearest.name + ' · ' + nearest.days + ' дн.') : 'Впиши даты в карточках') +
+          '</b></div>' +
+          '<div class="pay-mini"><span>Просрочено</span><b>' + overdue + '</b></div>' +
+          '<div class="pay-mini"><span>Расход в месяц</span><b>' +
+            (hasAmount ? (monthSum.toLocaleString('ru-RU') + ' ₽') : 'Стоимость не указана') +
+          '</b></div>' +
+          '<div class="pay-mini"><span>Услуг с датами</span><b>' + bars.length + '</b></div>' +
+        '</div>' +
+        (bars.length ? '<div class="pay-bars">' + bars.join('') + '</div>' :
+          '<p class="hint">Укажи «когда оплатил» в карточках ниже — здесь появятся полоски.</p>');
+    }
+
+    function renderChecklist() {
+      const rows = [
+        { t: 'Сайт открывается', id: 'landing' },
+        { t: 'Приложение загружается', id: 'app' },
+        { t: 'Вход и синхронизация', id: 'api' },
+        { t: 'Письма (зависит от сервера)', id: 'api' },
+        { t: 'Уведомления на телефон', id: 'pushY' },
+        { t: 'Синхронизация календаря', id: 'api' },
+      ];
+      const html = rows.map((row) => {
+        const st = lastLiveMap[row.id];
+        let dot = 'idle';
+        let label = 'Не проверяется';
+        if (st) {
+          if (st.kind === 'wait') { dot = 'idle'; label = 'Проверяется'; }
+          else if (st.kind === 'ok') { dot = 'ok'; label = 'Работает'; }
+          else { dot = 'bad'; label = 'Не работает'; }
+        }
+        return '<div class="check-item"><span class="check-dot ' + dot + '" aria-hidden></span><span>' + row.t + '</span><span style="margin-left:auto;color:var(--muted)">' + label + '</span></div>';
+      }).join('');
+      document.getElementById('checklist').innerHTML = html;
     }
 
     async function withTimeout(url, opts) {
@@ -700,67 +1135,59 @@
 
     function liveCard(item, state) {
       const tone = state.kind === 'wait' ? 'idle' : state.kind;
+      const liveBad = state.kind === 'bad' ? '1' : '0';
+      const liveOk = state.kind === 'ok' ? '1' : '0';
       return (
-        '<article class="tone-' + tone + '">' +
-          '<div class="row">' +
-            '<div><div class="name">' + item.name + '</div>' +
-            '<div class="meta">' + item.hint + (state.detail ? ' · код ' + state.detail : '') + '</div></div>' +
-            pill(state.kind === 'wait' ? 'wait' : state.kind, state.label) +
-          '</div>' +
-          '<div class="do"><strong>' + item.doTitle + '</strong> ' + item.doBody +
-            (item.href ? ' <a class="link" href="' + item.href + '" target="_blank" rel="noopener">Открыть кабинет</a>' : '') +
+        '<article class="live-card tone-' + tone + '" data-filter-kind="live" data-live-bad="' + liveBad + '" data-live-ok="' + liveOk + '" data-pay-bad="0" data-pay-warn="0">' +
+          '<div class="svc-head">' +
+            iconBubble(item.id === 'api' ? 'adminvps' : (item.id === 'pushY' ? 'yandex-push' : 'pages')) +
+            '<div style="flex:1">' +
+              '<div class="row"><div><div class="name">' + item.name + '</div>' +
+              '<div class="meta">' + item.hint + (state.detail ? ' · ' + state.detail : '') + '</div></div>' +
+              pill(state.kind === 'wait' ? 'wait' : state.kind, state.label, 'tech') + '</div>' +
+              '<div class="do" style="margin-top:10px"><strong>' + item.doTitle + '</strong> ' + item.doBody + '</div>' +
+              (item.href ? '<div class="btn-row"><a class="btn-link" href="' + item.href + '" target="_blank" rel="noopener">Открыть кабинет</a></div>' : '') +
+            '</div>' +
           '</div>' +
         '</article>'
       );
     }
 
     function serviceCard(svc, liveMap) {
-      const billing = readBilling();
-      const saved = billing[svc.id] || {};
-      const paidOn = saved.paidOn || '';
-      const months = Number(saved.months || svc.periodMonths || 1);
-      const example = !paidOn && svc.examplePaidOn;
-      const effectivePaid = paidOn || (example ? svc.examplePaidOn : '');
-      const end = effectivePaid ? addMonths(effectivePaid, months) : '';
-      const days = end ? daysUntil(end) : null;
-      const tone = svc.billable ? payTone(days) : 'idle';
+      const bill = serviceBilling(svc);
+      const { saved, paidOn, months, example, effectivePaid, end, days, tone } = bill;
 
-      let live = null;
-      if (svc.liveId && liveMap[svc.liveId]) live = liveMap[svc.liveId];
-
-      let statusKind = 'idle';
-      let statusLabel = 'Справка';
+      const live = svc.liveId && liveMap[svc.liveId] ? liveMap[svc.liveId] : null;
+      let techKind = 'idle';
+      let techLabel = 'Нет автопроверки';
       if (live) {
-        statusKind = live.kind;
-        statusLabel = live.label;
-      } else if (svc.billable) {
-        if (days == null && !paidOn) {
-          statusKind = 'warn';
-          statusLabel = 'Впиши дату';
-        } else if (tone === 'bad') {
-          statusKind = 'bad';
-          statusLabel = 'Пора платить';
-        } else if (tone === 'warn') {
-          statusKind = 'warn';
-          statusLabel = 'Скоро платить';
-        } else {
-          statusKind = 'ok';
-          statusLabel = 'Оплачено';
-        }
+        techKind = live.kind;
+        techLabel = live.kind === 'ok' ? 'Работает' : (live.kind === 'wait' ? 'Проверяется' : 'Не работает');
       }
 
-      const articleTone = statusKind === 'bad' || tone === 'bad' ? 'bad'
-        : statusKind === 'warn' || tone === 'warn' ? 'warn'
-        : statusKind === 'ok' ? 'ok' : 'idle';
+      let payKind = 'idle';
+      let payLabelText = '';
+      if (svc.billable) {
+        if (!effectivePaid && !paidOn) { payKind = 'warn'; payLabelText = 'Впиши дату'; }
+        else if (tone === 'bad') { payKind = 'bad'; payLabelText = 'Пора платить'; }
+        else if (tone === 'warn') { payKind = 'warn'; payLabelText = 'Скоро платить'; }
+        else { payKind = 'ok'; payLabelText = 'Оплачено'; }
+      }
+
+      const articleTone = techKind === 'bad' || payKind === 'bad' ? 'bad'
+        : techKind === 'warn' || payKind === 'warn' ? 'warn'
+        : techKind === 'ok' ? 'ok' : 'idle';
 
       let payHtml = '';
       if (svc.billable) {
+        const amount = saved.amountRub || '';
         payHtml =
-          '<div class="pay">' +
-            '<div class="hint">' +
-              (example && !paidOn ? 'Жёлтая дата — только пример. Впиши свою.' : 'Даты хранятся только в этом браузере.') +
+          '<details class="tech pay" open>' +
+            '<summary>Изменить оплату</summary>' +
+            '<div class="hint" style="margin-top:8px">' +
+              (example && !paidOn ? 'Серая дата — пример. Впиши свою.' : 'Данные только в этом браузере.') +
             '</div>' +
-            '<div class="pay-grid">' +
+            '<div class="pay-grid" style="margin-top:8px">' +
               '<div><label>Когда оплатил</label>' +
                 '<input type="date" data-bill-paid="' + svc.id + '" value="' + (paidOn || '') + '" />' +
               '</div>' +
@@ -768,35 +1195,48 @@
                 '<input type="number" min="1" max="36" data-bill-months="' + svc.id + '" value="' + months + '" />' +
               '</div>' +
             '</div>' +
-            '<div class="pay-out ' + tone + '">' +
+            '<label style="margin-top:8px">Стоимость в месяц, ₽ (необязательно)</label>' +
+            '<input class="amount-field" type="number" min="0" step="1" data-bill-amount="' + svc.id + '" value="' + amount + '" placeholder="Например 544" />' +
+            '<div class="pay-out ' + tone + '" style="margin-top:8px">' +
               (effectivePaid
-                ? ('Оплачено до <b>' + fmtRu(end) + '</b>. ' + payLabel(days) +
-                   (example && !paidOn ? ' (пример)' : ''))
-                : 'Выбери дату — посчитаю, до когда оплачено.') +
+                ? ('Оплачено до <b>' + fmtRu(end) + '</b>. ' + payLabel(days) + (example && !paidOn ? ' (пример)' : ''))
+                : 'Выбери дату — посчитаю срок.') +
             '</div>' +
-            (svc.doIfDue ? '<div class="hint"><b>Когда срок кончается:</b> ' + svc.doIfDue + '</div>' : '') +
-          '</div>';
+            (svc.doIfDue ? '<p class="hint"><b>Если срок кончается:</b> ' + svc.doIfDue + '</p>' : '') +
+          '</details>';
       }
 
+      const liveBad = live && live.kind === 'bad' ? '1' : '0';
+      const liveOk = live && live.kind === 'ok' ? '1' : '0';
+      const payBad = payKind === 'bad' ? '1' : '0';
+      const payWarn = payKind === 'warn' ? '1' : '0';
+
       return (
-        '<article class="tone-' + articleTone + '" data-svc="' + svc.id + '">' +
-          '<div class="row">' +
-            '<div><div class="name">' + svc.name + '</div>' +
-            '<div class="meta">' + (svc.plain || svc.why) + '</div></div>' +
-            pill(statusKind, statusLabel) +
+        '<article class="svc-card tone-' + articleTone + '" data-svc="' + svc.id + '" data-filter-kind="svc" data-live-bad="' + liveBad + '" data-live-ok="' + liveOk + '" data-pay-bad="' + payBad + '" data-pay-warn="' + payWarn + '">' +
+          '<div class="svc-head">' + iconBubble(svc.id) +
+            '<div style="flex:1;min-width:0">' +
+              '<div class="name">' + svc.name + '</div>' +
+              '<div class="meta">' + (svc.plain || svc.why) + '</div>' +
+              '<div class="badge-row">' +
+                (live ? pill(techKind, techLabel, 'tech') : '') +
+                (svc.billable ? pill(payKind, payLabelText, 'pay') : pill('idle', 'Справка', 'pay')) +
+              '</div>' +
+            '</div>' +
           '</div>' +
-          '<div class="facts">' +
-            '<div><b>Зачем:</b> ' + svc.why + '</div>' +
-            '<div><b>Где:</b> ' + svc.where + '</div>' +
-            (svc.note ? '<div><b>Важно:</b> ' + svc.note + '</div>' : '') +
-          '</div>' +
-          '<div class="do"><strong>Сейчас</strong> ' +
-            (live && live.kind === 'bad'
-              ? 'Не работает — смотри блок «Работает ли». '
-              : (tone === 'bad' ? 'Пора оплатить. '
-                : (tone === 'warn' ? 'Скоро оплата. ' : ''))) +
-            '<a class="link" href="' + svc.cabinet + '" target="_blank" rel="noopener">' + svc.cabinetLabel + '</a>' +
-          '</div>' +
+          '<p class="meta" style="margin-top:10px">' +
+            (live && live.kind === 'bad' ? 'Сейчас не отвечает. ' : '') +
+            (payKind === 'bad' ? 'Нужна оплата. ' : (payKind === 'warn' ? 'Скоро оплата. ' : '')) +
+            (svc.billable && effectivePaid ? 'Оплачено до ' + fmtRu(end) + '.' : '') +
+          '</p>' +
+          '<div class="btn-row"><a class="btn-link" href="' + svc.cabinet + '" target="_blank" rel="noopener">' + svc.cabinetLabel + '</a></div>' +
+          '<details class="tech"><summary>Подробности</summary>' +
+            '<div class="facts">' +
+              '<div><b>Зачем:</b> ' + svc.why + '</div>' +
+              '<div><b>Где:</b> ' + svc.where + '</div>' +
+              (live && live.detail ? '<div><b>Проверка:</b> ' + techLabel + ' (' + live.detail + ')</div>' : '') +
+              (svc.note ? '<div><b>Важно:</b> ' + svc.note + '</div>' : '') +
+            '</div>' +
+          '</details>' +
           payHtml +
         '</article>'
       );
@@ -807,35 +1247,71 @@
       const liveOk = liveStates.filter((s) => s.kind === 'ok').length;
       const payBad = billingTones.filter((t) => t === 'bad').length;
       const payWarn = billingTones.filter((t) => t === 'warn').length;
-      document.getElementById('summary').innerHTML =
-        '<div class="stat"><b style="color:var(--ok)">' + liveOk + '</b><span>работает</span></div>' +
-        '<div class="stat"><b style="color:var(--bad)">' + liveBad + '</b><span>не отвечает</span></div>' +
-        '<div class="stat"><b style="color:var(--warn)">' + payWarn + '</b><span>скоро платить</span></div>' +
-        '<div class="stat"><b style="color:var(--bad)">' + payBad + '</b><span>пора платить</span></div>';
+      summaryStats = { liveOk, liveBad, payWarn, payBad, waiting: liveStates.filter((s) => s.kind === 'wait').length };
+
+      const kpis = [
+        { f: 'ok', n: liveOk, label: 'Работает', icon: 'ok', color: 'var(--ok)' },
+        { f: 'bad', n: liveBad, label: 'Не отвечает', icon: 'bad', color: 'var(--bad)' },
+        { f: 'pay-warn', n: payWarn, label: 'Скоро платить', icon: 'warn', color: 'var(--warn)' },
+        { f: 'pay-bad', n: payBad, label: 'Пора платить', icon: 'bad', color: 'var(--bad)' },
+      ];
+      document.getElementById('summary').innerHTML = kpis.map((k) =>
+        '<button type="button" class="kpi' + (activeFilter === k.f ? ' is-active' : '') + '" data-filter="' + k.f + '">' +
+          '<div class="kpi-top"><span class="kpi-icon ' + k.icon + '">●</span></div>' +
+          '<b style="color:' + k.color + '">' + k.n + '</b><span>' + k.label + '</span></button>'
+      ).join('');
+
+      document.querySelectorAll('.kpi[data-filter]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const f = btn.getAttribute('data-filter');
+          activeFilter = activeFilter === f ? null : f;
+          applyFilterClasses();
+          updateFilterChip();
+          renderSummary(liveStates, billingTones);
+        });
+      });
 
       const banner = document.getElementById('banner');
-      if (liveBad > 0 || payBad > 0) {
-        banner.className = 'banner bad';
-        banner.textContent = 'Есть срочное: что-то не отвечает или пора платить. Сверху — деньги, ниже — проверки.';
+      const title = document.getElementById('banner-title');
+      const sub = document.getElementById('banner-sub');
+      banner.className = 'attention';
+      if (summaryStats.waiting > 0 && liveOk + liveBad === 0) {
+        banner.classList.add('idle');
+        title.textContent = 'Проверяю…';
+        sub.textContent = 'Снимаю показания с сайта и серверов.';
+      } else if (liveBad > 0 || payBad > 0) {
+        banner.classList.add('bad');
+        title.textContent = 'Требуется внимание';
+        sub.textContent = 'Что-то не отвечает или пора платить. Нажми «Показать проблемы».';
       } else if (payWarn > 0) {
-        banner.className = 'banner warn';
-        banner.textContent = 'Пока всё отвечает, но оплата скоро — загляни в жёлтые карточки.';
+        banner.classList.add('warn');
+        title.textContent = 'Скоро оплата';
+        sub.textContent = 'Техника отвечает, но сроки услуг поджимают.';
+      } else if (liveOk > 0) {
+        banner.classList.add('ok');
+        title.textContent = 'Всё в порядке';
+        sub.textContent = 'Срочных действий нет. Следи за датами оплаты выше.';
       } else {
-        banner.className = 'banner ok';
-        banner.textContent = 'Спокойно: ответы есть, сроки оплаты не горят.';
+        banner.classList.add('idle');
+        title.textContent = 'Не всё удалось проверить';
+        sub.textContent = 'Подожди или нажми «Обновить».';
       }
     }
 
     function bindBillingInputs() {
-      document.querySelectorAll('[data-bill-paid], [data-bill-months]').forEach((el) => {
+      document.querySelectorAll('[data-bill-paid], [data-bill-months], [data-bill-amount]').forEach((el) => {
         el.addEventListener('change', () => {
           const map = readBilling();
-          const id = el.getAttribute('data-bill-paid') || el.getAttribute('data-bill-months');
+          const id = el.getAttribute('data-bill-paid') || el.getAttribute('data-bill-months') || el.getAttribute('data-bill-amount');
           const paidEl = document.querySelector('[data-bill-paid="' + id + '"]');
           const monthsEl = document.querySelector('[data-bill-months="' + id + '"]');
+          const amountEl = document.querySelector('[data-bill-amount="' + id + '"]');
+          const prev = map[id] || {};
           map[id] = {
+            ...prev,
             paidOn: paidEl && paidEl.value ? paidEl.value : '',
             months: Math.max(1, Number(monthsEl && monthsEl.value ? monthsEl.value : 1)),
+            amountRub: amountEl && amountEl.value !== '' ? Number(amountEl.value) : (prev.amountRub || 0),
           };
           writeBilling(map);
           void refreshServicesOnly();
@@ -863,14 +1339,20 @@
       document.getElementById('services-pay').innerHTML = pay.join('');
       document.getElementById('services-other').innerHTML = other.join('');
       bindBillingInputs();
+      renderPaymentOverview();
+      renderChecklist();
+      applyFilterClasses();
+      updateFilterChip();
       renderSummary(Object.values(lastLiveMap), billingTones);
     }
 
     async function runChecks() {
       const stamp = document.getElementById('stamp');
       const live = document.getElementById('live');
-      stamp.textContent = 'Проверяю…';
-      live.innerHTML = liveChecks.map((item) => liveCard(item, { kind: 'wait', label: '…' })).join('');
+      const reloadBtn = document.getElementById('reload');
+      reloadBtn?.classList.add('reload-busy');
+      stamp.textContent = 'Проверяю… · авто 60 с';
+      live.innerHTML = liveChecks.map((item) => liveCard(item, { kind: 'wait', label: 'Проверяется' })).join('');
 
       const states = [];
       lastLiveMap = {};
@@ -884,7 +1366,8 @@
       }
 
       refreshServicesOnly();
-      stamp.textContent = 'Обновлено ' + new Date().toLocaleString('ru-RU') + ' · авто каждые 60 с';
+      reloadBtn?.classList.remove('reload-busy');
+      stamp.textContent = 'Обновлено ' + new Date().toLocaleString('ru-RU');
     }
 
     function showApp() {
@@ -921,6 +1404,21 @@
     });
 
     document.getElementById('reload').addEventListener('click', () => { void runChecks(); });
+
+    document.getElementById('showProblems').addEventListener('click', () => {
+      activeFilter = 'problems';
+      applyFilterClasses();
+      updateFilterChip();
+      document.getElementById('services-pay')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    document.getElementById('helpBtn').addEventListener('click', () => {
+      window.alert(
+        'Пульт проверяет сайт из браузера. Красное — не отвечает. ' +
+        'Отдельно смотри оплату: «Пора платить» и «Скоро платить». ' +
+        'Даты оплаты хранятся только на этом устройстве.'
+      );
+    });
 
     document.getElementById('savePass').addEventListener('click', async () => {
       const msg = document.getElementById('passMsg');
