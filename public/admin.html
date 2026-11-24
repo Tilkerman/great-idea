@@ -652,7 +652,6 @@
         note: 'Счёт до 12.12.2026, оплачен 15.11. Тикет #173103 — «Не в сети».',
         billable: true,
         periodMonths: 1,
-        examplePaidOn: '2025-11-15',
         doIfDue: 'Оплати счёт. Если после оплаты не включается — один тикет, не плоди новые.',
         liveId: 'api',
       },
@@ -661,18 +660,18 @@
         group: 'pay',
         priority: 2,
         name: 'Письма при регистрации',
-        plain: 'Подтверждение почты',
+        plain: 'Unisender шлёт письмо, сервер его заказывает',
         why: 'Подтверждение почты и сброс пароля',
         where: 'Unisender Go + сервер api.tili.su',
         cabinet: 'https://go.unisender.com/',
         cabinetLabel: 'Кабинет Unisender',
         passwordHint: 'Ключи только на сервере, не в git.',
-        note: 'Пока VPS мёртв — письма не уйдут. Для Gmail нужен Postbox или платный SMTP.',
+        note: 'Кабинет и домен tili.su могут быть зелёными. Письма всё равно не уйдут, пока молчит api.tili.su — это не поломка Unisender.',
         billable: true,
+        optionalPay: true,
         periodMonths: 1,
-        examplePaidOn: '2025-11-01',
-        doIfDue: 'Проверь тариф почты. Сервер должен быть включён.',
-        liveId: 'api',
+        dependsOnApi: true,
+        doIfDue: 'Платить Unisender нужно только если кончился тариф. Красное «не работает» из‑за сервера — не счёт.',
       },
       {
         id: 'domain',
@@ -688,7 +687,6 @@
         note: 'Без домена сайт не откроется по красивому адресу.',
         billable: true,
         periodMonths: 12,
-        examplePaidOn: '2025-06-01',
         doIfDue: 'reg.ru → продли домен на год.',
       },
       {
@@ -705,7 +703,6 @@
         note: 'Деньги с гранта/баланса. Ноль рублей — пуши встанут.',
         billable: true,
         periodMonths: 1,
-        examplePaidOn: '2025-11-01',
         doIfDue: 'Облако → Биллинг → пополнить.',
         liveId: 'pushY',
       },
@@ -723,7 +720,6 @@
         note: 'Оплачивается тем же балансом, что и пуши.',
         billable: true,
         periodMonths: 1,
-        examplePaidOn: '2025-11-01',
         doIfDue: 'Тот же биллинг. Если пуши живы — смотри функцию voice.',
       },
       {
@@ -739,8 +735,8 @@
         passwordHint: 'Логин владельца',
         note: 'Часто бесплатный план. Платить редко нужно.',
         billable: true,
+        optionalPay: true,
         periodMonths: 1,
-        examplePaidOn: '2025-11-01',
         doIfDue: 'Если сайт красный при живом GitHub — смотри Worker.',
         liveId: 'landing',
       },
@@ -757,8 +753,8 @@
         passwordHint: 'Пароль кабинета PostHog',
         note: 'На старте часто хватает бесплатного.',
         billable: true,
+        optionalPay: true,
         periodMonths: 1,
-        examplePaidOn: '2025-11-01',
         doIfDue: 'Проверь лимит на eu.posthog.com.',
       },
       {
@@ -959,12 +955,10 @@
       const saved = readBilling()[svc.id] || {};
       const paidOn = saved.paidOn || '';
       const months = Number(saved.months || svc.periodMonths || 1);
-      const example = !paidOn && svc.examplePaidOn;
-      const effectivePaid = paidOn || (example ? svc.examplePaidOn : '');
-      const end = effectivePaid ? addMonths(effectivePaid, months) : '';
+      const end = paidOn ? addMonths(paidOn, months) : '';
       const days = end ? daysUntil(end) : null;
-      const tone = svc.billable ? payTone(days) : 'idle';
-      return { saved, paidOn, months, example, effectivePaid, end, days, tone };
+      const tone = svc.billable && paidOn ? payTone(days) : 'idle';
+      return { saved, paidOn, months, example: false, effectivePaid: paidOn, end, days, tone };
     }
 
     function matchesFilter(svc, liveMap, bill) {
@@ -1035,14 +1029,14 @@
       const bars = [];
       items.forEach((svc) => {
         const b = serviceBilling(svc);
-        if (b.days != null && b.effectivePaid) {
+        if (b.days != null && b.paidOn) {
           if (b.days < 0) overdue += 1;
           else if (!nearest || b.days < nearest.days) nearest = { name: svc.name, days: b.days, end: b.end };
         }
         const amount = Number(b.saved.amountRub || 0);
         if (amount > 0) { monthSum += amount; hasAmount = true; }
-        if (b.effectivePaid) {
-          const pct = payProgressPct(b.effectivePaid, b.months, b.days, b.tone);
+        if (b.paidOn) {
+          const pct = payProgressPct(b.paidOn, b.months, b.days, b.tone);
           bars.push(
             '<div class="pay-bar-row">' +
               '<div class="pay-bar-label"><span>' + svc.name + '</span><span>' +
@@ -1072,7 +1066,7 @@
         { t: 'Сайт открывается', id: 'landing' },
         { t: 'Приложение загружается', id: 'app' },
         { t: 'Вход и синхронизация', id: 'api' },
-        { t: 'Письма (зависит от сервера)', id: 'api' },
+        { t: 'Письма (шлются, только если жив сервер)', id: 'api', waitLabel: 'Ждут сервер' },
         { t: 'Уведомления на телефон', id: 'pushY' },
         { t: 'Синхронизация календаря', id: 'api' },
       ];
@@ -1083,6 +1077,7 @@
         if (st) {
           if (st.kind === 'wait') { dot = 'idle'; label = 'Проверяется'; }
           else if (st.kind === 'ok') { dot = 'ok'; label = 'Работает'; }
+          else if (row.waitLabel) { dot = 'idle'; label = row.waitLabel; }
           else { dot = 'bad'; label = 'Не работает'; }
         }
         return '<div class="check-item"><span class="check-dot ' + dot + '" aria-hidden></span><span>' + row.t + '</span><span style="margin-left:auto;color:var(--muted)">' + label + '</span></div>';
@@ -1155,38 +1150,56 @@
 
     function serviceCard(svc, liveMap) {
       const bill = serviceBilling(svc);
-      const { saved, paidOn, months, example, effectivePaid, end, days, tone } = bill;
+      const { saved, paidOn, months, end, days, tone } = bill;
 
       const live = svc.liveId && liveMap[svc.liveId] ? liveMap[svc.liveId] : null;
+      const apiLive = liveMap.api || null;
       let techKind = 'idle';
       let techLabel = 'Нет автопроверки';
-      if (live) {
+      let summaryLine = '';
+
+      if (svc.dependsOnApi) {
+        if (!apiLive || apiLive.kind === 'wait') {
+          techKind = 'wait';
+          techLabel = 'Проверяется';
+          summaryLine = 'Смотрим, жив ли сервер аккаунтов — без него письмо не заказать.';
+        } else if (apiLive.kind === 'ok') {
+          techKind = 'ok';
+          techLabel = 'Сервер жив';
+          summaryLine = 'Unisender может отправить, сервер отвечает. Проверь тариф, если письма нет.';
+        } else {
+          techKind = 'warn';
+          techLabel = 'Ждёт сервер';
+          summaryLine = 'Кабинет Unisender тут ни при чём: письма не уходят, потому что молчит api.tili.su. Платить Unisender из‑за этой плашки не нужно.';
+        }
+      } else if (live) {
         techKind = live.kind;
         techLabel = live.kind === 'ok' ? 'Работает' : (live.kind === 'wait' ? 'Проверяется' : 'Не работает');
       }
 
       let payKind = 'idle';
       let payLabelText = '';
-      if (svc.billable) {
-        if (!effectivePaid && !paidOn) { payKind = 'warn'; payLabelText = 'Впиши дату'; }
-        else if (tone === 'bad') { payKind = 'bad'; payLabelText = 'Пора платить'; }
+      if (svc.billable && paidOn) {
+        if (tone === 'bad') { payKind = 'bad'; payLabelText = 'Пора платить'; }
         else if (tone === 'warn') { payKind = 'warn'; payLabelText = 'Скоро платить'; }
         else { payKind = 'ok'; payLabelText = 'Оплачено'; }
+      } else if (svc.billable) {
+        payKind = 'idle';
+        payLabelText = svc.optionalPay ? 'Дата не нужна' : 'Дата не указана';
       }
 
-      const articleTone = techKind === 'bad' || payKind === 'bad' ? 'bad'
-        : techKind === 'warn' || payKind === 'warn' ? 'warn'
-        : techKind === 'ok' ? 'ok' : 'idle';
+      const articleTone = payKind === 'bad' ? 'bad'
+        : (techKind === 'bad' ? 'bad'
+          : (techKind === 'warn' || payKind === 'warn' ? 'warn'
+            : (techKind === 'ok' ? 'ok' : 'idle')));
 
       let payHtml = '';
       if (svc.billable) {
         const amount = saved.amountRub || '';
         payHtml =
-          '<details class="tech pay" open>' +
-            '<summary>Изменить оплату</summary>' +
-            '<div class="hint" style="margin-top:8px">' +
-              (example && !paidOn ? 'Серая дата — пример. Впиши свою.' : 'Данные только в этом браузере.') +
-            '</div>' +
+          '<details class="tech pay">' +
+            '<summary>Срок оплаты (если платишь)</summary>' +
+            '<div class="hint" style="margin-top:8px">Считается только дата, которую ты сюда вписал. Пустое поле — не «просрочка».</div>' +
             '<div class="pay-grid" style="margin-top:8px">' +
               '<div><label>Когда оплатил</label>' +
                 '<input type="date" data-bill-paid="' + svc.id + '" value="' + (paidOn || '') + '" />' +
@@ -1198,18 +1211,31 @@
             '<label style="margin-top:8px">Стоимость в месяц, ₽ (необязательно)</label>' +
             '<input class="amount-field" type="number" min="0" step="1" data-bill-amount="' + svc.id + '" value="' + amount + '" placeholder="Например 544" />' +
             '<div class="pay-out ' + tone + '" style="margin-top:8px">' +
-              (effectivePaid
-                ? ('Оплачено до <b>' + fmtRu(end) + '</b>. ' + payLabel(days) + (example && !paidOn ? ' (пример)' : ''))
-                : 'Выбери дату — посчитаю срок.') +
+              (paidOn
+                ? ('Оплачено до <b>' + fmtRu(end) + '</b>. ' + payLabel(days))
+                : 'Дата не указана — пульт не считает это долгом.') +
             '</div>' +
             (svc.doIfDue ? '<p class="hint"><b>Если срок кончается:</b> ' + svc.doIfDue + '</p>' : '') +
           '</details>';
       }
 
-      const liveBad = live && live.kind === 'bad' ? '1' : '0';
+      const liveBad = !svc.dependsOnApi && live && live.kind === 'bad' ? '1' : '0';
       const liveOk = live && live.kind === 'ok' ? '1' : '0';
       const payBad = payKind === 'bad' ? '1' : '0';
       const payWarn = payKind === 'warn' ? '1' : '0';
+
+      if (!summaryLine) {
+        if (live && live.kind === 'bad') summaryLine = 'Сервис сейчас не отвечает.';
+        else if (payKind === 'bad') summaryLine = 'По твоей дате срок оплаты вышел.';
+        else if (payKind === 'warn') summaryLine = 'По твоей дате срок скоро кончится.';
+        else if (paidOn) summaryLine = 'Оплачено до ' + fmtRu(end) + '.';
+        else if (svc.optionalPay) summaryLine = 'Часто бесплатно. Дату оплаты можно не ставить.';
+        else summaryLine = 'Дата оплаты не указана — это не счёт к оплате.';
+      } else if (paidOn) {
+        summaryLine += ' По твоей дате оплачено до ' + fmtRu(end) + '.';
+      }
+
+      const showTechPill = Boolean(live || svc.dependsOnApi);
 
       return (
         '<article class="svc-card tone-' + articleTone + '" data-svc="' + svc.id + '" data-filter-kind="svc" data-live-bad="' + liveBad + '" data-live-ok="' + liveOk + '" data-pay-bad="' + payBad + '" data-pay-warn="' + payWarn + '">' +
@@ -1218,16 +1244,12 @@
               '<div class="name">' + svc.name + '</div>' +
               '<div class="meta">' + (svc.plain || svc.why) + '</div>' +
               '<div class="badge-row">' +
-                (live ? pill(techKind, techLabel, 'tech') : '') +
+                (showTechPill ? pill(techKind, techLabel, 'tech') : '') +
                 (svc.billable ? pill(payKind, payLabelText, 'pay') : pill('idle', 'Справка', 'pay')) +
               '</div>' +
             '</div>' +
           '</div>' +
-          '<p class="meta" style="margin-top:10px">' +
-            (live && live.kind === 'bad' ? 'Сейчас не отвечает. ' : '') +
-            (payKind === 'bad' ? 'Нужна оплата. ' : (payKind === 'warn' ? 'Скоро оплата. ' : '')) +
-            (svc.billable && effectivePaid ? 'Оплачено до ' + fmtRu(end) + '.' : '') +
-          '</p>' +
+          '<p class="meta" style="margin-top:10px">' + summaryLine + '</p>' +
           '<div class="btn-row"><a class="btn-link" href="' + svc.cabinet + '" target="_blank" rel="noopener">' + svc.cabinetLabel + '</a></div>' +
           '<details class="tech"><summary>Подробности</summary>' +
             '<div class="facts">' +
@@ -1282,7 +1304,13 @@
       } else if (liveBad > 0 || payBad > 0) {
         banner.classList.add('bad');
         title.textContent = 'Требуется внимание';
-        sub.textContent = 'Что-то не отвечает или пора платить. Нажми «Показать проблемы».';
+        if (liveBad > 0 && payBad > 0) {
+          sub.textContent = 'Что-то не отвечает, и по твоим датам вышел срок оплаты.';
+        } else if (liveBad > 0) {
+          sub.textContent = 'Сервер или проверка не отвечает. Это не счёт к оплате.';
+        } else {
+          sub.textContent = 'По дате, которую ты вписал, вышел срок оплаты.';
+        }
       } else if (payWarn > 0) {
         banner.classList.add('warn');
         title.textContent = 'Скоро оплата';
@@ -1300,7 +1328,7 @@
 
     function bindBillingInputs() {
       document.querySelectorAll('[data-bill-paid], [data-bill-months], [data-bill-amount]').forEach((el) => {
-        el.addEventListener('change', () => {
+        const save = () => {
           const map = readBilling();
           const id = el.getAttribute('data-bill-paid') || el.getAttribute('data-bill-months') || el.getAttribute('data-bill-amount');
           const paidEl = document.querySelector('[data-bill-paid="' + id + '"]');
@@ -1315,7 +1343,8 @@
           };
           writeBilling(map);
           void refreshServicesOnly();
-        });
+        };
+        el.addEventListener('change', save);
       });
     }
 
@@ -1328,7 +1357,7 @@
       sortServices(serviceCatalog).forEach((svc) => {
         if (svc.billable) {
           const saved = readBilling()[svc.id] || {};
-          const paidOn = saved.paidOn || svc.examplePaidOn || '';
+          const paidOn = saved.paidOn || '';
           const months = Number(saved.months || svc.periodMonths || 1);
           if (paidOn) billingTones.push(payTone(daysUntil(addMonths(paidOn, months))));
         }
