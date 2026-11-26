@@ -12,7 +12,7 @@ alwaysApply: true
 Статусбар `default`: iOS уже держит webview под островом.
 
 - **Не** вешать `ios-safe-top` / `ios-dynamic-island` в `index.html` и `iosNeedsTopSafeFloor()` = **false**
-- `html.is-ios-standalone .app-header { padding-top: 10px; }`
+- `html.is-ios-standalone .app-header { padding-top: 16px; }` (10px оставляло верх логотипа в статусбаре; пол 47/59px по-прежнему нельзя)
 - Не возвращать пол `--safe-top` 47px / 59px — это пустой ряд над логотипом и сдвиг 21:00 под меню
 
 ## Низ
@@ -22,7 +22,8 @@ alwaysApply: true
 Не трогать:
 
 - `html.is-ios-standalone .week-view__grid-scroll { padding-bottom: calc(var(--bottom-nav-bar-h) + 12px); }`
-- `--bottom-nav-bar-h`, `--bottom-nav-h`, `.bottom-nav` position/height
+- `--bottom-nav-bar-h`, `--bottom-nav-h`, `.bottom-nav` position/`min-height`
+- iPhone Home `.bottom-nav` padding `6px 4px 12px` (не полный `--ios-nav-safe` — иначе пустота под табами)
 - лишний `padding-bottom` на `.week-view__grid-scroll` / `.day-view`
 - `html.is-ios-standalone .app-viewport { padding-bottom: 0; }` — второй `--bottom-nav-h` поднимает сетку над меню
 

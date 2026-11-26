@@ -98,7 +98,7 @@
     <div class="banner wait" id="banner">Сейчас сниму показания.</div>
     <div class="grid" id="live"></div>
     <h2>Оплаты и кабинеты — открыть руками</h2>
-    <p class="sub">Автоматом баланс AdminVPS и Яндекса отсюда не видно. Красное ниже — чеклист, что открыть.</p>
+    <p class="sub">Автоматом баланс HOSTKEY и Яндекса отсюда не видно. Красное ниже — чеклист, что открыть.</p>
     <div class="grid" id="manual"></div>
   </main>
   <script>
@@ -125,8 +125,8 @@
         id: 'api',
         name: 'Сервер аккаунтов',
         hint: 'api.tili.su/healthz',
-        do: 'Регистрация, вход, облако. Красное → AdminVPS, сервер «В сети», тикет #173103.',
-        href: 'https://my.adminvps.ru/',
+        do: 'Регистрация, вход, облако. Красное → HOSTKEY 20759, Польша. Старый AdminVPS не трогай.',
+        href: 'https://my.hostkey.ru/',
         run: () => pingJson('https://api.tili.su/healthz', (data, status) => status === 200 && data && data.ok === true),
       },
       {
@@ -149,10 +149,10 @@
 
     const manualChecks = [
       {
-        name: 'AdminVPS',
-        hint: 'Сервер, баланс, счета',
-        do: 'Кабинет → сервер 251345.com: «В сети»? Счета оплачены? Баланс не 0 перед концом периода. Тикет #173103.',
-        href: 'https://my.adminvps.ru/',
+        name: 'HOSTKEY',
+        hint: 'Сервер аккаунтов, 760 ₽/мес',
+        do: 'Кабинет → сервер 20759 (Польша, 191.101.223.146): Active? Счёт nano оплачен?',
+        href: 'https://my.hostkey.ru/',
       },
       {
         name: 'Unisender Go',

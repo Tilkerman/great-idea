@@ -13,10 +13,10 @@
   flex-shrink: 0;
 }
 
-/* iPhone Home: status bar already sits above the webview. Extra --safe-top
-   here pushed logo, weekday heads and the hour grid down by ~one hour row. */
+/* iPhone Home: 10px left the logo top in the status bar. 47/59px floor is
+   still forbidden (empty row + 21:00 under tabs). */
 html.is-ios-standalone .app-header {
-  padding-top: 10px;
+  padding-top: 16px;
 }
 
 .app-header__brand {

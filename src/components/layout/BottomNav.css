@@ -38,7 +38,8 @@ html.is-ios-standalone .app-viewport__main > .bottom-nav {
   margin-right: auto;
   box-sizing: border-box !important;
   min-height: var(--bottom-nav-h);
-  padding: 6px 4px var(--ios-nav-safe, var(--safe-bottom));
+  /* Icons sit near the home indicator; full --ios-nav-safe left a gap under the tabs. */
+  padding: 6px 4px 12px;
   z-index: 1200;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
