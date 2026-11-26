@@ -40,7 +40,7 @@ html.is-ios-standalone .app-viewport__main > .bottom-nav {
   box-sizing: content-box !important;
   min-height: var(--bottom-nav-bar-h);
   height: auto;
-  padding: 6px 4px 12px;
+  padding: 12px 4px 12px;
   z-index: 1200;
   display: grid;
   grid-template-columns: repeat(5, 1fr);

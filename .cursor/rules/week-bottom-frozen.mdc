@@ -23,7 +23,7 @@ alwaysApply: true
 
 - `html.is-ios-standalone .week-view__grid-scroll { padding-bottom: calc(var(--bottom-nav-bar-h) + 12px); }`
 - `--bottom-nav-bar-h`, `--bottom-nav-h` как переменные; iPhone Home `.bottom-nav` `min-height: var(--bottom-nav-bar-h)` — **не** `--bottom-nav-h` (высокая плашка над иконками)
-- iPhone Home `.bottom-nav` `content-box`, padding `6px 4px 12px`, `align-items: center`
+- iPhone Home `.bottom-nav` `content-box`, padding `12px 4px 12px`, `align-items: center`
 - лишний `padding-bottom` на `.week-view__grid-scroll` / `.day-view`
 - `html.is-ios-standalone .app-viewport { padding-bottom: 0; }` — второй `--bottom-nav-h` поднимает сетку над меню
 
