@@ -1,0 +1,1 @@
+export function splashLinkTags(hrefFor: (file: string) => string): string;

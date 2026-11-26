@@ -32,7 +32,7 @@ export default defineConfig(({ command }) => {
         const splashBase = appAtSubpath ? 'https://tili.su/app/ios-splash/' : '/ios-splash/';
         const withSplash = html.replace(
           '    <!-- ios-splash -->',
-          splashLinkTags((file) => `${splashBase}${file}`),
+          splashLinkTags((file: string) => `${splashBase}${file}`),
         );
         if (!appAtSubpath) return withSplash;
         return withSplash
