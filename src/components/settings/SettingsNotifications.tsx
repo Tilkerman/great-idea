@@ -57,7 +57,7 @@ export function SettingsNotifications() {
         );
       } else if (result === 'denied') {
         updateSettings({ notificationsEnabled: false });
-        setFeedback(t('notifDenied'));
+        setFeedback(t(ios ? 'notifDenied' : 'notifDeniedDesktop'));
       } else if (result === 'blocked') {
         setFeedback(blocked ?? t('notifBlocked'));
       } else if (result === 'unsupported') {

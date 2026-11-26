@@ -59,7 +59,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.startsWith('/app/assets/') && isOfflineMediaAsset(url.pathname)) {
+  if (
+    (url.pathname.startsWith('/app/assets/') && isOfflineMediaAsset(url.pathname))
+    || url.pathname === '/app/logo-tili-header.png'
+    || url.pathname.startsWith('/app/ios-splash/')
+  ) {
     event.respondWith(networkFirstMedia(event.request));
   }
 });

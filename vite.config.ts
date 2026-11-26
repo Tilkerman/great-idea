@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { splashLinkTags } from './scripts/ios-splash-sizes.mjs';
 
 export default defineConfig(({ command }) => {
   const base = process.env.BASE_PATH ?? (command === 'build' ? '/app/' : '/');
@@ -28,9 +29,15 @@ export default defineConfig(({ command }) => {
     {
       name: 'tili-html-icons',
       transformIndexHtml(html) {
-        if (!appAtSubpath) return html;
-        return html
+        const splashBase = appAtSubpath ? 'https://tili.su/app/ios-splash/' : '/ios-splash/';
+        const withSplash = html.replace(
+          '    <!-- ios-splash -->',
+          splashLinkTags((file) => `${splashBase}${file}`),
+        );
+        if (!appAtSubpath) return withSplash;
+        return withSplash
           .replace('href="favicon.png"', 'href="/app/favicon.png"')
+          .replace('src="logo-tili-header.png"', 'src="/app/logo-tili-header.png"')
           .replace(
             'href="apple-touch-icon-v8.png"',
             'href="https://tili.su/app/apple-touch-icon-v8.png"',
@@ -48,7 +55,7 @@ export default defineConfig(({ command }) => {
       srcDir: 'src',
       filename: 'sw.ts',
       injectManifest: {
-        globPatterns: ['index.html', 'assets/*.js', 'assets/*.css'],
+        globPatterns: ['index.html', 'assets/*.js', 'assets/*.css', 'logo-tili-header.png', 'ios-splash/*.png'],
       },
       includeAssets: [
         'favicon.png',
@@ -81,6 +88,8 @@ export default defineConfig(({ command }) => {
         'tili-home-icon-v8.png',
         'tili-pwa-192-v8.png',
         'tili-pwa-512-v8.png',
+        'logo-tili-header.png',
+        'ios-splash/*.png',
       ],
       manifest: {
         name: 'TiLi Calendar',
