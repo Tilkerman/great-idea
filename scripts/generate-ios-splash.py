@@ -153,9 +153,13 @@ def blit(canvas: bytearray, cw: int, ch: int, logo: list[list[tuple[int, int, in
 
 
 def main() -> None:
-    lw, lh, logo = read_png(LOGO)
     OUT.mkdir(parents=True, exist_ok=True)
-    for width, height in SIZES:
+    missing = [size for size in SIZES if not (OUT / f'{size[0]}x{size[1]}.png').is_file()]
+    if not missing:
+        print('ios-splash already present')
+        return
+    lw, lh, logo = read_png(LOGO)
+    for width, height in missing:
         canvas = bytearray([BG[0], BG[1], BG[2]]) * (width * height)
         blit(canvas, width, height, logo, lw, lh)
         dest = OUT / f'{width}x{height}.png'
