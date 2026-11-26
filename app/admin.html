@@ -554,7 +554,7 @@
 
       <div class="pass-box">
         <h2 style="margin-top:0">Сменить пароль админки</h2>
-        <p class="hint">Хранится только на этом устройстве (хэш в браузере). Не путай с паролем GitHub или AdminVPS.</p>
+        <p class="hint">Хранится только на этом устройстве (хэш в браузере). Не путай с паролем GitHub или HOSTKEY.</p>
         <div class="row-inline">
           <div>
             <label for="newPass">Новый пароль</label>
@@ -585,8 +585,8 @@
         name: 'Аккаунты и синхронизация',
         hint: 'Без этого дела не переезжают между телефоном и компьютером',
         doTitle: 'Что делать',
-        doBody: 'Зайди в AdminVPS, включи сервер. Тикет #173103. Или переезжай на Яндекс.',
-        href: 'https://my.adminvps.ru/',
+        doBody: 'Сервер HOSTKEY 20759 (Польша). Кабинет HOSTKEY, не AdminVPS. Старый немецкий VPS не трогай.',
+        href: 'https://my.hostkey.ru/',
         run: () => pingJson('https://api.tili.su/healthz', (d, s) => s === 200 && d && d.ok === true),
       },
       {
@@ -594,7 +594,7 @@
         name: 'Вход в аккаунт',
         hint: 'Проверка, отвечает ли сервер на вход',
         doTitle: 'Как понять',
-        doBody: 'Если пишет «401» — сервер жив. Если тишина — тот же сломанный VPS.',
+        doBody: 'Если пишет «401» — сервер жив, просто нет сессии. Если тишина — смотри карточку HOSTKEY.',
         href: 'https://tili.su/app/',
         run: () => pingStatus('https://tili.su/v1/auth/session', (s) => s === 401 || s === 200),
       },
@@ -619,9 +619,9 @@
       {
         id: 'push',
         name: 'Напоминания через сайт',
-        hint: 'Прокси tili.su — часто падает вместе с VPS',
+        hint: 'Прокси tili.su/v1/push',
         doTitle: 'Что делать',
-        doBody: 'Смотри карточку «Яндекс» выше. Если она зелёная — дело в API-сервере.',
+        doBody: 'Баннеры идут через Яндекс. Если эта строка красная, а Яндекс зелёный — смотри Cloudflare Worker.',
         href: 'https://console.cloud.yandex.ru/',
         run: () => pingJson('https://tili.su/v1/push?action=health', (d, s) => s === 200 && d && d.ok === true),
       },
@@ -639,21 +639,38 @@
     /** Catalog from docs/third-party-services.md + known ops notes. */
     const serviceCatalog = [
       {
-        id: 'adminvps',
+        id: 'hostkey',
         group: 'pay',
         priority: 1,
         name: 'Сервер аккаунтов',
         plain: 'Вход, регистрация, облако',
         why: 'Регистрация, вход, sync календаря и Lumi',
+        where: 'HOSTKEY nano, Польша, 20759 / 191.101.223.146',
+        cabinet: 'https://my.hostkey.ru/',
+        cabinetLabel: 'Кабинет HOSTKEY',
+        passwordHint: 'Кабинет HOSTKEY. SSH-ключ на Mac (tili_adminvps).',
+        note: '760 ₽/мес, оплачен 25.11.2026. api.tili.su смотрит сюда. Старый AdminVPS не удалять.',
+        billable: true,
+        periodMonths: 1,
+        doIfDue: 'HOSTKEY → продли nano 20759. DNS api.tili.su не трогай без нужды.',
+        liveId: 'api',
+      },
+      {
+        id: 'adminvps',
+        group: 'pay',
+        priority: 1.5,
+        name: 'Старый сервер (не трогать)',
+        plain: 'AdminVPS, уже не api.tili.su',
+        why: 'Мёртвый немецкий VPS, оплачен до 12.12',
         where: 'AdminVPS, Германия, 251345.com / 194.147.215.110',
         cabinet: 'https://my.adminvps.ru/',
         cabinetLabel: 'Кабинет AdminVPS',
-        passwordHint: 'Кабинет AdminVPS. SSH-ключ на Mac.',
-        note: 'Счёт до 12.12.2026, оплачен 15.11. Тикет #173103 — «Не в сети».',
+        passwordHint: 'Кабинет AdminVPS. Не продлевать.',
+        note: 'Тикет #173103 — «Не в сети». Не удалять до конца оплаченного срока. Новый API на HOSTKEY.',
         billable: true,
+        optionalPay: true,
         periodMonths: 1,
-        doIfDue: 'Оплати счёт. Если после оплаты не включается — один тикет, не плоди новые.',
-        liveId: 'api',
+        doIfDue: 'Не продлевать. Не удалять сервер до 12.12.2026.',
       },
       {
         id: 'mail',
@@ -666,7 +683,7 @@
         cabinet: 'https://go.unisender.com/',
         cabinetLabel: 'Кабинет Unisender',
         passwordHint: 'Ключи только на сервере, не в git.',
-        note: 'Кабинет и домен tili.su могут быть зелёными. Письма всё равно не уйдут, пока молчит api.tili.su — это не поломка Unisender.',
+        note: 'Письма заказывает api.tili.su (HOSTKEY). Кабинет Unisender зелёный ≠ письма уходят, если API красный.',
         billable: true,
         optionalPay: true,
         periodMonths: 1,
