@@ -1481,6 +1481,20 @@
   white-space: nowrap;
 }
 
+/* Mac / desktop: pill sat in the hour above the line. Sit it on the line, line starts after. Phone unchanged. */
+@media (min-width: 1024px) {
+  .now-indicator__label {
+    bottom: auto;
+    top: 0;
+    left: 12px;
+    transform: translateY(-50%);
+  }
+
+  .now-indicator__line {
+    left: 54px;
+  }
+}
+
 .week-view__slot {
   position: relative;
   border-bottom: 0.5px solid var(--grid);
