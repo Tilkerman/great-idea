@@ -29,6 +29,7 @@ import { useOpenTaskFromNotification } from './hooks/useOpenTaskFromNotification
 import { useI18n } from './i18n/useI18n';
 import { LumiEmbed } from './lumi/LumiEmbed';
 import { persistUtmFromUrl, trackAppOpenOnce } from './utils/productAnalytics';
+import { startAppMetrika } from './utils/yandexMetrika';
 import { pingPushHello } from './utils/webPush';
 import { useAppViewportHeight } from './hooks/useAppViewportHeight';
 import { useDesktopLayoutClass } from './hooks/useDesktopLayoutClass';
@@ -124,6 +125,7 @@ function AppRouter() {
     persistUtmFromUrl();
     void pingPushHello();
     if (settings.analyticsEnabled) {
+      startAppMetrika(true);
       trackAppOpenOnce(true, settings.locale);
     }
   }, [ready, settings.analyticsEnabled, settings.locale]);

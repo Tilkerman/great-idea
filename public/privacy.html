@@ -134,13 +134,13 @@
 
       <h2>4. Что уходит наружу</h2>
       <h3>4.1. Сайт (лендинг)</h3>
-      <p>Яндекс Метрика (счётчик 113253680, РФ): визиты, устройство, адрес страницы, источник перехода, карта кликов, вебвизор (запись действий на странице). Тексты дел не передаются: на лендинге их нет. Отдельного выключателя Метрики на сайте нет; вы можете отключить её средствами браузера или блокировщика. Приложение /app/ этим счётчиком не измеряется.</p>
+      <p>Яндекс Метрика (счётчик 113253680, РФ): визиты, устройство, адрес страницы, источник перехода, карта кликов, вебвизор (запись действий на странице). Тексты дел не передаются: на лендинге их нет. Отдельного выключателя Метрики на сайте нет; вы можете отключить её средствами браузера или блокировщика. Вебвизор и карта кликов работают только здесь, не в приложении.</p>
       <p>PostHog (ЕС): события лендинга (открытие PWA, клик по кнопке, просмотр разделов). Без текстов календаря.</p>
       <p>localStorage лендинга: выбранный язык (ru / en / es).</p>
       <p>Хостинг GitHub Pages и Cloudflare, как любой CDN, могут вести обычные веб-логи (IP-адрес, User-Agent). Это их журналы, не наш кабинет аналитики.</p>
 
       <h3>4.2. Анонимная статистика приложения</h3>
-      <p>По умолчанию включена. Выключить: Настройки → Данные. Мы используем случайный идентификатор устройства (<code>tili-analytics-id</code>), не связанный с email или именем, и отправляем в PostHog (ЕС, eu.i.posthog.com) события без текста дел: открытие приложения, создание дела, категория, включение push, шаги Lumi, UTM-метки из ссылки. Если статистика выключена, приложение эти события не отправляет.</p>
+      <p>По умолчанию включена. Выключить: Настройки → Данные. Мы используем случайный идентификатор устройства (<code>tili-analytics-id</code>), не связанный с email или именем, и отправляем в PostHog (ЕС, eu.i.posthog.com) события без текста дел: открытие приложения, создание дела, категория, включение push, шаги Lumi, UTM-метки из ссылки. Тот же счётчик Яндекс Метрики (113253680, РФ) считает открытия <code>/app/</code>: визит, устройство, адрес страницы. Без вебвизора, без карты кликов, без текстов дел. Если статистика выключена, приложение эти события не отправляет.</p>
 
       <h3>4.3. Push-напоминания</h3>
       <p>Работают только если вы дали разрешение на уведомления и включили их в настройках. На iPhone нужно добавить PWA на экран «Домой». На сервер в Яндекс Облаке (регион ru-central1, Object Storage, РФ) передаётся:</p>
@@ -265,13 +265,13 @@
 
       <h2>4. What leaves your device</h2>
       <h3>4.1. Website (landing page)</h3>
-      <p>Yandex Metrica (counter 113253680, Russia): visits, device, page URL, referrer, click map and Webvisor (recording of your session on the page). No task text is sent because the landing page has none. There is no on-page switch for Metrica; you can block it with your browser or an ad blocker. The app at /app/ is not measured by this counter.</p>
+      <p>Yandex Metrica (counter 113253680, Russia): visits, device, page URL, referrer, click map and Webvisor (recording of your session on the page). No task text is sent because the landing page has none. There is no on-page switch for Metrica; you can block it with your browser or an ad blocker. Webvisor and the click map run only here, not in the app.</p>
       <p>PostHog (EU): landing-page events (opening the PWA, CTA clicks, section views). No calendar text.</p>
       <p>Landing-page localStorage: your chosen language (ru / en / es).</p>
       <p>Hosting: GitHub Pages and Cloudflare may keep ordinary web logs (IP address, User-Agent), as any CDN does. These are their logs, not our analytics account.</p>
 
       <h3>4.2. Anonymous app analytics</h3>
-      <p>On by default. Turn off under Settings → Data. We use a random device ID (<code>tili-analytics-id</code>), not linked to your email or name, and send PostHog (EU, eu.i.posthog.com) events without task text: app opened, task created, category, push enabled, Lumi steps, UTM parameters from the link. When switched off, the app does not send these events.</p>
+      <p>On by default. Turn off under Settings → Data. We use a random device ID (<code>tili-analytics-id</code>), not linked to your email or name, and send PostHog (EU, eu.i.posthog.com) events without task text: app opened, task created, category, push enabled, Lumi steps, UTM parameters from the link. The same Yandex Metrica counter (113253680, Russia) counts openings of <code>/app/</code>: visit, device, page URL. No Webvisor, no click map, no task text. When switched off, the app does not send these events.</p>
 
       <h3>4.3. Push reminders</h3>
       <p>These work only if you grant notification permission and enable them in app settings. On iPhone, add the PWA to the Home Screen. The following is sent to Yandex Cloud (region ru-central1, Object Storage, Russia):</p>
@@ -396,13 +396,13 @@
 
       <h2>4. Qué sale de tu dispositivo</h2>
       <h3>4.1. Sitio web (landing)</h3>
-      <p>Yandex Metrica (contador 113253680, Rusia): visitas, dispositivo, URL, referente, mapa de clics y Webvisor (grabación de tu sesión en la página). No se envía texto de tareas porque la landing no tiene. No hay un interruptor de Metrica en la página; puedes bloquearla con tu navegador o un bloqueador de anuncios. La aplicación en /app/ no se mide con este contador.</p>
+      <p>Yandex Metrica (contador 113253680, Rusia): visitas, dispositivo, URL, referente, mapa de clics y Webvisor (grabación de tu sesión en la página). No se envía texto de tareas porque la landing no tiene. No hay un interruptor de Metrica en la página; puedes bloquearla con tu navegador o un bloqueador de anuncios. El Webvisor y el mapa de clics funcionan solo aquí, no en la aplicación.</p>
       <p>PostHog (UE): eventos de la landing (apertura de la PWA, clics en botones, secciones vistas). Sin texto del calendario.</p>
       <p>localStorage de la landing: el idioma elegido (ru / en / es).</p>
       <p>Alojamiento: GitHub Pages y Cloudflare pueden guardar registros web habituales (dirección IP, User-Agent), como cualquier CDN. Son sus registros, no nuestra cuenta de analítica.</p>
 
       <h3>4.2. Analítica anónima de la aplicación</h3>
-      <p>Activada por defecto. Para desactivarla: Ajustes → Datos. Usamos un identificador aleatorio de dispositivo (<code>tili-analytics-id</code>), no vinculado a tu email ni nombre, y enviamos a PostHog (UE, eu.i.posthog.com) eventos sin texto de tareas: apertura de la app, creación de tarea, categoría, activación de push, pasos de Lumi, parámetros UTM del enlace. Si está desactivada, la app no envía estos eventos.</p>
+      <p>Activada por defecto. Para desactivarla: Ajustes → Datos. Usamos un identificador aleatorio de dispositivo (<code>tili-analytics-id</code>), no vinculado a tu email ni nombre, y enviamos a PostHog (UE, eu.i.posthog.com) eventos sin texto de tareas: apertura de la app, creación de tarea, categoría, activación de push, pasos de Lumi, parámetros UTM del enlace. El mismo contador de Yandex Metrica (113253680, Rusia) cuenta las aperturas de <code>/app/</code>: visita, dispositivo, URL. Sin Webvisor, sin mapa de clics, sin texto de tareas. Si está desactivada, la app no envía estos eventos.</p>
 
       <h3>4.3. Recordatorios push</h3>
       <p>Funcionan solo si concedes el permiso de notificaciones y las activas en los ajustes de la app. En iPhone hay que añadir la PWA a la pantalla de inicio. Se envía a Yandex Cloud (región ru-central1, Object Storage, Rusia):</p>

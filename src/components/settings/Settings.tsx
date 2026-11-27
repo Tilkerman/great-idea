@@ -14,6 +14,7 @@ import {
   updateAccountSession,
 } from '../../utils/authService';
 import { setAnalyticsConsent, trackAppOpenOnce } from '../../utils/productAnalytics';
+import { startAppMetrika } from '../../utils/yandexMetrika';
 import {
   buildFullBackup,
   downloadBackupJson,
@@ -641,7 +642,10 @@ export function SettingsData() {
   const onAnalyticsToggle = (enabled: boolean) => {
     setAnalyticsConsent(enabled);
     void updateSettings({ analyticsEnabled: enabled }).then(() => {
-      if (enabled) trackAppOpenOnce(true, settings.locale);
+      if (enabled) {
+        startAppMetrika(true);
+        trackAppOpenOnce(true, settings.locale);
+      }
     });
   };
 

@@ -254,7 +254,7 @@ export const en: typeof ru = {
     exportJson: 'Export JSON',
     exportNote: 'This is a file backup. Without an account, data stays on this phone; with an account it also syncs — export is extra safety.',
     analyticsSettingsLabel: 'Anonymous statistics',
-    analyticsSettingsHint: 'On by default: app opens and actions, no task text. You can turn it off here.',
+    analyticsSettingsHint: 'On by default: app opens and actions, no task text. /app/ visits also go to Yandex Metrica, without screen recording. You can turn it off here.',
     analyticsPrivacyLink: 'Privacy policy',
     voiceSettingsLabel: 'Voice notes with AI',
     voiceSettingsHint: 'Hold the + button, speak — TiLi fills the task card. Text is sent to our server for parsing (TiLi only, not Lumi). You tap Save yourself.',
